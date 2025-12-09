@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hostel Hub | CampusCare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+      .menu-table { width:100%; border-collapse: collapse; margin-top:1rem; }
+      .menu-table th, .menu-table td { padding: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.1); text-align: left; }
+      .menu-table th { background: rgba(255,255,255,0.5); font-weight: 700; color: #4a5568; }
+      .today-row { background: rgba(59, 130, 246, 0.1); font-weight:bold; color: #1e40af; border-left: 4px solid #3b82f6; }
+      
+      .leave-form { background: rgba(255,255,255,0.6); padding:1.5rem; border-radius:15px; margin-top:1rem; }
+      .btn-apply { background: #f59e0b; color: white; border:none; padding: 0.8rem 1.5rem; border-radius:8px; width:100%; cursor:pointer; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">CampusCare</a>
+      <nav class="main-nav">
+        <a href="../index.html">Home</a>
+        <a href="#" class="active">Hostel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <section class="hero" style="min-height:auto; padding-bottom:1rem;">
+      <div class="hero-left">
+        <h1 class="hero-title">Hostel Hub</h1>
+        <p class="hero-sub">Mess Menu, Leave Apps, and Warden Contacts</p>
+      </div>
+    </section>
+
+    <div style="display:flex; flex-wrap:wrap; gap:2rem;">
+        
+        <!-- MESS MENU -->
+        <div style="flex:1.5; min-width:300px;">
+            <div class="glass" style="padding:1.5rem; border-radius:20px;">
+                <h2 style="margin-bottom:1rem;">Weekly Mess Menu 🍛</h2>
+                <div style="overflow-x:auto;">
+                    <table class="menu-table" id="mess-menu-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Breakfast</th>
+                                <th>Lunch</th>
+                                <th>Dinner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align:center;">Loading Menu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="glass" style="padding:1.5rem; border-radius:20px; margin-top:2rem;">
+                <h3>Status: <span id="leave-status-count">Loading...</span></h3>
+                <p style="color:#64748b;">Your recent leave application history</p>
+                <div id="leave-history" style="margin-top:1rem; max-height:200px; overflow-y:auto;">
+                </div>
+            </div>
+        </div>
+
+        <!-- LEAVE APPLICATION -->
+        <div style="flex:1; min-width:300px;">
+            <div class="leave-form glass">
+                <h2 style="margin-bottom:1rem;">Apply for Leave</h2>
+                <form id="leaveForm">
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Type</label>
+                        <select id="type" class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc;">
+                            <option value="Night Out">Night Out</option>
+                            <option value="Home Visit">Home Visit</option>
+                            <option value="Medical">Medical Emergency</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;">
+                            <label style="display:block; font-weight:600; margin-bottom:0.4rem;">From</label>
+                            <input type="date" id="startDate" class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc;" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label style="display:block; font-weight:600; margin-bottom:0.4rem;">To</label>
+                            <input type="date" id="endDate" class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc;" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:1rem; margin-top:1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Reason</label>
+                        <textarea id="reason" rows="3" class="form-control" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid #ccc;" placeholder="Why are you leaving?" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-apply">Submit Application</button>
+                </form>
+            </div>
+
+            <div class="glass" style="padding:1.5rem; border-radius:15px; margin-top:2rem; background:linear-gradient(135deg, #1f2937, #111827); color:white;">
+                <h3 style="color:#f59e0b; margin-bottom:0.5rem;"><i class="fa-solid fa-phone"></i> Emergency Contacts</h3>
+                <p style="margin-bottom:0.5rem;"><strong>Chief Warden:</strong> +91 98765 43210</p>
+                <p style="margin-bottom:0.5rem;"><strong>Ambulance:</strong> +91 11223 34455</p>
+                <p><strong>Security Gate:</strong> +91 99887 76655</p>
+            </div>
+        </div>
+
+    </div>
+
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/hostel.js"></script>
+</body>
+</html>

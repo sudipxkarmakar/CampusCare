@@ -1,92 +1,148 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CampusCare — Teacher Dashboard</title>
-
-  <!-- External CSS -->
+  <title>CampusCare — Teacher Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/styles.css">
-  <!-- Dashboard specific CSS -->
-  <!-- <link rel="stylesheet" href="dashboard.css"> -->
+  <style>
+    /* Specific styles for form */
+    .form-card {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-submit {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+      background: #059669;
+    }
+
+    .row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .col {
+      flex: 1;
+    }
+  </style>
 </head>
 
 <body>
 
-  <header class="topbar">
-    <div class="brand">
-      <a href="../index.html" class="logo-glow" style="text-decoration:none; color:inherit;">
-  CampusCare
-</a>
-
-      <small class="tag">Teacher Module</small>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">CampusCare</a>
+      <nav class="main-nav">
+        <a href="../index.html">Home</a>
+        <a href="#" class="active">Teacher Portal</a>
+      </nav>
     </div>
-    <nav class="nav">
-        <a href="../index.html" class="nav-link">Home</a>
-        <a href="../about.html" class="nav-link">About</a>
-        <a href="../contact.html" class="nav-link">Contact</a>
-    </nav>
   </header>
 
-  <main class="container">
-
-    <h1 style="margin-bottom:6px;">Teacher Dashboard</h1>
-    <p class="muted" style="margin-bottom:22px;">Plan classes, post assignments and publish notices from one place.</p>
-
-    <!-- Stats Section -->
-    <div class="stats-cards">
-      <div class="stats-card">
-        <h3>Today's Classes</h3>
-        <p class="stat-number">03</p>
+  <main class="main-container">
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="hero-title">Academic Command Center</h1>
+        <p class="hero-sub">Welcome, Faculty</p>
       </div>
+    </section>
 
-      <div class="stats-card">
-        <h3>Pending Evaluations</h3>
-        <p class="stat-number">12</p>
+    <!-- ASSIGNMENT CREATION FORM -->
+    <section class="form-section">
+      <div class="form-card glass">
+        <h2 style="margin-bottom:1.5rem; text-align:center;">Create New Assignment</h2>
+        <form id="assignmentForm">
+          <div class="form-group">
+            <label>Assignment Title</label>
+            <input type="text" id="title" class="form-control" placeholder="e.g. Thermodynamics Lab Report" required>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="description" class="form-control" rows="3" placeholder="Instructions for students..."
+              required></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col form-group">
+              <label>Subject</label>
+              <input type="text" id="subject" class="form-control" placeholder="e.g. ME-101" required>
+            </div>
+            <div class="col form-group">
+              <label>Deadline</label>
+              <input type="date" id="deadline" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col form-group">
+              <label>Target Dept</label>
+              <select id="department" class="form-control">
+                <option value="CSE">CSE</option>
+                <option value="ECE">ECE</option>
+                <option value="ME">ME</option>
+                <option value="CE">CE</option>
+              </select>
+            </div>
+            <div class="col form-group">
+              <label>Batch</label>
+              <input type="text" id="batch" class="form-control" placeholder="e.g. 2025" required>
+            </div>
+            <div class="col form-group">
+              <label>Section (Optional)</label>
+              <select id="section" class="form-control">
+                <option value="">All Sections</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">Push Assignment</button>
+        </form>
       </div>
-
-      <div class="stats-card">
-        <h3>Active Notices</h3>
-        <p class="stat-number">04</p>
-      </div>
-    </div>
-
-    <!-- Feature Cards Section -->
-    <div class="feature-boxes">
-
-      <a class="feature-card" href="assignments.html">
-        <div class="icon">📘</div>
-        <p>Create Assignment</p>
-      </a>
-
-      <a class="feature-card" href="submissions.html">
-        <div class="icon">📝</div>
-        <p>View Submissions</p>
-      </a>
-
-      <a class="feature-card" href="schedule.html">
-        <div class="icon">📅</div>
-        <p>Class Schedule</p>
-      </a>
-
-      <a class="feature-card" href="notices.html">
-        <div class="icon">📢</div>
-        <p>Publish Notices</p>
-      </a>
-
-      <a class="feature-card" href="files.html">
-        <div class="icon">📂</div>
-        <p>Shared Files</p>
-      </a>
-
-    </div>
+    </section>
 
   </main>
 
-  <footer class="footer">
-    &copy; 2025 CampusCare — Frontend mockup
-  </footer>
-
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/teacher.js"></script>
 </body>
-</html>
 
+</html>

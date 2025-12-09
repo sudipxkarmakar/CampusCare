@@ -1,28 +1,36 @@
-﻿import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
+﻿import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import assignmentRoutes from './routes/assignmentRoutes.js';
+import complaintRoutes from './routes/complaintRoutes.js';
+import noticeRoutes from './routes/noticeRoutes.js';
+import hostelRoutes from './routes/hostelRoutes.js';
 
 dotenv.config();
 
+connectDB();
+
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "CampusCare backend is running" });
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/complaints', complaintRoutes);
+app.use('/api/notices', noticeRoutes);
+app.use('/api/hostel', hostelRoutes);
+
+app.get('/', (req, res) => {
+  res.send('CampusCare API is running...');
 });
 
-const start = async () => {
-  const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/campuscare";
-  try {
-    await mongoose.connect(MONGO_URI);
-    console.log("MongoDB connected");
-  } catch (err) {
-    console.warn("MongoDB connection failed (server will still start):", err.message);
-  }
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-};
+const PORT = process.env.PORT || 5000;
 
-start();
+app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+});

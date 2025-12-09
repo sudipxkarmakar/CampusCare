@@ -17,95 +17,129 @@
       <i class="fa-solid fa-graduation-cap"></i> CampusCare
     </div>
     <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#modules">Services</a></li>
-      <li><a href="#notices">Notices</a></li>
-      <li><a href="#complaint-wall">Public Wall</a></li>
-      <li><a href="#faculty">Faculty</a></li>
+      <li><a href="#home"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="#modules"><i class="fa-solid fa-layer-group"></i> Services</a></li>
+      <li><a href="#notices"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
+      <li><a href="#complaint-wall"><i class="fa-solid fa-comments"></i> Public Wall</a></li>
+      <li><a href="#faculty"><i class="fa-solid fa-users"></i> Faculty</a></li>
     </ul>
-    <button class="btn-login">Login / Sign Up</button>
+    <a href="login.html" class="btn-login" style="text-decoration:none;">Login / Sign Up</a>
   </header>
 
-  <section class="hero" id="home">
+  <section class="hero" id="home"
+    style="position: relative; padding: 4rem 5% 2rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
     <h1>Smart Campus Management<br>Powered by AI</h1>
-    <p>Seamlessly integrating Students, Teachers, and Hostels into one digital ecosystem.</p>
-    
-    <div class="hero-banner glass">
-        <img src="assets/images/hero-illustration.png" alt="Campus Illustration">
+    <p style="margin-bottom: 3rem;">Seamlessly integrating Students, Teachers, and Hostels into one digital ecosystem.
+    </p>
+
+    <!-- Hero Image in Foreground (Clean & Sharp) -->
+    <div class="hero-banner" style="width: 100%; max-width: 800px; animation: float 6s ease-in-out infinite;">
+      <img src="assets/images/hero-illustration.png" alt="Campus Illustration"
+        style="width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
     </div>
-</section>
+  </section>
+
+  <!-- Add slight floating animation for life -->
+  <style>
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-15px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+  </style>
 
   <section class="modules-section" id="modules">
     <h2 class="section-title">Core Services</h2>
     <div class="modules-grid">
 
-      <div class="module-card glass student-card">
+      <a href="student/index.html" class="module-card glass student-card" style="text-decoration:none;">
         <i class="fa-solid fa-user-graduate module-icon"></i>
         <div class="module-title">Student Services</div>
         <div class="module-desc">Your digital backpack. Access assignments, view exam routines, and manage personal
           documents.</div>
-      </div>
+      </a>
 
-      <div class="module-card glass teacher-card">
+      <a href="teacher/index.html" class="module-card glass teacher-card" style="text-decoration:none;">
         <i class="fa-solid fa-chalkboard-user module-icon"></i>
         <div class="module-title">Teacher Portal</div>
         <div class="module-desc">Streamline grading, publish notices, and manage class schedules effortlessly.</div>
-      </div>
+      </a>
 
-      <div class="module-card glass hostel-card">
+      <a href="hostel/index.html" class="module-card glass hostel-card" style="text-decoration:none;">
         <i class="fa-solid fa-bed module-icon"></i>
         <div class="module-title">Hosteler Hub</div>
         <div class="module-desc">Check mess menus, apply for leave, and receive instant hostel announcements.</div>
-      </div>
+      </a>
 
-      <div class="module-card glass ai-card">
+      <a href="complaints/index.html" class="module-card glass ai-card" style="text-decoration:none;">
         <i class="fa-solid fa-robot module-icon"></i>
         <div class="module-title">AI Complaints</div>
         <div class="module-desc"><strong>Flagship:</strong> AI-powered issue tracking. Auto-route complaints and track
           resolution in real-time.</div>
-      </div>
+      </a>
     </div>
   </section>
 
-<section class="blog-section" id="complaint-wall">
-        <h2 class="section-title">Transparency Wall (Public Complaints)</h2>
-        <p style="text-align:center; margin-bottom:2rem; color:#4a5568;">See how AI is resolving campus issues in real-time.</p>
-        
-        <div class="blog-container">
-            <div class="blog-card glass">
-                <div class="status-badge status-resolved">RESOLVED</div>
-                <h3 class="blog-title">Hostel 3 Water Cooler Repair</h3>
-                <p class="blog-meta">Reported by: Student • 2 Days ago</p>
-                <p class="blog-excerpt">The issue regarding the RO filter in the 2nd-floor wing has been fixed. Maintenance team replaced the filter cartridge.</p>
-                <div class="blog-footer">
-                    <span><i class="fa-solid fa-thumbs-up"></i> 45 Upvotes</span>
-                    <span><i class="fa-solid fa-check-circle"></i> Verified</span>
-                </div>
-            </div>
+  <!-- NOTICE BOARD SECTION -->
+  <section class="notice-section" id="notices" style="padding: 2rem 5%; background: rgba(255,255,255,0.4);">
+    <h2 class="section-title">Campus Notice Board</h2>
+    <div class="notice-wrapper" id="public-notice-list">
+      <!-- JS Injected Notices -->
+      <p style="text-align:center;">Loading notices...</p>
+    </div>
+  </section>
 
-            <div class="blog-card glass">
-                <div class="status-badge status-progress">IN PROGRESS</div>
-                <h3 class="blog-title">Projector Malfunction in Lab 4</h3>
-                <p class="blog-meta">Reported by: Faculty • Yesterday</p>
-                <p class="blog-excerpt">Complaint auto-routed to IT Department. A technician has been assigned and is currently inspecting the wiring.</p>
-                <div class="blog-footer">
-                    <span><i class="fa-solid fa-thumbs-up"></i> 12 Upvotes</span>
-                    <span><i class="fa-solid fa-clock"></i> ETA: 4 Hours</span>
-                </div>
-            </div>
+  <section class="blog-section" id="complaint-wall">
+    <h2 class="section-title">Transparency Wall (Public Complaints)</h2>
+    <p style="text-align:center; margin-bottom:2rem; color:#4a5568;">See how AI is resolving campus issues in real-time.
+    </p>
 
-            <div class="blog-card glass">
-                <div class="status-badge status-resolved">RESOLVED</div>
-                <h3 class="blog-title">Library Wi-Fi Connectivity</h3>
-                <p class="blog-meta">Reported by: Student • 4 Days ago</p>
-                <p class="blog-excerpt">Network congestion identified by AI analysis. Bandwidth has been increased for the reading room area.</p>
-                <div class="blog-footer">
-                    <span><i class="fa-solid fa-thumbs-up"></i> 89 Upvotes</span>
-                    <span><i class="fa-solid fa-check-circle"></i> Verified</span>
-                </div>
-            </div>
+    <div class="blog-container">
+      <div class="blog-card glass">
+        <div class="status-badge status-resolved">RESOLVED</div>
+        <h3 class="blog-title">Hostel 3 Water Cooler Repair</h3>
+        <p class="blog-meta">Reported by: Student • 2 Days ago</p>
+        <p class="blog-excerpt">The issue regarding the RO filter in the 2nd-floor wing has been fixed. Maintenance team
+          replaced the filter cartridge.</p>
+        <div class="blog-footer">
+          <span><i class="fa-solid fa-thumbs-up"></i> 45 Upvotes</span>
+          <span><i class="fa-solid fa-check-circle"></i> Verified</span>
         </div>
-    </section>
+      </div>
+
+      <div class="blog-card glass">
+        <div class="status-badge status-progress">IN PROGRESS</div>
+        <h3 class="blog-title">Projector Malfunction in Lab 4</h3>
+        <p class="blog-meta">Reported by: Faculty • Yesterday</p>
+        <p class="blog-excerpt">Complaint auto-routed to IT Department. A technician has been assigned and is currently
+          inspecting the wiring.</p>
+        <div class="blog-footer">
+          <span><i class="fa-solid fa-thumbs-up"></i> 12 Upvotes</span>
+          <span><i class="fa-solid fa-clock"></i> ETA: 4 Hours</span>
+        </div>
+      </div>
+
+      <div class="blog-card glass">
+        <div class="status-badge status-resolved">RESOLVED</div>
+        <h3 class="blog-title">Library Wi-Fi Connectivity</h3>
+        <p class="blog-meta">Reported by: Student • 4 Days ago</p>
+        <p class="blog-excerpt">Network congestion identified by AI analysis. Bandwidth has been increased for the
+          reading room area.</p>
+        <div class="blog-footer">
+          <span><i class="fa-solid fa-thumbs-up"></i> 89 Upvotes</span>
+          <span><i class="fa-solid fa-check-circle"></i> Verified</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="faculty-section" id="faculty">
     <h2 class="section-title">Meet Our Academic Leaders</h2>
@@ -137,6 +171,9 @@
     &copy; 2025 CampusCare. Built for the Future.
   </footer>
 
+  <!-- Scripts -->
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/landing.js"></script>
 </body>
 
 </html>

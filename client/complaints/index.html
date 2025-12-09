@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Transparency Wall | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .badge {
+            display: inline-block;
+        }
+
+        .bg-red-100 {
+            background-color: #fee2e2;
+        }
+
+        .text-red-800 {
+            color: #991b1b;
+        }
+
+        .bg-orange-100 {
+            background-color: #ffedd5;
+        }
+
+        .text-orange-800 {
+            color: #9a3412;
+        }
+
+        .bg-blue-100 {
+            background-color: #dbeafe;
+        }
+
+        .text-blue-800 {
+            color: #1e40af;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="../index.html" class="brand">CampusCare</a>
+            <nav class="main-nav">
+                <a href="../index.html" class="active">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero" style="min-height: auto;">
+            <div class="hero-left">
+                <h1 class="hero-title">AI Complaint Center</h1>
+                <p class="hero-sub">Report issues. Let AI route them instantly.</p>
+            </div>
+        </section>
+
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+
+            <!-- FORM SECTION -->
+            <div style="flex: 1; min-width: 300px;">
+                <div class="glass" style="padding: 2rem; border-radius: 20px;">
+                    <h2 style="margin-bottom: 1rem;">File a Complaint</h2>
+                    <form id="complaintForm">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display:block; font-weight:600; margin-bottom:0.5rem;">Subject</label>
+                            <input type="text" id="title"
+                                style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #ddd;"
+                                placeholder="e.g. Broken Fan in Room 101" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display:block; font-weight:600; margin-bottom:0.5rem;">Issue Details</label>
+                            <textarea id="description" rows="4"
+                                style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #ddd;"
+                                placeholder="Describe the issue... (e.g. Wires sparking)" required></textarea>
+                        </div>
+                        <button type="submit"
+                            style="width:100%; padding:1rem; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
+                            Analyze & Submit
+                        </button>
+                        <p style="font-size:0.8rem; color:#64748b; margin-top:10px; text-align:center;">
+                            <i class="fa-solid fa-robot"></i> AI will automatically detect Category & Priority.
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PUBLIC WALL SECTION -->
+            <div style="flex: 1.5; min-width: 300px;">
+                <h2 style="margin-bottom: 1rem;">Transparency Wall</h2>
+                <div id="complaint-list">
+                    <!-- Complaints injected here -->
+                    <div style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/complaints.js"></script>
+</body>
+
+</html>

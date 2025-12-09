@@ -1,37 +1,42 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Notices</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
+
 <body>
 
-<header class="site-header">
-  <h1>CampusCare</h1>
-  <nav>
-    <a href="index.html">Dashboard</a>
-  </nav>
-</header>
+  <header class="site-header">
+    <h1>CampusCare</h1>
+    <nav>
+      <a href="index.html">Dashboard</a>
+    </nav>
+  </header>
 
-<main class="inner-page">
-  <h1 class="page-title">Notices</h1>
-  <a href="index.html" class="back-btn">← Back to Dashboard</a>
+  <main class="inner-page">
+    <h1 class="page-title">Notices</h1>
+    <a href="index.html" class="back-btn">← Back to Dashboard</a>
 
-  <div class="glass-card">
-    <ul>
-      <li>Mid-Semester Exam starts from 15th Dec</li>
-      <li>Library will remain closed on Sunday</li>
-      <li>Project report submission deadline extended</li>
-    </ul>
-  </div>
-</main>
+    <div class="glass-card">
+      <div id="notices-container">
+        <div style="text-align: center; color: #64748b; padding: 2rem;">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading notices...
+        </div>
+      </div>
+    </div>
+  </main>
 
-<footer class="site-footer">
-  <p>© 2025 CampusCare</p>
-</footer>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/student_notices.js"></script>
+
+  <footer class="site-footer">
+    <p>© 2025 CampusCare</p>
+  </footer>
 
 </body>
-</html>
 
+</html>

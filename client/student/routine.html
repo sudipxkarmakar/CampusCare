@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -7,39 +8,116 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
+
 <body>
 
-<header class="site-header">
-  <div class="container header-inner">
-    <a href="../index.html" class="brand">CampusCare</a>
-    <nav class="main-nav">
-      <a href="../index.html">Home</a>
-      <a href="index.html" class="active">Student</a>
-    </nav>
-  </div>
-</header>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="brand">CampusCare</a>
+      <nav class="main-nav">
+        <a href="../index.html">Home</a>
+        <a href="index.html" class="active">Student</a>
+      </nav>
+    </div>
+  </header>
 
-<main class="inner-page">
+  <main class="inner-page">
 
-  <h1 class="page-title">Class Routine</h1>
+    <h1 class="page-title">Class Routine</h1>
 
-  <a href="index.html" class="back-btn">← Back to Dashboard</a>
+    <a href="index.html" class="back-btn">← Back to Dashboard</a>
 
-  <div class="glass-card">
-    <ul>
-      <li><span class="time-badge">09:00 AM</span> – Mathematics</li>
-      <li><span class="time-badge">11:00 AM</span> – DBMS</li>
-      <li><span class="time-badge">01:00 PM</span> – Data Structures</li>
-    </ul>
-  </div>
+    <div class="glass-card">
+      <div id="routine-container">
+        <div style="text-align: center; padding: 2rem; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+        </div>
+      </div>
+    </div>
 
-</main>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get('view');
+      const container = document.getElementById('routine-container');
+      const title = document.querySelector('.page-title');
+
+      // MOCK DATA
+      const fullRoutine = {
+        'Monday': [
+          { time: '09:00 AM', subject: 'Mathematics' },
+          { time: '11:00 AM', subject: 'DBMS' }
+        ],
+        'Tuesday': [
+          { time: '10:00 AM', subject: 'Physics' },
+          { time: '02:00 PM', subject: 'Lab' }
+        ],
+        'Wednesday': [
+          { time: '09:00 AM', subject: 'Data Structures' },
+          { time: '01:00 PM', subject: 'English' }
+        ],
+        // Add more days as needed
+      };
+
+      // Helper to get today's day name
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const today = days[new Date().getDay()];
+
+      if (view === 'today') {
+        title.textContent = `Today's Classes (${today})`;
+
+        const todaysClasses = fullRoutine[today] || [];
+
+        if (todaysClasses.length === 0) {
+          container.innerHTML = `<p style="text-align:center; padding:1rem;">No classes scheduled for today! 🎉</p>`;
+        } else {
+          let html = '<ul style="list-style:none; padding:0;">';
+          todaysClasses.forEach(cls => {
+            html += `
+            <li style="padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between;">
+              <span class="time-badge" style="background:#e0f2fe; color:#0284c7; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.85rem; font-weight:600;">${cls.time}</span>
+              <span style="font-size:1.1rem; font-weight:500; color:#334155;">${cls.subject}</span>
+            </li>
+          `;
+          });
+          html += '</ul>';
+          container.innerHTML = html;
+        }
+
+      } else {
+        // FULL ROUTINE VIEW
+        title.textContent = 'Weekly Routine';
+        let html = '';
+
+        for (const [day, classes] of Object.entries(fullRoutine)) {
+          html += `<h3 style="margin-top:1.5rem; margin-bottom:0.5rem; color:#475569; border-bottom:1px solid #ddd; padding-bottom:0.5rem;">${day}</h3>`;
+          if (classes.length === 0) {
+            html += `<p style="font-size:0.9rem; color:#94a3b8;">No classes</p>`;
+          } else {
+            html += `<ul style="list-style:none; padding:0;">`;
+            classes.forEach(cls => {
+              html += `
+                  <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size:0.85rem; color:#64748b; min-width:80px;">${cls.time}</span>
+                    <span style="font-weight:500; color:#334155;">${cls.subject}</span>
+                  </li>
+                `;
+            });
+            html += `</ul>`;
+          }
+        }
+        container.innerHTML = html;
+      }
+    });
+  </script>
 
 
-<footer class="site-footer">
-  <p>© 2025 CampusCare</p>
-</footer>
+  <footer class="site-footer">
+    <p>© 2025 CampusCare</p>
+  </footer>
 
 </body>
-</html>
 
+</html>
