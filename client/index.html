@@ -1,89 +1,173 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CampusCare — Services</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusCare | AI-Driven Campus Services</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo-glow">CampusCare</div>
-      <small class="tag">AI Complaint & Student Services</small>
-    </div>
 
-    <nav class="nav">
-      <a href="#" class="nav-link">Home</a>
-      <a href="#" class="nav-link">About</a>
-      <a href="#" class="nav-link">Contact</a>
-    </nav>
+<body>
+
+  <header class="glass">
+    <div class="logo">
+      <i class="fa-solid fa-graduation-cap"></i> CampusCare
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#modules">Services</a></li>
+      <li><a href="#notices">Notices</a></li>
+      <li><a href="#complaint-wall">Public Wall</a></li>
+      <li><a href="#faculty">Faculty</a></li>
+    </ul>
+    <button class="btn-login">Login / Sign Up</button>
   </header>
 
-  <main class="container">
-    <section class="hero">
-      <div class="hero-left">
-        <h1 class="hero-title">Future-Ready Campus Services</h1>
-        <p class="hero-sub">Secure student locker, teacher dashboards, file repository and AI-driven complaint routing — all in one place.</p>
+  <section class="hero" id="home">
+    <h1>Smart Campus Management<br>Powered by AI</h1>
+    <p>Seamlessly integrating Students, Teachers, and Hostels into one digital ecosystem.</p>
+    
+    <div class="hero-banner glass">
+        <img src="assets/images/hero-illustration.png" alt="Campus Illustration">
+    </div>
+</section>
 
-        <div class="hero-ctas">
-          <a class="btn primary" href="student.html">Student Portal</a>
-          <a class="btn ghost" href="files.html">Explore Files</a>
+  <section class="modules-section" id="modules">
+    <h2 class="section-title">Core Services</h2>
+    <div class="modules-grid">
+
+      <div class="module-card glass student-card">
+        <i class="fa-solid fa-user-graduate module-icon"></i>
+        <div class="module-title">Student Services</div>
+        <div class="module-desc">Your digital backpack. Access assignments, view exam routines, and manage personal
+          documents.</div>
+      </div>
+
+      <div class="module-card glass teacher-card">
+        <i class="fa-solid fa-chalkboard-user module-icon"></i>
+        <div class="module-title">Teacher Portal</div>
+        <div class="module-desc">Streamline grading, publish notices, and manage class schedules effortlessly.</div>
+      </div>
+
+      <div class="module-card glass hostel-card">
+        <i class="fa-solid fa-bed module-icon"></i>
+        <div class="module-title">Hosteler Hub</div>
+        <div class="module-desc">Check mess menus, apply for leave, and receive instant hostel announcements.</div>
+      </div>
+
+      <div class="module-card glass ai-card">
+        <i class="fa-solid fa-robot module-icon"></i>
+        <div class="module-title">AI Complaints</div>
+        <div class="module-desc"><strong>Flagship:</strong> AI-powered issue tracking. Auto-route complaints and track
+          resolution in real-time.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="notices-section" id="notices">
+    <h2 class="section-title"> Official Notices</h2>
+    <div class="notice-wrapper glass">
+      <div class="notice-item">
+        <div class="notice-date">DEC<br>10</div>
+        <div class="notice-content">
+          <strong>Mid-Semester Break Announced</strong>
+          <span>The campus will remain closed from Dec 24th to Jan 2nd for winter break.</span>
         </div>
+      </div>
+      <div class="notice-item">
+        <div class="notice-date">DEC<br>08</div>
+        <div class="notice-content">
+          <strong>Server Maintenance Alert</strong>
+          <span>Student portal might be down on Sunday 2 PM - 4 PM for upgrades.</span>
+        </div>
+      </div>
+      <div class="notice-item">
+        <div class="notice-date">DEC<br>05</div>
+        <div class="notice-content">
+          <strong>Library Fine Policy Update</strong>
+          <span>New digital payment integration for late fees is now live.</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="features-inline">
-          <div class="feat">
-            <strong>AI</strong>
-            <span>Auto-classify complaints</span>
-          </div>
-          <div class="feat">
-            <strong>Real-time</strong>
-            <span>Tracking & notifications</span>
-          </div>
-          <div class="feat">
-            <strong>Secure</strong>
-            <span>Encrypted documents</span>
-          </div>
+  <section class="blog-section" id="complaint-wall">
+    <h2 class="section-title">Transparency Wall (Public Complaints)</h2>
+    <p style="text-align:center; margin-bottom:2rem; color:#4a5568;">See how AI is resolving campus issues in real-time.
+    </p>
+
+    <div class="blog-container">
+      <div class="blog-card glass">
+        <div class="status-badge status-resolved">RESOLVED</div>
+        <h3 class="blog-title">Hostel 3 Water Cooler Repair</h3>
+        <p class="blog-meta">Reported by: Student • 2 Days ago</p>
+        <p class="blog-excerpt">The issue regarding the RO filter in the 2nd-floor wing has been fixed. Maintenance team
+          replaced the filter cartridge.</p>
+        <div class="blog-footer">
+          <span><i class="fa-solid fa-thumbs-up"></i> 45 Upvotes</span>
+          <span><i class="fa-solid fa-check-circle"></i> Verified</span>
         </div>
       </div>
 
-      <div class="hero-right">
-        <!-- hero illustration or card -->
-        <div class="hero-card glass">
-          <h3>Services</h3>
-          <p class="muted">Tap one to continue</p>
-
-          <div class="card-grid">
-            <a class="module-card" href="student.html">
-              <img src="assets/icons/student.svg" alt="Students">
-              <span>Students</span>
-            </a>
-            <a class="module-card" href="teacher.html">
-              <img src="assets/icons/teacher.svg" alt="Teachers">
-              <span>Teachers</span>
-            </a>
-            <a class="module-card" href="files.html">
-              <img src="assets/icons/files.svg" alt="Files">
-              <span>Files</span>
-            </a>
-            <a class="module-card complaint" href="blog.html">
-              <img src="assets/icons/complaint.svg" alt="Complaints">
-              <span>Complaints</span>
-            </a>
-          </div>
+      <div class="blog-card glass">
+        <div class="status-badge status-progress">IN PROGRESS</div>
+        <h3 class="blog-title">Projector Malfunction in Lab 4</h3>
+        <p class="blog-meta">Reported by: Faculty • Yesterday</p>
+        <p class="blog-excerpt">Complaint auto-routed to IT Department. A technician has been assigned and is currently
+          inspecting the wiring.</p>
+        <div class="blog-footer">
+          <span><i class="fa-solid fa-thumbs-up"></i> 12 Upvotes</span>
+          <span><i class="fa-solid fa-clock"></i> ETA: 4 Hours</span>
         </div>
       </div>
-    </section>
 
-    <section class="demo-note">
-      <p class="muted center">This is a frontend-only prototype for submission — all pages are static mockups.</p>
-    </section>
-  </main>
+      <div class="blog-card glass">
+        <div class="status-badge status-resolved">RESOLVED</div>
+        <h3 class="blog-title">Library Wi-Fi Connectivity</h3>
+        <p class="blog-meta">Reported by: Student • 4 Days ago</p>
+        <p class="blog-excerpt">Network congestion identified by AI analysis. Bandwidth has been increased for the
+          reading room area.</p>
+        <div class="blog-footer">
+          <span><i class="fa-solid fa-thumbs-up"></i> 89 Upvotes</span>
+          <span><i class="fa-solid fa-check-circle"></i> Verified</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <footer class="footer">
-    &copy; 2025 CampusCare — Developed by Sudip & Team
+  <section class="faculty-section" id="faculty">
+    <h2 class="section-title">Meet Our Academic Leaders</h2>
+    <div class="faculty-container">
+      <div class="faculty-card glass">
+        <img src="https://via.placeholder.com/100" alt="Prof Name" class="faculty-img">
+        <h3 class="faculty-name">Dr. A. Sharma</h3>
+        <p class="faculty-role">Dean of Academics</p>
+        <p class="faculty-bio">Ph.D. in Computer Science with 15+ years of experience in AI research.</p>
+      </div>
+
+      <div class="faculty-card glass">
+        <img src="https://via.placeholder.com/100" alt="Prof Name" class="faculty-img">
+        <h3 class="faculty-name">Prof. R. Das</h3>
+        <p class="faculty-role">HOD, Mechanical Eng.</p>
+        <p class="faculty-bio">Expert in Thermodynamics and Robotics. Spearheading automated labs.</p>
+      </div>
+
+      <div class="faculty-card glass">
+        <img src="https://via.placeholder.com/100" alt="Prof Name" class="faculty-img">
+        <h3 class="faculty-name">Mrs. K. Verma</h3>
+        <p class="faculty-role">Chief Warden (Hostels)</p>
+        <p class="faculty-bio">Dedicated to ensuring student welfare and safe hostel environment.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 CampusCare. Built for the Future.
   </footer>
+
 </body>
+
 </html>
