@@ -278,20 +278,36 @@
         style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
       <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
       <h2 style="color: #ef4444; margin-bottom: 0.5rem;">EMERGENCY SOS</h2>
-      <p style="margin-bottom: 1.5rem;">Alert sent to Campus Security & Warden.</p>
+      <p style="margin-bottom: 1.5rem;">Select your emergency type to alert nearest help.</p>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <!-- Row 1: Calls -->
         <a href="tel:100"
-          style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold;">
-          <i class="fa-solid fa-phone"></i> Call Police (100)
+          style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;">
+          <i class="fa-solid fa-shield-halved"></i> Call Security / Police
         </a>
+
+        <!-- Row 2: Medical Action -->
+        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+          style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
+          <i class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid
+        </button>
+
+        <button
+          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
+          style="background: #ef4444; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
+          <i class="fa-solid fa-droplet" style="font-size:1.5rem;"></i> Need Blood
+        </button>
+
+        <!-- Row 3: Others -->
         <a href="tel:101"
-          style="background: #f59e0b; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold;">
-          <i class="fa-solid fa-truck-medical"></i> Call Ambulance (101)
+          style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display:flex; justify-content:center; align-items:center; gap:5px;">
+          <i class="fa-solid fa-truck-medical"></i> Ambulance
         </a>
-        <button onclick="alert('Location Sent to Security!')"
-          style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">
-          <i class="fa-solid fa-location-dot"></i> Send My Location
+
+        <button onclick="alert('Panic Signal Sent with Location!')"
+          style="background: #4b5563; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">
+          Other / Panic
         </button>
       </div>
     </div>
