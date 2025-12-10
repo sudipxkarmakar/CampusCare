@@ -33,7 +33,7 @@ if (loginForm) {
             if (result.token) {
                 // Success
                 localStorage.setItem('user', JSON.stringify(result));
-                alert(`Welcome ${result.name}!`);
+                // alert(`Welcome ${result.name}!`);
 
                 // Redirect based on Role
                 if (result.role === 'student') {
