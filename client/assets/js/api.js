@@ -30,7 +30,7 @@ const api = {
                     return {
                         token: 'mock-token-hosteler',
                         role: 'hosteler',
-                        name: 'Rahul Verma (Hosteler)',
+                        name: 'Rahul Verma',
                         identifier: data.identifier
                     };
                 }

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await api.post('/complaints', data);
                 if (res.complaint) {
                     // Show AI Result
-                    alert(`✅ Filed! \n${res.aiNote}`);
+                    alert(` Filed! \n${res.aiNote}`);
                     complaintForm.reset();
                     loadComplaints(); // Refresh wall
                 } else {

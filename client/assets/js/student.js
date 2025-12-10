@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update Header/Hero
     const heroSub = document.querySelector('.hero-sub');
     if (heroSub) {
-        heroSub.innerText = `Hello ${user.name} 👋 (${user.department} - ${user.batch})`;
+        heroSub.innerText = `Hello ${user.name}  (${user.department} - ${user.batch})`;
     }
 
     // Update Stats (Mock for now, or fetch from API)
