@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MAR / MOOCS Points</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .split-container {
+            display: flex;
+            width: 100%;
+            min-height: 80vh;
+            gap: 2rem;
+        }
+
+        .split-section {
+            flex: 1;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .split-section:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .points-display {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .points-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .points-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            background: -webkit-linear-gradient(#eee, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4a5568;
+        }
+
+        .activity-points {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="index.html" class="logo"
+            style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="#" style="text-decoration: none; color: #eab308; font-weight: 600;"><i
+                        class="fa-solid fa-award"></i> MAR / MOOCS</a></li>
+        </ul>
+    </header>
+
+    <main class="standard-container" style="margin-top: 2rem;">
+
+        <div class="split-container">
+
+            <!-- MAR SECTION -->
+            <section class="split-section">
+                <h2 style="text-align: center; color: #1f2937; margin-bottom: 1.5rem;">MAR Points <i
+                        class="fa-solid fa-medal" style="color: #eab308;"></i></h2>
+
+                <div class="points-display">
+                    <div class="points-label">Total Points Collected</div>
+                    <div class="points-value">42 / 100</div>
+                    <div style="font-size: 0.8rem; color: #9ca3af;">Semester Goal: 25 Points</div>
+                </div>
+
+                <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 1rem;">Recent Activities</h3>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span>Tree Plantation Drive</span>
+                        <span class="activity-points">+10</span>
+                    </li>
+                    <li class="activity-item">
+                        <span>Tech Fest Volunteer</span>
+                        <span class="activity-points">+15</span>
+                    </li>
+                    <li class="activity-item">
+                        <span>Blood Donation Camp</span>
+                        <span class="activity-points">+10</span>
+                    </li>
+                    <li class="activity-item">
+                        <span>Library Assistance</span>
+                        <span class="activity-points">+7</span>
+                    </li>
+                </ul>
+                </ul>
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
+                    <h4 style="margin-bottom: 0.5rem; color: #374151;">Submit New Activity</h4>
+                    <form onsubmit="event.preventDefault(); alert('Activity Submitted!');"
+                        style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-size: 0.9rem; color: #4b5563;">Select Activity</label>
+                        <select
+                            style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8); font-family: 'Poppins';">
+                            <option value="10">Tree Plantation (10 Points)</option>
+                            <option value="10">Blood Donation (10 Points)</option>
+                            <option value="5">Tech Fest Volunteer (5 Points)</option>
+                            <option value="5">Sports Participation (5 Points)</option>
+                            <option value="20">Publication of Paper (20 Points)</option>
+                        </select>
+
+                        <label style="font-size: 0.9rem; color: #4b5563;">Upload Proof</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="file" style="font-size: 0.8rem; flex: 1;">
+                            <button type="submit" class="btn-login"
+                                style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #eab308; border: none; color: white;">Submit
+                                Activity</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- MOOCS SECTION -->
+            <section class="split-section">
+                <h2 style="text-align: center; color: #1f2937; margin-bottom: 1.5rem;">MOOCS Credits <i
+                        class="fa-solid fa-laptop-code" style="color: #3b82f6;"></i></h2>
+
+                <div class="points-display">
+                    <div class="points-label">Total Credits Earned</div>
+                    <div class="points-value">12 / 20</div>
+                    <div style="font-size: 0.8rem; color: #9ca3af;">Required for Honors</div>
+                </div>
+
+                <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 1rem;">Completed Courses</h3>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <span>NPTEL: Data Science</span>
+                        <span class="activity-points">3 Credits</span>
+                    </li>
+                    <li class="activity-item">
+                        <span>Coursera: AI for Everyone</span>
+                        <span class="activity-points">2 Credits</span>
+                    </li>
+                    <li class="activity-item">
+                        <span>Udemy: Web Development</span>
+                        <span class="activity-points">4 Credits</span>
+                    </li>
+                    <li class="activity-item">
+                        <span>Swayam: Soft Skills</span>
+                        <span class="activity-points">3 Credits</span>
+                    </li>
+                </ul>
+                </ul>
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
+                    <h4 style="margin-bottom: 0.5rem; color: #374151;">Submit Certificate</h4>
+                    <form onsubmit="handleMoocsSubmit(event)"
+                        style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <input type="text" id="courseName" placeholder="Course Name (e.g. NPTEL Java)" required
+                            style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8);">
+                        <input type="url" id="courseLink" placeholder="Certificate / Course Link" required
+                            style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8);">
+
+                        <label style="font-size: 0.9rem; color: #4b5563;">Course Duration (Hours)</label>
+                        <input type="number" id="courseHours" placeholder="Total Hours" min="1" required
+                            oninput="calcPoints()"
+                            style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8);">
+
+                        <div id="pointsPreview"
+                            style="font-size: 0.9rem; color: #3b82f6; font-weight: 600; min-height: 20px;"></div>
+
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <div style="flex:1;">
+                                <label style="font-size: 0.8rem; color:#64748b;">Upload Cert</label>
+                                <input type="file" style="font-size: 0.8rem; width:100%;">
+                            </div>
+                            <button type="submit" class="btn-login"
+                                style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #3b82f6; border: none; color: white; align-self: flex-end;">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 CampusCare</p>
+    </footer>
+
+    <script>
+        function calcPoints() {
+            const hrs = document.getElementById('courseHours').value;
+            const preview = document.getElementById('pointsPreview');
+            if (hrs) {
+                const points = Math.floor(hrs / 8);
+                if (points > 0) {
+                    preview.innerHTML = `<i class="fa-solid fa-check"></i> Eligible for ${points} Credit Point(s)`;
+                    preview.style.color = '#10b981';
+                } else {
+                    preview.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Less than 8 hours (0 Points)`;
+                    preview.style.color = '#ef4444';
+                }
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        function handleMoocsSubmit(e) {
+            e.preventDefault();
+            const hrs = document.getElementById('courseHours').value;
+            const points = Math.floor(hrs / 8);
+            if (points > 0) {
+                alert(`Successfully submitted! You will receive ${points} credits after verification.`);
+            } else {
+                alert('Sorry, course must be at least 8 hours long to claim credits.');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

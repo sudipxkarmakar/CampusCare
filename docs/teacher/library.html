@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Faculty Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="text-decoration:none; font-size: 1.5rem; font-weight: 700; color: #2d3748;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </header>
+    <main class="main-container">
+        <section class="hero">
+            <div class="hero-left">
+                <h1 class="hero-title">Faculty Library</h1>
+                <p class="hero-sub">Search Books, Journals & Research Papers</p>
+            </div>
+        </section>
+
+        <!-- SEARCH BAR -->
+        <section class="standard-container" style="margin-bottom:2rem;">
+            <div
+                style="background:white; padding:15px; border-radius:15px; display:flex; gap:10px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <i class="fa-solid fa-search"
+                    style="color:#94a3b8; align-self:center; font-size:1.2rem; margin-left:10px;"></i>
+                <input type="text" placeholder="Search by Title, Author, or ISBN..."
+                    style="flex:1; border:none; outline:none; font-size:1rem; color:#4a5568;">
+                <button
+                    style="padding:10px 25px; background:#3b82f6; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600;">Search</button>
+            </div>
+        </section>
+
+        <!-- BOOK GRID -->
+        <section class="standard-container" style="padding:0; background:transparent; box-shadow:none;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:2rem;">
+
+                <!-- Book 1 -->
+                <div style="background:white; border-radius:15px; padding:1.5rem; text-align:center; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-5px)'"
+                    onmouseout="this.style.transform='translateY(0)'">
+                    <div
+                        style="width:100px; height:140px; background:#e2e8f0; margin:0 auto 1rem auto; border-radius:5px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-book" style="font-size:3rem; color:#94a3b8;"></i>
+                    </div>
+                    <h3 style="font-size:1rem; margin:0 0 5px 0; color:#2d3748;">Intro to Algorithms</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin:0 0 10px 0;">Cormen et al.</p>
+                    <span
+                        style="background:#dbeafe; color:#1e40af; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;"><i
+                            class="fa-solid fa-eye"></i> Read Online</span>
+                </div>
+
+                <!-- Book 2 -->
+                <div style="background:white; border-radius:15px; padding:1.5rem; text-align:center; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-5px)'"
+                    onmouseout="this.style.transform='translateY(0)'">
+                    <div
+                        style="width:100px; height:140px; background:#e2e8f0; margin:0 auto 1rem auto; border-radius:5px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-book" style="font-size:3rem; color:#94a3b8;"></i>
+                    </div>
+                    <h3 style="font-size:1rem; margin:0 0 5px 0; color:#2d3748;">Clean Code</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin:0 0 10px 0;">Robert C. Martin</p>
+                    <span
+                        style="background:#dbeafe; color:#1e40af; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;"><i
+                            class="fa-solid fa-eye"></i> Read Online</span>
+                </div>
+
+                <!-- Book 3 -->
+                <div style="background:white; border-radius:15px; padding:1.5rem; text-align:center; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-5px)'"
+                    onmouseout="this.style.transform='translateY(0)'">
+                    <div
+                        style="width:100px; height:140px; background:#e2e8f0; margin:0 auto 1rem auto; border-radius:5px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-book" style="font-size:3rem; color:#94a3b8;"></i>
+                    </div>
+                    <h3 style="font-size:1rem; margin:0 0 5px 0; color:#2d3748;">Modern OS</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin:0 0 10px 0;">Tanenbaum</p>
+                    <span
+                        style="background:#e0e7ff; color:#4338ca; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;"><i
+                            class="fa-solid fa-file-pdf"></i> PDF Available</span>
+                </div>
+
+                <!-- Book 4 -->
+                <div style="background:white; border-radius:15px; padding:1.5rem; text-align:center; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-5px)'"
+                    onmouseout="this.style.transform='translateY(0)'">
+                    <div
+                        style="width:100px; height:140px; background:#e2e8f0; margin:0 auto 1rem auto; border-radius:5px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-microchip" style="font-size:3rem; color:#94a3b8;"></i>
+                    </div>
+                    <h3 style="font-size:1rem; margin:0 0 5px 0; color:#2d3748;">Digital Logic</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin:0 0 10px 0;">Morris Mano</p>
+                    <span
+                        style="background:#dbeafe; color:#1e40af; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;"><i
+                            class="fa-solid fa-eye"></i> Read Online</span>
+                </div>
+
+                <!-- Book 5 -->
+                <div style="background:white; border-radius:15px; padding:1.5rem; text-align:center; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='translateY(-5px)'"
+                    onmouseout="this.style.transform='translateY(0)'">
+                    <div
+                        style="width:100px; height:140px; background:#e2e8f0; margin:0 auto 1rem auto; border-radius:5px; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-flask" style="font-size:3rem; color:#94a3b8;"></i>
+                    </div>
+                    <h3 style="font-size:1rem; margin:0 0 5px 0; color:#2d3748;">Chemistry Vol 1</h3>
+                    <p style="font-size:0.85rem; color:#64748b; margin:0 0 10px 0;">NCERT</p>
+                    <span
+                        style="background:#e0e7ff; color:#4338ca; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;"><i
+                            class="fa-solid fa-file-pdf"></i> PDF Available</span>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

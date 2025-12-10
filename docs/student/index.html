@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CampusCare — Student Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    /* FORCE ICON FONT FAMILY (Fix for "No Logos") */
+    /* The global * selector in styles.css was breaking FontAwesome */
+    .fa-solid,
+    .fas {
+      font-family: "Font Awesome 6 Free" !important;
+    }
+
+    /* UNIFIED DASHBOARD GRID */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    /* STAT CARD STYLES */
+    .stat-card {
+      padding: 1.5rem;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      min-height: 130px;
+      /* Reduced height */
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);
+    }
+
+    /* MODULE CARD STYLES */
+    /* INHERITS FROM .standard-card in styles.css */
+    .module-card-dashboard {
+      min-height: 220px;
+      /* Specific height for dashboard */
+      text-decoration: none;
+    }
+
+    /* FONT MATCHING (Poppins) */
+    body,
+    .stat-title,
+    .stat-value,
+    .module-title,
+    .module-desc {
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    /* ICON VISIBILITY FIX */
+    .module-icon {
+      font-size: 3rem;
+      /* Slightly reduced icon size */
+      margin-bottom: 0.8rem;
+      color: #4a5568;
+      display: inline-block;
+      opacity: 1;
+      transition: all 0.4s ease;
+    }
+
+    /* HOVER EFFECTS */
+    .stat-card:hover,
+    .module-card-dashboard:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+      /* Same Gradient as Landing Page */
+      border-color: transparent;
+      opacity: 0.95;
+    }
+
+    .module-card-dashboard:hover .module-icon,
+    .stat-card:hover .stat-title,
+    .stat-card:hover .stat-value {
+      color: #ffffff !important;
+    }
+
+    .module-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+      transition: all 0.4s ease;
+    }
+
+    .module-card-dashboard:hover .module-title {
+      color: #ffffff;
+    }
+
+    .module-desc {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .module-card-dashboard:hover .module-desc {
+      color: #ffffff;
+    }
+
+    /* STATS SPECIFIC FONTS */
+    .stat-title {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .stat-card:nth-child(2) .stat-value {
+      color: #f59e0b;
+    }
+
+    .stat-card:nth-child(3) .stat-value {
+      color: #10b981;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BACKGROUND ILLUSTRATION (Watermark) -->
+  <img src="../assets/images/hero-illustration.png" alt=""
+    style="position: fixed; bottom: -5%; right: -5%; width: 50vw; max-width: 600px; opacity: 0.15; z-index: -2; pointer-events: none;">
+
+  <!-- HEADER (Styled like Landing Page) -->
+  <header class="glass"
+    style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <a href="../index.html" class="logo"
+      style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+      <i class="fa-solid fa-graduation-cap"></i> CampusCare
+    </a>
+    <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+      <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="assignments.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-book"></i> Assignments</a></li>
+      <li><a href="notices.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-bullhorn"></i> Notices</a></li>
+      <li><a href="../hostel/index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-building-user"></i> Hostel</a></li>
+      <li><a href="../complaints/index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
+      <li><a href="profile.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-user"></i> Profile</a></li>
+      <li><a href="#" onclick="localStorage.clear(); window.location.href='../index.html'"
+          style="text-decoration: none; color: #dc2626; font-weight: 600;"><i
+            class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </header>
+
+  <main class="main-container">
+
+    <!-- PAGE HEADER -->
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="hero-title">Student Dashboard</h1>
+        <p class="hero-sub">Hello Student 👋</p>
+        <p class="hero-sub">Quick access to your assignments, routine, documents and notices.</p>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-card">
+          <h3>Welcome Back</h3>
+          <p class="muted">Everything you need in one place.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- TOP OVERVIEW BAR -->
+    <!-- TOP OVERVIEW BAR (Row 1) -->
+    <section class="dashboard-grid standard-container" style="padding-bottom: 0;">
+      <a href="routine.html?view=today" class="stat-card">
+        <div class="stat-title">Today's First Class</div>
+        <div class="stat-value" style="font-size: 1.5rem;">Maths</div>
+        <div style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Using DeepSeek AI</div>
+        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;">Ends at 10:30 AM</div>
+      </a>
+      <a href="assignments.html" class="stat-card">
+        <div class="stat-title">Pending Assignments</div>
+        <div class="stat-value">12</div>
+      </a>
+      <a href="notices.html?filter=personal" class="stat-card">
+        <div class="stat-title">Personal Notices</div>
+        <div class="stat-value">04</div>
+      </a>
+    </section>
+
+
+    <!-- MAIN MODULE CARDS -->
+    <!-- MAIN MODULE CARDS (Compact) -->
+    <section class="modules-section standard-container" style="margin-top: 2rem;">
+      <!-- MAIN MODULE CARDS (Row 2) -->
+      <section style="margin-top: 2rem;">
+        <div class="dashboard-grid">
+          <a href="mar_moocs.html" class="module-card-dashboard standard-card">
+            <i class="fa-solid fa-award module-icon" style="color: #eab308 !important;"></i>
+            <div class="module-title">MAR / MOOCS</div>
+            <div class="module-desc">Points & Credits</div>
+          </a>
+          <a href="documents.html" class="module-card-dashboard standard-card">
+            <i class="fa-solid fa-file-pdf module-icon"></i>
+            <div class="module-title">Documents</div>
+            <div class="module-desc">Study Materials</div>
+          </a>
+          <a href="#" class="module-card-dashboard standard-card" onclick="alert('Digital Library Coming Soon!')">
+            <i class="fa-solid fa-book-open module-icon"></i>
+            <div class="module-title">Library</div>
+            <div class="module-desc">Books & Journals</div>
+          </a>
+        </div>
+      </section>
+    </section>
+
+
+    <!-- OPTIONAL: UPCOMING DEADLINES -->
+    <section class="deadlines-box glass" style="margin-top:3rem; padding:2rem; border-radius:15px;">
+      <h3 style="margin-bottom:1rem; color:#dc2626;"><i class="fa-solid fa-clock"></i> Upcoming Deadlines</h3>
+      <ul style="list-style:none;">
+        <li
+          style="padding:0.8rem 0; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between;">
+          <span>Math Assignment</span> <span style="color:#dc2626; font-weight:bold;">Tomorrow</span>
+        </li>
+        <li
+          style="padding:0.8rem 0; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between;">
+          <span>DBMS Lab</span> <span style="color:#f59e0b; font-weight:bold;">2 Days</span>
+        </li>
+        <li style="padding:0.8rem 0; display:flex; justify-content:space-between;">
+          <span>Project Report</span> <span style="color:#10b981; font-weight:bold;">This Week</span>
+        </li>
+      </ul>
+    </section>
+
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2025 CampusCare</p>
+    </div>
+  </footer>
+
+  <script src="../assets/js/student.js"></script>
+</body>
+
+</html>

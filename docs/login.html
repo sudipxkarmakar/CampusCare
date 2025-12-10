@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            /* Subtle background to show box contrast */
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+            text-align: center;
+            background: #ffffff;
+            /* Explicit white box */
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            /* Soft shadow */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Responsive Box Hover (No Color Change) */
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Revert text changes - ensure they stay default */
+        .login-container:hover h2,
+        .login-container:hover p,
+        .login-container:hover label {
+            color: inherit !important;
+        }
+
+        .login-container:hover .login-header i {
+            -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+        }
+
+        /* Reset Input colors */
+        .login-container:hover .form-control {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .login-container:hover .form-control:focus {
+            background: #ffffff;
+            border-color: var(--primary-color);
+        }
+
+        /* Register Button - Apply Gradient Here Instead */
+        .login-container:hover .switch-mode {
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+
+        .switch-mode:hover,
+        .login-container:hover .switch-mode:hover {
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%);
+            color: white !important;
+            border-color: transparent;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 10px rgba(193, 33, 233, 0.3);
+            text-decoration: none;
+        }
+
+        .login-header {
+            margin-bottom: 2rem;
+        }
+
+        .login-header i {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #1a202c;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            background: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            /* Default border */
+            border-radius: 12px;
+            background: transparent;
+            /* Not highlighted by default */
+            color: #64748b;
+            /* Neutral text */
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Light up Login Button on Box Hover */
+        .login-container:hover .btn-submit,
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(193, 33, 233, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Register Button Styling */
+        .switch-mode {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        /* Register Button Hover Effects */
+        .switch-mode:hover,
+        .login-container:hover .switch-mode {
+            border-color: #00aeff;
+            /* Blue border on box hover */
+            color: #00aeff;
+        }
+
+        .switch-mode:hover {
+            /* Stronger highlight on direct hover */
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container glass">
+        <div class="login-header">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h2>Welcome Back</h2>
+            <p>Enter your Roll Number or Employee ID</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="identifier">ID (Roll No. / Emp ID)</label>
+                <input type="text" id="identifier" class="form-control" placeholder="e.g. CSE-2025-045" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Login</button>
+        </form>
+
+        <div class="switch-mode" id="toggleRegister">
+            New here? Register
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+
+</html>

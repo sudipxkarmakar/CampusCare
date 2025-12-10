@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hostel Hub | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .menu-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9rem;
+            font-size: 0.9rem;
+        }
+
+        .menu-table th,
+        .menu-table td {
+            border: none;
+            border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+            padding: 0.8rem 0.6rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .menu-table th {
+            background: transparent;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #cbd5e1;
+            font-size: 0.8rem;
+        }
+
+        .menu-table td {
+            background: rgba(255, 255, 255, 0.3);
+            color: #475569;
+            transition: all 0.2s ease;
+            border-right: 1px solid rgba(203, 213, 225, 0.3);
+        }
+
+        .menu-table td:last-child {
+            border-right: none;
+        }
+
+        .menu-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+
+        .menu-table tbody tr:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(193, 33, 233, 0.15);
+            background: white;
+            z-index: 10;
+            position: relative;
+            border-radius: 8px;
+            border-radius: 8px;
+        }
+
+        .menu-table tbody tr:hover td {
+            background: #fdf4ff;
+            color: #c121e9 !important;
+            border-color: #e879f9;
+        }
+
+        .menu-table tbody tr:hover td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .menu-table tbody tr:hover td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+
+        .today-row td {
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%) !important;
+            border-top: none;
+            border-bottom: none !important;
+            color: white !important;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .today-row td:first-child {
+            border-left: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            position: relative;
+        }
+
+        .today-row td:last-child {
+            border-right: none;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .today-row td:first-child::after {
+            content: 'TODAY';
+            position: absolute;
+            top: -8px;
+            left: 5px;
+            background: #c121e9;
+            color: white;
+            font-size: 0.6rem;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 0.9rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 15px;
+            padding: 12px 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .status-table td {
+            padding: 12px 15px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .status-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .status-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+
+        .btn-view-status {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-view-status:hover {
+            background: #2563eb;
+        }
+
+
+        .badge-status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .btn-apply {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            transition: 0.2s;
+        }
+
+        .btn-apply:hover {
+            background: #d97706;
+        }
+
+
+
+        /* Emergency Contact Card Override (Keep it dark theme if static, or just let it be) */
+
+
+
+
+
+        .item-row:hover {
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            transform: translateX(4px) scale(1.005);
+            cursor: pointer;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Ensure text stays visible on row hover */
+        .item-row:hover div {
+            color: #1f2937 !important;
+        }
+
+        /* --- FIX TEXT COLORS ON HOVER (Override Global Static Card) --- */
+
+        /* 1. Menu Table: Purple text on hover for normal rows */
+        .standard-card.static-card:hover .menu-table tbody tr:hover td {
+            color: #c121e9 !important;
+        }
+
+        /* 2. Menu Table: TODAY Row must stay WHITE */
+        .standard-card.static-card:hover .menu-table tbody tr.today-row td {
+            color: white !important;
+        }
+
+        /* 3. Status Table: Keep text Dark on hover */
+        .standard-card.static-card:hover .status-table tbody tr:hover td {
+            color: #334155 !important;
+        }
+
+        /* 4. Badges must keep their color */
+
+
+
+
+        /* --- LOGIN STYLE FORM (Requested Restyle - Compacted) --- */
+        .leave-card-styled {
+            background: rgba(255, 255, 255, 0.65) !important;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 1.2rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #1a202c;
+            outline: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        .login-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .login-label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: #4a5568 !important;
+            font-size: 0.9rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%);
+            /* Solid Gradient Default */
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0.8rem;
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 4px 15px rgba(193, 33, 233, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* --- FIX: Prevent Leave Card Background Change on Hover --- */
+        /* High specificity to override global static-card rule */
+        .standard-card.static-card.leave-card-styled:hover {
+            background: rgba(255, 255, 255, 0.65) !important;
+            backdrop-filter: blur(10px) !important;
+        }
+
+        /* Add this to your <style> block */
+
+        #leave-history {
+            width: 100%;
+            /* Ensures the container is full width */
+        }
+
+        #leave-history table {
+            width: 100% !important;
+            /* Forces the table to stretch */
+            border-collapse: collapse;
+            /* Removes gaps between borders */
+        }
+
+        /* --- NOTICE CARD STYLE (Matches Notices Page) --- */
+        .notice-card-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .notice-card-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(59, 130, 246, 0.1);
+            /* Blue glow on hover */
+            border-color: #bfdbfe;
+            cursor: pointer;
+        }
+
+        .notice-icon-box {
+            background: #eff6ff;
+            color: #3b82f6;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .notice-content h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 0.95rem;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .notice-content p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .notice-date-badge {
+            font-size: 0.7rem;
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* --- FIX: Stretch Hostel Notices to Fill Space --- */
+        #hostel-notices-list>div {
+            flex: 1;
+            /* This makes the row grow to fill vertical space */
+            width: 100%;
+            /* Ensures it fills horizontally */
+            display: flex;
+            /* Use flexbox inside the row too */
+            flex-direction: column;
+            justify-content: center;
+            /* Centers the text vertically inside the row */
+        }
+
+        /* --- EMERGENCY FOOTER OVERRIDE --- */
+
+
+        .standard-card.static-card.emergency-footer:hover {
+            background: linear-gradient(135deg, #1f2937, #111827) !important;
+            transform: none !important;
+            box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05) !important;
+            /* Keep static shadow or none? User said 'remove hover effect', so static state. */
+            cursor: default !important;
+        }
+
+        .standard-card.static-card.emergency-footer:hover h3,
+        .standard-card.static-card.emergency-footer:hover i {
+            color: #f59e0b !important;
+        }
+
+        .standard-card.static-card.emergency-footer:hover p,
+        .standard-card.static-card.emergency-footer:hover strong {
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+            <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="#" style="text-decoration: none; color: #f59e0b; font-weight: 600;"><i
+                        class="fa-solid fa-bed"></i> Hostel Hub</a></li>
+            <li><a href="#" id="logoutBtn" style="text-decoration: none; color: #ef4444; font-weight: 500;"><i
+                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </header>
+
+    <main class="main-container">
+        <section class="hero" style="min-height:auto; padding-bottom:1rem;">
+            <div class="hero-left">
+                <h1 class="hero-title">Hostel Hub</h1>
+                <p class="hero-sub">Mess Menu, Leave Apps, and Warden Contacts</p>
+            </div>
+        </section>
+
+        <!-- MAIN GRID CONTAINER -->
+        <div class="standard-container"
+            style="display:grid; grid-template-columns: 2fr 1fr; gap:2rem; align-items:stretch;">
+
+            <!-- 1. WEEKLY MESS MENU (Top Left) -->
+            <div class="standard-card static-card" style="height:100%; display:flex; flex-direction:column;">
+                <h2 style="margin-bottom:1rem;">Weekly Mess Menu 🍛</h2>
+                <div class="no-scrollbar" style="width:100%; flex:1;">
+                    <table class="menu-table" id="mess-menu-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Breakfast</th>
+                                <th>Lunch</th>
+                                <th>Dinner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" style="text-align:center;">Loading Menu...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. HOSTEL NOTICES (Top Right - Restyled) -->
+            <div class="standard-card static-card"
+                style="height:100%; display:flex; flex-direction:column; text-align:left;">
+                <div style="flex-shrink:0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <h3 style="margin:0;">Hostel Notices</h3>
+                        <div
+                            style="background:#eff6ff; color:#3b82f6; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.8rem; border:1px solid #dbeafe; white-space:nowrap;">
+                            <i class="fa-solid fa-bell"></i> 3 New
+                        </div>
+                    </div>
+                    <p style="color:#64748b; margin-top:0;">Latest announcements and updates</p>
+                </div>
+
+                <div class="no-scrollbar" id="hostel-notices-list"
+                    style="margin-top:1rem; display:flex; flex-direction:column; gap:0; flex:1;">
+                    <!-- Content injected by JS -->
+                </div>
+            </div>
+
+            <!-- 3. APPLICATION STATUS (Bottom Left) -->
+            <div class="standard-card static-card"
+                style="height:100%; display:flex; flex-direction:column; text-align:left;">
+                <div style="flex-shrink:0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <h3 style="margin:0;">Application Status</h3>
+                        <div id="leave-status-count"
+                            style="background:#eff6ff; color:#3b82f6; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.8rem; border:1px solid #dbeafe; white-space:nowrap;">
+                            <i class="fa-solid fa-layer-group"></i> Loading...
+                        </div>
+                    </div>
+                    <p style="color:#64748b; margin-top:0;">Your recent leave application history</p>
+                </div>
+                <div id="leave-history" style="margin-top:1rem; flex:1;">
+                    <!-- Content injected by JS -->
+                </div>
+            </div>
+
+            <!-- 4. LEAVE FORM (Bottom Right) -->
+            <div class="standard-card static-card leave-card-styled"
+                style="height:100%; display:flex; flex-direction:column; justify-content:center;">
+                <div class="login-header" style="text-align:center; margin-bottom:1rem;">
+                    <h2 style="margin:0; font-size:1.3rem; color:#1f2937;">Apply for Leave</h2>
+                    <p style="margin:0.2rem 0 0; color:#64748b; font-size:0.85rem;">Request permission for leave</p>
+                </div>
+
+                <form id="leaveForm"
+                    style="flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label class="login-label">Type</label>
+                        <select id="type" class="login-input">
+                            <option value="Night Out">Night Out</option>
+                            <option value="Home Visit">Home Visit</option>
+                            <option value="Medical">Medical Emergency</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label class="login-label">From</label>
+                        <input type="datetime-local" id="startDate" class="login-input" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label class="login-label">To</label>
+                        <input type="datetime-local" id="endDate" class="login-input" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label class="login-label">Reason</label>
+                        <textarea id="reason" rows="2" class="login-input" placeholder="Enter reason..."
+                            required></textarea>
+                    </div>
+
+                    <button type="submit" class="login-btn" style="margin-top:auto;">Submit Application</button>
+                </form>
+            </div>
+
+            <!-- 5. EMERGENCY CONTACTS (Footer - Full Width) -->
+            <div class="standard-card static-card emergency-footer"
+                style="grid-column: 1 / -1; background:linear-gradient(135deg, #1f2937, #111827); color:white; display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:1rem;">
+                <h3 style="color:#f59e0b; margin:0;"><i class="fa-solid fa-phone"></i> Emergency Contacts</h3>
+                <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+                    <p style="margin:0;"><strong>Chief Warden:</strong> +91 98765 43210</p>
+                    <p style="margin:0;"><strong>Ambulance:</strong> +91 11223 34455</p>
+                    <p style="margin:0;"><strong>Security Gate:</strong> +91 99887 76655</p>
+                </div>
+            </div>
+
+        </div>
+
+        </div>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/hostel.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Routine | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        /* Excel Grid Styles - Restored */
+        .routine-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 700px;
+        }
+
+        .routine-table th,
+        .routine-table td {
+            border: none;
+            border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+            padding: 0.8rem 0.5rem;
+            /* Compact padding */
+            text-align: center;
+            font-size: 0.85rem;
+            /* Smaller font */
+            vertical-align: middle;
+        }
+
+        .routine-table th {
+            background: transparent;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .routine-table td {
+            background: rgba(255, 255, 255, 0.5);
+            /* Semi-transparent for glass effect */
+            color: #475569;
+            transition: all 0.2s ease;
+            border-right: 1px solid rgba(203, 213, 225, 0.3);
+        }
+
+        .routine-table td:last-child {
+            border-right: none;
+        }
+
+        /* Scrollbar Hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Hover Effects - Refined */
+        .routine-table tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .routine-table tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 20px rgba(193, 33, 233, 0.15);
+            /* Purple shadow */
+            background: white;
+            z-index: 10;
+            position: relative;
+        }
+
+        .routine-table tbody tr:hover td {
+            background: #fdf4ff;
+            /* Very subtle purple tint */
+            color: #c121e9 !important;
+            /* Purple text */
+            border-color: #e879f9;
+        }
+
+        .routine-table tbody tr:hover td .sub-detail {
+            color: #a855f7 !important;
+        }
+
+        .routine-table tbody tr:hover td:first-child {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        .routine-table tbody tr:hover td:last-child {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        /* Current Day - Gradient Theme */
+        .current-day td {
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%) !important;
+            border-top: none;
+            border-bottom: none !important;
+            color: white !important;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ensure sub-details are white on active day */
+        .current-day td .sub-detail {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .current-day td:first-child {
+            border-left: none;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            position: relative;
+        }
+
+        .current-day td:last-child {
+            border-right: none;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .current-day td:first-child::after {
+            content: 'TODAY';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #c121e9;
+            /* Purple badge */
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Sub detail style */
+        .sub-detail {
+            font-size: 0.8rem;
+            color: #64748b;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="text-decoration:none; font-size: 1.5rem; font-weight: 700; color: #2d3748;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </header>
+    <main class="main-container">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-left">
+                <h1 class="hero-title">My Routine</h1>
+                <p class="hero-sub">Weekly Class Schedule & Allocations</p>
+            </div>
+        </section>
+
+        <!-- ROUTINE CONTAINER -->
+        <section class="standard-container">
+            <!-- NEW "BOX STYLE" (Glassmorphism) -->
+            <div
+                style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05); border: 1px solid rgba(255, 255, 255, 0.6); padding: 1.5rem;">
+
+                <!-- HEADER ROW -->
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:15px;">
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <h2
+                            style="margin:0; border-left:6px solid #f59e0b; padding-left:15px; color:#1f2937; font-size:1.2rem; font-weight:700;">
+                            Weekly Timetable</h2>
+                        <div
+                            style="background:#fffbeb; color:#d97706; padding:4px 10px; border-radius:20px; font-weight:600; font-size:0.8rem; border:1px solid #fcd34d;">
+                            <i class="fa-solid fa-calendar-week"></i> Current Term
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ORIGINAL "CLASSES TYPE" (Grid/Timeline) -->
+                <div class="no-scrollbar" style="overflow-x:auto;">
+                    <div id="routine-container" style="width: 100%;">
+                        <div style="text-align: center; padding: 2rem; color: #64748b;">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Loading Schedule...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCRIPT TO RENDER GRID -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const container = document.getElementById('routine-container');
+
+                const routineData = {
+                    'Monday': ['Calculus<br><span class="sub-detail">Room 301</span>', 'Physics<br><span class="sub-detail">Room 402</span>', 'Break', 'CS Lab<br><span class="sub-detail">Lab 2</span>', 'Library'],
+                    'Tuesday': ['Chemistry<br><span class="sub-detail">Room 305</span>', 'English<br><span class="sub-detail">Room 101</span>', 'Break', 'Workshop<br><span class="sub-detail">Mech Shed</span>', '-'],
+                    'Wednesday': ['Calculus<br><span class="sub-detail">Room 301</span>', 'Physics<br><span class="sub-detail">Room 402</span>', 'Break', 'Sports', 'Self Study'],
+                    'Thursday': ['OS<br><span class="sub-detail">Room 204</span>', 'See Teacher', 'Break', 'Placement<br><span class="sub-detail">Seminar Hall</span>', 'Mentoring'],
+                    'Friday': ['Project<br><span class="sub-detail">Lab 1</span>', 'Break', 'Calculus<br><span class="sub-detail">Room 301</span>', 'Club Activity', '-']
+                };
+
+                const renderRoutine = () => {
+                    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                    const timeSlots = ['10:00 - 11:00', '11:00 - 12:00', '12:00 - 01:00', '01:00 - 03:00', '03:00 - 05:00'];
+                    const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+                    let html = '<table class="routine-table">';
+                    html += '<thead><tr><th>Day / Time</th>';
+                    timeSlots.forEach(t => html += `<th>${t}</th>`);
+                    html += '</tr></thead><tbody>';
+
+                    days.forEach(day => {
+                        const isToday = day === todayName;
+                        const subjects = routineData[day] || [];
+
+                        html += `<tr class="${isToday ? 'current-day' : ''}">`;
+                        html += `<td style="font-weight:700; color:#2d3748;">${day}</td>`;
+
+                        subjects.forEach(sub => {
+                            html += `<td>${sub}</td>`;
+                        });
+
+                        html += '</tr>';
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                };
+
+                setTimeout(renderRoutine, 100);
+            });
+        </script>
+    </main>
+</body>
+
+</html>

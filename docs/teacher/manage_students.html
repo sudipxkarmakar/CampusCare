@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Manage Students | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        /* Reusing form styles inline for simplicity or ensuring they exist in styles.css */
+        .form-card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .btn-submit {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </header>
+
+    <main class="main-container">
+        <section class="hero">
+            <div class="hero-left">
+                <h1 class="hero-title">Student Management</h1>
+                <p class="hero-sub">Database, Assignments & Resources</p>
+            </div>
+        </section>
+
+        <!-- SPLIT LAYOUT -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+            <!-- LEFT: ASSIGNMENTS & NOTICES -->
+            <div>
+                <section class="form-card standard-card">
+                    <h3><i class="fa-solid fa-pen-nib"></i> Create Assignment</h3>
+                    <p style="color:#666; margin-bottom:1rem; font-size:0.9rem;">Post new tasks for your classes.</p>
+
+                    <form id="assignmentForm">
+                        <input type="text" id="title" class="form-control" placeholder="Assignment Title" required>
+                        <textarea id="description" class="form-control" rows="2" placeholder="Description/Instructions"
+                            required></textarea>
+
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="subject" class="form-control" placeholder="Subject (e.g. CS-101)"
+                                required>
+                            <input type="date" id="deadline" class="form-control" required>
+                        </div>
+
+                        <div style="display:flex; gap:10px;">
+                            <select id="department" class="form-control">
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="ME">ME</option>
+                            </select>
+                            <input type="text" id="batch" class="form-control" placeholder="Batch (2025)" required>
+                        </div>
+
+                        <button type="submit" class="btn-submit" style="width:100%;">Push Assignment</button>
+                    </form>
+                </section>
+
+                <section class="form-card standard-card">
+                    <h3><i class="fa-solid fa-file-arrow-up"></i> Share Notes</h3>
+                    <input type="file" class="form-control">
+                    <input type="text" class="form-control" placeholder="Topic Name">
+                    <button onclick="alert('Notes Uploaded Successfully!')" class="btn-submit"
+                        style="background:#3b82f6;">Upload Material</button>
+                </section>
+            </div>
+
+            <!-- RIGHT: STUDENT DATABASE -->
+            <div>
+                <section class="form-card standard-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3><i class="fa-solid fa-users"></i> Student Database</h3>
+                        <input type="text" placeholder="Search Roll..."
+                            style="padding:5px; border-radius:5px; border:1px solid #ccc;">
+                    </div>
+
+                    <!-- Notice Board Style List -->
+                    <div class="notice-wrapper"
+                        style="padding:0; box-shadow:none; background:transparent; border:none; max-width:100%;">
+
+                        <!-- Student Item 1 -->
+                        <div class="notice-item"
+                            style="background: rgba(255,255,255,0.5); margin-bottom:10px; border-radius:15px;">
+                            <div class="notice-date" style="min-width:80px;">
+                                <div style="font-size:1.1rem; color:#3b82f6; font-weight:bold;">CSE</div>
+                                <div style="font-size:1.2rem; font-weight:800; color:#2d3748;">001</div>
+                            </div>
+                            <div class="notice-content" style="flex:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <strong style="font-size:1.1rem; color:#2d3748; display:block;">Sudip
+                                            Karmakar</strong>
+                                        <span style="font-size:0.9rem; color:#666;">
+                                            <i class="fa-solid fa-building" style="margin-right:5px; color:#666;"></i>
+                                            Dept: CSE
+                                        </span>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div
+                                            style="font-size:0.9rem; color:#10b981; font-weight:600; margin-bottom:5px;">
+                                            <i class="fa-solid fa-phone"></i> 98765 43210
+                                        </div>
+                                        <a href="#"
+                                            style="color:#3b82f6; font-size:0.9rem; text-decoration:none; font-weight:600;">View
+                                            Profile <i class="fa-solid fa-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Item 2 -->
+                        <div class="notice-item"
+                            style="background: rgba(255,255,255,0.5); margin-bottom:10px; border-radius:15px;">
+                            <div class="notice-date" style="min-width:80px;">
+                                <div style="font-size:1.1rem; color:#3b82f6; font-weight:bold;">CSE</div>
+                                <div style="font-size:1.2rem; font-weight:800; color:#2d3748;">002</div>
+                            </div>
+                            <div class="notice-content" style="flex:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <strong style="font-size:1.1rem; color:#2d3748; display:block;">Rahul
+                                            Verma</strong>
+                                        <span style="font-size:0.9rem; color:#666;">
+                                            <i class="fa-solid fa-building" style="margin-right:5px; color:#666;"></i>
+                                            Dept: CSE
+                                        </span>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div
+                                            style="font-size:0.9rem; color:#10b981; font-weight:600; margin-bottom:5px;">
+                                            <i class="fa-solid fa-phone"></i> 91234 56789
+                                        </div>
+                                        <a href="#"
+                                            style="color:#3b82f6; font-size:0.9rem; text-decoration:none; font-weight:600;">View
+                                            Profile <i class="fa-solid fa-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Item 3 -->
+                        <div class="notice-item"
+                            style="background: rgba(255,255,255,0.5); margin-bottom:10px; border-radius:15px;">
+                            <div class="notice-date" style="min-width:80px;">
+                                <div style="font-size:1.1rem; color:#ef4444; font-weight:bold;">ME</div>
+                                <div style="font-size:1.2rem; font-weight:800; color:#2d3748;">045</div>
+                            </div>
+                            <div class="notice-content" style="flex:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <strong style="font-size:1.1rem; color:#2d3748; display:block;">Anita
+                                            Roy</strong>
+                                        <span style="font-size:0.9rem; color:#666;">
+                                            <i class="fa-solid fa-building" style="margin-right:5px; color:#666;"></i>
+                                            Dept: ME
+                                        </span>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div
+                                            style="font-size:0.9rem; color:#10b981; font-weight:600; margin-bottom:5px;">
+                                            <i class="fa-solid fa-phone"></i> 99887 76655
+                                        </div>
+                                        <a href="#"
+                                            style="color:#3b82f6; font-size:0.9rem; text-decoration:none; font-weight:600;">View
+                                            Profile <i class="fa-solid fa-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/teacher.js"></script>
+</body>
+
+</html>

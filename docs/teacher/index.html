@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CampusCare — Teacher Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    /* Specific styles for form */
+    .form-card {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-submit {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+      background: #059669;
+    }
+
+    .row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .col {
+      flex: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="glass"
+    style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <a href="../index.html" class="logo"
+      style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+      <i class="fa-solid fa-graduation-cap"></i> CampusCare
+    </a>
+    <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+      <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="#" style="text-decoration: none; color: #3b82f6; font-weight: 600;"><i
+            class="fa-solid fa-chalkboard-user"></i> Teacher Portal</a></li>
+      <li><a href="#" onclick="logout()" style="text-decoration: none; color: #ef4444; font-weight: 600;"><i
+            class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
+  </header>
+
+  <main class="main-container">
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="hero-title">Academic Command Center</h1>
+        <p class="hero-sub">Welcome, Faculty</p>
+      </div>
+    </section>
+
+    <!-- DASHBOARD NAVIGATION (Values & Sections) -->
+
+    <!-- PARENT GRID FOR SIDE-BY-SIDE LAYOUT -->
+    <div class="row"
+      style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem; margin-top:2rem; padding: 0 5%;">
+
+      <!-- SECTION 1: STUDENT MANAGEMENT -->
+      <section class="standard-container" style="margin:0; width:100%;">
+        <h2
+          style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #3b82f6; padding-left:10px; font-size:1.3rem;">
+          Manage Students</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+          <a href="assignments.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-pen-nib module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Assignments</div>
+            <div class="module-desc">Create & Track</div>
+          </a>
+
+          <a href="students.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-users module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Student DB</div>
+            <div class="module-desc">View Database</div>
+          </a>
+
+          <a href="notes.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-file-arrow-up module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Upload Notes</div>
+            <div class="module-desc">Share Material</div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- SECTION 2: MENTEE MANAGEMENT -->
+      <section class="standard-container" style="margin:0; width:100%;">
+        <h2
+          style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #10b981; padding-left:10px; font-size:1.3rem;">
+          Manage Mentees</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+          <a href="mentees.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-hands-holding-child module-icon" style="font-size:2rem; color:#10b981;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">My Mentees</div>
+            <div class="module-desc">MAR / MOOC Status</div>
+          </a>
+
+          <a href="mentee_complaints.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-triangle-exclamation module-icon" style="font-size:2rem; color:#ef4444;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Complaints</div>
+            <div class="module-desc">Issues Reported</div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- SECTION 3: PERSONAL SPACE -->
+      <section class="standard-container" style="margin:0; width:100%;">
+        <h2
+          style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #f59e0b; padding-left:10px; font-size:1.3rem;">
+          Personal Space</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+          <a href="routine.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-calendar-days module-icon" style="font-size:2rem; color:#f59e0b;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Full Routine</div>
+            <div class="module-desc">Weekly Schedule</div>
+          </a>
+
+          <a href="library.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-book module-icon" style="font-size:2rem; color:#f59e0b;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Library</div>
+            <div class="module-desc">Access Books</div>
+          </a>
+
+          <a href="notices.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-envelope-open-text module-icon" style="font-size:2rem; color:#f59e0b;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Official Notices</div>
+            <div class="module-desc">Admin Updates</div>
+          </a>
+
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/teacher.js"></script>
+</body>
+
+</html>

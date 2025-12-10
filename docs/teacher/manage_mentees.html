@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Manage Mentees | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-ok {
+            background: #d1fae5;
+            color: #059669;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="text-decoration:none; font-size: 1.5rem; font-weight: 700; color: #2d3748;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </header>
+
+    <main class="main-container">
+        <section class="hero">
+            <div class="hero-left">
+                <h1 class="hero-title">Mentee Management</h1>
+                <p class="hero-sub">Pastoral Care & MAR/MOOC Verification</p>
+            </div>
+        </section>
+
+        <!-- MENTEE LIST -->
+        <section class="glass card">
+            <h3><i class="fa-solid fa-child-reaching"></i> Assigned Mentees (Batch 2025)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>MAR Points</th>
+                        <th>MOOCs</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CSE-001</td>
+                        <td>Sudip Karmakar</td>
+                        <td>12/25</td>
+                        <td>0 Hrs</td>
+                        <td><span class="badge badge-pending">Lagging</span></td>
+                        <td><button onclick="alert('Viewing Details...')"
+                                style="cursor:pointer; color:blue;">Check</button></td>
+                    </tr>
+                    <tr>
+                        <td>CSE-005</td>
+                        <td>Rahul Verma</td>
+                        <td>25/25</td>
+                        <td>20 Hrs</td>
+                        <td><span class="badge badge-ok">On Track</span></td>
+                        <td><button onclick="alert('Viewing Details...')"
+                                style="cursor:pointer; color:blue;">Check</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- COMPLAINTS FROM MENTEE -->
+        <section class="glass card" style="background: #fff5f5; border: 1px solid #fed7d7;">
+            <h3 style="color:#c53030;"><i class="fa-solid fa-triangle-exclamation"></i> Critical Issues / Complaints
+            </h3>
+            <p>Issues reported by your mentees that require attention.</p>
+
+            <div style="margin-top:1rem; background:white; padding:1rem; border-radius:10px;">
+                <strong>Hostel Water Issue</strong> - <em>Rahum Verma</em>
+                <p style="font-size:0.9rem; color:#666;">"Water cooler on 2nd floor is giving shocks."</p>
+                <button onclick="alert('Escalated to Maintenance!')"
+                    style="margin-top:5px; background:#c53030; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">Escalate</button>
+            </div>
+        </section>
+
+    </main>
+</body>
+
+</html>

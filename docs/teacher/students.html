@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Database | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="text-decoration:none; font-size: 1.5rem; font-weight: 700; color: #2d3748;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </header>
+    <main class="main-container">
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-left">
+                <h1 class="hero-title">Student Database</h1>
+                <p class="hero-sub">Manage & View Student Records</p>
+            </div>
+        </section>
+
+        <!-- STUDENT DATABASE -->
+        <section class="standard-container">
+            <div
+                style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05); border: 1px solid rgba(255, 255, 255, 0.6); padding: 2rem;">
+
+                <!-- HEADER ROW: Title + Stats -->
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:15px;">
+                    <div style="display:flex; align-items:center; gap:20px;">
+                        <h2
+                            style="margin:0; border-left:6px solid #3b82f6; padding-left:15px; color:#1f2937; font-size:1.4rem; font-weight:700;">
+                            All Students</h2>
+                        <div
+                            style="background:#eff6ff; color:#3b82f6; padding:5px 12px; border-radius:20px; font-weight:600; font-size:0.9rem; border:1px solid #dbeafe;">
+                            <i class="fa-solid fa-graduation-cap"></i> Total: 60
+                        </div>
+                    </div>
+
+                    <div style="position:relative; width:300px;">
+                        <i class="fa-solid fa-search"
+                            style="position:absolute; left:12px; top:12px; color:#94a3b8;"></i>
+                        <input type="text" id="searchInput" placeholder="Search Student..." onkeyup="filterStudent()"
+                            style="width:100%; padding:10px 10px 10px 40px; border-radius:10px; border:1px solid #cbd5e0;">
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto; border-radius:12px; border:1px solid #e2e8f0;">
+                    <table id="studentTable" style="width:100%; border-collapse:collapse; background:white;">
+                        <thead>
+                            <tr style="background:#f8fafc; text-align:left; border-bottom:2px solid #e2e8f0;">
+                                <th style="padding:15px; color:#475569; font-weight:600;">Roll No</th>
+                                <th style="padding:15px; color:#475569; font-weight:600;">Student Name</th>
+                                <th style="padding:15px; color:#475569; font-weight:600;">Dept</th>
+                                <th style="padding:15px; color:#475569; font-weight:600;">Phone Number</th>
+                                <th style="padding:15px; color:#475569; font-weight:600;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size:0.95rem;">
+                            <!-- Row 1 -->
+                            <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;">
+                                <td style="padding:15px; font-weight:600; color:#334155;">CSE-001</td>
+                                <td style="padding:15px;">
+                                    <div style="font-weight:600; color:#2d3748;">Sudip Karmakar</div>
+                                    <div style="font-size:0.75rem; color:#64748b;">Batch 2024</div>
+                                </td>
+                                <td style="padding:15px;">
+                                    <span
+                                        style="background:#f1f5f9; padding:5px 10px; border-radius:6px; font-weight:600; color:#475569;">
+                                        Computer Science
+                                    </span>
+                                </td>
+                                <td style="padding:15px;">
+                                    <span style="font-family:monospace; font-size:1.05rem; color:#10b981;">
+                                        <i class="fa-solid fa-phone"
+                                            style="font-size:0.8rem; margin-right:5px;"></i>98765
+                                        43210
+                                    </span>
+                                </td>
+                                <td style="padding:15px;">
+                                    <button
+                                        style="background:#3b82f6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
+                                        onclick="alert('Viewing Profile...')">View Profile</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2 -->
+                            <tr style="border-bottom:1px solid #f1f5f9;">
+                                <td style="padding:15px; font-weight:600; color:#334155;">CSE-002</td>
+                                <td style="padding:15px;">
+                                    <div style="font-weight:600; color:#2d3748;">Rahul Verma</div>
+                                    <div style="font-size:0.75rem; color:#64748b;">Batch 2024</div>
+                                </td>
+                                <td style="padding:15px;">
+                                    <span
+                                        style="background:#f1f5f9; padding:5px 10px; border-radius:6px; font-weight:600; color:#475569;">
+                                        Computer Science
+                                    </span>
+                                </td>
+                                <td style="padding:15px;">
+                                    <span style="font-family:monospace; font-size:1.05rem; color:#10b981;">
+                                        <i class="fa-solid fa-phone"
+                                            style="font-size:0.8rem; margin-right:5px;"></i>91234
+                                        56789
+                                    </span>
+                                </td>
+                                <td style="padding:15px;">
+                                    <button
+                                        style="background:#3b82f6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
+                                        onclick="alert('Viewing Profile...')">View Profile</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3 -->
+                            <tr style="border-bottom:1px solid #f1f5f9;">
+                                <td style="padding:15px; font-weight:600; color:#334155;">ME-045</td>
+                                <td style="padding:15px;">
+                                    <div style="font-weight:600; color:#2d3748;">Anita Roy</div>
+                                    <div style="font-size:0.75rem; color:#64748b;">Batch 2025</div>
+                                </td>
+                                <td style="padding:15px;">
+                                    <span
+                                        style="background:#f1f5f9; padding:5px 10px; border-radius:6px; font-weight:600; color:#475569;">
+                                        Mechanical
+                                    </span>
+                                </td>
+                                <td style="padding:15px;">
+                                    <span style="font-family:monospace; font-size:1.05rem; color:#10b981;">
+                                        <i class="fa-solid fa-phone"
+                                            style="font-size:0.8rem; margin-right:5px;"></i>99887
+                                        76655
+                                    </span>
+                                </td>
+                                <td style="padding:15px;">
+                                    <button
+                                        style="background:#3b82f6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
+                                        onclick="alert('Viewing Profile...')">View Profile</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCRIPT -->
+        <script>
+            function filterStudent() {
+                const input = document.getElementById("searchInput");
+                const filter = input.value.toUpperCase();
+                const table = document.getElementById("studentTable");
+                const tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+                    const tdRoll = tr[i].getElementsByTagName("td")[0];
+                    const tdName = tr[i].getElementsByTagName("td")[1];
+                    if (tdRoll || tdName) {
+                        const txtValueRoll = tdRoll.textContent || tdRoll.innerText;
+                        const txtValueName = tdName.textContent || tdName.innerText;
+                        if (txtValueRoll.toUpperCase().indexOf(filter) > -1 || txtValueName.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        </script>
+    </main>
+</body>
+
+</html>
