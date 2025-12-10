@@ -11,6 +11,12 @@ if (user.role !== 'teacher' && user.role !== 'hod') {
     window.location.href = '../index.html';
 }
 
+// Global Logout Function
+window.logout = function () {
+    localStorage.removeItem('user');
+    window.location.href = '../index.html';
+};
+
 // UI Setup
 document.addEventListener('DOMContentLoaded', () => {
     // Hero Greeting

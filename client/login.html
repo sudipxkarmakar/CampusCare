@@ -14,13 +14,67 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            /* Subtle background to show box contrast */
         }
 
         .login-container {
             width: 100%;
-            max-width: 400px;
-            padding: 2rem;
+            max-width: 420px;
+            padding: 2.5rem;
             text-align: center;
+            background: #ffffff;
+            /* Explicit white box */
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            /* Soft shadow */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Responsive Box Hover (No Color Change) */
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Revert text changes - ensure they stay default */
+        .login-container:hover h2,
+        .login-container:hover p,
+        .login-container:hover label {
+            color: inherit !important;
+        }
+
+        .login-container:hover .login-header i {
+            -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+        }
+
+        /* Reset Input colors */
+        .login-container:hover .form-control {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .login-container:hover .form-control:focus {
+            background: #ffffff;
+            border-color: var(--primary-color);
+        }
+
+        /* Register Button - Apply Gradient Here Instead */
+        .login-container:hover .switch-mode {
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+
+        .switch-mode:hover,
+        .login-container:hover .switch-mode:hover {
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%);
+            color: white !important;
+            border-color: transparent;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 10px rgba(193, 33, 233, 0.3);
+            text-decoration: none;
         }
 
         .login-header {
@@ -29,7 +83,9 @@
 
         .login-header i {
             font-size: 3rem;
-            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
 
@@ -41,50 +97,81 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
+            color: #4a5568;
         }
 
         .form-control {
             width: 100%;
-            padding: 0.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #333;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #1a202c;
             outline: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
-            background: rgba(255, 255, 255, 0.4);
+            background: #ffffff;
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.1);
         }
 
         .btn-submit {
             width: 100%;
             padding: 1rem;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: 2px solid #e2e8f0;
+            /* Default border */
+            border-radius: 12px;
+            background: transparent;
+            /* Not highlighted by default */
+            color: #64748b;
+            /* Neutral text */
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Light up Login Button on Box Hover */
+        .login-container:hover .btn-submit,
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%);
             color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(193, 33, 233, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Register Button Styling */
+        .switch-mode {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            color: #64748b;
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
         }
 
-        .btn-submit:hover {
-            transform: scale(1.02);
-        }
-
-        .switch-mode {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            cursor: pointer;
-            color: #4a5568;
+        /* Register Button Hover Effects */
+        .switch-mode:hover,
+        .login-container:hover .switch-mode {
+            border-color: #00aeff;
+            /* Blue border on box hover */
+            color: #00aeff;
         }
 
         .switch-mode:hover {
-            text-decoration: underline;
+            /* Stronger highlight on direct hover */
+            background: #eff6ff;
+            transform: translateY(-2px);
         }
     </style>
 </head>
