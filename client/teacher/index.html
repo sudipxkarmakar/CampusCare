@@ -5,7 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CampusCare — Teacher Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/styles.css">
   <style>
     /* Specific styles for form */
@@ -65,14 +66,18 @@
 
 <body>
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="../index.html" class="brand">CampusCare</a>
-      <nav class="main-nav">
-        <a href="../index.html">Home</a>
-        <a href="#" class="active">Teacher Portal</a>
-      </nav>
-    </div>
+  <header class="glass"
+    style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <a href="../index.html" class="logo"
+      style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+      <i class="fa-solid fa-graduation-cap"></i> CampusCare
+    </a>
+    <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+      <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="#" style="text-decoration: none; color: #3b82f6; font-weight: 600;"><i
+            class="fa-solid fa-chalkboard-user"></i> Teacher Portal</a></li>
+    </ul>
   </header>
 
   <main class="main-container">
@@ -84,8 +89,8 @@
     </section>
 
     <!-- ASSIGNMENT CREATION FORM -->
-    <section class="form-section">
-      <div class="form-card glass">
+    <section class="form-section standard-container">
+      <div class="form-card standard-card">
         <h2 style="margin-bottom:1.5rem; text-align:center;">Create New Assignment</h2>
         <form id="assignmentForm">
           <div class="form-group">

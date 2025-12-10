@@ -35,6 +35,8 @@ body {
     position: relative;
     overflow-x: hidden;
     /* Prevents scrollbars from the blobs */
+    display: flex;
+    flex-direction: column;
 }
 
 /* 1. Top-Left Blob (Deep Sky Blue) */
@@ -100,6 +102,121 @@ body::after {
     border: var(--glass-border);
     border-radius: 20px;
     box-shadow: var(--glass-shadow);
+}
+
+/* --- STANDARDIZATION UTILITIES --- */
+.standard-container {
+    padding: 0 5% 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.standard-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2rem;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontal cross-axis */
+    justify-content: center;
+    /* Center vertical main-axis */
+    text-align: center;
+    /* Center text content */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Standard Hover Effect for ALL Cards */
+.standard-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    /* Lighter, softer Gradient (Royal Blue -> Soft Violet) */
+    background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+    border-color: transparent;
+    opacity: 0.95;
+}
+
+/* Ensure text inside standard cards handles the hover correctly (white text) */
+.standard-card:hover h2,
+.standard-card:hover h3,
+.standard-card:hover .module-title,
+.standard-card:hover .faculty-name,
+.standard-card:hover .blog-title,
+.standard-card:hover p,
+.standard-card:hover div,
+.standard-card:hover i {
+    color: #ffffff !important;
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+}
+
+/* --- LIST CARD (No outer hover, Inner row hover) --- */
+.list-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    /* No Transform on the card itself */
+}
+
+/* Inner Row/Item Hover */
+.list-row-hover:hover {
+    background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+    color: white !important;
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Ensure text turns white on hover */
+.list-row-hover:hover * {
+    color: white !important;
+}
+
+/* EXCEPTION: Buttons inside hover rows should keep their own text color or be legible */
+.list-row-hover:hover button,
+.list-row-hover:hover .btn-primary {
+    color: white !important;
+    /* White is fine if background is dark, but if btn is light, might need check */
+    /* Let's keep it white for now as buttons usually have background */
+}
+
+.list-row-hover:hover button.btn-secondary,
+.list-row-hover:hover a.download-btn {
+    /* If button has white background, text must be dark */
+    color: #1f2937 !important;
+}
+
+/* PRIORITY COLORS (Deadlines) */
+.priority-red {
+    border-left: 4px solid #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.priority-yellow {
+    border-left: 4px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.priority-green {
+    border-left: 4px solid #10b981;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+/* Exception for badges/buttons inside cards that might need their own colors */
+.standard-card:hover .btn,
+.standard-card:hover button {
+    color: inherit;
+    /* or keep their own style */
 }
 
 /* --- HEADER --- */

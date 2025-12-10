@@ -5,30 +5,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Routine — CampusCare</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 
 <body>
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="../index.html" class="brand">CampusCare</a>
-      <nav class="main-nav">
-        <a href="../index.html">Home</a>
-        <a href="index.html" class="active">Student</a>
-      </nav>
-    </div>
+  <header class="glass"
+    style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <a href="index.html" class="logo"
+      style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+      <i class="fa-solid fa-graduation-cap"></i> CampusCare
+    </a>
+    <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
+      <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+            class="fa-solid fa-house"></i> Dashboard</a></li>
+      <li><a href="#" style="text-decoration: none; color: #3b82f6; font-weight: 600;"><i
+            class="fa-solid fa-calendar-days"></i> Routine</a></li>
+    </ul>
   </header>
 
-  <main class="inner-page">
+  <main class="inner-page standard-container">
 
-    <h1 class="page-title">Class Routine</h1>
+    <div
+      style="margin-top: 2rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+      <h1 class="page-title">Class Routine</h1>
+      <select id="batch-select"
+        style="padding: 0.5rem; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Poppins';">
+        <option value="A">Batch A (CS-2025)</option>
+        <option value="B">Batch B (IT-2025)</option>
+        <option value="C">Batch C (ECE-2025)</option>
+      </select>
+    </div>
 
-    <a href="index.html" class="back-btn">← Back to Dashboard</a>
-
-    <div class="glass-card">
-      <div id="routine-container">
+    <!-- EXCEL STYLE GRID -->
+    <!-- Changed to list-card to stop whole box hovering -->
+    <div class="list-card" style="padding: 1rem; overflow-x: auto; align-items: stretch; text-align: left;">
+      <div id="routine-container" style="width: 100%;">
         <div style="text-align: center; padding: 2rem; color: #64748b;">
           <i class="fa-solid fa-spinner fa-spin"></i> Loading...
         </div>
@@ -37,83 +51,157 @@
 
   </main>
 
+  <style>
+    /* Excel Grid Styles */
+    .routine-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 800px;
+      /* Force scroll on small screens */
+    }
+
+    .routine-table th,
+    .routine-table td {
+      border: none;
+      /* Remove all borders */
+      border-bottom: 1px solid rgba(203, 213, 225, 0.5);
+      /* Subtle row separators */
+      padding: 1.5rem 1rem;
+      /* Bigger padding */
+      text-align: center;
+      font-size: 1rem;
+      /* Larger font */
+    }
+
+    .routine-table th {
+      background: transparent;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    .routine-table td {
+      background: rgba(255, 255, 255, 0.9);
+      color: #475569;
+      transition: all 0.2s ease;
+    }
+
+    /* ROW Hover Effect */
+    .routine-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .routine-table tbody tr:hover td {
+      background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+      color: white !important;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Ensure top-left and top-right radius for the whole row on hover if possible, 
+       but standard table rows are tricky. We'll just color the cells. 
+       To make the whole row "pop", we can try transforming the cells or the row? 
+       Transforms on TR are sometimes flaky. Let's do scale on cells.
+    */
+    .routine-table tbody tr:hover td:first-child {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    .routine-table tbody tr:hover td:last-child {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .current-day {
+      background: #eff6ff !important;
+      border: 2px solid #3b82f6 !important;
+      position: relative;
+    }
+
+    .current-day::after {
+      content: 'TODAY';
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #3b82f6;
+      color: white;
+      font-size: 0.6rem;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: bold;
+      z-index: 5;
+    }
+
+    /* Override hover for current day to keep it distinct or merge? 
+       User said "hover reflect over entire row". 
+       So row hover should probably take precedence or blend.
+    */
+  </style>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const view = params.get('view');
+      const dbSelect = document.getElementById('batch-select');
       const container = document.getElementById('routine-container');
-      const title = document.querySelector('.page-title');
 
-      // MOCK DATA
-      const fullRoutine = {
-        'Monday': [
-          { time: '09:00 AM', subject: 'Mathematics' },
-          { time: '11:00 AM', subject: 'DBMS' }
-        ],
-        'Tuesday': [
-          { time: '10:00 AM', subject: 'Physics' },
-          { time: '02:00 PM', subject: 'Lab' }
-        ],
-        'Wednesday': [
-          { time: '09:00 AM', subject: 'Data Structures' },
-          { time: '01:00 PM', subject: 'English' }
-        ],
-        // Add more days as needed
+      // MOCK DATA GENERATOR
+      const generateRoutine = (batch) => {
+        return {
+          'Monday': ['Maths (10-11)', 'Physics (11-12)', 'Break', 'CS Lab (1-3)', 'Library'],
+          'Tuesday': ['Chemistry (10-11)', 'English (11-12)', 'Break', 'Workshop (1-4)'],
+          'Wednesday': ['Maths (10-11)', 'Physics (11-12)', 'Break', 'Sports', 'Self Study'],
+          'Thursday': ['OS (10-11)', 'DBMS (11-12)', 'Break', 'Placement Trg', 'Mentoring'],
+          'Friday': ['Project (9-12)', 'Break', 'Maths (1-2)', 'Club Activity']
+        };
       };
 
-      // Helper to get today's day name
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const today = days[new Date().getDay()];
+      const renderRoutine = (batch) => {
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const timeSlots = ['10:00 - 11:00', '11:00 - 12:00', '12:00 - 01:00', '01:00 - 02:00', '02:00 - 04:00'];
+        // Simplified Logic: Just projecting subjects into slots for the Excel look
 
-      if (view === 'today') {
-        title.textContent = `Today's Classes (${today})`;
+        const routineData = generateRoutine(batch);
+        const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
-        const todaysClasses = fullRoutine[today] || [];
+        let html = '<table class="routine-table">';
+        html += '<thead><tr><th>Day / Time</th>';
+        timeSlots.forEach(t => html += `<th>${t}</th>`);
+        html += '</tr></thead><tbody>';
 
-        if (todaysClasses.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding:1rem;">No classes scheduled for today! 🎉</p>`;
-        } else {
-          let html = '<ul style="list-style:none; padding:0;">';
-          todaysClasses.forEach(cls => {
-            html += `
-            <li style="padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between;">
-              <span class="time-badge" style="background:#e0f2fe; color:#0284c7; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.85rem; font-weight:600;">${cls.time}</span>
-              <span style="font-size:1.1rem; font-weight:500; color:#334155;">${cls.subject}</span>
-            </li>
-          `;
-          });
-          html += '</ul>';
-          container.innerHTML = html;
-        }
+        days.forEach(day => {
+          const isToday = day === todayName;
+          const subjects = routineData[day] || [];
 
-      } else {
-        // FULL ROUTINE VIEW
-        title.textContent = 'Weekly Routine';
-        let html = '';
+          html += `<tr class="${isToday ? 'current-day' : ''}">`;
+          html += `<td style="font-weight:bold;">${day}</td>`;
 
-        for (const [day, classes] of Object.entries(fullRoutine)) {
-          html += `<h3 style="margin-top:1.5rem; margin-bottom:0.5rem; color:#475569; border-bottom:1px solid #ddd; padding-bottom:0.5rem;">${day}</h3>`;
-          if (classes.length === 0) {
-            html += `<p style="font-size:0.9rem; color:#94a3b8;">No classes</p>`;
-          } else {
-            html += `<ul style="list-style:none; padding:0;">`;
-            classes.forEach(cls => {
-              html += `
-                  <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 1rem;">
-                    <span style="font-size:0.85rem; color:#64748b; min-width:80px;">${cls.time}</span>
-                    <span style="font-weight:500; color:#334155;">${cls.subject}</span>
-                  </li>
-                `;
-            });
-            html += `</ul>`;
+          // Fill slots (mock logic: just take first 5 items from array)
+          for (let i = 0; i < 5; i++) {
+            html += `<td>${subjects[i] || '-'}</td>`;
           }
-        }
+          html += '</tr>';
+        });
+
+        html += '</tbody></table>';
         container.innerHTML = html;
-      }
+      };
+
+      // Initial Render
+      renderRoutine('A');
+
+      // Change Handler
+      dbSelect.addEventListener('change', (e) => {
+        container.innerHTML = '<div style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Updating Batch...</div>';
+        setTimeout(() => renderRoutine(e.target.value), 500);
+      });
+
     });
   </script>
 
-
+  <!-- Removed Duplicate Footer (using global footer margin-top: auto) -->
+  <!-- But keeping footer tag as per request to have it at bottom -->
   <footer class="site-footer">
     <p>© 2025 CampusCare</p>
   </footer>
