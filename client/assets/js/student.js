@@ -6,8 +6,8 @@ if (!userStr) {
 
 const user = JSON.parse(userStr);
 
-if (user.role !== 'student') {
-    alert("Access Denied: Students Only");
+if (user.role !== 'student' && user.role !== 'hosteler') {
+    alert("Access Denied: Students & Hostelers Only");
     window.location.href = '../index.html';
 }
 

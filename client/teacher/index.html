@@ -88,61 +88,99 @@
       </div>
     </section>
 
-    <!-- ASSIGNMENT CREATION FORM -->
-    <section class="form-section standard-container">
-      <div class="form-card standard-card">
-        <h2 style="margin-bottom:1.5rem; text-align:center;">Create New Assignment</h2>
-        <form id="assignmentForm">
-          <div class="form-group">
-            <label>Assignment Title</label>
-            <input type="text" id="title" class="form-control" placeholder="e.g. Thermodynamics Lab Report" required>
-          </div>
+    <!-- DASHBOARD NAVIGATION (Values & Sections) -->
 
-          <div class="form-group">
-            <label>Description</label>
-            <textarea id="description" class="form-control" rows="3" placeholder="Instructions for students..."
-              required></textarea>
-          </div>
+    <!-- PARENT GRID FOR SIDE-BY-SIDE LAYOUT -->
+    <div class="row"
+      style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem; margin-top:2rem; padding: 0 5%;">
 
-          <div class="row">
-            <div class="col form-group">
-              <label>Subject</label>
-              <input type="text" id="subject" class="form-control" placeholder="e.g. ME-101" required>
-            </div>
-            <div class="col form-group">
-              <label>Deadline</label>
-              <input type="date" id="deadline" class="form-control" required>
-            </div>
-          </div>
+      <!-- SECTION 1: STUDENT MANAGEMENT -->
+      <section class="standard-container" style="margin:0; width:100%;">
+        <h2
+          style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #3b82f6; padding-left:10px; font-size:1.3rem;">
+          Manage Students</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
 
-          <div class="row">
-            <div class="col form-group">
-              <label>Target Dept</label>
-              <select id="department" class="form-control">
-                <option value="CSE">CSE</option>
-                <option value="ECE">ECE</option>
-                <option value="ME">ME</option>
-                <option value="CE">CE</option>
-              </select>
-            </div>
-            <div class="col form-group">
-              <label>Batch</label>
-              <input type="text" id="batch" class="form-control" placeholder="e.g. 2025" required>
-            </div>
-            <div class="col form-group">
-              <label>Section (Optional)</label>
-              <select id="section" class="form-control">
-                <option value="">All Sections</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-              </select>
-            </div>
-          </div>
+          <a href="assignments.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-pen-nib module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Assignments</div>
+            <div class="module-desc">Create & Track</div>
+          </a>
 
-          <button type="submit" class="btn-submit">Push Assignment</button>
-        </form>
-      </div>
-    </section>
+          <a href="students.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-users module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Student DB</div>
+            <div class="module-desc">View Database</div>
+          </a>
+
+          <a href="notes.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-file-arrow-up module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Upload Notes</div>
+            <div class="module-desc">Share Material</div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- SECTION 2: MENTEE MANAGEMENT -->
+      <section class="standard-container" style="margin:0; width:100%;">
+        <h2
+          style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #10b981; padding-left:10px; font-size:1.3rem;">
+          Manage Mentees</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+          <a href="mentees.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-hands-holding-child module-icon" style="font-size:2rem; color:#10b981;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">My Mentees</div>
+            <div class="module-desc">MAR / MOOC Status</div>
+          </a>
+
+          <a href="mentee_complaints.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-triangle-exclamation module-icon" style="font-size:2rem; color:#ef4444;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Complaints</div>
+            <div class="module-desc">Issues Reported</div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- SECTION 3: PERSONAL SPACE -->
+      <section class="standard-container" style="margin:0; width:100%;">
+        <h2
+          style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #f59e0b; padding-left:10px; font-size:1.3rem;">
+          Personal Space</h2>
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+          <a href="routine.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-calendar-days module-icon" style="font-size:2rem; color:#f59e0b;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Full Routine</div>
+            <div class="module-desc">Weekly Schedule</div>
+          </a>
+
+          <a href="library.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-book module-icon" style="font-size:2rem; color:#f59e0b;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Library</div>
+            <div class="module-desc">Access Books</div>
+          </a>
+
+          <a href="notices.html" class="module-card-dashboard standard-card"
+            style="text-decoration:none; padding:1.5rem; text-align:center;">
+            <i class="fa-solid fa-envelope-open-text module-icon" style="font-size:2rem; color:#f59e0b;"></i>
+            <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Official Notices</div>
+            <div class="module-desc">Admin Updates</div>
+          </a>
+
+        </div>
+      </section>
+
+    </div>
 
   </main>
 

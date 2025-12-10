@@ -56,4 +56,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Animate Blobs or Interactivity if needed
+
+    // --- AUTH STATE CHECK ---
+    checkAuthState();
 });
+
+// --- AUTH FUNCTIONS ---
+function checkAuthState() {
+    const userStr = localStorage.getItem('user');
+    const loginBtn = document.getElementById('loginBtn');
+    const userProfile = document.getElementById('userProfile');
+    const userName = document.getElementById('userName');
+    const userAvatar = document.getElementById('userAvatar');
+    const userDetails = document.getElementById('userDetails');
+
+    if (userStr) {
+        // User is Logged In
+        const user = JSON.parse(userStr);
+
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (userProfile) userProfile.style.display = 'flex';
+
+        if (userName) userName.textContent = `Hello, ${user.name.split(' ')[0]}`; // First Name
+        if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`;
+
+        if (userDetails) {
+            userDetails.innerHTML = `
+                <strong>${user.name}</strong><br>
+                <span style="text-transform: capitalize;">${user.role}</span><br>
+                <span style="font-size:0.8rem;">${user.identifier || 'ID: --'}</span>
+            `;
+        }
+
+    } else {
+        // User is Guest
+        if (loginBtn) loginBtn.style.display = 'block';
+        if (userProfile) userProfile.style.display = 'none';
+    }
+}
+
+function toggleProfileMenu() {
+    const menu = document.getElementById('profileMenu');
+    if (menu.style.display === 'flex') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'flex';
+    }
+}
+
+// Close menu when clicking outside
+window.addEventListener('click', (e) => {
+    const menu = document.getElementById('profileMenu');
+    const avatar = document.getElementById('userAvatar');
+    if (menu && menu.style.display === 'flex' && e.target !== menu && e.target !== avatar && !menu.contains(e.target)) {
+        menu.style.display = 'none';
+    }
+});
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.clear();
+        window.location.reload(); // Refresh to reset state
+    }
+}
