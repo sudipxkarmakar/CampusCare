@@ -22,20 +22,145 @@
                         class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
         </ul>
     </header>
+
     <main class="main-container">
+        <!-- HERO -->
         <section class="hero">
             <div class="hero-left">
-                <h1 class="hero-title">Student Complaints</h1>
+                <h1 class="hero-title">Complaints & Issues</h1>
+                <p class="hero-sub">Resolve Disciplinary Reports & Address Student Grievances</p>
             </div>
         </section>
-        <section class="standard-container standard-card">
-            <p>Issues reported by your mentees:</p>
-            <div style="background:#fff5f5; border:1px solid red; padding:10px; border-radius:10px;">
-                <strong>Hostel 3 Water</strong> - Rahul
-                <br>
-                <button onclick="alert('Escalated!')">Escalate</button>
-            </div>
-        </section>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+
+            <!-- SECTION 1: REPORTS AGAINST MENTEE (Disciplinary) -->
+            <section class="standard-container" style="margin:0;">
+                <div
+                    style="background: rgba(255, 241, 242, 0.9); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid #fecdd3; padding: 1.5rem; box-shadow: 0 10px 30px rgba(190, 18, 60, 0.05);">
+                    <h2 style="margin:0 0 1.5rem 0; color:#881337; font-size:1.4rem; display:flex; align-items:center;">
+                        <i class="fa-solid fa-user-xmark" style="margin-right:10px;"></i> Reports Against Mentees
+                    </h2>
+
+                    <!-- Report Item 1 -->
+                    <div
+                        style="background:white; padding:1.2rem; border-radius:12px; margin-bottom:1rem; border-left:5px solid #e11d48; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Disruptive Behavior in
+                                    Lab</h3>
+                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
+                                    <strong>Student:</strong> Rahul Verma (CSE-005)<br>
+                                    <strong>Reported By:</strong> Prof. S. Gupta (Physics)
+                                </p>
+                            </div>
+                            <span
+                                style="background:#ffe4e6; color:#be123c; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Critical</span>
+                        </div>
+                        <div
+                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end;">
+                            <button onclick="alert('Student Counseled. Report Closed.')"
+                                style="background:#e11d48; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:5px;">
+                                <i class="fa-solid fa-check"></i> Mark Resolved (Counseled)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Report Item 2 -->
+                    <div
+                        style="background:white; padding:1.2rem; border-radius:12px; border-left:5px solid #f59e0b; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Frequent Absenteeism</h3>
+                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
+                                    <strong>Student:</strong> Sudip Karmakar (CSE-001)<br>
+                                    <strong>Reported By:</strong> Attendance System (Auto)
+                                </p>
+                            </div>
+                            <span
+                                style="background:#fef3c7; color:#b45309; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Warning</span>
+                        </div>
+                        <div
+                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end;">
+                            <button onclick="alert('Parent Called. Report Closed.')"
+                                style="background:#d97706; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:5px;">
+                                <i class="fa-solid fa-phone"></i> Resolved (Parent Informed)
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- SECTION 2: GRIEVANCES BY MENTEE (Problems) -->
+            <section class="standard-container" style="margin:0;">
+                <div
+                    style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.05);">
+                    <h2 style="margin:0 0 1.5rem 0; color:#1e3a8a; font-size:1.4rem; display:flex; align-items:center;">
+                        <i class="fa-solid fa-triangle-exclamation" style="margin-right:10px;"></i> Issues Reported by
+                        Mentees
+                    </h2>
+
+                    <!-- Issue Item 1 -->
+                    <div
+                        style="background:white; padding:1.2rem; border-radius:12px; margin-bottom:1rem; border:1px solid #e2e8f0; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Hostel Water Cooler
+                                    Malfunction</h3>
+                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
+                                    <strong>From:</strong> Rahul Verma (Room 302)<br>
+                                    <span style="font-style:italic;">"The cooler on the 2nd floor gives electric
+                                        shocks."</span>
+                                </p>
+                            </div>
+                            <span
+                                style="background:#dbeafe; color:#1e40af; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Infrastructure</span>
+                        </div>
+                        <div
+                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; gap:10px;">
+                            <!-- Can't resolve tech issue personally, so Escalate is primary -->
+                            <button onclick="alert('Issue Escalated to Estate Manager!')"
+                                style="background:#ef4444; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
+                                <i class="fa-solid fa-share"></i> Escalate to Estate Office
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Issue Item 2 -->
+                    <div
+                        style="background:white; padding:1.2rem; border-radius:12px; margin-bottom:1rem; border:1px solid #e2e8f0; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Request for Leave
+                                    (Medical)</h3>
+                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
+                                    <strong>From:</strong> Anita Roy<br>
+                                    <span style="font-style:italic;">"I have missed 3 days due to fever. Medical
+                                        certificate attached."</span>
+                                </p>
+                            </div>
+                            <span
+                                style="background:#f3e8ff; color:#6b21a8; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Academic</span>
+                        </div>
+                        <div
+                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; gap:10px;">
+                            <!-- Mentor can solve this personally -->
+                            <button onclick="alert('Leave Approved. Marked Solved.')"
+                                style="background:#10b981; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
+                                <i class="fa-solid fa-check-double"></i> Approve & Solve
+                            </button>
+                            <button onclick="alert('Forwarded to HOD.')"
+                                style="background:white; color:#4b5563; border:1px solid #9ca3af; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
+                                Escalate
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
     </main>
 </body>
 
