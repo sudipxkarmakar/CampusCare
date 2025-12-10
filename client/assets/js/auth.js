@@ -35,16 +35,8 @@ if (loginForm) {
                 localStorage.setItem('user', JSON.stringify(result));
                 // alert(`Welcome ${result.name}!`);
 
-                // Redirect based on Role
-                if (result.role === 'student') {
-                    window.location.href = 'student/index.html';
-                } else if (result.role === 'teacher') {
-                    window.location.href = 'teacher/index.html';
-                } else if (result.role === 'hod') {
-                    window.location.href = 'teacher/index.html'; // Or specific HOD dashboard
-                } else {
-                    window.location.href = 'index.html';
-                }
+                // Redirect to Home Page (Always)
+                window.location.href = 'index.html';
             } else {
                 alert(result.message || 'Login Failed');
             }

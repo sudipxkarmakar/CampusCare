@@ -36,6 +36,12 @@
         .text-blue-800 {
             color: #1e40af;
         }
+
+        /* FIX: File Input Text Color on Hover */
+        input[type="file"]:hover {
+            color: #1f2937 !important;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -52,6 +58,8 @@
                         class="fa-solid fa-house"></i> Home</a></li>
             <li><a href="#" style="text-decoration: none; color: #ef4444; font-weight: 600;"><i
                         class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
+            <li><a href="#" id="logoutBtn" style="text-decoration: none; color: #ef4444; font-weight: 500;"><i
+                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
         </ul>
     </header>
 
@@ -81,6 +89,12 @@
                             <textarea id="description" rows="4"
                                 style="width:100%; padding:0.8rem; border-radius:8px; border:1px solid #ddd;"
                                 placeholder="Describe the issue... (e.g. Wires sparking)" required></textarea>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display:block; font-weight:600; margin-bottom:0.5rem;">Attachment
+                                (Optional)</label>
+                            <input type="file" id="attachment"
+                                style="width:100%; padding:0.5rem; border-radius:8px; border:1px solid #ddd; background:#f8fafc;">
                         </div>
                         <button type="submit"
                             style="width:100%; padding:1rem; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
