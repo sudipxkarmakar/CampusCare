@@ -2,12 +2,18 @@
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
 import complaintRoutes from './routes/complaintRoutes.js';
 import noticeRoutes from './routes/noticeRoutes.js';
 import hostelRoutes from './routes/hostelRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 dotenv.config();
 
@@ -24,9 +30,16 @@ app.use('/api/assignments', assignmentRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/hostel', hostelRoutes);
+app.use('/api/ai', aiRoutes);
 
-app.get('/', (req, res) => {
-  res.send('CampusCare API is running...');
+// Serve static assets from 'docs' (formerly client)
+// The docs folder is one level up from server/src (server/../docs -> ../../docs)
+const docsPath = path.join(__dirname, '../../docs');
+app.use(express.static(docsPath));
+
+// Fallback to index.html for any other route (SPA behavior)
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(docsPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;

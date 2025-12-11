@@ -10,6 +10,25 @@ export const fileComplaint = async (req, res) => {
         // AI Processing
         const analysis = analyzeComplaint(title + " " + description);
 
+        // --- MOCK MODE ---
+        if (global.MOCK_MODE) {
+            return res.status(201).json({
+                message: 'Complaint filed successfully (MOCK MODE)',
+                complaint: {
+                    _id: 'mock_id_' + Date.now(),
+                    title,
+                    description,
+                    category: analysis.category,
+                    priority: analysis.priority,
+                    status: 'Submitted',
+                    upvotes: 0,
+                    createdAt: new Date(),
+                    student: studentId || 'mock_student'
+                },
+                aiNote: `Auto-classified as ${analysis.category} with ${analysis.priority} priority.`
+            });
+        }
+
         const complaint = await Complaint.create({
             title,
             description,
@@ -74,6 +93,16 @@ export const getComplaints = async (req, res) => {
 // @route   POST /api/complaints/:id/upvote
 export const upvoteComplaint = async (req, res) => {
     try {
+        // --- MOCK MODE ---
+        if (global.MOCK_MODE) {
+            return res.json({
+                _id: req.params.id,
+                title: 'Mock Complaint',
+                upvotes: 11, // Simulated increment
+                status: 'In Progress'
+            });
+        }
+
         const complaint = await Complaint.findById(req.params.id);
         if (!complaint) return res.status(404).json({ message: 'Not found' });
 
