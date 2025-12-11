@@ -7,7 +7,8 @@ dotenv.config();
 
 const seed = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/campuscare';
+        await mongoose.connect(mongoURI);
         console.log('MongoDB Connected');
 
         // 1. Create Student

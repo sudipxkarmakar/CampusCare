@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "693ab17e5c6ed5d729c044dc",
+    "name": "Rahul Kumar",
+    "email": "rahul@campus.com",
+    "password": "password123",
+    "role": "student",
+    "rollNumber": "CSE-2025-045",
+    "batch": "2025",
+    "section": "B",
+    "department": "CSE",
+    "mentees": [],
+    "createdAt": "2025-12-11T11:56:46.872Z",
+    "updatedAt": "2025-12-11T11:56:46.872Z",
+    "__v": 0
+  },
+  {
+    "_id": "693ab17e5c6ed5d729c044e0",
+    "name": "Prof. Sharma",
+    "email": "sharma@campus.com",
+    "password": "password123",
+    "role": "teacher",
+    "employeeId": "T-101",
+    "department": "CSE",
+    "mentees": [],
+    "createdAt": "2025-12-11T11:56:46.903Z",
+    "updatedAt": "2025-12-11T11:56:46.903Z",
+    "__v": 0
+  }
+]
