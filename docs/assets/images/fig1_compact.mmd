@@ -1,0 +1,24 @@
+graph TD
+    User([👤 User]) <-->|HTTPS / Websocket| FE["🖥️ User Frontend<br/>(Student/Teacher Portal)"]
+    
+    subgraph "Server-Side Infrastructure (Backend)"
+        FE <-->|JSON REST API| API["🛡️ API Controller<br/>(Auth & Routing)"]
+        API <-->|Internal Call| AI["🧠 AI Agent / NLP Engine<br/>(Intent & Drafting)"]
+        API <-->|Read/Write| DB[("🗄️ MongoDB Database")]
+        
+        AI <-->|Logic Flow| Logic{"⚙️ Decision Logic"}
+        Logic -->|Routing| Email["📧 Notification Service"]
+        Logic -->|Drafting| Gen["📝 Content Generator"]
+    end
+
+    subgraph "Public Output"
+        DB -->|Fetch Public Data| Wall["📊 Transparency Wall<br/>(Public Dashboard)"]
+    end
+
+    classDef glass fill:#e0f2fe,stroke:#38bdf8,stroke-width:2px;
+    classDef core fill:#fef3c7,stroke:#f59e0b,stroke-width:2px;
+    classDef db fill:#dcfce7,stroke:#22c55e,stroke-width:2px;
+    
+    class FE,Wall glass;
+    class API,AI,Logic,Gen core;
+    class DB db;

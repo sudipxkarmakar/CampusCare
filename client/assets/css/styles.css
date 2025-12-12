@@ -1,0 +1,696 @@
+/* --- CSS VARIABLES --- */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    --text-dark: #1f2937;
+
+    /* Specific Module Colors */
+    --student-color: #3b82f6;
+    /* Blue */
+    --teacher-color: #10b981;
+    /* Green */
+    --hostel-color: #f59e0b;
+    /* Orange */
+    --ai-color: #ef4444;
+    /* Red */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* --- BACKGROUND: Strong Mesh Gradient --- */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    color: var(--text-dark);
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff;
+    /* Fallback */
+    cposition: relative;
+    overflow-x: hidden;
+    /* Prevents scrollbars from the blobs */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 1. Top-Left Blob (Deep Sky Blue) */
+body::before {
+    content: '';
+    position: fixed;
+    /* Fixed so it doesn't move when scrolling */
+    top: -10%;
+    left: -10%;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    /* Stronger Blue Color */
+    background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+    filter: blur(80px);
+    /* Softens the edges */
+    opacity: 0.5;
+    /* Adjust this: 0.5 is visible, 0.8 is very strong */
+    z-index: -1;
+}
+
+/* 2. Bottom-Right Blob (Vivid Purple/Lavender) */
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -10%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    /* Stronger Purple Color */
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    filter: blur(80px);
+    opacity: 0.6;
+    z-index: -1;
+}
+
+@keyframes moveBlob1 {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(50px, 50px);
+    }
+}
+
+@keyframes moveBlob2 {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(-50px, -50px);
+    }
+}
+
+/* --- GLASS UTILITY --- */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+}
+
+/* --- STANDARDIZATION UTILITIES --- */
+.standard-container {
+    padding: 0 5% 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.standard-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2rem;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontal cross-axis */
+    justify-content: center;
+    /* Center vertical main-axis */
+    text-align: center;
+    /* Center text content */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Standard Hover Effect for ALL Cards */
+.standard-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    /* Lighter, softer Gradient (Royal Blue -> Soft Violet) */
+    background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+    border-color: transparent;
+    opacity: 0.95;
+}
+
+/* Ensure text inside standard cards handles the hover correctly (white text) */
+.standard-card:hover h2,
+.standard-card:hover h3,
+.standard-card:hover .module-title,
+.standard-card:hover .faculty-name,
+.standard-card:hover .blog-title,
+.standard-card:hover p,
+.standard-card:hover div,
+.standard-card:hover i {
+    color: #ffffff !important;
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+}
+
+
+
+/* --- STATIC CARD UTILITY (Disables Hover) --- */
+.standard-card.static-card:hover {
+    transform: none !important;
+    box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05) !important;
+    background: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    cursor: default !important;
+}
+
+/* Prevent text color shift in static cards only */
+.standard-card.static-card:hover h2,
+.standard-card.static-card:hover h3,
+.standard-card.static-card:hover div,
+.standard-card.static-card:hover li,
+.standard-card.static-card:hover label {
+    color: #1f2937 !important;
+}
+
+.standard-card.static-card:hover p,
+.standard-card.static-card:hover th,
+.standard-card.static-card:hover td {
+    color: #64748b !important;
+}
+
+/* Reset Icons to default dark grey */
+.standard-card.static-card:hover i {
+    color: #4a5568 !important;
+}
+
+/* --- LIST CARD (No outer hover, Inner row hover) --- */
+.list-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    /* No Transform on the card itself */
+}
+
+/* Inner Row/Item Hover */
+.list-row-hover:hover {
+    background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+    color: white !important;
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Ensure text turns white on hover */
+.list-row-hover:hover * {
+    color: white !important;
+}
+
+/* EXCEPTION: Buttons inside hover rows should keep their own text color or be legible */
+.list-row-hover:hover button,
+.list-row-hover:hover .btn-primary {
+    color: white !important;
+    /* White is fine if background is dark, but if btn is light, might need check */
+    /* Let's keep it white for now as buttons usually have background */
+}
+
+.list-row-hover:hover button.btn-secondary,
+.list-row-hover:hover a.download-btn {
+    /* If button has white background, text must be dark */
+    color: #1f2937 !important;
+}
+
+/* PRIORITY COLORS (Deadlines) */
+.priority-red {
+    border-left: 4px solid #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.priority-yellow {
+    border-left: 4px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.priority-green {
+    border-left: 4px solid #10b981;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+/* Exception for badges/buttons inside cards that might need their own colors */
+.standard-card:hover .btn,
+.standard-card:hover button {
+    color: inherit;
+    /* or keep their own style */
+}
+
+/* --- HEADER --- */
+header {
+    position: sticky;
+    top: 20px;
+    z-index: 1000;
+    margin: 0 5%;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--student-color);
+}
+
+.btn-login {
+    padding: 0.5rem 1.5rem;
+    background: #2d3748;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: #4a5568;
+    transform: translateY(-2px);
+}
+
+/* --- HERO SECTION (Standard Layout) --- */
+.hero {
+    text-align: center;
+    /* Normal padding */
+    padding: 4rem 5% 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+    line-height: 1.2;
+    /* Optional: Slight text shadow to pop against the background blobs */
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 3rem;
+}
+
+/* --- HERO IMAGE BANNER (Foreground 3D Element) --- */
+.hero-banner {
+    position: relative;
+    /* Places it normally in the flow (Foreground) */
+    width: 100%;
+    max-width: 900px;
+    /* Limits width so it doesn't stretch too wide */
+    height: auto;
+    /* Lets the image determine the height */
+    margin: 0 auto;
+    /* Centers the block */
+    z-index: 2;
+
+    /* Optional: Add a glass platform beneath the illustration */
+    /* If you want it floating freely, remove the 'background' and 'border' lines below */
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.hero-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    /* Shows the full image */
+
+    /* Make sure opacity is 1 (fully visible) */
+    opacity: 1;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+    /* Adds 3D shadow to the building */
+
+    /* Hover Animation */
+    transition: transform 0.5s ease;
+}
+
+.hero-banner:hover img {
+    transform: translateY(-5px) scale(1.02);
+}
+
+/* --- COMMON TITLES --- */
+/* Reduced top margin (was 4rem) */
+.section-title {
+    font-size: 2rem;
+    text-align: center;
+    margin: 1rem 0 2rem;
+    color: #2d3748;
+}
+
+/* --- 1. MODULES SECTION (Revised: Gradient ONLY on Hover) --- */
+.modules-section {
+    padding: 0 5% 2rem;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+}
+
+.module-card {
+    height: 260px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+
+    /* DEFAULT STATE: Clean Glassy Look (Not Gradient yet) */
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Default Icon: Dark Grey (so it's visible on white) */
+.module-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: #4a5568;
+    /* Dark Grey */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Default Title: Dark Grey */
+.module-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+    /* Dark Grey */
+    transition: all 0.4s ease;
+    z-index: 2;
+}
+
+/* Description Text (Hidden initially) */
+.module-desc {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 0.95rem;
+    color: #ffffff;
+    /* White text for the hover state */
+    opacity: 0;
+    transition: all 0.4s ease;
+    z-index: 3;
+}
+
+/* --- HOVER EFFECTS --- */
+
+/* 1. ON HOVER: Apply the Lighter Deep Gradient */
+.module-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    /* Lighter, softer Gradient (Royal Blue -> Soft Violet) */
+    background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    opacity: 0.8;
+    border-color: transparent;
+}
+
+/* 2. ON HOVER: Turn Icon/Title WHITE, Move UP, and SHRINK */
+.module-card:hover .module-icon {
+    color: #ffffff;
+    /* Turn white */
+    transform: translateY(-50px) scale(0.7);
+    /* Move up & shrink */
+}
+
+.module-card:hover .module-title {
+    color: #ffffff;
+    /* Turn white */
+    transform: translateY(-50px) scale(0.9);
+    /* Move up & shrink */
+}
+
+/* 3. ON HOVER: Slide the Description Up */
+.module-card:hover .module-desc {
+    bottom: 0;
+    opacity: 1;
+}
+
+/* --- 2. NOTICE SECTION --- */
+.notice-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.notice-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    align-items: center;
+    transition: 0.2s;
+}
+
+.notice-item:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.notice-date {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.8rem;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 80px;
+    font-weight: bold;
+    color: #4a5568;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.notice-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.notice-content span {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* --- 3. PUBLIC COMPLAINT WALL (Previously Blog) --- */
+.blog-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 0 5%;
+}
+
+.blog-card {
+    padding: 2rem;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.blog-card:hover {
+    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.status-resolved {
+    background-color: #10b981;
+}
+
+/* Green */
+.status-progress {
+    background-color: #f59e0b;
+}
+
+/* Orange */
+
+.blog-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.blog-meta {
+    font-size: 0.8rem;
+    color: #718096;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.blog-excerpt {
+    font-size: 0.95rem;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.blog-footer {
+    margin-top: auto;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 600;
+}
+
+/* --- 4. FACULTY SECTION --- */
+.faculty-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    padding: 0 5%;
+    margin-bottom: 4rem;
+}
+
+.faculty-card {
+    width: 280px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.faculty-card:hover {
+    transform: translateY(-5px);
+}
+
+.faculty-img {
+    width: 100px;
+    height: 100px;
+    background: #cbd5e0;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    object-fit: cover;
+}
+
+.faculty-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.faculty-role {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.faculty-bio {
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+/* --- FOOTER --- */
+footer {
+    margin-top: auto;
+    padding: 2rem;
+    text-align: center;
+    color: #718096;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width:980px) {
+    .hero {
+        grid-template-columns: 1fr;
+        gap: 20px
+    }
+
+    .hero-right {
+        order: 2
+    }
+
+    .hero-left {
+        order: 1
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+}
+
+@media (max-width:520px) {
+    .hero-title {
+        font-size: 24px
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px
+    }
+
+    .module-card img {
+        width: 40px;
+        height: 40px
+    }
+}
