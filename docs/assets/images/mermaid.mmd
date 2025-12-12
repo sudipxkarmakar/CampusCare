@@ -1,0 +1,37 @@
+sequenceDiagram
+    actor User as 👤 User
+    participant FE as 🖥️ Frontend
+    participant API as 🛡️ Backend API
+    participant AI as 🧠 AI Service
+    participant Logic as ⚙️ Analysis Engine
+    participant DB as 🗄️ Database
+
+    User->>FE: Inputs "Water leaking in Room 302"
+    FE->>API: POST /api/ai/chat
+    API->>AI: processInput()
+    
+    rect rgb(240, 248, 255)
+        note right of AI: Classification Phase
+        AI->>Logic: classifyIntent()
+        Logic-->>AI: Intent: "COMPLAINT"
+    end
+
+    rect rgb(255, 250, 240)
+        note right of AI: Analysis Phase
+        AI->>Logic: analyzeComplaint()
+        Logic->>Logic: Keyword Match "leaking" -> Cat: INFRASTRUCTURE
+        Logic->>Logic: Entity Extract "Room 302" -> Location
+        Logic-->>AI: {Category: Infra, Priority: Low, Loc: Room 302}
+    end
+
+    rect rgb(240, 255, 240)
+        note right of AI: Action Generation
+        AI->>Logic: generateResponse()
+        Logic->>Logic: Route -> Maintenance Warden
+        Logic->>Logic: Draft Formal Letter
+    end
+
+    AI-->>API: Return JSON Response
+    API-->>FE: Display Draft & "File Complaint" Button
+    FE->>User: Confirmation Request
+

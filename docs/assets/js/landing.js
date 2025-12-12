@@ -58,11 +58,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Animate Blobs or Interactivity if needed
 
     // --- AUTH STATE CHECK ---
-    checkAuthState();
+    if (window.checkAuthState) window.checkAuthState();
 });
 
 // --- AUTH FUNCTIONS ---
-function checkAuthState() {
+// --- AUTH FUNCTIONS ---
+window.checkAuthState = function () {
     const userStr = localStorage.getItem('user');
     const loginBtn = document.getElementById('loginBtn');
     const userProfile = document.getElementById('userProfile');
@@ -77,13 +78,13 @@ function checkAuthState() {
         if (loginBtn) loginBtn.style.display = 'none';
         if (userProfile) userProfile.style.display = 'flex';
 
-        if (userName) userName.textContent = `Hello, ${user.name.split(' ')[0]}`; // First Name
-        if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`;
+        if (userName) userName.textContent = `Hello, ${user.name ? user.name.split(' ')[0] : 'User'}`;
+        if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random`;
 
         if (userDetails) {
             userDetails.innerHTML = `
-                <strong>${user.name}</strong><br>
-                <span style="text-transform: capitalize;">${user.role}</span><br>
+                <strong>${user.name || 'User'}</strong><br>
+                <span style="text-transform: capitalize;">${user.role || 'Member'}</span><br>
                 <span style="font-size:0.8rem;">${user.identifier || 'ID: --'}</span>
             `;
         }
@@ -93,7 +94,7 @@ function checkAuthState() {
         if (loginBtn) loginBtn.style.display = 'block';
         if (userProfile) userProfile.style.display = 'none';
     }
-}
+};
 
 function toggleProfileMenu() {
     const menu = document.getElementById('profileMenu');

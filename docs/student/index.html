@@ -139,29 +139,44 @@
     style="position: fixed; bottom: -5%; right: -5%; width: 50vw; max-width: 600px; opacity: 0.15; z-index: -2; pointer-events: none;">
 
   <!-- HEADER (Styled like Landing Page) -->
+  <!-- HEADER (Dynamic) -->
   <header class="glass"
-    style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
-    <a href="../index.html" class="logo"
-      style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
+    style="position: sticky; top: 0; z-index: 1000; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center;">
+    <a href="../index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
       <i class="fa-solid fa-graduation-cap"></i> CampusCare
     </a>
-    <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
-      <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-house"></i> Home</a></li>
-      <li><a href="assignments.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-book"></i> Assignments</a></li>
-      <li><a href="notices.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-bullhorn"></i> Notices</a></li>
-      <li><a href="../hostel/index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-building-user"></i> Hostel</a></li>
-      <li><a href="../complaints/index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
-      <li><a href="profile.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-user"></i> Profile</a></li>
-      <li><a href="#" onclick="localStorage.clear(); window.location.href='../index.html'"
-          style="text-decoration: none; color: #dc2626; font-weight: 600;"><i
-            class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    <ul class="nav-links" style="margin-right: auto; margin-left: 2rem;">
+      <!-- Module Specific Links -->
+      <li><a href="../index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="assignments.html"><i class="fa-solid fa-book"></i> Assignments</a></li>
+      <li><a href="notices.html"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
     </ul>
+
+    <!-- LOGIN BUTTON (Visible by default) -->
+    <a href="../login.html" id="loginBtn" class="btn-login" style="text-decoration:none;">Login / Sign Up</a>
+
+    <!-- USER PROFILE (Hidden by default, toggled by JS) -->
+    <div id="userProfile" style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+      <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
+      <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
+        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;" onclick="toggleProfileMenu()">
+
+      <!-- DROPDOWN MENU -->
+      <div id="profileMenu" class="glass"
+        style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000; text-align: left;">
+        <p
+          style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
+          Account Details
+        </p>
+        <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
+          <!-- Injected by JS -->
+        </p>
+        <button onclick="logout()"
+          style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </div>
   </header>
 
   <main class="main-container">
@@ -257,6 +272,7 @@
     </div>
   </footer>
 
+  <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/student.js"></script>
 </body>
 

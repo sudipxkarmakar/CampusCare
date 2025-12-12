@@ -10,18 +10,43 @@ if (loginForm) {
         const password = document.getElementById('password').value;
 
         if (isRegistering) {
-            // Registration Logic
-            // For MVP, we assume Role is 'student' if using Roll Format, else need a selector?
-            // Let's keep it simple: Login checks if User exists. 
-            // If Registering, we need Name and Role. 
-            // For now, let's just handle Login as the primary flow and maybe Register is creating a student?
+            const name = document.getElementById('name').value;
+            const role = document.getElementById('role').value;
 
-            // To properly register, we need Name. Let's redirect or prompt?
-            // For this demo, let's assume auto-registration on Login using the "Single Key" if user not found?
-            // No, the Plan says "Auth: Simple login".
+            // Basic Validation
+            const studentRegex = /^\d{11}$/;
+            const teacherRegex = /^T\d{11}$/;
 
-            // Let's implement a simple Register Alert
-            alert("Registration is restricted to Admin import for now. Please Login with 'CSE-2025-001' and 'password'.");
+            if (role === 'student' && !studentRegex.test(identifier)) {
+                alert('Student Roll Number must be exactly 11 digits (e.g. 10900120001)');
+                return;
+            }
+            if (role === 'teacher' && !teacherRegex.test(identifier)) {
+                alert('Teacher ID must be "T" followed by 11 digits (e.g. T10900120001)');
+                return;
+            }
+
+            const regData = {
+                name,
+                email: identifier.includes('@') ? identifier : `${identifier.toLowerCase()}@campus.com`, // Auto-email if not provided
+                password,
+                role,
+                // Assign identifier based on role
+                ...(role === 'student' || role === 'hosteler' ? { rollNumber: identifier } : { employeeId: identifier })
+            };
+
+            try {
+                const result = await api.post('/auth/register', regData);
+                if (result.token) {
+                    localStorage.setItem('user', JSON.stringify(result));
+                    window.location.href = 'index.html';
+                } else {
+                    alert(result.message || 'Registration Failed');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Registration Error: ' + error.message);
+            }
             return;
         }
 
@@ -64,7 +89,20 @@ function apiRegisterLogic() {
         const nameField = document.createElement('div');
         nameField.className = 'form-group';
         nameField.id = 'name-group';
-        nameField.innerHTML = `<label>Full Name</label><input type="text" id="name" class="form-control" placeholder="John Doe">`;
+        nameField.innerHTML = `
+            <div style="margin-bottom:10px;">
+                <label>Full Name</label>
+                <input type="text" id="name" class="form-control" placeholder="John Doe">
+            </div>
+            <div>
+                <label>I am a...</label>
+                <select id="role" class="form-control" style="background:white;">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="hosteler">Hosteler</option>
+                </select>
+            </div>
+        `;
         loginForm.insertBefore(nameField, loginForm.querySelector('.form-group')); // Insert at top?
     } else {
         title.innerText = "Welcome Back";
