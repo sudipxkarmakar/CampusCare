@@ -16,6 +16,7 @@ if (loginForm) {
             // Basic Validation
             const studentRegex = /^\d{11}$/;
             const teacherRegex = /^T\d{11}$/;
+            const hostelerRegex = /^H\d{11}$/;
 
             if (role === 'student' && !studentRegex.test(identifier)) {
                 alert('Student Roll Number must be exactly 11 digits (e.g. 10900120001)');
@@ -23,6 +24,10 @@ if (loginForm) {
             }
             if (role === 'teacher' && !teacherRegex.test(identifier)) {
                 alert('Teacher ID must be "T" followed by 11 digits (e.g. T10900120001)');
+                return;
+            }
+            if (role === 'hosteler' && !hostelerRegex.test(identifier)) {
+                alert('Hosteler ID must be "H" followed by 11 digits (e.g. H10900120001)');
                 return;
             }
 

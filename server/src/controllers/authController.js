@@ -41,6 +41,16 @@ export const registerUser = async (req, res) => {
                 batch: parsedData.batch,
                 section: parsedData.section,
             };
+        } else if (role === 'hosteler' && rollNumber) {
+            // Hosteler ID (H + 11 digits) is stored as rollNumber
+            userData = {
+                ...userData,
+                rollNumber,
+                // Optional: You could infer dept/batch from the 11 digits if they follow the same pattern, 
+                // but for now we just save it.
+                department: 'Hostel',
+                section: 'H'
+            };
         } else if (role !== 'student' && employeeId) {
             userData.employeeId = employeeId;
             // Department for teachers might be manual or parsed from ID if standard exists
@@ -62,6 +72,9 @@ export const registerUser = async (req, res) => {
             res.status(400).json({ message: 'Invalid user data' });
         }
     } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'User with this Email or ID already exists' });
+        }
         res.status(500).json({ message: error.message });
     }
 };

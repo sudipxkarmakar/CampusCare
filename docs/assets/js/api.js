@@ -36,10 +36,7 @@ const api = {
                 }
                 // Default Student
                 return {
-                    token: 'mock-token-123',
-                    role: 'student',
-                    name: 'Sudip Karmakar',
-                    identifier: 'CSE-2025-001'
+                    message: 'Network Error (Server Unreachable). Please check if server is running.'
                 };
             }
             return { message: 'Network Error (Server Unreachable)' };
