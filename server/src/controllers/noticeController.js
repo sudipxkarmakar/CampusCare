@@ -1,31 +1,30 @@
-import Notice from '../models/Notice.js';
+// @desc    Get Notices based on Role
+// @route   GET /api/notices
+export const getNotices = async (req, res) => {
+    let role = req.query.role || 'public';
+    role = role.toLowerCase(); // Normalize to lowercase
 
-// @desc    Get Public Notices
-// @route   GET /api/notices/public
-export const getPublicNotices = async (req, res) => {
+    // Mock Mode Logic (Simplified)
     if (global.MOCK_MODE) {
-        return res.json([
-            {
-                _id: 'n1',
-                title: 'Mock: Exam Schedule Released',
-                content: 'The end semester exams will start from 25th Dec.',
-                date: new Date(),
-                audience: 'public'
-            },
-            {
-                _id: 'n2',
-                title: 'Mock: Holiday Announcement',
-                content: 'Campus closed on Friday due to heavy rains.',
-                date: new Date(Date.now() - 172800000),
-                audience: 'public'
-            }
-        ]);
+        return res.json([]);
     }
 
     try {
-        const notices = await Notice.find({ audience: 'public' })
+        // Default: General + Public (Legacy)
+        let filter = { audience: { $in: ['general', 'public'] } };
+
+        if (role === 'teacher') {
+            filter = { audience: { $in: ['general', 'public', 'teacher'] } };
+        } else if (role === 'student') {
+            filter = { audience: { $in: ['general', 'public', 'student'] } };
+        } else if (role === 'hosteler') {
+            filter = { audience: { $in: ['general', 'public', 'student', 'hosteler'] } };
+        }
+
+        const notices = await Notice.find(filter)
             .sort({ date: -1 })
-            .limit(5);
+            .limit(20);
+
         res.json(notices);
     } catch (error) {
         res.status(500).json({ message: error.message });

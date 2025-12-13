@@ -34,17 +34,18 @@
     </div>
 
     <!-- NOTICES LIST (Container) -->
-    <div class="list-card" style="padding: 1.5rem; overflow: hidden;">
-      <div id="notices-container" style="width: 100%; display: flex; flex-direction: column; gap: 1rem;">
-        <div style="text-align: center; color: #64748b; padding: 2rem;">
-          <i class="fa-solid fa-spinner fa-spin"></i> Loading notices...
-        </div>
+    <section class="standard-container" style="padding:0; background:transparent; box-shadow:none;">
+      <div id="noticeList" class="notice-wrapper"
+        style="background: rgba(255, 255, 255, 0.65); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);">
+
+        <!-- Notices will be loaded here dynamically -->
+        <div style="text-align: center; color: #64748b; padding: 2rem;">Loading notices...</div>
       </div>
-    </div>
+    </section>
   </main>
 
-  <script src="../assets/js/api.js"></script>
-  <script src="../assets/js/student_notices.js"></script>
+  <!-- <script src="../assets/js/api.js"></script> -->
+  <script src="../assets/js/notices.js"></script>
 
   <footer class="site-footer">
     <p>© 2025 CampusCare</p>
