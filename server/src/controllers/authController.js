@@ -1,5 +1,4 @@
 import User from '../models/User.js';
-import { parseRollNumber } from '../utils/rollParser.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
@@ -8,69 +7,98 @@ const generateToken = (id) => {
     });
 };
 
-// @desc    Register a new user (Student or Staff)
+// --- VALIDATION HELPERS ---
+// const isValidEmail = (email) => {
+//     const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com'];
+//     const domain = email.split('@')[1];
+//     return allowedDomains.includes(domain);
+// };
+
+const validateRoleData = (role, data) => {
+    const { rollNumber, employeeId, batch, section, department } = data;
+
+    if (role === 'student') {
+        if (!/^\d{11}$/.test(rollNumber)) return 'Student Roll Number must be exactly 11 digits.';
+        if (!batch) return 'Batch is required for Students.';
+        if (!section) return 'Section is required for Students.';
+        if (!department) return 'Department is required for Students.';
+        return null;
+    }
+
+    if (role === 'teacher') {
+        if (!/^T\d{11}$/.test(employeeId)) return 'Employee ID must start with T followed by 11 digits.';
+        if (!department) return 'Department is required for Teachers.';
+        return null; // Batch/Section not required
+    }
+
+    if (role === 'hosteler') {
+        if (!/^H\d{11}$/.test(rollNumber)) return 'Hostel Roll Number must start with H followed by 11 digits.';
+        if (!batch) return 'Batch is required for Hostelers.';
+        if (!department) return 'Department is required for Hostelers.';
+        return null;
+    }
+
+    return 'Invalid Role';
+};
+
+// @desc    Register a new user (Strict)
 // @route   POST /api/auth/register
 // @access  Public
 export const registerUser = async (req, res) => {
-    const { name, email, password, rollNumber, employeeId, role } = req.body;
-
-    // --- MOCK MODE FALLBACK FOR REGISTRATION ---
-    if (global.MOCK_MODE) {
-        console.log('Attempting Mock Registration for:', email);
-        return res.status(201).json({
-            _id: 'mock_user_id_' + Math.floor(Math.random() * 1000),
-            name,
-            email,
-            role,
-            department: 'CSE', // Mock default
-            token: generateToken('mock_user_id_' + Math.floor(Math.random() * 1000)),
-        });
-    }
-    // -------------------------------------------
-
     try {
-        const userExists = await User.findOne({ email });
+        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup } = req.body;
 
-        if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
+        // 1. Email Domain Check - REMOVED
+        // if (!isValidEmail(email)) {
+        //     return res.status(400).json({ message: 'Email must be @gmail.com, @yahoo.com, or @outlook.com' });
+        // }
+
+        // 2. Role specific validation
+        const validationError = validateRoleData(role, req.body);
+        if (validationError) {
+            return res.status(400).json({ message: validationError });
         }
 
+        // 3. Check for duplicates (Specific Checks)
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
+            return res.status(400).json({ message: 'User with this Email already exists.' });
+        }
+
+        let idQuery;
+        if (role === 'teacher') {
+            idQuery = { employeeId };
+        } else {
+            // Students & Hostelers: Roll Number is unique ONLY within the department
+            idQuery = { rollNumber, department };
+        }
+
+        const idExists = await User.findOne(idQuery);
+
+        if (idExists) {
+            const idType = role === 'teacher' ? 'Employee ID' : 'Roll Number in this Department';
+            return res.status(400).json({ message: `${idType} already exists.` });
+        }
+
+        // 4. Prepare Data
         let userData = {
             name,
             email,
-            password, // In a real app, hash this!
+            password, // Store as is (In production, hash this!)
             role,
+            department,
+            bloodGroup
         };
 
-        // Automatic Parsing for Students
-        if (role === 'student' && rollNumber) {
-            const parsedData = parseRollNumber(rollNumber);
-            if (!parsedData) {
-                return res.status(400).json({ message: 'Invalid Roll Number Format' });
-            }
-            userData = {
-                ...userData,
-                rollNumber,
-                department: parsedData.dept,
-                batch: parsedData.batch,
-                section: parsedData.section,
-            };
-        } else if (role === 'hosteler' && rollNumber) {
-            // Hosteler ID (H + 11 digits) is stored as rollNumber
-            userData = {
-                ...userData,
-                rollNumber,
-                // Optional: You could infer dept/batch from the 11 digits if they follow the same pattern, 
-                // but for now we just save it.
-                department: 'Hostel',
-                section: 'H'
-            };
-        } else if (role !== 'student' && employeeId) {
+        if (role === 'student' || role === 'hosteler') {
+            userData.rollNumber = rollNumber;
+            userData.batch = batch;
+            if (role === 'student') userData.section = section;
+        } else if (role === 'teacher') {
             userData.employeeId = employeeId;
-            // Department for teachers might be manual or parsed from ID if standard exists
-            if (req.body.department) userData.department = req.body.department;
         }
 
+        // 5. Create User
         const user = await User.create(userData);
 
         if (user) {
@@ -79,71 +107,69 @@ export const registerUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                department: user.department,
                 token: generateToken(user._id),
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
+
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ message: 'User with this Email or ID already exists' });
-        }
-        res.status(500).json({ message: error.message });
+        console.error('Register Error:', error);
+        res.status(500).json({ message: 'Server Error during registration' });
     }
 };
 
-// @desc    Auth user & get token
+// @desc    Auth user & get token (Strict Role Based)
 // @route   POST /api/auth/login
 // @access  Public
 export const loginUser = async (req, res) => {
-    const { identifier, password } = req.body;
-
-    // --- MOCK MODE FALLBACK ---
-    if (global.MOCK_MODE) {
-        console.log('Attempting Mock Login for:', identifier);
-
-        // Mock Student
-        if (identifier === 'CSE-2025-045' && password === 'password123') {
-            return res.json({
-                _id: 'mock_student_id_123',
-                name: 'Rahul Kumar (Mock)',
-                email: 'rahul@campus.com',
-                role: 'student',
-                department: 'CSE',
-                batch: '2025',
-                section: 'A',
-                token: 'mock_token_123',
-            });
-        }
-
-        // Mock Teacher
-        if (identifier === 'T-101' && password === 'password123') {
-            return res.json({
-                _id: 'mock_teacher_id_456',
-                name: 'Prof. Sharma (Mock)',
-                email: 'sharma@campus.com',
-                role: 'teacher',
-                department: 'CSE',
-                token: 'mock_token_456',
-            });
-        }
-
-        return res.status(401).json({ message: 'Invalid credentials (Mock Mode)' });
-    }
-    // ---------------------------
-
     try {
-        // Try finding by Email, Roll Number, or Employee ID
-        const user = await User.findOne({
-            $or: [
-                { email: identifier },
-                { rollNumber: identifier },
-                { employeeId: identifier }
-            ]
-        });
+        const { identifier, password, role } = req.body;
 
-        if (user && (user.password === password)) { // Simple check for demo
+        if (!identifier || !password || !role) {
+            return res.status(400).json({ message: 'Please provide ID, Password, and Role.' });
+        }
+
+        // 1. Construct Strict Query
+        let query = { role: role };
+
+        if (role === 'student' || role === 'hosteler') {
+            query.rollNumber = identifier;
+            // If they provided a department (from frontend), verify it too.
+            // However, current login.html hides Dept. We need to check if we can rely on Email OR strict combination.
+            if (req.body.department) {
+                query.department = req.body.department;
+            }
+        } else if (role === 'teacher') {
+            query.employeeId = identifier;
+        } else {
+            return res.status(400).json({ message: 'Invalid Role' });
+        }
+
+        // 2. Find User
+        // Issue: If Dept is NOT provided during login, and multiple users exist with same RollNo...
+        // We find the first one. This is unavoidable without UI change.
+        // Enhanced Logic: Try to find *all* matches.
+        const users = await User.find(query);
+
+        if (users.length === 0) {
+            return res.status(401).json({ message: 'Invalid credentials or Role mismatch' });
+        }
+
+        let user;
+        if (users.length === 1) {
+            user = users[0];
+        } else {
+            // Multiple users found! ambiguous.
+            // If department is part of request, this shouldn't happen unless duplicate in same dept (which is blocked by register).
+            // If dept NOT provided, ask for it.
+            return res.status(400).json({
+                message: 'Multiple users found with this ID. Please login with Email or provide Department.',
+                requiresDepartment: true
+            });
+        }
+
+        if (user && (user.password === password)) { // Compare plain text for now
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -155,9 +181,11 @@ export const loginUser = async (req, res) => {
                 token: generateToken(user._id),
             });
         } else {
-            res.status(401).json({ message: 'Invalid email/ID or password' });
+            res.status(401).json({ message: 'Invalid credentials or Role mismatch' });
         }
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Login Error:', error);
+        res.status(500).json({ message: 'Server Error during login' });
     }
 };

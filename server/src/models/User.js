@@ -22,29 +22,32 @@ const userSchema = new mongoose.Schema({
     // Student Specific
     rollNumber: {
         type: String,
-        unique: true,
-        sparse: true, // Unique if exists
+        sparse: true,
     },
     batch: String,
     section: String,
-    mentor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
+    bloodGroup: String, // New Field
+
     // Staff Specific
     employeeId: {
         type: String,
-        unique: true,
         sparse: true,
     },
+
+    // Common for Student/Teacher/Hosteler
     department: {
-        type: String, // e.g., 'CSE', 'MEFA'
+        type: String, // e.g. 'CSE'
+    },
+
+    // Relationships (Optional based on requirements)
+    mentor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     mentees: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
-    // Helper/Staff could also be handled here
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

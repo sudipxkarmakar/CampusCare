@@ -1,42 +1,110 @@
 const loginForm = document.getElementById('loginForm');
 const toggleRegister = document.getElementById('toggleRegister');
+const roleSelect = document.getElementById('role');
+const idLabel = document.getElementById('idLabel');
+const identifierInput = document.getElementById('identifier');
+const idHelp = document.getElementById('idHelp');
+const nameGroup = document.getElementById('nameGroup');
+const registerExtras = document.getElementById('registerExtras'); // New container
+
+// Helper references for extras
+const deptGroup = document.getElementById('deptGroup');
+const batchGroup = document.getElementById('batchGroup');
+const sectionGroup = document.getElementById('sectionGroup');
+
 let isRegistering = false;
 
+// UI Configuration Map
+const roleConfig = {
+    student: {
+        label: 'Roll Number',
+        placeholder: 'Enter 11-digit Roll Number',
+        regex: /^\d{11}$/,
+        error: 'Roll Number must be exactly 11 digits (Numbers only).',
+        extras: ['dept', 'batch', 'section']
+    },
+    teacher: {
+        label: 'Employee ID',
+        placeholder: 'Enter Employee ID (TXXXXXXXXXXX)',
+        regex: /^T\d{11}$/,
+        error: 'Employee ID must start with "T" followed by 11 digits.',
+        extras: ['dept']
+    },
+    hosteler: {
+        label: 'Hostel Roll Number',
+        placeholder: 'Enter Hostel Roll Number (HXXXXXXXXXXX)',
+        regex: /^H\d{11}$/,
+        error: 'Hostel Roll Number must start with "H" followed by 11 digits.',
+        extras: ['dept', 'batch']
+    }
+};
+
 if (loginForm) {
+    // 1. Initialize UI
+    updateFormFields(roleSelect.value);
+
+    // 2. Handle Role Change
+    roleSelect.addEventListener('change', (e) => {
+        updateFormFields(e.target.value);
+        validateIdentifier();
+    });
+
+    // 3. Real-time Validation
+    identifierInput.addEventListener('input', validateIdentifier);
+
+    // 4. Handle Mode Toggle
+    toggleRegister.addEventListener('click', () => {
+        isRegistering = !isRegistering;
+        updateModeUI();
+        updateFormFields(roleSelect.value); // Re-run to show/hide extras
+    });
+
+    // 5. Form Submission
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const identifier = document.getElementById('identifier').value;
+        // Basic ID Validation
+        if (!validateIdentifier()) return;
+
+        const role = roleSelect.value;
+        const identifier = identifierInput.value;
         const password = document.getElementById('password').value;
 
         if (isRegistering) {
+            // Registration Logic
             const name = document.getElementById('name').value;
-            const role = document.getElementById('role').value;
+            const email = document.getElementById('email').value;
+            const department = document.getElementById('department').value;
+            const batch = document.getElementById('batch').value;
+            const section = document.getElementById('section').value;
+            const bloodGroup = document.getElementById('bloodGroup').value;
 
-            // Basic Validation
-            const studentRegex = /^\d{11}$/;
-            const teacherRegex = /^T\d{11}$/;
-            const hostelerRegex = /^H\d{11}$/;
-
-            if (role === 'student' && !studentRegex.test(identifier)) {
-                alert('Student Roll Number must be exactly 11 digits (e.g. 10900120001)');
+            // Strict Validation
+            // 1. Email Domain - REMOVED RESTRICTION
+            if (!email) {
+                alert('Email is required.');
                 return;
             }
-            if (role === 'teacher' && !teacherRegex.test(identifier)) {
-                alert('Teacher ID must be "T" followed by 11 digits (e.g. T10900120001)');
-                return;
-            }
-            if (role === 'hosteler' && !hostelerRegex.test(identifier)) {
-                alert('Hosteler ID must be "H" followed by 11 digits (e.g. H10900120001)');
-                return;
+
+            // 2. Required Extra Fields
+            if (role === 'student') {
+                if (!department || !batch || !section) return alert('All fields (Dept, Batch, Section) are required for Students.');
+                // Blood Group optional? User didn't say strict required, but good practice. Let's make it optional for now or lightly validate.
+            } else if (role === 'teacher') {
+                if (!department) return alert('Department is required for Teachers.');
+            } else if (role === 'hosteler') {
+                if (!department || !batch) return alert('Dept and Batch are required for Hostelers.');
             }
 
             const regData = {
                 name,
-                email: identifier.includes('@') ? identifier : `${identifier.toLowerCase()}@campus.com`, // Auto-email if not provided
+                email,
                 password,
                 role,
-                // Assign identifier based on role
+                department,
+                batch: role !== 'teacher' ? batch : undefined,
+                section: role === 'student' ? section : undefined,
+                bloodGroup: bloodGroup, // Send for ALL roles now
                 ...(role === 'student' || role === 'hosteler' ? { rollNumber: identifier } : { employeeId: identifier })
             };
 
@@ -52,68 +120,116 @@ if (loginForm) {
                 console.error(error);
                 alert('Registration Error: ' + error.message);
             }
-            return;
-        }
+        } else {
+            // Login Logic
+            const department = document.getElementById('department').value;
+            const data = { identifier, password, role };
 
-        const data = { identifier, password };
-
-        try {
-            const result = await api.post('/auth/login', data);
-
-            if (result.token) {
-                // Success
-                localStorage.setItem('user', JSON.stringify(result));
-                // alert(`Welcome ${result.name}!`);
-
-                // Redirect to Home Page (Always)
-                window.location.href = 'index.html';
-            } else {
-                alert(result.message || 'Login Failed');
+            // Send Department if selected (helps resolve ambiguity)
+            if (department && (role === 'student' || role === 'hosteler')) {
+                data.department = department;
             }
-        } catch (error) {
-            console.error(error);
-            alert('An error occurred');
-        }
-    });
 
-    toggleRegister.addEventListener('click', () => {
-        isRegistering = !isRegistering;
-        apiRegisterLogic(); // Toggle UI
+            try {
+                const result = await api.post('/auth/login', data);
+                if (result.token) {
+                    localStorage.setItem('user', JSON.stringify(result));
+                    window.location.href = 'index.html';
+                } else {
+                    if (result.requiresDepartment) {
+                        alert(result.message);
+                        // Force show department if it wasn't visible
+                        deptGroup.style.display = 'block';
+                    } else {
+                        alert(result.message || 'Login Failed');
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred');
+            }
+        }
     });
 }
 
-function apiRegisterLogic() {
+// Update Form Fields Logic
+function updateFormFields(role) {
+    const config = roleConfig[role];
+    if (config) {
+        idLabel.innerText = config.label;
+        identifierInput.placeholder = config.placeholder;
+        idHelp.style.display = 'none';
+
+        // Visibility Logic
+        if (isRegistering) {
+            // Register Mode: Strict rules
+            deptGroup.style.display = config.extras.includes('dept') ? 'block' : 'none';
+            batchGroup.style.display = config.extras.includes('batch') ? 'block' : 'none';
+            sectionGroup.style.display = config.extras.includes('section') ? 'block' : 'none';
+
+            const bgWrapper = document.getElementById('bloodGroupWrapper');
+            if (bgWrapper) {
+                // Now available for Student, Hosteler, AND Teacher
+                bgWrapper.style.display = 'block';
+            }
+        } else {
+            // Login Mode: Allow Department for ambiguity resolution
+            // Ideally, we only show it if the user gets the error, OR we always show it for Students?
+            // Let's keep it clean: Hide by default. Show if user toggles? 
+            // Better: Always show Department for Student/Hosteler Login?
+            // The user request implies duplicate IDs exist, so Dept is crucial for ID.
+            if (role === 'student' || role === 'hosteler') {
+                deptGroup.style.display = 'block'; // Show Dept for Login too!
+            } else {
+                deptGroup.style.display = 'none';
+            }
+            batchGroup.style.display = 'none';
+            sectionGroup.style.display = 'none';
+        }
+    }
+}
+
+function validateIdentifier() {
+    const role = roleSelect.value;
+    const value = identifierInput.value;
+    const config = roleConfig[role];
+
+    if (!value) {
+        idHelp.style.display = 'none';
+        return false;
+    }
+
+    if (!config.regex.test(value)) {
+        idHelp.innerText = config.error;
+        idHelp.style.display = 'block';
+        return false;
+    } else {
+        idHelp.style.display = 'none';
+        return true;
+    }
+}
+
+function updateModeUI() {
     const title = document.querySelector('.login-header h2');
     const submitBtn = document.querySelector('.btn-submit');
 
     if (isRegistering) {
         title.innerText = "Create Account";
         submitBtn.innerText = "Register";
-        document.getElementById('toggleRegister').innerText = "Already have an account? Login";
-        // Ideally add Name field here dynamically
-        const nameField = document.createElement('div');
-        nameField.className = 'form-group';
-        nameField.id = 'name-group';
-        nameField.innerHTML = `
-            <div style="margin-bottom:10px;">
-                <label>Full Name</label>
-                <input type="text" id="name" class="form-control" placeholder="John Doe">
-            </div>
-            <div>
-                <label>I am a...</label>
-                <select id="role" class="form-control" style="background:white;">
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="hosteler">Hosteler</option>
-                </select>
-            </div>
-        `;
-        loginForm.insertBefore(nameField, loginForm.querySelector('.form-group')); // Insert at top?
+        toggleRegister.innerText = "Already have an account? Login";
+        nameGroup.style.display = 'block';
+        registerExtras.style.display = 'block';
+
+        document.getElementById('name').required = true;
+        document.getElementById('email').required = true;
     } else {
         title.innerText = "Welcome Back";
         submitBtn.innerText = "Login";
-        document.getElementById('toggleRegister').innerText = "New here? Register";
-        const nameGroup = document.getElementById('name-group');
-        if (nameGroup) nameGroup.remove();
+        toggleRegister.innerText = "New here? Register";
+        nameGroup.style.display = 'none';
+        registerExtras.style.display = 'none';
+
+        document.getElementById('name').required = false;
+        document.getElementById('email').required = false;
     }
 }
