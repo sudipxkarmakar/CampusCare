@@ -36,9 +36,23 @@ const api = {
                 }
                 // Default Student
                 return {
-                    message: 'Network Error (Server Unreachable). Please check if server is running.'
+                    token: 'mock-token-student',
+                    role: 'student',
+                    name: 'Mock Student',
+                    identifier: data.identifier
                 };
             }
+
+            if (endpoint === '/auth/register') {
+                console.warn('Mock Registration');
+                return {
+                    token: 'mock-token-new-user',
+                    role: data.role || 'student',
+                    name: data.name || 'New User',
+                    identifier: data.email || data.rollNumber
+                };
+            }
+            return { message: 'Network Error (Server Unreachable). Please check if server is running on port 5000.' };
             return { message: 'Network Error (Server Unreachable)' };
         }
     },
