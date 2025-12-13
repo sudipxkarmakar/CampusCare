@@ -14,6 +14,20 @@ const generateToken = (id) => {
 export const registerUser = async (req, res) => {
     const { name, email, password, rollNumber, employeeId, role } = req.body;
 
+    // --- MOCK MODE FALLBACK FOR REGISTRATION ---
+    if (global.MOCK_MODE) {
+        console.log('Attempting Mock Registration for:', email);
+        return res.status(201).json({
+            _id: 'mock_user_id_' + Math.floor(Math.random() * 1000),
+            name,
+            email,
+            role,
+            department: 'CSE', // Mock default
+            token: generateToken('mock_user_id_' + Math.floor(Math.random() * 1000)),
+        });
+    }
+    // -------------------------------------------
+
     try {
         const userExists = await User.findOne({ email });
 
