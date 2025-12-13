@@ -133,11 +133,13 @@
                 </ul>
                 <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
                     <h4 style="margin-bottom: 0.5rem; color: #374151;">Submit New Activity</h4>
-                    <form onsubmit="event.preventDefault(); alert('Activity Submitted!');"
+                    <form
+                        onsubmit="event.preventDefault(); if(document.getElementById('marFile').files.length === 0) { alert('Please upload a proof file.'); return; } alert('Activity Submitted!');"
                         style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <label style="font-size: 0.9rem; color: #4b5563;">Select Activity</label>
-                        <select
+                        <select required
                             style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8); font-family: 'Poppins';">
+                            <option value="">-- Select Activity --</option>
                             <option value="10">Tree Plantation (10 Points)</option>
                             <option value="10">Blood Donation (10 Points)</option>
                             <option value="5">Tech Fest Volunteer (5 Points)</option>
@@ -145,9 +147,10 @@
                             <option value="20">Publication of Paper (20 Points)</option>
                         </select>
 
-                        <label style="font-size: 0.9rem; color: #4b5563;">Upload Proof</label>
+                        <label style="font-size: 0.9rem; color: #4b5563;">Upload Proof <span
+                                style="color: red;">*</span></label>
                         <div style="display: flex; gap: 0.5rem;">
-                            <input type="file" style="font-size: 0.8rem; flex: 1;">
+                            <input type="file" id="marFile" required style="font-size: 0.8rem; flex: 1;">
                             <button type="submit" class="btn-login"
                                 style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #eab308; border: none; color: white;">Submit
                                 Activity</button>
@@ -206,8 +209,9 @@
 
                         <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                             <div style="flex:1;">
-                                <label style="font-size: 0.8rem; color:#64748b;">Upload Cert</label>
-                                <input type="file" style="font-size: 0.8rem; width:100%;">
+                                <label style="font-size: 0.8rem; color:#64748b;">Upload Cert <span
+                                        style="color: red;">*</span></label>
+                                <input type="file" id="moocFile" required style="font-size: 0.8rem; width:100%;">
                             </div>
                             <button type="submit" class="btn-login"
                                 style="padding: 0.5rem 1rem; font-size: 0.9rem; background: #3b82f6; border: none; color: white; align-self: flex-end;">Submit</button>
@@ -244,6 +248,14 @@
 
         function handleMoocsSubmit(e) {
             e.preventDefault();
+
+            // Validate File
+            const fileInput = document.getElementById('moocFile');
+            if (fileInput.files.length === 0) {
+                alert('Please upload a certificate file.');
+                return;
+            }
+
             const hrs = document.getElementById('courseHours').value;
             const points = Math.floor(hrs / 8);
             if (points > 0) {
