@@ -111,8 +111,12 @@ if (loginForm) {
             try {
                 const result = await api.post('/auth/register', regData);
                 if (result.token) {
-                    localStorage.setItem('user', JSON.stringify(result));
-                    window.location.href = 'index.html';
+                    // localStorage.setItem('user', JSON.stringify(result)); // Stop Auto-Login
+                    // window.location.href = 'index.html';
+                    alert('Registration Successful! Please login with your credentials.');
+
+                    // Switch to Login Mode
+                    toggleRegister.click();
                 } else {
                     alert(result.message || 'Registration Failed');
                 }
