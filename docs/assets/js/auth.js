@@ -11,6 +11,7 @@ const registerExtras = document.getElementById('registerExtras'); // New contain
 const deptGroup = document.getElementById('deptGroup');
 const batchGroup = document.getElementById('batchGroup');
 const sectionGroup = document.getElementById('sectionGroup');
+const hostelFields = document.getElementById('hostelFields'); // Hosteler Fields
 
 let isRegistering = false;
 
@@ -35,7 +36,7 @@ const roleConfig = {
         placeholder: 'Enter Hostel Roll Number (HXXXXXXXXXXX)',
         regex: /^H\d{11}$/,
         error: 'Hostel Roll Number must start with "H" followed by 11 digits.',
-        extras: ['dept', 'batch']
+        extras: ['dept', 'batch', 'hostel']
     }
 };
 
@@ -79,6 +80,10 @@ if (loginForm) {
             const section = document.getElementById('section').value;
             const bloodGroup = document.getElementById('bloodGroup').value;
 
+            // Hosteler fields
+            const hostelName = document.getElementById('hostelName').value;
+            const roomNumber = document.getElementById('roomNumber').value;
+
             // Strict Validation
             // 1. Email Domain - REMOVED RESTRICTION
             if (!email) {
@@ -89,11 +94,11 @@ if (loginForm) {
             // 2. Required Extra Fields
             if (role === 'student') {
                 if (!department || !batch || !section) return alert('All fields (Dept, Batch, Section) are required for Students.');
-                // Blood Group optional? User didn't say strict required, but good practice. Let's make it optional for now or lightly validate.
             } else if (role === 'teacher') {
                 if (!department) return alert('Department is required for Teachers.');
             } else if (role === 'hosteler') {
                 if (!department || !batch) return alert('Dept and Batch are required for Hostelers.');
+                if (!hostelName || !roomNumber) return alert('Hostel Name and Room Number are required.');
             }
 
             const regData = {
@@ -108,14 +113,15 @@ if (loginForm) {
                 ...(role === 'student' || role === 'hosteler' ? { rollNumber: identifier } : { employeeId: identifier })
             };
 
+            if (role === 'hosteler') {
+                regData.hostelName = hostelName;
+                regData.roomNumber = roomNumber;
+            }
+
             try {
                 const result = await api.post('/auth/register', regData);
                 if (result.token) {
-                    // localStorage.setItem('user', JSON.stringify(result)); // Stop Auto-Login
-                    // window.location.href = 'index.html';
                     alert('Registration Successful! Please login with your credentials.');
-
-                    // Switch to Login Mode
                     toggleRegister.click();
                 } else {
                     alert(result.message || 'Registration Failed');
@@ -171,6 +177,11 @@ function updateFormFields(role) {
             batchGroup.style.display = config.extras.includes('batch') ? 'block' : 'none';
             sectionGroup.style.display = config.extras.includes('section') ? 'block' : 'none';
 
+            // New Hostel Fields
+            if (hostelFields) {
+                hostelFields.style.display = config.extras.includes('hostel') ? 'block' : 'none';
+            }
+
             const bgWrapper = document.getElementById('bloodGroupWrapper');
             if (bgWrapper) {
                 // Now available for Student, Hosteler, AND Teacher
@@ -178,10 +189,10 @@ function updateFormFields(role) {
             }
         } else {
             // Login Mode: Clean UI (User Request)
-            // Only show Department if explicitly requested by backend error handling
             deptGroup.style.display = 'none';
             batchGroup.style.display = 'none';
             sectionGroup.style.display = 'none';
+            if (hostelFields) hostelFields.style.display = 'none';
 
             const bgWrapper = document.getElementById('bloodGroupWrapper');
             if (bgWrapper) bgWrapper.style.display = 'none';
