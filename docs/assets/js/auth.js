@@ -111,8 +111,12 @@ if (loginForm) {
             try {
                 const result = await api.post('/auth/register', regData);
                 if (result.token) {
-                    localStorage.setItem('user', JSON.stringify(result));
-                    window.location.href = 'index.html';
+                    // localStorage.setItem('user', JSON.stringify(result)); // Stop Auto-Login
+                    // window.location.href = 'index.html';
+                    alert('Registration Successful! Please login with your credentials.');
+
+                    // Switch to Login Mode
+                    toggleRegister.click();
                 } else {
                     alert(result.message || 'Registration Failed');
                 }
@@ -173,18 +177,14 @@ function updateFormFields(role) {
                 bgWrapper.style.display = 'block';
             }
         } else {
-            // Login Mode: Allow Department for ambiguity resolution
-            // Ideally, we only show it if the user gets the error, OR we always show it for Students?
-            // Let's keep it clean: Hide by default. Show if user toggles? 
-            // Better: Always show Department for Student/Hosteler Login?
-            // The user request implies duplicate IDs exist, so Dept is crucial for ID.
-            if (role === 'student' || role === 'hosteler') {
-                deptGroup.style.display = 'block'; // Show Dept for Login too!
-            } else {
-                deptGroup.style.display = 'none';
-            }
+            // Login Mode: Clean UI (User Request)
+            // Only show Department if explicitly requested by backend error handling
+            deptGroup.style.display = 'none';
             batchGroup.style.display = 'none';
             sectionGroup.style.display = 'none';
+
+            const bgWrapper = document.getElementById('bloodGroupWrapper');
+            if (bgWrapper) bgWrapper.style.display = 'none';
         }
     }
 }

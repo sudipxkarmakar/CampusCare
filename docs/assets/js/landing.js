@@ -4,11 +4,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (noticeContainer) {
         try {
-            const res = await fetch('http://localhost:5000/api/notices/public');
+            const res = await fetch('http://localhost:5000/api/notices?role=public');
+            if (!res.ok) throw new Error('API Error');
             const notices = await res.json();
 
             if (notices.length === 0) {
-                noticeContainer.innerHTML = '<p style="text-align:center;">No recent public notices.</p>';
+                noticeContainer.innerHTML = '<div style="background:rgba(255,255,255,0.8); padding:1rem; border-radius:10px; text-align:center; color:#64748b;">No recent public notices available.</div>';
                 return;
             }
 

@@ -14,6 +14,7 @@ import complaintRoutes from './routes/complaintRoutes.js';
 import noticeRoutes from './routes/noticeRoutes.js';
 import hostelRoutes from './routes/hostelRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import libraryRoutes from './routes/libraryRoutes.js';
 
 dotenv.config();
 
@@ -21,7 +22,11 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
@@ -31,6 +36,7 @@ app.use('/api/complaints', complaintRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/hostel', hostelRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/library', libraryRoutes);
 
 // Serve static assets from 'docs' (formerly client)
 // The docs folder is one level up from server/src (server/../docs -> ../../docs)

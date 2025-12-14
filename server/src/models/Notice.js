@@ -14,8 +14,9 @@ const noticeSchema = new mongoose.Schema({
         ref: 'User', // Teacher or Admin
     },
     audience: {
-        type: String, // 'public', 'CSE', 'Hostel', etc.
-        default: 'public',
+        type: String, // 'general', 'student', 'teacher', 'hosteler'
+        enum: ['general', 'student', 'teacher', 'hosteler'],
+        default: 'general',
     },
     date: {
         type: Date,

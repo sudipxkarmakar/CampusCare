@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; margin: 0 5%; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="../index.html" class="logo"
+            style="text-decoration:none; font-size: 1.5rem; font-weight: 700; color: #2d3748;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
+                        class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </header>
+    <main class="main-container">
+        <section class="hero">
+            <div class="hero-left">
+                <h1 class="hero-title">Student Library</h1>
+                <p class="hero-sub">Search Books, Journals & Research Papers</p>
+            </div>
+        </section>
+
+        <!-- SEARCH and FILTERS -->
+        <section class="standard-container" style="margin-bottom:2rem;">
+            <div
+                style="background:white; padding:15px; border-radius:15px; display:flex; flex-wrap:wrap; gap:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); align-items:center;">
+
+                <div
+                    style="flex:1; min-width:200px; display:flex; background:#f1f5f9; border-radius:10px; padding:0 15px;">
+                    <i class="fa-solid fa-search" style="color:#94a3b8; align-self:center;"></i>
+                    <input type="text" id="searchInput" placeholder="Search Title, Author, ISBN..."
+                        style="width:100%; border:none; background:transparent; padding:12px; outline:none; font-size:0.95rem;">
+                </div>
+
+                <select id="categoryFilter"
+                    style="padding:10px 15px; border-radius:10px; border:1px solid #e2e8f0; outline:none; color:#4a5568;">
+                    <option value="All">All Categories</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="ECE">ECE</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Civil">Civil</option>
+                    <option value="General">General</option>
+                </select>
+
+                <!-- <button id="searchBtn" style="padding:10px 25px; background:#3b82f6; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600;">Search</button> -->
+            </div>
+        </section>
+
+        <!-- BOOK GRID -->
+        <section class="standard-container" style="padding:0; background:transparent; box-shadow:none;">
+            <div id="bookList"
+                style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:2rem;">
+                <div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#64748b;">
+                    Loading library...
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="../assets/js/library.js"></script>
+</body>
+
+</html>
