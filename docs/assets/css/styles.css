@@ -372,7 +372,12 @@ header {
 
 /* Student Dashboard Hero Specific - INCREASED Gap */
 .student-hero {
-    padding-top: 6rem !important;
+    padding-top: rem !important;
+}
+
+/* Teacher Dashboard Hero Specific */
+.teacher-hero {
+    padding-top: 3rem !important;
 }
 
 .hero h1 {
