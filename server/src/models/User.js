@@ -39,6 +39,15 @@ const userSchema = new mongoose.Schema({
         type: String, // e.g. 'CSE'
     },
 
+    // Hosteler Specific
+    hostelName: {
+        type: String,
+        enum: ['H1', 'H2', 'H3', 'H4', 'H5']
+    },
+    roomNumber: {
+        type: String
+    },
+
     // Relationships (Optional based on requirements)
     mentor: {
         type: mongoose.Schema.Types.ObjectId,
