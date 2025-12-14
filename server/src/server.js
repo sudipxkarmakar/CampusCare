@@ -15,6 +15,7 @@ import noticeRoutes from './routes/noticeRoutes.js';
 import hostelRoutes from './routes/hostelRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import libraryRoutes from './routes/libraryRoutes.js';
+import alumniRoutes from './routes/alumniRoutes.js';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/hostel', hostelRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/library', libraryRoutes);
+app.use('/api/alumni', alumniRoutes);
 
 // Serve static assets from 'docs' (formerly client)
 // The docs folder is one level up from server/src (server/../docs -> ../../docs)

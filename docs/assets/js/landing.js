@@ -56,6 +56,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Load Alumni
+    const alumniContainer = document.getElementById('alumni-list');
+    if (alumniContainer) {
+        try {
+            const res = await fetch('http://localhost:5000/api/alumni');
+            if (!res.ok) throw new Error('API Error');
+            const alumni = await res.json();
+
+            if (alumni.length === 0) {
+                alumniContainer.innerHTML = '<p style="text-align:center; width:100%;">No alumni profiles found.</p>';
+            } else {
+                let html = '';
+                alumni.forEach(a => {
+                    const roleColor = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)];
+                    const name = a.user ? a.user.name : a.name || 'Alumni'; // Handle populated user or direct name
+                    const avatarUrl = a.linkedinProfile?.includes('http') ? `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random` : `https://via.placeholder.com/100`;
+
+                    html += `
+                    <div class="faculty-card glass">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100" alt="${name}" class="faculty-img" style="border-radius:15px;">
+                        <h3 class="faculty-name">${name}</h3>
+                        <p class="faculty-role" style="color:${roleColor};">${a.jobTitle} @ ${a.currentCompany}</p>
+                        <p class="faculty-bio">"${a.about || 'Proud Alumni of CampusCare'}"</p>
+                        <a href="${a.linkedinProfile || '#'}" target="_blank"
+                        style="display:inline-block; margin-top:1rem; text-decoration:none; color:#25D366; font-weight:bold;">
+                        <i class="fa-brands fa-whatsapp" style="font-size:1.5rem;"></i> Connect
+                        </a>
+                    </div>
+                    `;
+                });
+                alumniContainer.innerHTML = html;
+            }
+
+        } catch (error) {
+            console.error('Alumni API Error:', error);
+            alumniContainer.innerHTML = '<p style="text-align:center; color:red;">Failed to load alumni.</p>';
+        }
+    }
+
     // Animate Blobs or Interactivity if needed
 
     // --- AUTH STATE CHECK ---

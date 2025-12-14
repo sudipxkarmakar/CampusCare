@@ -1,3 +1,5 @@
+import Notice from '../models/Notice.js';
+
 // @desc    Get Notices based on Role
 // @route   GET /api/notices
 export const getNotices = async (req, res) => {

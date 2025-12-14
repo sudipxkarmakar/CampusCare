@@ -10,6 +10,8 @@ import Book from '../src/models/Book.js';
 import Alumni from '../src/models/Alumni.js';
 import MessMenu from '../src/models/MessMenu.js';
 import MarMooc from '../src/models/MarMooc.js';
+import Assignment from '../src/models/Assignment.js';
+import Leave from '../src/models/Leave.js';
 
 dotenv.config();
 
@@ -192,6 +194,91 @@ const seed = async () => {
                 });
                 console.log(`Created Alumni: ${data.name}`);
             }
+        }
+
+
+
+        // 6. MESS MENU (Min 5 Days)
+        const messData = [
+            { day: 'Monday', breakfast: 'Aloo Paratha', lunch: 'Rice, Dal, Mixed Veg', snacks: 'Tea, Biscuits', dinner: 'Roti, Paneer Butter Masala' },
+            { day: 'Tuesday', breakfast: 'Idli Sambar', lunch: 'Rice, Sambhar, Papad', snacks: 'Samosa', dinner: 'Fried Rice, Manchurian' },
+            { day: 'Wednesday', breakfast: 'Poha', lunch: 'Rajma Chawal', snacks: 'Coffee, Cookies', dinner: 'Roti, Egg Curry' },
+            { day: 'Thursday', breakfast: 'Sandwich', lunch: 'Rice, Kadi Pakoda', snacks: 'Veg Puff', dinner: 'Chole Bhature' },
+            { day: 'Friday', breakfast: 'Puri Sabji', lunch: 'Veg Biryani', snacks: 'Fruit Salad', dinner: 'Roti, Chicken Curry' },
+            { day: 'Saturday', breakfast: 'Dosa', lunch: 'Khichdi', snacks: 'Tea, Bread Pakoda', dinner: 'Pizza / Burger' },
+            { day: 'Sunday', breakfast: 'Oats / Cornflakes', lunch: 'Special Thali', snacks: 'Sandwich', dinner: 'Maggi / Pasta' }
+        ];
+
+        for (const m of messData) {
+            const exists = await MessMenu.findOne({ day: m.day });
+            if (!exists) {
+                await MessMenu.create(m);
+                console.log(`Created Mess Menu: ${m.day}`);
+            }
+        }
+
+        // 7. ASSIGNMENTS (Min 5)
+        const assignmentData = [
+            { title: 'Data Structures Implementation', subject: 'Data Structures', deadline: new Date(Date.now() + 86400000 * 5), description: 'Implement Linked List in C++' },
+            { title: 'Thermodynamics Laws', subject: 'Physics', deadline: new Date(Date.now() + 86400000 * 3), description: 'Explain 2nd Law with examples.' },
+            { title: 'React Project', subject: 'Web Development', deadline: new Date(Date.now() + 86400000 * 10), description: 'Build a To-Do App.' },
+            { title: 'Calculus Problems', subject: 'Mathematics', deadline: new Date(Date.now() + 86400000 * 2), description: 'Solve Chapter 5 exercise.' },
+            { title: 'Database Design', subject: 'DBMS', deadline: new Date(Date.now() + 86400000 * 7), description: 'Design ER Diagram for Hospital Management.' }
+        ];
+
+        for (const a of assignmentData) {
+            const exists = await Assignment.findOne({ title: a.title });
+            if (!exists) {
+                await Assignment.create({
+                    ...a,
+                    teacher: teachers[0]._id, // Assign to first teacher
+                    batch: '2025',
+                    department: 'CSE'
+                });
+                console.log(`Created Assignment: ${a.title}`);
+            }
+        }
+
+        // 8. LEAVES (Min 5)
+        const leaveData = [
+            { reason: 'Fever', type: 'Medical', status: 'Pending', studentIdx: 0 },
+            { reason: 'Family Function', type: 'Home Visit', status: 'Approved', studentIdx: 1 },
+            { reason: 'Urgent Work', type: 'Night Out', status: 'Rejected', studentIdx: 2 },
+            { reason: 'Chicken Pox', type: 'Medical', status: 'Approved', studentIdx: 3 },
+            { reason: 'Sister Marriage', type: 'Home Visit', status: 'Pending', studentIdx: 4 }
+        ];
+
+        for (const l of leaveData) {
+            await Leave.create({
+                student: students[l.studentIdx]._id,
+                reason: l.reason,
+                type: l.type, // Correct field name
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 86400000 * 2),
+                status: l.status
+            });
+            console.log(`Created Leave Application: ${l.reason}`);
+        }
+
+        // 9. MAR / MOOCS (Min 5)
+        const marData = [
+            { title: 'NPTEL Course', platform: 'NPTEL', points: 20, studentIdx: 0 },
+            { title: 'Tree Plantation', platform: 'NSS', points: 5, studentIdx: 1 },
+            { title: 'Blood Donation', platform: 'Red Cross', points: 10, studentIdx: 2 },
+            { title: 'Hackathon Winner', platform: 'Devfolio', points: 15, studentIdx: 3 },
+            { title: 'Coursera Python', platform: 'Coursera', points: 20, studentIdx: 0 }
+        ];
+
+        for (const m of marData) {
+            await MarMooc.create({
+                student: students[m.studentIdx]._id,
+                title: m.title, // Correct field
+                platform: m.platform,
+                points: m.points,
+                completionDate: new Date(),
+                status: 'Verified'
+            });
+            console.log(`Created MAR/MOOC: ${m.title}`);
         }
 
         console.log('✅ Seeding Completed Successfully.');
