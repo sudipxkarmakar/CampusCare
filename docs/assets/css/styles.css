@@ -252,15 +252,25 @@ body::after {
 }
 
 /* --- HEADER --- */
+/* --- HEADER (Premium Glass Stick Bar) --- */
 header {
     position: sticky;
     top: 20px;
     z-index: 1000;
-    margin: 0 5%;
-    padding: 1rem 2rem;
+    margin: 0 auto;
+    width: 95%;
+    max-width: 1400px;
+    padding: 0.8rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    /* Slightly more opaque for the bar look */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .logo {
@@ -274,20 +284,28 @@ header {
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     list-style: none;
+    align-items: center;
 }
 
 .nav-links a {
     text-decoration: none;
-    color: var(--text-dark);
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: 0.3s;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
 }
 
 .nav-links a:hover {
     color: var(--student-color);
+    background: rgba(59, 130, 246, 0.1);
+    /* Subtle hover fill */
 }
 
 .btn-login {
@@ -305,11 +323,44 @@ header {
     transform: translateY(-2px);
 }
 
+/* --- USER PROFILE STYLES --- */
+.user-profile {
+    display: none;
+    /* Default hidden, toggled via JS */
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50px;
+    transition: background 0.3s ease;
+}
+
+.user-profile:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.user-name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.95rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    /* White border for pop */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+}
+
 /* --- HERO SECTION (Standard Layout) --- */
 .hero {
     text-align: center;
-    /* Normal padding */
-    padding: 4rem 5% 1rem;
+    /* Substantially increased top padding to create a large gap between Taskbar and Title */
+    padding: 14rem 5% 1rem;
     position: relative;
     z-index: 1;
 }

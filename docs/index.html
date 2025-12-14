@@ -14,23 +14,23 @@
 
   <header class="glass">
     <a href="index.html" class="logo" style="text-decoration: none;">
-      <i class="fa-solid fa-graduation-cap"></i> CampusCare
+      CampusCare
     </a>
     <ul class="nav-links">
-      <li><a href="#home"><i class="fa-solid fa-house"></i> Home</a></li>
-      <li><a href="#modules"><i class="fa-solid fa-layer-group"></i> Services</a></li>
-      <li><a href="#notices"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
-      <li><a href="#complaint-wall"><i class="fa-solid fa-comments"></i> Public Wall</a></li>
-      <li><a href="#faculty"><i class="fa-solid fa-users"></i> Faculty</a></li>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#modules">Services</a></li>
+      <li><a href="#notices">Notices</a></li>
+      <li><a href="#complaint-wall">Public Wall</a></li>
+      <li><a href="#faculty">Faculty</a></li>
     </ul>
     <!-- LOGIN BUTTON (Visible by default) -->
     <a href="login.html" id="loginBtn" class="btn-login" style="text-decoration:none;">Login / Sign Up</a>
 
     <!-- USER PROFILE (Hidden by default) -->
-    <div id="userProfile" style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
-      <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
-      <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
-        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;" onclick="toggleProfileMenu()">
+    <div id="userProfile" class="user-profile">
+      <span id="userName" class="user-name">Hello, User</span>
+      <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random"
+        alt="Profile" onclick="toggleProfileMenu()">
 
       <!-- DROPDOWN MENU -->
       <div id="profileMenu" class="glass"
