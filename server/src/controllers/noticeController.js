@@ -16,11 +16,11 @@ export const getNotices = async (req, res) => {
         let filter = { audience: { $in: ['general', 'public'] } };
 
         if (role === 'teacher') {
-            filter = { audience: { $in: ['general', 'public', 'teacher'] } };
+            filter = { audience: { $in: ['teacher'] } };
         } else if (role === 'student') {
-            filter = { audience: { $in: ['general', 'public', 'student'] } };
+            filter = { audience: { $in: ['student'] } };
         } else if (role === 'hosteler') {
-            filter = { audience: { $in: ['general', 'public', 'student', 'hosteler'] } };
+            filter = { audience: { $in: ['student', 'hosteler'] } };
         }
 
         const notices = await Notice.find(filter)
