@@ -128,8 +128,16 @@ window.checkAuthState = function () {
         // -------------------------
 
         if (userName) userName.textContent = `Hello, ${user.name ? user.name.split(' ')[0] : 'User'}`;
-        // Use Teal background to match the design in the screenshot
-        if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=10b981&color=fff&rounded=true&bold=true`;
+
+        // Role-based Colors
+        let roleColor = '10b981'; // Default Green (Teacher/General)
+        const role = (user.role || '').toLowerCase();
+
+        if (role === 'student') roleColor = '3b82f6'; // Blue
+        else if (role === 'hosteler') roleColor = 'f59e0b'; // Orange
+        else if (role === 'teacher') roleColor = '10b981'; // Green
+
+        if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
 
         if (userDetails) {
             userDetails.innerHTML = `
