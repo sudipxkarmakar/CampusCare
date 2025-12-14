@@ -66,12 +66,24 @@ export const getDeptUsers = async (req, res) => {
     }
 };
 
-// @desc    Get All Students (Entire Database)
+// @desc    Get All Students (Entire Database) with Search
 // @route   GET /api/admin/students
 // @access  Admin or HOD
 export const getAllStudents = async (req, res) => {
+    const { search } = req.query;
+
     try {
-        const students = await User.find({ role: 'student' }).select('-password');
+        let query = { role: 'student' };
+
+        if (search) {
+            const searchRegex = new RegExp(search, 'i');
+            query.$or = [
+                { name: searchRegex },
+                { rollNumber: searchRegex }
+            ];
+        }
+
+        const students = await User.find(query).select('-password');
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: error.message });
