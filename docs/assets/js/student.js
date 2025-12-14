@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update Stats
     fetchStats();
+    fetchNotices();
 });
 
 async function fetchStats() {
@@ -40,6 +41,24 @@ async function fetchStats() {
 
     } catch (error) {
         console.error('Error fetching stats:', error);
+    }
+}
+
+async function fetchNotices() {
+    try {
+        const res = await fetch(`http://localhost:5000/api/notices?role=${user.role}&userId=${user._id}`);
+        if (!res.ok) throw new Error('Failed to fetch notices');
+        const notices = await res.json();
+        const count = notices.length;
+
+        const noticeCountEl = document.getElementById('notice-count');
+        if (noticeCountEl) {
+            noticeCountEl.textContent = count < 10 ? `0${count}` : count;
+        }
+    } catch (error) {
+        console.error('Error fetching notices:', error);
+        const noticeCountEl = document.getElementById('notice-count');
+        if (noticeCountEl) noticeCountEl.textContent = "00";
     }
 }
 
