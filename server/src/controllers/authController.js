@@ -15,7 +15,7 @@ const generateToken = (id) => {
 // };
 
 const validateRoleData = (role, data) => {
-    const { rollNumber, employeeId, batch, section, department } = data;
+    const { rollNumber, employeeId, batch, section, department, hostelName, roomNumber } = data;
 
     if (role === 'student') {
         if (!/^\d{11}$/.test(rollNumber)) return 'Student Roll Number must be exactly 11 digits.';
@@ -33,8 +33,14 @@ const validateRoleData = (role, data) => {
 
     if (role === 'hosteler') {
         if (!/^H\d{11}$/.test(rollNumber)) return 'Hostel Roll Number must start with H followed by 11 digits.';
-        if (!batch) return 'Batch is required for Hostelers.';
         if (!department) return 'Department is required for Hostelers.';
+        if (!hostelName) return 'Hostel Name is required for Hostelers.';
+        if (!roomNumber) return 'Room Number is required for Hostelers.';
+        // Batch not strictly required for hostelers in some systems, but keeping it optional or required based on user need. 
+        // Let's keep it required as per previous logic if it was there, or optional. 
+        // Previous logic had: if (!batch) return 'Batch is required...'. Let's keep it.
+        if (!batch) return 'Batch is required for Hostelers.';
+
         return null;
     }
 
@@ -46,7 +52,7 @@ const validateRoleData = (role, data) => {
 // @access  Public
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup } = req.body;
+        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber } = req.body;
 
         // 1. Email Domain Check - REMOVED
         // if (!isValidEmail(email)) {
@@ -90,10 +96,15 @@ export const registerUser = async (req, res) => {
             bloodGroup
         };
 
-        if (role === 'student' || role === 'hosteler') {
+        if (role === 'student') {
             userData.rollNumber = rollNumber;
             userData.batch = batch;
-            if (role === 'student') userData.section = section;
+            userData.section = section;
+        } else if (role === 'hosteler') {
+            userData.rollNumber = rollNumber;
+            userData.batch = batch;
+            userData.hostelName = hostelName;
+            userData.roomNumber = roomNumber;
         } else if (role === 'teacher') {
             userData.employeeId = employeeId;
         }
