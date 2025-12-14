@@ -9,7 +9,7 @@ const fixUser = async () => {
         await mongoose.connect(process.env.MONGO_URI);
         console.log('✅ Connected to DB');
 
-        const idToFix = '10800222062';
+        const idToFix = '10800222026';
 
         // Find the user (likely stored as employeeId because it defaulted to Teacher)
         // Or checking both just in case.
@@ -24,16 +24,17 @@ const fixUser = async () => {
 
         console.log(`Found User: ${user.name} | Role: ${user.role}`);
 
-        // Update to Student
+        // Update to Student and Name
+        user.name = 'Sumit Modi';
         user.role = 'student';
         user.rollNumber = idToFix;
         user.employeeId = undefined; // Clear this
         user.batch = '2025'; // Default
         user.section = 'A'; // Default
-        user.department = 'General'; // Default
-
+        user.department = 'CSE'; // Default
+        
         await user.save();
-        console.log(`✅ User updated successfully to STUDENT.`);
+        console.log(`✅ User updated successfully to STUDENT: Sumit Modi.`);
         console.log(`New State: ${user.name} | Role: ${user.role} | Roll: ${user.rollNumber}`);
 
         process.exit();
