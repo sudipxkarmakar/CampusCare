@@ -359,10 +359,20 @@ header {
 /* --- HERO SECTION (Standard Layout) --- */
 .hero {
     text-align: center;
-    /* Substantially increased top padding to create a large gap between Taskbar and Title */
-    padding: 14rem 5% 1rem;
+    /* Normal padding */
+    padding: 1rem 5% 1rem;
     position: relative;
     z-index: 1;
+}
+
+/* Landing Page Hero Specific - ADJUSTED: Reduced Gap */
+.landing-hero {
+    padding-top: 4rem !important;
+}
+
+/* Student Dashboard Hero Specific - INCREASED Gap */
+.student-hero {
+    padding-top: 6rem !important;
 }
 
 .hero h1 {
