@@ -72,13 +72,8 @@
       style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
       <i class="fa-solid fa-graduation-cap"></i> CampusCare
     </a>
-    <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
-      <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-            class="fa-solid fa-house"></i> Home</a></li>
-      <li><a href="#" style="text-decoration: none; color: #3b82f6; font-weight: 600;"><i
-            class="fa-solid fa-chalkboard-user"></i> Teacher Portal</a></li>
-      <li><a href="#" onclick="logout()" style="text-decoration: none; color: #ef4444; font-weight: 600;"><i
-            class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    <ul class="nav-links" style="display: none;">
+      <!-- Navigation hidden as per user request -->
     </ul>
   </header>
 
@@ -215,30 +210,23 @@
       <p style="margin-bottom: 1.5rem;">Select your emergency type to alert nearest help.</p>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <!-- Row 1: Calls -->
         <a href="tel:100"
           style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;">
           <i class="fa-solid fa-shield-halved"></i> Call Security / Police
         </a>
-
-        <!-- Row 2: Medical Action -->
         <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
           style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
           <i class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid
         </button>
-
         <button
           onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
           style="background: #ef4444; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
           <i class="fa-solid fa-droplet" style="font-size:1.5rem;"></i> Need Blood
         </button>
-
-        <!-- Row 3: Others -->
         <a href="tel:101"
           style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display:flex; justify-content:center; align-items:center; gap:5px;">
           <i class="fa-solid fa-truck-medical"></i> Ambulance
         </a>
-
         <button onclick="alert('Panic Signal Sent with Location!')"
           style="background: #4b5563; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">
           Other / Panic
@@ -259,7 +247,6 @@
       <div id="ai-chat-history"
         style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid #eee; padding: 10px; border-radius: 10px; background: #f9fafb; display:none;">
       </div>
-
       <input type="text" id="ai-input" placeholder="Ask about routine, hostel..."
         style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 1rem;">
       <button onclick="askAI()"
@@ -296,7 +283,6 @@
   </script>
 
   <script src="../assets/js/api.js"></script>
-  <script src="../assets/js/ai.js"></script> <!-- Added AI Script -->
   <script src="../assets/js/teacher.js"></script>
 </body>
 

@@ -421,13 +421,8 @@
             style="font-size: 1.5rem; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; text-decoration: none;">
             <i class="fa-solid fa-graduation-cap"></i> CampusCare
         </a>
-        <ul class="nav-links" style="display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0;">
-            <li><a href="../index.html" style="text-decoration: none; color: #1f2937; font-weight: 500;"><i
-                        class="fa-solid fa-house"></i> Home</a></li>
-            <li><a href="#" style="text-decoration: none; color: #f59e0b; font-weight: 600;"><i
-                        class="fa-solid fa-bed"></i> Hostel Hub</a></li>
-            <li><a href="#" id="logoutBtn" style="text-decoration: none; color: #ef4444; font-weight: 500;"><i
-                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        <ul class="nav-links" style="display: none;">
+            <!-- Navigation hidden as per user request -->
         </ul>
     </header>
 
@@ -489,26 +484,14 @@
             <div class="standard-card static-card"
                 style="height:100%; display:flex; flex-direction:column; text-align:left;">
                 <div style="flex-shrink:0;">
-                    <!-- NOTICES SECTION -->
-                    <section class="standard-container" style="margin-top:2rem;">
-                        <h2 style="color:#2d3748; margin-bottom:1.5rem;"><i class="fa-solid fa-bullhorn"></i> Important
-                            Notices</h2>
-                        <div id="noticeList" class="notice-wrapper"
-                            style="background: rgba(255, 255, 255, 0.65); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);">
-                            <div style="text-align: center; color: #64748b; padding: 2rem;">Loading notices...</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <h3 style="margin:0;">Application Status</h3>
+                        <div id="leave-status-count"
+                            style="background:#eff6ff; color:#3b82f6; padding:4px 12px; border-radius:20px; font-weight:600; font-size:0.8rem; border:1px solid #dbeafe; white-space:nowrap;">
+                            <i class="fa-solid fa-layer-group"></i> Loading...
                         </div>
-                    </section>
-
-                    <!-- COMPLAINTS PREVIEW -->
-                    <section class="standard-container" style="margin-top:2rem;">
-                        <h2 style="color:#2d3748; margin-bottom:1.5rem;"><i
-                                class="fa-solid fa-triangle-exclamation"></i> Your Recent Complaints</h2>
-                        <div id="complaintList" class="notice-wrapper"
-                            style="background: rgba(255, 255, 255, 0.65); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05);">
-                            <div style="text-align: center; color: #64748b; padding: 2rem;">No complaints to display.
-                            </div>
-                        </div>
-                    </section>
+                    </div>
+                    <p style="color:#64748b; margin-top:0;">Your recent leave application history</p>
                 </div>
                 <div id="leave-history" style="margin-top:1rem; flex:1;">
                     <!-- Content injected by JS -->
@@ -602,30 +585,23 @@
             <p style="margin-bottom: 1.5rem;">Select your emergency type to alert nearest help.</p>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <!-- Row 1: Calls -->
                 <a href="tel:100"
                     style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;">
                     <i class="fa-solid fa-shield-halved"></i> Call Security / Police
                 </a>
-
-                <!-- Row 2: Medical Action -->
                 <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
                     style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
                     <i class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid
                 </button>
-
                 <button
                     onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
                     style="background: #ef4444; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
                     <i class="fa-solid fa-droplet" style="font-size:1.5rem;"></i> Need Blood
                 </button>
-
-                <!-- Row 3: Others -->
                 <a href="tel:101"
                     style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display:flex; justify-content:center; align-items:center; gap:5px;">
                     <i class="fa-solid fa-truck-medical"></i> Ambulance
                 </a>
-
                 <button onclick="alert('Panic Signal Sent with Location!')"
                     style="background: #4b5563; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">
                     Other / Panic
@@ -646,7 +622,6 @@
             <div id="ai-chat-history"
                 style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid #eee; padding: 10px; border-radius: 10px; background: #f9fafb; display:none;">
             </div>
-
             <input type="text" id="ai-input" placeholder="Ask about routine, hostel..."
                 style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 1rem;">
             <button onclick="askAI()"
@@ -683,9 +658,7 @@
     </script>
 
     <script src="../assets/js/api.js"></script>
-    <script src="../assets/js/ai.js"></script> <!-- Added AI Script -->
     <script src="../assets/js/hostel.js"></script>
-    <script src="../assets/js/notices.js"></script>
 </body>
 
 </html>
