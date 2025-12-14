@@ -65,3 +65,15 @@ export const getDeptUsers = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Get All Students (Entire Database)
+// @route   GET /api/admin/students
+// @access  Admin or HOD
+export const getAllStudents = async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' }).select('-password');
+        res.json(students);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
