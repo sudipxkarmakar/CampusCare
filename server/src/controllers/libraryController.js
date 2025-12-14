@@ -10,12 +10,21 @@ export const getBooks = async (req, res) => {
 
         // 1. Search Filter (Title or Author or ISBN)
         if (search) {
-            const searchRegex = new RegExp(search, 'i');
-            query.$or = [
-                { title: searchRegex },
-                { author: searchRegex },
-                { isbn: searchRegex }
-            ];
+            // Constraint: Minimum 1 character
+            if (search.length < 1) {
+                return res.status(400).json({ message: 'Search query must be at least 1 character long.' });
+            }
+
+            // Constraint: Escape Regex Characters for safety
+            const escapeRegex = (string) => {
+                return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+            };
+
+            const cleanSearch = escapeRegex(search);
+            const searchRegex = new RegExp(cleanSearch, 'i');
+
+            // Constraint: Search by Title Only
+            query.title = searchRegex;
         }
 
         // 2. Category Filter
@@ -28,7 +37,8 @@ export const getBooks = async (req, res) => {
             query.availableCopies = { $gt: 0 };
         }
 
-        const books = await Book.find(query).sort({ title: 1 });
+        // Constraint: Limit results to 50
+        const books = await Book.find(query).sort({ title: 1 }).limit(50);
         res.json(books);
 
     } catch (error) {

@@ -18,9 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
     categoryFilter.addEventListener('change', fetchBooks);
 
     async function fetchBooks() {
-        const search = searchInput.value;
+        const search = searchInput.value.trim();
         const category = categoryFilter.value;
         // const availableOnly = false; // Filter removed by user request
+
+        // Constraint: Client-side validation for search length (Min 1 char)
+        if (search.length > 0 && search.length < 1) {
+            bookList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#dc2626;">Please enter at least 1 character to search.</div>`;
+            return;
+        }
 
         // Build Query URL
         const queryParams = new URLSearchParams({
@@ -31,12 +37,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const res = await fetch(`http://localhost:5000/api/library?${queryParams}`);
-            if (!res.ok) throw new Error('Failed to fetch books');
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Failed to fetch books');
+            }
             const books = await res.json();
             renderBooks(books);
         } catch (error) {
             console.error(error);
-            bookList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:red;">Failed to load books. Ensure server is running.</div>`;
+            bookList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:red;">${error.message}</div>`;
         }
     }
 
