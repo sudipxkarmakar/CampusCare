@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            const res = await fetch(`http://localhost:5001/api/library?${queryParams}`);
+            const res = await fetch(`http://localhost:5000/api/library?${queryParams}`);
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.message || 'Failed to fetch books');
