@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Complaint from '../models/Complaint.js';
 
 // @desc    Get logged in teacher's mentees (with optional filtering)
 // @route   GET /api/teacher/my-mentees
@@ -27,5 +28,30 @@ export const getMyMentees = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error fetching mentees' });
+    }
+};
+
+// @desc    Get issues/complaints reported by my mentees
+// @route   GET /api/teacher/mentee-issues
+// @access  Teacher
+export const getMenteeIssues = async (req, res) => {
+    try {
+        const teacher = await User.findById(req.user._id);
+
+        if (!teacher) {
+            return res.status(404).json({ message: 'Teacher profile not found' });
+        }
+
+        const menteeIds = teacher.mentees;
+
+        const issues = await Complaint.find({ student: { $in: menteeIds } })
+            .populate('student', 'name rollNumber')
+            .sort({ createdAt: -1 });
+
+        res.json(issues);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error fetching mentee issues' });
     }
 };
