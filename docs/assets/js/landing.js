@@ -121,7 +121,7 @@ window.checkAuthState = function () {
         if (userProfile) userProfile.style.display = 'flex';
 
         // --- NAME FIX OVERRIDE ---
-        if (user.identifier === '10800222026' || user.rollNumber === '10800222026') {
+        if (user.identifier === '10800222026' || user.identifier === '10800222062' || user.rollNumber === '10800222026' || user.rollNumber === '10800222062') {
             user.name = 'Sumit Modi';
             user.role = 'Student'; // Ensure role is correct too
         }
