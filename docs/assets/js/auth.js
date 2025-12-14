@@ -56,6 +56,16 @@ if (loginForm) {
     // 4. Handle Mode Toggle
     toggleRegister.addEventListener('click', () => {
         isRegistering = !isRegistering;
+
+        // Clear value of Department/Batch/etc to avoid stale data sent on Login
+        if (!isRegistering) {
+            document.getElementById('department').value = "";
+            document.getElementById('batch').value = "";
+            document.getElementById('section').value = "";
+            document.getElementById('hostelName').value = "";
+            document.getElementById('roomNumber').value = "";
+        }
+
         updateModeUI();
         updateFormFields(roleSelect.value); // Re-run to show/hide extras
     });
@@ -135,7 +145,8 @@ if (loginForm) {
             const department = document.getElementById('department').value;
             const data = { identifier, password, role };
 
-            // Send Department if selected (helps resolve ambiguity)
+            // Send Department if selected and relevant (and visible)
+            // Note: We clear department on mode switch, so this check handles it.
             if (department && (role === 'student' || role === 'hosteler')) {
                 data.department = department;
             }
