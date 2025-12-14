@@ -87,9 +87,8 @@ async function loadNotices() {
 
     try {
         // Fetch notices with audience 'hosteler' or 'general'
-        // Assuming API supports filtering or we filter client side. 
         // Using general notices endpoint for now, ideally /api/notices?audience=hosteler
-        const res = await fetch('http://localhost:5000/api/notices');
+        const res = await fetch('http://localhost:5000/api/notices?role=hosteler');
         if (!res.ok) throw new Error("Failed to fetch notices");
         const allNotices = await res.json();
 

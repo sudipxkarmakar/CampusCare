@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (noticeContainer) {
         try {
+            // Landing Page should ONLY show Public/General notices, regardless of login state.
             const res = await fetch('http://localhost:5000/api/notices?role=public');
             if (!res.ok) throw new Error('API Error');
             const notices = await res.json();

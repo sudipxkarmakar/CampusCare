@@ -1,29 +1,31 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import Notice from '../src/models/Notice.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config();
 
-const listNotices = async () => {
+const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI);
-        console.log('✅ Connected to MongoDB');
-
-        const notices = await Notice.find({});
-        console.log(`found ${notices.length} notices`);
-        notices.forEach(n => {
-            console.log(`- [${n.audience}] ${n.title} (ID: ${n._id})`);
-        });
-
+        console.log('MongoDB Connected');
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error(`Error: ${error.message}`);
+        process.exit(1);
+    }
+};
+
+const listNotices = async () => {
+    await connectDB();
+    try {
+        const notices = await Notice.find({});
+        console.log(`Found ${notices.length} notices:`);
+        notices.forEach(n => {
+            console.log(`- [${n.audience}] ${n.title} (By: ${n.postedBy})`);
+        });
+    } catch (error) {
+        console.error(error);
     } finally {
-        await mongoose.connection.close();
-        process.exit();
+        mongoose.connection.close();
     }
 };
 

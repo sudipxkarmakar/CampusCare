@@ -4,6 +4,7 @@ import Notice from '../models/Notice.js';
 // @route   GET /api/notices
 export const getNotices = async (req, res) => {
     let role = req.query.role || 'public';
+    const userId = req.query.userId;
     role = role.toLowerCase(); // Normalize to lowercase
 
     // Mock Mode Logic (Simplified)
@@ -12,20 +13,31 @@ export const getNotices = async (req, res) => {
     }
 
     try {
-        // Default: General + Public (Legacy)
-        let filter = { audience: { $in: ['general', 'public'] } };
+        // Base Audience Filter
+        let audienceList = ['general', 'public'];
+        if (role === 'teacher') audienceList.push('teacher');
+        if (role === 'student') audienceList.push('student');
+        if (role === 'hosteler') audienceList.push('student', 'hosteler');
 
-        if (role === 'teacher') {
-            filter = { audience: { $in: ['general', 'public', 'teacher'] } };
-        } else if (role === 'student') {
-            filter = { audience: { $in: ['general', 'public', 'student'] } };
-        } else if (role === 'hosteler') {
-            filter = { audience: { $in: ['general', 'public', 'student', 'hosteler'] } };
-        }
+        // Construct Query
+        const query = {
+            $or: [
+                { audience: { $in: audienceList } },
+                // If user is logged in, they should see their OWN posts regardless of audience
+                ...(userId ? [{ postedBy: userId }] : [])
+            ]
+        };
 
-        const notices = await Notice.find(filter)
+        console.log(`[DEBUG] Role: ${role}, AudienceList: ${audienceList}, UserID: ${userId}`);
+        console.log(`[DEBUG] Query: ${JSON.stringify(query)}`);
+
+        const notices = await Notice.find(query)
             .sort({ date: -1 })
             .limit(20);
+
+        console.log(`[DEBUG] Found ${notices.length} notices`);
+
+        // Duplicate execution removed
 
         res.json(notices);
     } catch (error) {

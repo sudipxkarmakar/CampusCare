@@ -17,11 +17,13 @@ async function loadNotices() {
     const userStr = localStorage.getItem('user');
     let role = 'public';
     let token = '';
+    let userId = '';
 
     if (userStr) {
         const user = JSON.parse(userStr);
         role = user.role || 'public';
         token = user.token;
+        userId = user._id || '';
 
         // Normalize role if needed (though backend sends correct lowercase usually)
         if (role === 'Hosteler') role = 'hosteler';
@@ -30,7 +32,7 @@ async function loadNotices() {
     }
 
     try {
-        const response = await fetch(`${API_URL}?role=${role}`, {
+        const response = await fetch(`${API_URL}?role=${role}&userId=${userId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -78,7 +80,7 @@ async function loadNotices() {
 
     } catch (error) {
         console.error('Error loading notices:', error);
-        noticeList.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 2rem;">Failed to load notices.</div>';
+        noticeList.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 2rem;">Failed to load notices: ${error.message}</div>`;
     }
 }
 
@@ -107,7 +109,7 @@ async function handleCreateNotice(e) {
                 title,
                 content,
                 audience,
-                userId: user.id // Assuming ID is in token/user obj
+                userId: user._id // Fixed: Login returns _id
             })
         });
 
