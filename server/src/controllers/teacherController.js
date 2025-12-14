@@ -55,3 +55,18 @@ export const getMenteeIssues = async (req, res) => {
         res.status(500).json({ message: 'Server Error fetching mentee issues' });
     }
 };
+
+// @desc    Get All Students (Entire Database)
+// @route   GET /api/teacher/all-students
+// @access  Teacher
+export const getAllStudents = async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' })
+            .select('-password')
+            .sort({ rollNumber: 1 }); // Sort by Roll Number
+        res.json(students);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error fetching students' });
+    }
+};
