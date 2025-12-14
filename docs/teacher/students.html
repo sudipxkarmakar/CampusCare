@@ -74,6 +74,7 @@
                     <table id="studentTable" style="width:100%; border-collapse:collapse; background:white;">
                         <thead>
                             <tr style="background:#f8fafc; text-align:left; border-bottom:2px solid #e2e8f0;">
+                                <th style="padding:15px; color:#475569; font-weight:600;">S.No</th>
                                 <th style="padding:15px; color:#475569; font-weight:600;">Roll No</th>
                                 <th style="padding:15px; color:#475569; font-weight:600;">Student Name</th>
                                 <th style="padding:15px; color:#475569; font-weight:600;">Dept</th>
@@ -158,9 +159,10 @@
                 }
 
                 let html = '';
-                students.forEach(student => {
+                students.forEach((student, index) => {
                     html += `
                     <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;">
+                        <td style="padding:15px; font-weight:600; color:#334155;">${index + 1}</td>
                         <td style="padding:15px; font-weight:600; color:#334155;">${student.rollNumber || 'N/A'}</td>
                         <td style="padding:15px;">
                             <div style="font-weight:600; color:#2d3748;">${student.name}</div>
