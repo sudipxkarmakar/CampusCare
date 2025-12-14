@@ -56,12 +56,15 @@ export const getMenteeIssues = async (req, res) => {
     }
 };
 
-// @desc    Get All Students (Entire Database)
+// @desc    Get All Students (Same Department Only)
 // @route   GET /api/teacher/all-students
 // @access  Teacher
 export const getAllStudents = async (req, res) => {
     try {
-        const students = await User.find({ role: 'student' })
+        // Ensure strictly limiting to teacher's department
+        const teacherDept = req.user.department;
+
+        const students = await User.find({ role: 'student', department: teacherDept })
             .select('-password')
             .sort({ rollNumber: 1 }); // Sort by Roll Number
         res.json(students);
