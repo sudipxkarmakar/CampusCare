@@ -48,22 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadMenu() {
     try {
-        let menu;
-        try {
-            const res = await fetch('http://localhost:5000/api/hostel/menu');
-            if (!res.ok) throw new Error("Server offline");
-            menu = await res.json();
-        } catch (e) {
-            menu = {
-                'Monday': { Breakfast: 'Aloo Paratha', Lunch: 'Rajma Rice', Dinner: 'Egg Curry / Paneer' },
-                'Tuesday': { Breakfast: 'Idli Sambar', Lunch: 'Curd Rice & Alu Fry', Dinner: 'Chicken / Mushroom' },
-                'Wednesday': { Breakfast: 'Poha', Lunch: 'Dal Makhani', Dinner: 'Mix Veg' },
-                'Thursday': { Breakfast: 'Sandwich', Lunch: 'Chole Bhature', Dinner: 'Veg Biryani' },
-                'Friday': { Breakfast: 'Puri Sabzi', Lunch: 'Fried Rice', Dinner: 'Fish / Kadhai Paneer' },
-                'Saturday': { Breakfast: 'Dosa', Lunch: 'Khichdi', Dinner: 'Pizza / Pasta' },
-                'Sunday': { Breakfast: 'Cornflakes', Lunch: 'Special Thali', Dinner: 'Burgers' }
-            };
-        }
+        const res = await fetch('http://localhost:5000/api/hostel/menu');
+        if (!res.ok) throw new Error("Server offline");
+        const menu = await res.json();
 
         const tbody = document.querySelector('#mess-menu-table tbody');
         if (!tbody) return;
@@ -88,38 +75,51 @@ async function loadMenu() {
         });
         tbody.innerHTML = html;
     } catch (err) {
-        console.error("Critical Menu Error:", err);
+        console.error("Menu Load Error:", err);
         const tbody = document.querySelector('#mess-menu-table tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Failed to load menu.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Failed to load menu from server.</td></tr>';
     }
 }
 
-function loadNotices() {
+async function loadNotices() {
     const list = document.getElementById('hostel-notices-list');
     if (!list) return;
 
-    const data = [
-        { title: ' Power Cut Scheduled', date: 'Tomorrow, 2:00 PM - 4:00 PM', priority: 'High' },
-        { title: ' Mass Cleanliness Drive', date: 'Sunday, 9:00 AM', priority: 'Medium' },
-        { title: ' Hostel Night Registration', date: 'Deadline: Friday', priority: 'Low' },
-        { title: ' Water Tank Cleaning', date: 'Next Monday', priority: 'Low' }
-    ];
+    try {
+        // Fetch notices with audience 'hosteler' or 'general'
+        // Assuming API supports filtering or we filter client side. 
+        // Using general notices endpoint for now, ideally /api/notices?audience=hosteler
+        const res = await fetch('http://localhost:5000/api/notices');
+        if (!res.ok) throw new Error("Failed to fetch notices");
+        const allNotices = await res.json();
 
-    let html = '';
-    html += `<table style="width:100%; border-collapse: collapse;"><tbody>`;
+        // Filter for hostel related
+        const data = allNotices.filter(n => n.audience === 'hosteler' || n.audience === 'general').slice(0, 5);
 
-    data.forEach(n => {
-        html += `
-            <tr class="item-row" style="cursor:pointer; transition:0.2s;">
-                <td style="padding:0.8rem 0.5rem; border-bottom:1px solid rgba(203, 213, 225, 0.5);">
-                    <div style="font-weight:600; color:#374151; margin-bottom:0.2rem;">${n.title}</div>
-                    <div style="font-size:0.85rem; color:#64748b;">${n.date}</div>
-                </td>
-            </tr>
-        `;
-    });
-    html += `</tbody></table>`;
-    list.innerHTML = html;
+        if (data.length === 0) {
+            list.innerHTML = '<p style="padding:10px; color:#666;">No hostel notices.</p>';
+            return;
+        }
+
+        let html = '';
+        html += `<table style="width:100%; border-collapse: collapse;"><tbody>`;
+
+        data.forEach(n => {
+            html += `
+                <tr class="item-row" style="cursor:pointer; transition:0.2s;">
+                    <td style="padding:0.8rem 0.5rem; border-bottom:1px solid rgba(203, 213, 225, 0.5);">
+                        <div style="font-weight:600; color:#374151; margin-bottom:0.2rem;">${n.title}</div>
+                        <div style="font-size:0.85rem; color:#64748b;">${new Date(n.date).toLocaleDateString()}</div>
+                    </td>
+                </tr>
+            `;
+        });
+        html += `</tbody></table>`;
+        list.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        list.innerHTML = '<p style="padding:10px; color:red;">Error loading notices.</p>';
+    }
 }
 
 async function loadLeaves() {
@@ -127,19 +127,9 @@ async function loadLeaves() {
     const statusCount = document.getElementById('leave-status-count');
 
     try {
-        let leaves;
-        try {
-            const res = await fetch(`http://localhost:5000/api/hostel/leave/${user._id}`);
-            if (!res.ok) throw new Error("Server offline");
-            leaves = await res.json();
-        } catch (e) {
-            leaves = [
-                { type: 'Night Out', startDate: '2025-03-15', endDate: '2025-03-16', status: 'Pending' },
-                { type: 'Home Visit', startDate: '2025-02-20', endDate: '2025-02-25', status: 'Approved' },
-                { type: 'Medical', startDate: '2025-01-10', endDate: '2025-01-12', status: 'Rejected' },
-                { type: 'Day Out', startDate: '2025-01-05', endDate: '2025-01-05', status: 'Approved' }
-            ];
-        }
+        const res = await fetch(`http://localhost:5000/api/hostel/leave/${user._id}`);
+        if (!res.ok) throw new Error("Server offline");
+        const leaves = await res.json();
 
         if (statusCount) statusCount.innerHTML = `<i class="fa-solid fa-layer-group"></i> Total: ${leaves.length}`;
 
@@ -200,33 +190,48 @@ async function loadLeaves() {
     }
 }
 
-function loadComplaints() {
+async function loadComplaints() {
     const list = document.getElementById('student-complaints-list');
     if (!list) return;
 
-    const data = [
-        { issue: 'Noise Disturbance (Late Night)', date: 'Feb 28', status: 'Warning Issued' },
-        { issue: 'Room Cleanliness Check', date: 'Jan 15', status: 'Resolved' }
-    ];
+    try {
+        // Fetch my complaints (reusing general complaints API or specific endpoint)
+        // Assuming /api/complaints/my returns complaints for logged in user if token sent, 
+        // or we filter client side from /api/complaints but that's public wall.
+        // Let's assume there is an endpoint or we try to hit the main one.
+        // Actually, for "My Complaints" we usually sort by user ID. 
+        // Let's try /api/complaints?studentId=${user._id} if supported, else filter.
 
-    let html = '';
-    if (data.length === 0) {
-        list.innerHTML = '<p>No complaints found. maintain it!</p>';
-        return;
-    }
+        const res = await fetch('http://localhost:5000/api/complaints');
+        if (!res.ok) throw new Error("Failed");
+        const all = await res.json();
 
-    data.forEach(c => {
-        let color = c.status.includes('Warning') ? '#ef4444' : '#10b981';
-        html += `
-            <div class="item-row" style="padding:0.8rem; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center; transition:0.2s;">
-                <div>
-                    <div style="font-weight:600; color:#1f2937;">${c.issue}</div>
-                    <div style="font-size:0.85rem; color:#64748b;">${c.date}</div>
+        // Filter for this user
+        const data = all.filter(c => c.student && (c.student._id === user._id || c.student === user._id));
+
+        let html = '';
+        if (data.length === 0) {
+            list.innerHTML = '<p>No complaints filed yet.</p>';
+            return;
+        }
+
+        data.forEach(c => {
+            let color = '#f59e0b'; // pending
+            if (c.status === 'Resolved') color = '#10b981';
+
+            html += `
+                <div class="item-row" style="padding:0.8rem; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center; transition:0.2s;">
+                    <div>
+                        <div style="font-weight:600; color:#1f2937;">${c.title}</div>
+                        <div style="font-size:0.85rem; color:#64748b;">${new Date(c.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <span style="font-size:0.8rem; font-weight:bold; color:${color}; border:1px solid ${color}; padding:2px 6px; border-radius:4px;">${c.status}</span>
                 </div>
-                <span style="font-size:0.8rem; font-weight:bold; color:${color}; border:1px solid ${color}; padding:2px 6px; border-radius:4px;">${c.status}</span>
-            </div>
-        `;
-    });
-    list.innerHTML = html;
+            `;
+        });
+        list.innerHTML = html;
+    } catch (e) {
+        list.innerHTML = '<p style="color:red">Error loading status.</p>';
+    }
 }
 

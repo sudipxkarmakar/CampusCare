@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
+
         // --- 2. MOCK FALLBACK IF API FAILS ---
         if (!response.ok) {
             throw new Error('API request failed');
@@ -36,8 +37,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error('Error fetching assignments:', error);
-        // --- 3. MOCK FALLBACK ON ERROR ---
-        renderMockAssignments(tableBody);
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">
+                    <i class="fa-solid fa-circle-exclamation"></i> Error loading assignments. Ensure server is online.
+                </td>
+            </tr>`;
     }
 });
 
@@ -83,16 +88,7 @@ function renderAssignments(container, data) {
     `}).join('');
 }
 
-function renderMockAssignments(tableBody) {
-    if (!tableBody) return;
-    const mockAssignments = [
-        { title: 'Calculus Problem Set 3', teacher: { name: 'Dr. S. Raman' }, dueDate: new Date(Date.now() + 86400000).toISOString(), _id: 'mock1' },
-        { title: 'Physics Lab Report', teacher: { name: 'Prof. A. Newton' }, dueDate: new Date(Date.now() + 172800000).toISOString(), _id: 'mock2' },
-        { title: 'History Essay', teacher: { name: 'Dr. I. Jones' }, dueDate: new Date(Date.now() + 604800000).toISOString(), _id: 'mock3' }
-    ];
-    renderAssignments(tableBody, mockAssignments);
+function viewAssignment(id) {
+    alert(`Viewing assignment ${id}`);
 }
 
-function viewAssignment(id) {
-    alert(`Viewing assignment ${id} (Mock Functionality)`);
-}

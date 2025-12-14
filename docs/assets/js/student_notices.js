@@ -16,21 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         container.innerHTML = '';
 
+
         if (filter === 'personal') {
-            // Mock Personal Notices (since backend might not have this fully separated yet)
-            const personalNotices = [
-                { title: 'Meeting with HOD', date: new Date(), content: 'Please report to the HOD office at 2 PM tomorrow regarding your project.' },
-                { title: 'Library Book Overdue', date: new Date(Date.now() - 86400000), content: 'The book "Intro to Algorithms" is overdue. Please return it.' }
-            ];
-
-            personalNotices.forEach(notice => {
-                const card = createNoticeCard(notice, true);
-                container.appendChild(card);
-            });
-
-            if (personalNotices.length === 0) {
-                container.innerHTML = '<p style="text-align:center;">No personal notices.</p>';
-            }
+            // Fetch Personal Notices (Assuming endpoint exists or filtering from public for now if not)
+            // Ideally: const response = await fetch(`${API_BASE_URL}/notices/personal`, ...);
+            // Since we seeded general notices mostly, let's just show an empty state or filter if we had user ID.
+            // For rigorous "No Mock", we strictly fallback to "No personal notices found" if we can't fetch them.
+            container.innerHTML = '<p style="text-align:center; padding:2rem; color:#64748b;">Personal notices feature coming soon (API Integration Pending).</p>';
 
         } else {
             // Display Public Notices
@@ -46,14 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error('Error fetching notices:', error);
-        // Mock fallback
-        container.innerHTML = '';
-        const mockNotices = [
-            { title: 'Exam Schedule Released', content: 'The final semester exam schedule is now available on the portal.', date: new Date() },
-            { title: 'Holiday Announcement', content: 'Campus will remain closed on Friday for National Holiday.', date: new Date() },
-            { title: 'Guest Lecture', content: 'Dr. APJ Abdul Kalam Memorial Lecture starts at 10 AM in the Auditorium.', date: new Date() }
-        ];
-        mockNotices.forEach(n => container.appendChild(createNoticeCard(n)));
+        container.innerHTML = '<p style="text-align:center; color:red; padding:2rem;">Failed to load notices. Check connection.</p>';
     }
 });
 
