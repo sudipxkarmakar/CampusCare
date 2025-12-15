@@ -106,69 +106,14 @@
 
             <!-- SECTION 2: GRIEVANCES BY MENTEE (Problems) -->
             <section class="standard-container" style="margin:0;">
-                <div
+                <div id="menteeComplaintsList"
                     style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.05);">
                     <h2 style="margin:0 0 1.5rem 0; color:#1e3a8a; font-size:1.4rem; display:flex; align-items:center;">
                         <i class="fa-solid fa-triangle-exclamation" style="margin-right:10px;"></i> Issues Reported by
                         Mentees
                     </h2>
-
-                    <!-- Issue Item 1 -->
-                    <div
-                        style="background:white; padding:1.2rem; border-radius:12px; margin-bottom:1rem; border:1px solid #e2e8f0; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div>
-                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Hostel Water Cooler
-                                    Malfunction</h3>
-                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
-                                    <strong>From:</strong> Rahul Verma (Room 302)<br>
-                                    <span style="font-style:italic;">"The cooler on the 2nd floor gives electric
-                                        shocks."</span>
-                                </p>
-                            </div>
-                            <span
-                                style="background:#dbeafe; color:#1e40af; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Infrastructure</span>
-                        </div>
-                        <div
-                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; gap:10px;">
-                            <!-- Can't resolve tech issue personally, so Escalate is primary -->
-                            <button onclick="alert('Issue Escalated to Estate Manager!')"
-                                style="background:#ef4444; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
-                                <i class="fa-solid fa-share"></i> Escalate to Estate Office
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Issue Item 2 -->
-                    <div
-                        style="background:white; padding:1.2rem; border-radius:12px; margin-bottom:1rem; border:1px solid #e2e8f0; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div>
-                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Request for Leave
-                                    (Medical)</h3>
-                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
-                                    <strong>From:</strong> Anita Roy<br>
-                                    <span style="font-style:italic;">"I have missed 3 days due to fever. Medical
-                                        certificate attached."</span>
-                                </p>
-                            </div>
-                            <span
-                                style="background:#f3e8ff; color:#6b21a8; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Academic</span>
-                        </div>
-                        <div
-                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; gap:10px;">
-                            <!-- Mentor can solve this personally -->
-                            <button onclick="alert('Leave Approved. Marked Solved.')"
-                                style="background:#10b981; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
-                                <i class="fa-solid fa-check-double"></i> Approve & Solve
-                            </button>
-                            <button onclick="alert('Forwarded to HOD.')"
-                                style="background:white; color:#4b5563; border:1px solid #9ca3af; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
-                                Escalate
-                            </button>
-                        </div>
-                    </div>
-
+                    <!-- Dynamic Content Loaded Here -->
+                    <div style="text-align:center; color:#64748b; padding: 2rem;">Loading complaints...</div>
                 </div>
             </section>
 
@@ -234,6 +179,7 @@
     <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') { m.style.display = 'none'; } else { m.style.display = 'flex'; } }</script>
     <script src="../assets/js/landing.js"></script>
     <script src="../assets/js/ai.js"></script>
+    <script src="../assets/js/teacher_mentee_complaints.js"></script>
 
 </body>
 

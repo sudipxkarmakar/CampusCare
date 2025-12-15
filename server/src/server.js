@@ -17,6 +17,7 @@ import aiRoutes from './routes/aiRoutes.js';
 import libraryRoutes from './routes/libraryRoutes.js';
 import alumniRoutes from './routes/alumniRoutes.js';
 import teacherRoutes from './routes/teacherRoutes.js';
+import leaveRoutes from './routes/leaveRoutes.js';
 
 // ... imports
 
@@ -44,6 +45,7 @@ const startServer = async () => {
   app.use('/api/library', libraryRoutes);
   app.use('/api/alumni', alumniRoutes);
   app.use('/api/teacher', teacherRoutes);
+  app.use('/api/leaves', leaveRoutes);
 
   // Serve static assets from 'docs' (formerly client)
   // The docs folder is one level up from server/src (server/../docs -> ../../docs)
@@ -56,9 +58,10 @@ const startServer = async () => {
   });
 
   const PORT = process.env.PORT || 5000;
+  const ENV = process.env.NODE_ENV || 'development';
 
   app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`Server running in ${ENV} mode on port ${PORT}`);
   });
 };
 

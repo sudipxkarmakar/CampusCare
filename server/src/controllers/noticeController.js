@@ -9,15 +9,45 @@ export const getNotices = async (req, res) => {
 
     // Mock Mode Logic (Simplified)
     if (global.MOCK_MODE) {
-        return res.json([]);
+        return res.json([
+            {
+                _id: 'mock_n1',
+                title: 'Mock: Exam Schedule Released',
+                content: 'Final exams start from Dec 15th.',
+                audience: 'student',
+                date: new Date(),
+                postedBy: 'mock_admin'
+            },
+            {
+                _id: 'mock_n2',
+                title: 'Mock: Faculty Meeting',
+                content: 'Staff meeting at 4 PM.',
+                audience: 'teacher',
+                date: new Date(),
+                postedBy: 'mock_admin'
+            },
+            {
+                _id: 'mock_n3',
+                title: 'Mock: Holiday Announcement',
+                content: 'College closed on Friday.',
+                audience: 'general',
+                date: new Date(),
+                postedBy: 'mock_admin'
+            }
+        ]);
     }
 
     try {
+        console.log('[DEBUG] getNotices called');
+        console.log('[DEBUG] Role:', role, 'UserId:', userId);
+
         // Base Audience Filter
         let audienceList = ['general', 'public'];
-        if (role === 'teacher') audienceList.push('teacher');
+        if (role === 'teacher') audienceList.push('teacher', 'student', 'hosteler'); // Teachers can see Student & Hosteler notices now
         if (role === 'student') audienceList.push('student');
         if (role === 'hosteler') audienceList.push('student', 'hosteler');
+
+        console.log('[DEBUG] Audience List:', audienceList);
 
         // Construct Query
         const query = {
@@ -28,9 +58,13 @@ export const getNotices = async (req, res) => {
             ]
         };
 
+        console.log('[DEBUG] Notice Query:', JSON.stringify(query));
+
         const notices = await Notice.find(query)
             .sort({ date: -1 })
             .limit(20);
+
+        console.log('[DEBUG] Notices found:', notices.length);
 
         // Duplicate execution removed
 

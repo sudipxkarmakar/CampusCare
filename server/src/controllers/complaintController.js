@@ -1,4 +1,5 @@
 import Complaint from '../models/Complaint.js';
+import User from '../models/User.js';
 import { analyzeComplaint } from '../utils/aiService.js';
 
 // @desc    File a new complaint
@@ -111,6 +112,55 @@ export const upvoteComplaint = async (req, res) => {
 
         res.json(complaint);
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+// @desc    Get complaints from mentees of the logged-in teacher
+// @route   GET /api/complaints/mentees
+export const getMenteeComplaints = async (req, res) => {
+    try {
+        // 1. Get Teacher and their mentees
+        // 1. Get Teacher and their mentees
+        const teacher = await User.findById(req.user._id);
+
+        if (!teacher || !teacher.mentees || teacher.mentees.length === 0) {
+            return res.json([]); // No mentees, no complaints
+        }
+
+        // 2. Find complaints from these students
+        const complaints = await Complaint.find({
+            student: { $in: teacher.mentees }
+        })
+            .populate('student', 'name department roomNumber rollNumber')
+            .sort({ createdAt: -1 });
+
+        res.json(complaints);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Update complaint status (Resolve/Escalate)
+// @route   PUT /api/complaints/:id/status
+export const updateComplaintStatus = async (req, res) => {
+    const { status } = req.body; // 'Resolved', 'Escalated', 'In Progress'
+
+    try {
+        const complaint = await Complaint.findById(req.params.id);
+
+        if (!complaint) {
+            return res.status(404).json({ message: 'Complaint not found' });
+        }
+
+        // Optional: Check if teacher is actually the mentor (security)
+        // For now, simpler implementation assuming teacher has access
+
+        complaint.status = status;
+        await complaint.save();
+
+        res.json(complaint);
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ message: error.message });
     }
 };

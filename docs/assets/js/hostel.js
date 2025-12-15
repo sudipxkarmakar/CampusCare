@@ -96,7 +96,7 @@ async function loadNotices() {
         const allNotices = await res.json();
 
         // Filter for hostel related
-        const data = allNotices.filter(n => n.audience === 'hosteler' || n.audience === 'general').slice(0, 5);
+        const data = allNotices.filter(n => n.audience === 'hosteler').slice(0, 5);
 
         if (data.length === 0) {
             list.innerHTML = '<p style="padding:10px; color:#666;">No hostel notices.</p>';
