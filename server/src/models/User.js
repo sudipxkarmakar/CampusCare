@@ -34,18 +34,26 @@ const userSchema = new mongoose.Schema({
         sparse: true,
     },
 
+    // Common for Student/Teacher    // Hosteler & Student Common
+    batch: { type: String }, // For Student & Hosteler
+
+    // Hosteler Specific
+    hostelName: { type: String },
+    roomNumber: { type: String },
+
+    // Teacher Specific
+    designation: { type: String },
+    yearsExperience: { type: Number },
+    joiningYear: { type: Number },
+    specialization: { type: String },
+
+    // Assignment & Other refs
+    xp: { type: Number, default: 0 },
+    streak: { type: Number, default: 0 },
+    lastActive: { type: Date },
     // Common for Student/Teacher/Hosteler
     department: {
         type: String, // e.g. 'CSE'
-    },
-
-    // Hosteler Specific
-    hostelName: {
-        type: String,
-        enum: ['H1', 'H2', 'H3', 'H4', 'H5']
-    },
-    roomNumber: {
-        type: String
     },
 
     // Relationships (Optional based on requirements)

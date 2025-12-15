@@ -12,6 +12,7 @@ const deptGroup = document.getElementById('deptGroup');
 const batchGroup = document.getElementById('batchGroup');
 const sectionGroup = document.getElementById('sectionGroup');
 const hostelFields = document.getElementById('hostelFields'); // Hosteler Fields
+const teacherFields = document.getElementById('teacherFields'); // Teacher Fields
 
 let isRegistering = false;
 
@@ -29,7 +30,7 @@ const roleConfig = {
         placeholder: 'Enter Employee ID (TXXXXXXXXXXX)',
         regex: /^T\d{11}$/,
         error: 'Employee ID must start with "T" followed by 11 digits.',
-        extras: ['dept']
+        extras: ['dept', 'teacherDetails']
     },
     hosteler: {
         label: 'Hostel Roll Number',
@@ -64,6 +65,10 @@ if (loginForm) {
             document.getElementById('section').value = "";
             document.getElementById('hostelName').value = "";
             document.getElementById('roomNumber').value = "";
+            document.getElementById('designation').value = "";
+            document.getElementById('yearsExperience').value = "";
+            document.getElementById('joiningYear').value = "";
+            document.getElementById('specialization').value = "";
         }
 
         updateModeUI();
@@ -94,6 +99,12 @@ if (loginForm) {
             const hostelName = document.getElementById('hostelName').value;
             const roomNumber = document.getElementById('roomNumber').value;
 
+            // Teacher fields
+            const designation = document.getElementById('designation').value;
+            const yearsExperience = document.getElementById('yearsExperience').value;
+            const joiningYear = document.getElementById('joiningYear').value;
+            const specialization = document.getElementById('specialization').value;
+
             // Strict Validation
             // 1. Email Domain - REMOVED RESTRICTION
             if (!email) {
@@ -106,6 +117,10 @@ if (loginForm) {
                 if (!department || !batch || !section) return alert('All fields (Dept, Batch, Section) are required for Students.');
             } else if (role === 'teacher') {
                 if (!department) return alert('Department is required for Teachers.');
+                // Optional: Validate teacher fields if strictly required
+                if (!designation || !yearsExperience || !joiningYear || !specialization) {
+                    return alert('All Teacher details (Designation, Experience, Joining Year, Specialization) are required.');
+                }
             } else if (role === 'hosteler') {
                 if (!department || !batch) return alert('Dept and Batch are required for Hostelers.');
                 if (!hostelName || !roomNumber) return alert('Hostel Name and Room Number are required.');
@@ -122,6 +137,13 @@ if (loginForm) {
                 bloodGroup: bloodGroup, // Send for ALL roles now
                 ...(role === 'student' || role === 'hosteler' ? { rollNumber: identifier } : { employeeId: identifier })
             };
+
+            if (role === 'teacher') {
+                regData.designation = designation;
+                regData.yearsExperience = yearsExperience;
+                regData.joiningYear = joiningYear;
+                regData.specialization = specialization;
+            }
 
             if (role === 'hosteler') {
                 regData.hostelName = hostelName;
@@ -193,6 +215,10 @@ function updateFormFields(role) {
                 hostelFields.style.display = config.extras.includes('hostel') ? 'block' : 'none';
             }
 
+            if (teacherFields) {
+                teacherFields.style.display = config.extras.includes('teacherDetails') ? 'block' : 'none';
+            }
+
             const bgWrapper = document.getElementById('bloodGroupWrapper');
             if (bgWrapper) {
                 // Now available for Student, Hosteler, AND Teacher
@@ -203,7 +229,9 @@ function updateFormFields(role) {
             deptGroup.style.display = 'none';
             batchGroup.style.display = 'none';
             sectionGroup.style.display = 'none';
+            sectionGroup.style.display = 'none';
             if (hostelFields) hostelFields.style.display = 'none';
+            if (teacherFields) teacherFields.style.display = 'none';
 
             const bgWrapper = document.getElementById('bloodGroupWrapper');
             if (bgWrapper) bgWrapper.style.display = 'none';

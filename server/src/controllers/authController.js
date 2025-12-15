@@ -52,7 +52,7 @@ const validateRoleData = (role, data) => {
 // @access  Public
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber } = req.body;
+        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
 
         // 1. Email Domain Check - REMOVED
         // if (!isValidEmail(email)) {
@@ -107,6 +107,10 @@ export const registerUser = async (req, res) => {
             userData.roomNumber = roomNumber;
         } else if (role === 'teacher') {
             userData.employeeId = employeeId;
+            userData.designation = designation;
+            userData.yearsExperience = yearsExperience;
+            userData.joiningYear = joiningYear;
+            userData.specialization = specialization;
         }
 
         // 5. Create User
