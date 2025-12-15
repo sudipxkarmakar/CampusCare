@@ -47,15 +47,22 @@
     <section class="standard-container" style="margin-bottom: 2rem;">
       <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
         <h3 style="margin-bottom: 1rem; color: #2d3748;">Upload New Assignment/Notes</h3>
-        <form id="createAssignmentForm" style="display: flex; flex-direction: column; gap: 1rem;">
+        <form id="createAssignmentForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-          <!-- Row 1 -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="row" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+            <div class="form-group">
+              <select id="assignType"
+                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%;"
+                onchange="toggleDeadlineField()">
+                <option value="assignment">Assignment</option>
+                <option value="note">Study Material / Note</option>
+              </select>
+            </div>
             <input type="text" id="assignTitle" placeholder="Title (e.g., Chapter 1 Notes)" required
               style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
-            <input type="text" id="assignSubject" placeholder="Subject (e.g., Web Development)" required
-              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
           </div>
+          <input type="text" id="assignSubject" placeholder="Subject (e.g., Web Development)" required
+            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
 
           <!-- Row 2 -->
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
@@ -115,6 +122,28 @@
       </div>
     </section>
 
+    <!-- NEW SECTION: MY NOTES -->
+    <section class="standard-container" style="margin-bottom: 2rem;">
+      <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom: 1rem; color: #2d3748;">My Uploaded Notes</h3>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+            <thead>
+              <tr style="border-bottom: 2px solid #e2e8f0; text-align: left;">
+                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Title</th>
+                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Dept/Batch</th>
+                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Uploaded On</th>
+                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="teacherNotesTable">
+              <!-- Notes Loaded Here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- SUBMISSIONS MODAL -->
     <div id="submissions-modal" class="modal-overlay"
       style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
@@ -149,6 +178,19 @@
   <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') m.style.display = 'none'; else m.style.display = 'flex'; }</script>
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/teacher_assignments.js"></script>
+  <script>
+    function toggleDeadlineField() {
+      const type = document.getElementById('assignType').value;
+      const deadlineInput = document.getElementById('assignDeadline');
+      if (type === 'note') {
+        deadlineInput.style.display = 'none';
+        deadlineInput.required = false;
+      } else {
+        deadlineInput.style.display = 'block';
+        deadlineInput.required = true;
+      }
+    }
+  </script>
 </body>
 
 </html>

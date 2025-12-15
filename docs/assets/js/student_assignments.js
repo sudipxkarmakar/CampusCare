@@ -42,45 +42,77 @@ async function loadAssignments() {
         const assignments = await response.json();
         fetchedAssignments = assignments;
 
-        if (assignments.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No pending assignments for your batch! 🎉</td></tr>';
-            return;
-        }
+        const assignmentsList = assignments.filter(a => a.type !== 'note');
+        const notesList = assignments.filter(a => a.type === 'note');
 
-        tableBody.innerHTML = assignments.map((assign, index) => {
-            const date = new Date(assign.deadline).toLocaleDateString('en-GB');
-            const teacherName = assign.teacher ? assign.teacher.name : 'Unknown';
+        // Render ASSIGNMENTS
+        if (assignmentsList.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No pending assignments! 🎉</td></tr>';
+        } else {
+            tableBody.innerHTML = assignmentsList.map((assign, index) => {
+                const date = new Date(assign.deadline).toLocaleDateString('en-GB');
+                const teacherName = assign.teacher ? assign.teacher.name : 'Unknown';
 
-            // Status Logic
-            let statusBadge;
-            if (assign.submitted) {
-                statusBadge = `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Submitted</span>`;
-            } else {
-                const isOverdue = new Date(assign.deadline) < new Date();
-                statusBadge = isOverdue
-                    ? `<span style="background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Overdue</span>`
-                    : `<span style="background: #fff7ed; color: #f59e0b; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>`;
-            }
+                // Find original index in fetchedAssignments for viewAssignment to work correctly
+                const originalIndex = fetchedAssignments.indexOf(assign);
 
-            return `
-            <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-                <td style="padding: 1rem; font-weight: 600; color: #2d3748;">
-                    ${assign.title}
-                    <div style="font-size: 0.75rem; color: #64748b; font-weight: 400;">${assign.subject}</div>
-                </td>
-                <td style="padding: 1rem; color: #64748b;">${teacherName}</td>
-                <td style="padding: 1rem; color: #64748b;">${date}</td>
-                <td style="padding: 1rem;">${statusBadge}</td>
-                <td style="padding: 1rem;">
-                    <div style="display: flex; gap: 5px;">
-                        <button onclick="viewAssignment(${index})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
+                // Status Logic
+                let statusBadge;
+                if (assign.submitted) {
+                    statusBadge = `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Submitted</span>`;
+                } else {
+                    const isOverdue = new Date(assign.deadline) < new Date();
+                    statusBadge = isOverdue
+                        ? `<span style="background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Overdue</span>`
+                        : `<span style="background: #fff7ed; color: #f59e0b; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>`;
+                }
+
+                return `
+                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                    <td style="padding: 1rem; font-weight: 600; color: #2d3748;">
+                        ${assign.title}
+                        <div style="font-size: 0.75rem; color: #64748b; font-weight: 400;">${assign.subject}</div>
+                    </td>
+                    <td style="padding: 1rem; color: #64748b;">${teacherName}</td>
+                    <td style="padding: 1rem; color: #64748b;">${date}</td>
+                    <td style="padding: 1rem;">${statusBadge}</td>
+                    <td style="padding: 1rem;">
+                        <button onclick="viewAssignment(${originalIndex})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
                             View Details
                         </button>
-                    </div>
-                </td>
-            </tr>
-            `;
-        }).join('');
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Render NOTES
+        const notesTableBody = document.getElementById('notes-table-body');
+        if (notesTableBody) {
+            if (notesList.length === 0) {
+                notesTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #64748b;">No notes available.</td></tr>';
+            } else {
+                notesTableBody.innerHTML = notesList.map((note) => {
+                    const teacherName = note.teacher ? note.teacher.name : 'Unknown';
+                    const originalIndex = fetchedAssignments.indexOf(note);
+
+                    return `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <td style="padding: 1rem; font-weight: 600; color: #2d3748;">
+                            ${note.title}
+                        </td>
+                        <td style="padding: 1rem; color: #64748b;">${note.subject}</td>
+                        <td style="padding: 1rem; color: #64748b;">${teacherName}</td>
+                        <td style="padding: 1rem;">
+                            <button onclick="viewAssignment(${originalIndex})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #6366f1; color:white; border:none; border-radius:6px; cursor:pointer;">
+                                <i class="fa-solid fa-book-open"></i> Read Note
+                            </button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+        }
 
     } catch (error) {
         console.error('Error:', error);
@@ -99,7 +131,7 @@ function viewAssignment(index) {
     document.getElementById('modalTitle').innerText = assignment.title;
     document.getElementById('modalSubject').innerText = assignment.subject;
     document.getElementById('modalTeacher').innerText = 'By: ' + (assignment.teacher ? assignment.teacher.name : 'Unknown');
-    document.getElementById('modalDeadline').innerText = 'Due: ' + new Date(assignment.deadline).toLocaleDateString('en-GB');
+    document.getElementById('modalDeadline').innerText = assignment.deadline ? 'Due: ' + new Date(assignment.deadline).toLocaleDateString('en-GB') : 'No Deadline';
 
     document.getElementById('modalDescription').innerText = assignment.description;
 
@@ -122,15 +154,22 @@ function viewAssignment(index) {
     // Toggle Submission Form
     const submissionForm = document.getElementById('submissionForm');
     const submissionStatus = document.getElementById('submissionStatus');
-    const submissionInput = document.getElementById('submissionFile'); // Changed ID
+    const submissionSection = document.getElementById('submissionSection');
+    const submissionInput = document.getElementById('submissionFile');
 
-    if (assignment.submitted) {
-        submissionForm.style.display = 'none';
-        submissionStatus.style.display = 'block';
+    // If TYPE is NOTE, hide submission entirely
+    if (assignment.type === 'note') {
+        submissionSection.style.display = 'none';
     } else {
-        submissionForm.style.display = 'block';
-        submissionStatus.style.display = 'none';
-        if (submissionInput) submissionInput.value = ''; // Clear previous input
+        submissionSection.style.display = 'block';
+        if (assignment.submitted) {
+            submissionForm.style.display = 'none';
+            submissionStatus.style.display = 'block';
+        } else {
+            submissionForm.style.display = 'block';
+            submissionStatus.style.display = 'none';
+            if (submissionInput) submissionInput.value = ''; // Clear previous input
+        }
     }
 
     // Show Modal

@@ -35,9 +35,13 @@ const assignmentSchema = new mongoose.Schema({
     },
     deadline: {
         type: Date,
-        required: true,
+        // required: true, // Made optional for Notes
     },
-    // submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Submission' }] // later
+    type: {
+        type: String,
+        enum: ['assignment', 'note'],
+        default: 'assignment'
+    }
 }, { timestamps: true });
 
 const Assignment = mongoose.model('Assignment', assignmentSchema);

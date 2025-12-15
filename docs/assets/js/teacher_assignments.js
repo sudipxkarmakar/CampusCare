@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function handleCreateAssignment(e) {
     e.preventDefault();
 
+    const type = document.getElementById('assignType').value;
     const title = document.getElementById('assignTitle').value;
     const subject = document.getElementById('assignSubject').value;
     const department = document.getElementById('assignDept').value;
@@ -29,6 +30,7 @@ async function handleCreateAssignment(e) {
 
     try {
         const formData = new FormData();
+        formData.append('type', type);
         formData.append('title', title);
         formData.append('subject', subject);
         formData.append('department', department);
@@ -96,42 +98,71 @@ async function loadCreatedAssignments() {
 
         const assignments = await response.json();
 
-        if (assignments.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">You haven\'t created any assignments yet.</td></tr>';
-            return;
+        // Split into Assignments and Notes
+        const assignmentsList = assignments.filter(a => a.type !== 'note');
+        const notesList = assignments.filter(a => a.type === 'note');
+
+        // Render Assignments
+        if (assignmentsList.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No assignments created.</td></tr>';
+        } else {
+            tableBody.innerHTML = assignmentsList.map(assign => {
+                const date = new Date(assign.deadline).toLocaleDateString('en-GB');
+                return `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 1rem; color: #2d3748; font-weight: 500;">
+                        ${assign.title}
+                        <div style="font-size: 0.8rem; color: #64748b;">${assign.subject}</div>
+                    </td>
+                    <td style="padding: 1rem; color: #64748b;">${assign.department} - ${assign.batch}</td>
+                    <td style="padding: 1rem; color: #64748b;">${date}</td>
+                    <td style="padding: 1rem;">
+                        <button onclick="viewSubmissions('${assign._id}', '${assign.title}')" class="btn-login" 
+                            style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
+                            View Submissions
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
         }
 
-        tableBody.innerHTML = assignments.map(assign => {
-            const date = new Date(assign.deadline).toLocaleDateString('en-GB');
+        // Render Notes
+        const notesTableBody = document.getElementById('teacherNotesTable');
+        if (notesTableBody) {
+            if (notesList.length === 0) {
+                notesTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notes uploaded.</td></tr>';
+            } else {
+                notesTableBody.innerHTML = notesList.map(note => {
+                    const date = new Date(note.createdAt).toLocaleDateString('en-GB');
 
-            // Handle Link (Notes)
-            let notesLink = '';
-            if (assign.link) {
-                let href = assign.link;
-                if (href.startsWith('/')) {
-                    href = 'http://localhost:5000' + href;
-                }
-                notesLink = `<a href="${href}" target="_blank" style="margin-left: 5px; color: #3b82f6;" title="View Notes/File"><i class="fa-solid fa-file-pdf"></i></a>`;
+                    let notesLink = '';
+                    if (note.link) {
+                        let href = note.link;
+                        if (href.startsWith('/')) {
+                            href = 'http://localhost:5000' + href;
+                        }
+                        notesLink = `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight:600; text-decoration:none;"><i class="fa-solid fa-file-pdf"></i> View File</a>`;
+                    } else {
+                        notesLink = '<span style="color: #94a3b8;">No File</span>';
+                    }
+
+                    return `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 1rem; color: #2d3748; font-weight: 500;">
+                            ${note.title}
+                            <div style="font-size: 0.8rem; color: #64748b;">${note.subject}</div>
+                        </td>
+                        <td style="padding: 1rem; color: #64748b;">${note.department} - ${note.batch}</td>
+                        <td style="padding: 1rem; color: #64748b;">${date}</td>
+                        <td style="padding: 1rem;">
+                            ${notesLink}
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
             }
-
-            return `
-            <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td style="padding: 1rem; color: #2d3748; font-weight: 500;">
-                    ${assign.title}
-                    <div style="font-size: 0.8rem; color: #64748b;">${assign.subject}</div>
-                </td>
-                <td style="padding: 1rem; color: #64748b;">${assign.department} - ${assign.batch}</td>
-                <td style="padding: 1rem; color: #64748b;">${date}</td>
-                <td style="padding: 1rem;">
-                    <button onclick="viewSubmissions('${assign._id}', '${assign.title}')" class="btn-login" 
-                        style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
-                        View Submissions
-                    </button>
-                    ${notesLink}
-                </td>
-            </tr>
-            `;
-        }).join('');
+        }
 
     } catch (error) {
         console.error('Error:', error);
