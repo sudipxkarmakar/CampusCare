@@ -8,6 +8,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .dropdown-selected {
+            background: #fff;
+            padding: 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4a5568;
+        }
+
+        .dropdown-selected:after {
+            content: '\f078';
+            /* FontAwesome Chevron Down */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+
+        .custom-dropdown.open .dropdown-selected:after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            top: 105%;
+            /* Forces it to open downwards */
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .custom-dropdown.open .dropdown-options {
+            display: block;
+        }
+
+        .dropdown-option {
+            padding: 0.8rem;
+            color: #2d3748;
+            transition: background 0.2s;
+        }
+
+        .dropdown-option:hover {
+            background: #f1f5f9;
+        }
+    </style>
 </head>
 
 <body>
@@ -78,37 +140,44 @@
                         <div class="form-group">
                             <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Target
                                 Department</label>
-                            <select id="noteDept" required
-                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; width: 100%;">
-                                <option value="">-- All Departments --</option>
-                                <option value="CSE">Computer Science (CSE)</option>
-                                <option value="IT">Information Technology (IT)</option>
-                                <option value="ECE">Electronics (ECE)</option>
-                                <option value="ME">Mechanical (ME)</option>
-                                <option value="CIVIL">Civil (CE)</option>
-                            </select>
+                            <div class="custom-dropdown" id="deptDropdown">
+                                <div class="dropdown-selected">Select Department</div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="CSE">Computer Science (CSE)</div>
+                                    <div class="dropdown-option" data-value="IT">Information Technology (IT)</div>
+                                    <div class="dropdown-option" data-value="ECE">Electronics (ECE)</div>
+                                    <div class="dropdown-option" data-value="ME">Mechanical (ME)</div>
+                                    <div class="dropdown-option" data-value="CIVIL">Civil (CE)</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="noteDept" value="">
                         </div>
                         <div class="form-group">
                             <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Target
                                 Batch (Year)</label>
-                            <select id="noteBatch" required
-                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; width: 100%;">
-                                <option value="">-- All Batches --</option>
-                                <option value="2026">Batch 2026</option>
-                                <option value="2027">Batch 2027</option>
-                                <option value="2028">Batch 2028</option>
-                                <option value="2029">Batch 2029</option>
-                            </select>
+                            <div class="custom-dropdown" id="batchDropdown">
+                                <div class="dropdown-selected">Select Batch</div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="2026">Batch 2026</div>
+                                    <div class="dropdown-option" data-value="2027">Batch 2027</div>
+                                    <div class="dropdown-option" data-value="2028">Batch 2028</div>
+                                    <div class="dropdown-option" data-value="2029">Batch 2029</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="noteBatch" value="">
                         </div>
                         <div class="form-group">
                             <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Target
                                 Group / Section</label>
-                            <select id="noteSection"
-                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; width: 100%;">
-                                <option value="">-- All Groups --</option>
-                                <option value="A">Group A</option>
-                                <option value="B">Group B</option>
-                            </select>
+                            <div class="custom-dropdown" id="sectionDropdown">
+                                <div class="dropdown-selected">-- All Groups --</div>
+                                <div class="dropdown-options">
+                                    <div class="dropdown-option" data-value="">-- All Groups --</div>
+                                    <div class="dropdown-option" data-value="A">Group A</div>
+                                    <div class="dropdown-option" data-value="B">Group B</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="noteSection" value="">
                         </div>
                     </div>
 
@@ -155,10 +224,52 @@
             </div>
         </section>
 
+        <div style="height: 300px;"></div>
     </main>
 
     <script src="../assets/js/landing.js"></script>
     <script src="../assets/js/teacher_notes.js"></script>
+    <script>
+        // Custom Dropdown Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdowns = document.querySelectorAll('.custom-dropdown');
+
+            dropdowns.forEach(dropdown => {
+                const selected = dropdown.querySelector('.dropdown-selected');
+                const options = dropdown.querySelector('.dropdown-options');
+                const hiddenInput = dropdown.nextElementSibling; // The hidden input
+
+                // Toggle Dropdown
+                selected.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Close others
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) d.classList.remove('open');
+                    });
+                    dropdown.classList.toggle('open');
+                });
+
+                // Select Option
+                options.querySelectorAll('.dropdown-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const value = option.getAttribute('data-value');
+                        const text = option.innerText;
+
+                        selected.innerText = text;
+                        hiddenInput.value = value;
+
+                        dropdown.classList.remove('open');
+                    });
+                });
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', () => {
+                dropdowns.forEach(d => d.classList.remove('open'));
+            });
+        });
+    </script>
 </body>
 
 </html>
