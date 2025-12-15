@@ -107,8 +107,14 @@ function viewAssignment(index) {
     const linkBtn = document.getElementById('modalLink');
 
     if (assignment.link && assignment.link.trim() !== "") {
+        let href = assignment.link;
+        if (href.startsWith('/')) {
+            href = 'http://localhost:5000' + href; // Prepend Backend URL
+        }
+
         linkContainer.style.display = 'block';
-        linkBtn.href = assignment.link;
+        linkBtn.href = href;
+        linkBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Download Attached Notes';
     } else {
         linkContainer.style.display = 'none';
     }

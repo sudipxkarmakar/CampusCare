@@ -16,7 +16,8 @@ async function handleCreateAssignment(e) {
     const batch = document.getElementById('assignBatch').value;
     const deadline = document.getElementById('assignDeadline').value;
     const description = document.getElementById('assignDesc').value;
-    const link = document.getElementById('assignLink').value;
+    const fileInput = document.getElementById('assignFile');
+    const file = fileInput.files[0];
 
     const userStr = localStorage.getItem('user');
     if (!userStr) {
@@ -27,22 +28,30 @@ async function handleCreateAssignment(e) {
     const user = JSON.parse(userStr);
 
     try {
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('subject', subject);
+        formData.append('department', department);
+        formData.append('batch', batch);
+        formData.append('deadline', deadline);
+        formData.append('description', description);
+        formData.append('teacherId', user._id); // Validated by backend
+
+        if (file) {
+            if (file.type !== 'application/pdf') {
+                alert('Only PDF files are allowed for notes.');
+                return;
+            }
+            formData.append('file', file);
+        }
+
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${user.token}`
+                // Content-Type: multipart/form-data required (browser sets it automatically with boundary)
             },
-            body: JSON.stringify({
-                title,
-                subject,
-                department,
-                batch,
-                deadline,
-                description,
-                link,
-                teacherId: user._id // Validated by backend
-            })
+            body: formData
         });
 
         const data = await response.json();
@@ -50,6 +59,7 @@ async function handleCreateAssignment(e) {
         if (response.ok) {
             alert('Assignment/Notes uploaded successfully!');
             document.getElementById('createAssignmentForm').reset();
+            loadCreatedAssignments(); // Refresh list immediately
         } else {
             alert(data.message || 'Failed to upload assignment.');
         }
@@ -93,6 +103,17 @@ async function loadCreatedAssignments() {
 
         tableBody.innerHTML = assignments.map(assign => {
             const date = new Date(assign.deadline).toLocaleDateString('en-GB');
+
+            // Handle Link (Notes)
+            let notesLink = '';
+            if (assign.link) {
+                let href = assign.link;
+                if (href.startsWith('/')) {
+                    href = 'http://localhost:5000' + href;
+                }
+                notesLink = `<a href="${href}" target="_blank" style="margin-left: 5px; color: #3b82f6;" title="View Notes/File"><i class="fa-solid fa-file-pdf"></i></a>`;
+            }
+
             return `
             <tr style="border-bottom: 1px solid #e2e8f0;">
                 <td style="padding: 1rem; color: #2d3748; font-weight: 500;">
@@ -106,7 +127,7 @@ async function loadCreatedAssignments() {
                         style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
                         View Submissions
                     </button>
-                    ${assign.link ? `<a href="${assign.link}" target="_blank" style="margin-left: 5px; color: #3b82f6;"><i class="fa-solid fa-link"></i></a>` : ''}
+                    ${notesLink}
                 </td>
             </tr>
             `;

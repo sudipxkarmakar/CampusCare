@@ -21,10 +21,16 @@ export const createAssignment = async (req, res) => {
             return res.status(403).json({ message: 'Not authorized to create assignments' });
         }
 
+        let resourceLink = link || ''; // Default to provided link
+        if (req.file) {
+            // If file provided, override/set resourceLink
+            resourceLink = `/uploads/assignments/${req.file.filename}`;
+        }
+
         const assignment = await Assignment.create({
             title,
             description,
-            link,
+            link: resourceLink,
             subject,
             teacher: req.user._id,
             department: teacher.department, // Use Teacher's Department

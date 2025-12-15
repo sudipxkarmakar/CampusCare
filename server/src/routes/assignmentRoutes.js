@@ -41,7 +41,11 @@ const upload = multer({
 
 const router = express.Router();
 
-router.post('/', protect, createAssignment);
+// ... imports
+
+// ... storage/upload config
+
+router.post('/', protect, upload.single('file'), createAssignment);
 router.get('/', protect, getAssignments);
 router.get('/created', protect, getTeacherAssignments);
 router.get('/:id/submissions', protect, getAssignmentSubmissions);
