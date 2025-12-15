@@ -1,5 +1,44 @@
 import Leave from '../models/Leave.js';
 
+// @desc    Get All Leaves (for Mentor/Warden)
+// @route   GET /api/hostel/leaves
+export const getAllLeaves = async (req, res) => {
+    try {
+        const query = {};
+        if (req.query.status) {
+            query.status = req.query.status;
+        }
+
+        const leaves = await Leave.find(query)
+            .populate('student', 'name rollNumber department batch section')
+            .sort({ createdAt: -1 });
+
+        res.json(leaves);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Update Leave Status
+// @route   PUT /api/hostel/leave/:id
+export const updateLeaveStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const leave = await Leave.findById(req.params.id);
+
+        if (!leave) {
+            return res.status(404).json({ message: 'Leave application not found' });
+        }
+
+        leave.status = status;
+        await leave.save();
+
+        res.json(leave);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Apply for Leave
 // @route   POST /api/hostel/leave
 export const applyLeave = async (req, res) => {

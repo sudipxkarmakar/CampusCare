@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await api.post('/hostel/leave', data);
                 if (res._id) {
-                    alert('Leave Application Submitted to Warden');
+                    alert('Leave Application Submitted to Mentor');
                     leaveForm.reset();
                     loadLeaves();
                 } else {
@@ -138,40 +138,50 @@ async function loadLeaves() {
         }
 
         let html = `
-            <div style="height:100%; display:flex; flex-direction:column;">
-                <table class="status-table" style="flex:1; height:100%; width:100%;">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Dates</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <div style="height:100%; display:flex; flex-direction:column; overflow:hidden;">
+                <div style="flex:1; overflow-y:auto;">
+                    <table class="status-table" style="width:100%;">
+                        <thead>
+                            <tr style="position: sticky; top: 0; background: #f8fafc; z-index: 1;">
+                                <th>Type</th>
+                                <th>Reason</th>
+                                <th>Dates</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
         `;
 
         leaves.forEach(l => {
             let badgeBg = '#fef3c7'; // yellow-50
             let badgeColor = '#d97706'; // yellow-600
+            let icon = '<i class="fa-regular fa-clock"></i>';
 
             if (l.status === 'Approved') {
                 badgeBg = '#dcfce7'; // green-100
                 badgeColor = '#16a34a'; // green-600
-            }
-            if (l.status === 'Rejected') {
+                icon = '<i class="fa-solid fa-check"></i>';
+            } else if (l.status === 'Rejected') {
                 badgeBg = '#fee2e2'; // red-100
                 badgeColor = '#dc2626'; // red-600
+                icon = '<i class="fa-solid fa-xmark"></i>';
+            } else if (l.status === 'Pending') {
+                // Explicitly keeping default, but good for clarity
+                badgeBg = '#fff7ed'; // orange-50
+                badgeColor = '#ea580c'; // orange-600
+                icon = '<i class="fa-solid fa-hourglass-half"></i>';
             }
 
             html += `
                 <tr>
-                    <td style="font-weight:600;">${l.type}</td>
-                    <td style="font-size:0.75rem; color:#64748b;">
+                    <td style="font-weight:600; white-space:nowrap;">${l.type}</td>
+                    <td style="color:#4b5563; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${l.reason}">${l.reason}</td>
+                    <td style="font-size:0.75rem; color:#64748b; white-space:nowrap;">
                         ${new Date(l.startDate).toLocaleDateString()} - ${new Date(l.endDate).toLocaleDateString()}
                     </td>
                     <td>
-                        <span class="badge-status" style="background:${badgeBg}; color:${badgeColor};">
-                            ${l.status}
+                        <span class="badge-status" style="background:${badgeBg}; color:${badgeColor}; display:inline-flex; align-items:center; gap:4px;">
+                            ${icon} ${l.status}
                         </span>
                     </td>
                 </tr>
@@ -179,7 +189,8 @@ async function loadLeaves() {
         });
 
         html += `   </tbody>
-                </table>
+                    </table>
+                </div>
             </div>`;
 
         list.innerHTML = html;
