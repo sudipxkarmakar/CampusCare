@@ -9,6 +9,9 @@ const assignmentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    link: {
+        type: String, // Optional URL for notes
+    },
     subject: {
         type: String,
         required: true,

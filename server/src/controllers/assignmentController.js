@@ -1,17 +1,22 @@
 import Assignment from '../models/Assignment.js';
 import User from '../models/User.js';
 import Submission from '../models/Submission.js';
+import fs from 'fs';
 
 // @desc    Create a new assignment
 // @route   POST /api/assignments
 // @access  Teacher/HOD
+// @desc    Create a new assignment
+// @route   POST /api/assignments
+// @access  Teacher/HOD
 export const createAssignment = async (req, res) => {
-    const { title, description, subject, department, batch, section, deadline, teacherId } = req.body;
+    const { title, description, link, subject, batch, section, deadline } = req.body; // Remove 'department' from destructuring
 
     try {
         // Validate Teacher
         // In prod, use req.user._id from middleware
-        const teacher = await User.findById(teacherId);
+        const teacher = await User.findById(req.user._id);
+
         if (!teacher || (teacher.role !== 'teacher' && teacher.role !== 'hod')) {
             return res.status(403).json({ message: 'Not authorized to create assignments' });
         }
@@ -19,9 +24,10 @@ export const createAssignment = async (req, res) => {
         const assignment = await Assignment.create({
             title,
             description,
+            link,
             subject,
-            teacher: teacherId,
-            department,
+            teacher: req.user._id,
+            department: teacher.department, // Use Teacher's Department
             batch,
             section,
             deadline
@@ -74,6 +80,108 @@ export const getAssignments = async (req, res) => {
         }
 
         res.json(assignmentsWithStatus);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const submitAssignment = async (req, res) => {
+    const logParams = (msg) => {
+        const logMsg = `[${new Date().toISOString()}] ${msg}\n`;
+        try {
+            // Using absolute path relative to CWD or __dirname might be safer
+            // assuming process CWD is server root or project root?
+            // Let's try appending to 'debug_submission.log' in CWD
+            fs.appendFileSync('debug_submission.log', logMsg);
+        } catch (e) { console.error('Log file error', e); }
+    };
+
+    try {
+        logParams('Started submitAssignment');
+        logParams(`Params ID: ${req.params.id}`);
+        logParams(`User ID: ${req.user._id}`);
+        logParams(`File: ${req.file ? req.file.filename : 'No File'}`);
+
+        const assignmentId = req.params.id;
+        const studentId = req.user._id;
+
+        // Check if already submitted
+        const existingSubmission = await Submission.findOne({
+            assignment: assignmentId,
+            student: studentId
+        });
+
+        if (existingSubmission) {
+            logParams('Already submitted');
+            return res.status(400).json({ message: 'Assignment already submitted' });
+        }
+
+        let submissionLink = '';
+        if (req.file) {
+            submissionLink = `/uploads/assignments/${req.file.filename}`;
+        } else if (req.body.link) {
+            submissionLink = req.body.link;
+        } else {
+            logParams('No file/link');
+            return res.status(400).json({ message: 'Please upload a PDF file.' });
+        }
+
+        const submission = await Submission.create({
+            assignment: assignmentId,
+            student: studentId,
+            link: submissionLink
+        });
+
+        logParams(`Submission Created: ${submission._id}`);
+        res.status(201).json(submission);
+
+    } catch (error) {
+        if (typeof logParams === 'function') logParams(`Error: ${error.message}`);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get all assignments created by the logged-in teacher (Strict Dept)
+// @route   GET /api/assignments/created
+// @access  Teacher
+export const getTeacherAssignments = async (req, res) => {
+    try {
+        const teacher = await User.findById(req.user._id);
+
+        // Only show assignments where Teacher is creator AND Department matches (Strict View)
+        const assignments = await Assignment.find({
+            teacher: req.user._id,
+            department: teacher.department
+        })
+            .sort({ createdAt: -1 }); // Newest first
+
+        res.json(assignments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get all submissions for an assignment
+// @route   GET /api/assignments/:id/submissions
+// @access  Teacher
+export const getAssignmentSubmissions = async (req, res) => {
+    try {
+        const assignment = await Assignment.findById(req.params.id);
+
+        if (!assignment) {
+            return res.status(404).json({ message: 'Assignment not found' });
+        }
+
+        // Verify that the requesting teacher is the owner
+        if (assignment.teacher.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to view these submissions' });
+        }
+
+        const submissions = await Submission.find({ assignment: req.params.id })
+            .populate('student', 'name rollNumber email')
+            .sort({ submittedAt: -1 });
+
+        res.json(submissions);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

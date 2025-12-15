@@ -27,13 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchStats() {
     try {
         // Fetch Assignments
-        const res = await fetch(`http://localhost:5000/api/assignments?dept=${user.department}&batch=${user.batch}&section=${user.section}`);
+        const res = await fetch(`http://localhost:5000/api/assignments?dept=${user.department}&batch=${user.batch}&section=${user.section}`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
         if (!res.ok) throw new Error('Failed to fetch assignments');
 
         const assignments = await res.json();
 
-        // Filter Pending (Future Deadline)
-        const pendingCount = assignments.filter(a => new Date(a.deadline) > new Date()).length;
+        // Filter Pending (All unsubmitted, including overdue)
+        const pendingCount = assignments.filter(a => !a.submitted).length;
 
         // Update DOM
         const pendingCard = document.querySelector('a[href="assignments.html"] .stat-value');
