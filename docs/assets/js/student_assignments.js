@@ -65,7 +65,12 @@ function renderAssignments(container, data) {
         let badgeBg = 'rgba(16, 185, 129, 0.2)';
         let statusText = 'Pending';
 
-        if (dayDiff < 0) {
+        if (a.submitted) {
+            priorityClass = 'priority-green';
+            badgeColor = '#10b981';
+            badgeBg = 'rgba(16, 185, 129, 0.2)';
+            statusText = 'Submitted';
+        } else if (dayDiff < 0) {
             priorityClass = 'priority-red';
             badgeColor = '#ef4444';
             badgeBg = 'rgba(239, 68, 68, 0.2)';
@@ -111,12 +116,12 @@ function viewAssignment(id) {
     alert(`Viewing assignment ${id}`);
 }
 
- 
-function renderMockAssignments(container) { 
-    const mockData = [ 
-        { _id: 'm1', title: 'Data Structures Algo', teacher: { name: 'Dr. Smith' }, dueDate: new Date(Date.now() + 86400000 * 5).toISOString() }, 
-        { _id: 'm2', title: 'Database Systems', teacher: { name: 'Prof. Jones' }, dueDate: new Date(Date.now() + 86400000 * 2).toISOString() }, 
-        { _id: 'm3', title: 'Web Development', teacher: { name: 'Ms. Lee' }, dueDate: new Date(Date.now() - 86400000).toISOString() } 
-    ]; 
-    renderAssignments(container, mockData); 
+
+function renderMockAssignments(container) {
+    const mockData = [
+        { _id: 'm1', title: 'Data Structures Algo', teacher: { name: 'Dr. Smith' }, dueDate: new Date(Date.now() + 86400000 * 5).toISOString() },
+        { _id: 'm2', title: 'Database Systems', teacher: { name: 'Prof. Jones' }, dueDate: new Date(Date.now() + 86400000 * 2).toISOString() },
+        { _id: 'm3', title: 'Web Development', teacher: { name: 'Ms. Lee' }, dueDate: new Date(Date.now() - 86400000).toISOString() }
+    ];
+    renderAssignments(container, mockData);
 }

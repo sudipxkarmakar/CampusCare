@@ -1,5 +1,6 @@
 import Assignment from '../models/Assignment.js';
 import User from '../models/User.js';
+import Submission from '../models/Submission.js';
 
 // @desc    Create a new assignment
 // @route   POST /api/assignments
@@ -38,15 +39,6 @@ export const getAssignments = async (req, res) => {
     const { dept, batch, section } = req.query;
 
     try {
-        const query = {
-            department: dept,
-            batch: batch,
-        };
-
-        // If section provided, filter match. If assignment has no section, it's for whole batch?
-        // Let's assume if assignment.section is null, it applies to all. 
-        // Or strictly match query.
-
         let filter = {
             department: dept,
             batch: batch
@@ -65,7 +57,23 @@ export const getAssignments = async (req, res) => {
             .populate('teacher', 'name')
             .sort({ deadline: 1 });
 
-        res.json(assignments);
+        // Check for submissions by THIS student
+        let assignmentsWithStatus = [];
+        if (req.user) {
+            const submissions = await Submission.find({ student: req.user._id });
+            const submissionMap = new Set(submissions.map(s => s.assignment.toString()));
+
+            assignmentsWithStatus = assignments.map(a => {
+                const doc = a.toObject();
+                doc.submitted = submissionMap.has(a._id.toString());
+                return doc;
+            });
+        } else {
+            // Fallback if no user (should be protected usually)
+            assignmentsWithStatus = assignments;
+        }
+
+        res.json(assignmentsWithStatus);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

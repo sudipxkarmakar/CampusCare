@@ -10,7 +10,13 @@ import Leave from '../src/models/Leave.js';
 import MessMenu from '../src/models/MessMenu.js';
 import MarMooc from '../src/models/MarMooc.js';
 
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const checkCounts = async () => {
     try {
