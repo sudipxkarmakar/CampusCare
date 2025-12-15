@@ -222,17 +222,15 @@ window.addEventListener('click', (e) => {
 });
 
 function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
+    localStorage.clear();
 
-        // Determine path to home based on current location
-        const path = window.location.pathname;
-        let redirect = 'index.html';
+    // Determine path to home based on current location
+    const path = window.location.pathname;
+    let redirect = 'index.html';
 
-        if (path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/notices/')) {
-            redirect = '../index.html';
-        }
-
-        window.location.href = redirect;
+    if (path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/notices/')) {
+        redirect = '../index.html';
     }
+
+    window.location.href = redirect;
 }
