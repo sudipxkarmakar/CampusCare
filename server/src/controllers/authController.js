@@ -50,16 +50,38 @@ const validateRoleData = (role, data) => {
 // @desc    Register a new user (Strict)
 // @route   POST /api/auth/register
 // @access  Public
+// ... imports
+
+// Mock User Data
+const MOCK_USER = {
+    _id: 'mock_user_id_123',
+    name: 'Mock User',
+    email: 'mock@example.com',
+    role: 'student',
+    department: 'CSE',
+    batch: '2024',
+    section: 'A',
+    rollNumber: '12345678901'
+};
+
+// @desc    Register a new user (Strict)
+// @route   POST /api/auth/register
+// @access  Public
 export const registerUser = async (req, res) => {
+    if (global.MOCK_MODE) {
+        console.log('⚡ Mock Registration Successful');
+        return res.status(201).json({
+            _id: MOCK_USER._id,
+            name: req.body.name || MOCK_USER.name,
+            email: req.body.email || MOCK_USER.email,
+            role: req.body.role || MOCK_USER.role,
+            token: generateToken(MOCK_USER._id),
+        });
+    }
+
     try {
         const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
-
-        // 1. Email Domain Check - REMOVED
-        // if (!isValidEmail(email)) {
-        //     return res.status(400).json({ message: 'Email must be @gmail.com, @yahoo.com, or @outlook.com' });
-        // }
-
-        // 2. Role specific validation
+        // ... rest of registerUser
         const validationError = validateRoleData(role, req.body);
         if (validationError) {
             return res.status(400).json({ message: validationError });
@@ -70,7 +92,7 @@ export const registerUser = async (req, res) => {
         if (emailExists) {
             return res.status(400).json({ message: 'User with this Email already exists.' });
         }
-
+        // ...
         let idQuery;
         if (role === 'teacher') {
             idQuery = { employeeId };
@@ -138,13 +160,27 @@ export const registerUser = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 export const loginUser = async (req, res) => {
+    if (global.MOCK_MODE) {
+        console.log('⚡ Mock Login Successful');
+        return res.json({
+            _id: MOCK_USER._id,
+            name: MOCK_USER.name,
+            email: MOCK_USER.email,
+            role: req.body.role || MOCK_USER.role,
+            department: MOCK_USER.department,
+            batch: MOCK_USER.batch,
+            section: MOCK_USER.section,
+            token: generateToken(MOCK_USER._id),
+        });
+    }
+
     try {
         const { identifier, password, role } = req.body;
 
         if (!identifier || !password || !role) {
             return res.status(400).json({ message: 'Please provide ID, Password, and Role.' });
         }
-
+        // ... rest of loginUser logic
         // 1. Construct Strict Query
         let query = { role: role };
 

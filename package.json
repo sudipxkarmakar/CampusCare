@@ -1,0 +1,13 @@
+{
+    "name": "campuscare-root",
+    "version": "1.0.0",
+    "description": "Root configuration for CampusCare",
+    "scripts": {
+        "start": "cd server && npm start",
+        "dev": "cd server && npm run dev",
+        "install-deps": "cd server && npm install"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
