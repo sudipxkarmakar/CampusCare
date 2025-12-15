@@ -193,3 +193,26 @@ export const getAssignmentSubmissions = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+// @desc    Delete assignment/note
+// @route   DELETE /api/assignments/:id
+// @access  Teacher
+export const deleteAssignment = async (req, res) => {
+    try {
+        const assignment = await Assignment.findById(req.params.id);
+
+        if (!assignment) {
+            return res.status(404).json({ message: 'Resource not found' });
+        }
+
+        // Verify ownership
+        if (assignment.teacher.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to delete this resource' });
+        }
+
+        await assignment.deleteOne(); // or findByIdAndDelete
+
+        res.json({ message: 'Resource deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

@@ -146,20 +146,29 @@ async function loadNotes() {
 }
 
 async function deleteNote(id) {
-    if (!confirm('Are you sure you want to delete this note?')) return;
+    if (!confirm('Are you sure you want to delete this?')) return;
 
     const userStr = localStorage.getItem('user');
     const user = JSON.parse(userStr);
 
     try {
-        // We assume generic DELETE endpoint exists or we use assignment delete
-        // Existing assignmentController doesn't explicitly have DELETE I think, checking...
-        // Actually I need to check if DELETE route exists. If not, I'll allow delete button but it might fail until I implement it.
-        // For now, I will omit the implementation of delete call if I am not sure, OR I will just alert "Feature coming soon" to be safe.
-        // But user asked to "connect with database", so basic CRUD is expected.
-        // I will bet on DELETE /api/assignments/:id existing or I will create it.
-        alert("Delete functionality to be implemented in backend.");
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Deleted successfully.');
+            loadNotes();
+        } else {
+            alert(data.message || 'Failed to delete.');
+        }
     } catch (e) {
         console.error(e);
+        alert('Error deleting resource.');
     }
 }
