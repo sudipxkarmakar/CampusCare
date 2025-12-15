@@ -66,7 +66,10 @@ async function loadMenu() {
             const isToday = day === today ? 'today-row' : '';
             html += `
                 <tr class="${isToday}">
-                    <td>${day}</td>
+                    <td>
+                        ${day}
+                        ${day === today ? '<span style="background:#0ea5e9; color:white; font-size:0.65rem; padding:2px 6px; border-radius:4px; margin-left:6px; vertical-align:middle; font-weight:700;">TODAY</span>' : ''}
+                    </td>
                     <td>${meals.Breakfast}</td>
                     <td>${meals.Lunch}</td>
                     <td>${meals.Dinner}</td>

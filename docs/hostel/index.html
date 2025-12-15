@@ -10,111 +10,61 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
     <style>
+        /* --- PROFESSIONAL MESS MENU STYLE --- */
         .menu-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 0.9rem;
-            font-size: 0.9rem;
-        }
-
-        .menu-table th,
-        .menu-table td {
-            border: none;
-            border-bottom: 1px solid rgba(203, 213, 225, 0.5);
-            padding: 0.8rem 0.6rem;
-            text-align: center;
-            vertical-align: middle;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            color: #334155;
         }
 
         .menu-table th {
-            background: transparent;
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
             color: #64748b;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
+            font-size: 0.75rem;
             letter-spacing: 0.05em;
-            border-bottom: 2px solid #cbd5e1;
-            font-size: 0.8rem;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .menu-table td {
-            background: rgba(255, 255, 255, 0.3);
-            color: #475569;
-            transition: all 0.2s ease;
-            border-right: 1px solid rgba(203, 213, 225, 0.3);
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
         }
 
-        .menu-table td:last-child {
-            border-right: none;
+        .menu-table tbody tr:last-child td {
+            border-bottom: none;
         }
 
-        .menu-table tbody tr {
-            transition: all 0.2s ease;
-        }
-
-
+        /* Hover Effect - Subtle */
         .menu-table tbody tr:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(193, 33, 233, 0.15);
-            background: white;
-            z-index: 10;
-            position: relative;
-            border-radius: 8px;
-            border-radius: 8px;
+            background-color: #f8fafc;
         }
 
-        .menu-table tbody tr:hover td {
-            background: #fdf4ff;
-            color: #c121e9 !important;
-            border-color: #e879f9;
+        /* Today's Row Highlight - Professional & Distinct */
+        .today-row {
+            background-color: #f0f9ff !important;
+            /* Sky blue light */
         }
-
-        .menu-table tbody tr:hover td:first-child {
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
-        }
-
-        .menu-table tbody tr:hover td:last-child {
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-
 
         .today-row td {
-            background: linear-gradient(135deg, #00aeff 0%, #c121e9 100%) !important;
-            border-top: none;
-            border-bottom: none !important;
-            color: white !important;
+            color: #0369a1;
+            /* Dark blue text */
             font-weight: 600;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .today-row td:first-child {
-            border-left: none;
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
+            border-left: 4px solid #0ea5e9;
+            /* Blue accent bar */
             position: relative;
         }
 
-        .today-row td:last-child {
-            border-right: none;
-            border-top-right-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
-
-        .today-row td:first-child::after {
-            content: 'TODAY';
-            position: absolute;
-            top: -8px;
-            left: 5px;
-            background: #c121e9;
-            color: white;
-            font-size: 0.6rem;
-            padding: 1px 6px;
-            border-radius: 10px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
+        /* Optional: Add a small dot or badge via JS, but CSS border is clean */
 
         .status-table {
             width: 100%;
@@ -221,20 +171,7 @@
 
         /* --- FIX TEXT COLORS ON HOVER (Override Global Static Card) --- */
 
-        /* 1. Menu Table: Purple text on hover for normal rows */
-        .standard-card.static-card:hover .menu-table tbody tr:hover td {
-            color: #c121e9 !important;
-        }
-
-        /* 2. Menu Table: TODAY Row must stay WHITE */
-        .standard-card.static-card:hover .menu-table tbody tr.today-row td {
-            color: white !important;
-        }
-
-        /* 3. Status Table: Keep text Dark on hover */
-        .standard-card.static-card:hover .status-table tbody tr:hover td {
-            color: #334155 !important;
-        }
+        /* Removed conflicting overrides */
 
         /* 4. Badges must keep their color */
 
