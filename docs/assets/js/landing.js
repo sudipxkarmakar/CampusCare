@@ -96,6 +96,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Load Transparency Wall (Complaints)
+    const complaintContainer = document.getElementById('complaint-list');
+    if (complaintContainer) {
+        try {
+            const res = await fetch('http://localhost:5000/api/complaints');
+            if (res.ok) {
+                const complaints = await res.json();
+                const displayComplaints = complaints.slice(0, 3); // Top 3 recent
+
+                if (displayComplaints.length > 0) {
+                    let html = '';
+                    displayComplaints.forEach(c => {
+                        let statusClass = 'status-progress';
+                        if (c.status === 'Resolved') statusClass = 'status-resolved';
+
+                        const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+                        const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
+
+                        html += `
+                          <div class="blog-card glass">
+                            <div class="status-badge ${statusClass}">${c.status.toUpperCase()}</div>
+                            <h3 class="blog-title">${c.title}</h3>
+                            <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
+                            <p class="blog-excerpt">${excerpt}</p>
+                            <div class="blog-footer">
+                              <span><i class="fa-solid fa-thumbs-up"></i> ${c.upvotes} Upvotes</span>
+                              ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
+                            </div>
+                          </div>
+                        `;
+                    });
+                    complaintContainer.innerHTML = html;
+                }
+            }
+        } catch (error) {
+            console.error('Transparency Wall Error:', error);
+        }
+    }
+
     // Animate Blobs or Interactivity if needed
 
     // --- AUTH STATE CHECK ---
