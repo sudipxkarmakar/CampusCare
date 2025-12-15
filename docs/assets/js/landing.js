@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load Public Notices
+    // 1. Immediate UI Updates (Auth & Profile)
+    if (window.checkAuthState) window.checkAuthState();
+
+    // 2. Load Public Notices
     const noticeContainer = document.getElementById('public-notice-list');
 
     if (noticeContainer) {
@@ -167,7 +170,13 @@ window.checkAuthState = function () {
         }
         // -------------------------
 
-        if (userName) userName.textContent = `Hello, ${user.name ? user.name.split(' ')[0] : 'User'}`;
+        if (userName) {
+            let displayName = 'User';
+            if (user.name) displayName = user.name.split(' ')[0];
+            else if (user.role) displayName = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+            userName.textContent = `Hello, ${displayName}`;
+        }
 
         // Role-based Colors
         let roleColor = '10b981'; // Default Green (Teacher/General)
