@@ -28,14 +28,9 @@ export const getNotices = async (req, res) => {
             ]
         };
 
-        console.log(`[DEBUG] Role: ${role}, AudienceList: ${audienceList}, UserID: ${userId}`);
-        console.log(`[DEBUG] Query: ${JSON.stringify(query)}`);
-
         const notices = await Notice.find(query)
             .sort({ date: -1 })
             .limit(20);
-
-        console.log(`[DEBUG] Found ${notices.length} notices`);
 
         // Duplicate execution removed
 

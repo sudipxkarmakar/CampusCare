@@ -3,15 +3,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : null;
 
-        // --- 1. MOCK FALLBACK IF NO TOKEN ---
-        if (!token) {
-            console.warn('No authentication token found. Using mock data.');
+        // --- 1. MOCK FALLBACK IF NO TOKEN OR USER ---
+        if (!token || !user) {
+            console.warn('No authentication or user found. Using mock data.');
             renderMockAssignments(tableBody);
             return;
         }
 
-        const response = await fetch(`${API_BASE_URL}/assignments/my-assignments`, {
+        const dept = user.department || 'CSE';
+        const batch = user.batch || '2025';
+        const section = user.section || '';
+
+        // FIX: Use correct endpoint and query params
+        const response = await fetch(`${API_BASE_URL}/assignments?dept=${dept}&batch=${batch}&section=${section}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -56,15 +63,30 @@ function renderAssignments(container, data) {
         let priorityClass = 'priority-green';
         let badgeColor = '#10b981';
         let badgeBg = 'rgba(16, 185, 129, 0.2)';
+        let statusText = 'Pending';
 
-        if (dayDiff <= 2) {
+        if (a.submitted) {
+            priorityClass = 'priority-green';
+            badgeColor = '#10b981';
+            badgeBg = 'rgba(16, 185, 129, 0.2)';
+            statusText = 'Submitted';
+        } else if (dayDiff < 0) {
             priorityClass = 'priority-red';
             badgeColor = '#ef4444';
             badgeBg = 'rgba(239, 68, 68, 0.2)';
+            statusText = 'Overdue';
+        } else if (dayDiff <= 2) {
+            priorityClass = 'priority-red';
+            badgeColor = '#ef4444';
+            badgeBg = 'rgba(239, 68, 68, 0.2)';
+            statusText = `Pending (${dayDiff} Days)`;
         } else if (dayDiff <= 5) {
             priorityClass = 'priority-yellow';
             badgeColor = '#f59e0b';
             badgeBg = 'rgba(245, 158, 11, 0.2)';
+            statusText = `Pending (${dayDiff} Days)`;
+        } else {
+            statusText = `Pending (${dayDiff} Days)`;
         }
 
         // 3. Render Row with 'list-row-hover'
@@ -74,7 +96,9 @@ function renderAssignments(container, data) {
             <td style="padding: 1rem; color: #64748b;">${a.teacher?.name || 'Unknown'}</td>
             <td style="padding: 1rem; color: #4b5563;">${new Date(a.dueDate).toLocaleDateString()}</td>
             <td style="padding: 1rem;">
-                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${dayDiff < 0 ? 'Overdue' : dayDiff + ' Days Left'}</span>
+                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
+                    ${statusText}
+                </span>
             </td>
             <td style="padding: 1rem; display: flex; gap: 10px;">
                 <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 5px; cursor: pointer; background: #334155 !important; color: white !important; border: none;" onclick="viewAssignment('${a._id}')">
@@ -92,3 +116,12 @@ function viewAssignment(id) {
     alert(`Viewing assignment ${id}`);
 }
 
+
+function renderMockAssignments(container) {
+    const mockData = [
+        { _id: 'm1', title: 'Data Structures Algo', teacher: { name: 'Dr. Smith' }, dueDate: new Date(Date.now() + 86400000 * 5).toISOString() },
+        { _id: 'm2', title: 'Database Systems', teacher: { name: 'Prof. Jones' }, dueDate: new Date(Date.now() + 86400000 * 2).toISOString() },
+        { _id: 'm3', title: 'Web Development', teacher: { name: 'Ms. Lee' }, dueDate: new Date(Date.now() - 86400000).toISOString() }
+    ];
+    renderAssignments(container, mockData);
+}
