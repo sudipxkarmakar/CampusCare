@@ -3,11 +3,17 @@ const API_URL = 'http://localhost:5000/api';
 const api = {
     post: async (endpoint, data) => {
         try {
+            const token = localStorage.getItem('token');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const response = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: headers,
                 body: JSON.stringify(data)
             });
             return await response.json();

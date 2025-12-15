@@ -42,7 +42,6 @@
     </section>
     <!-- CREATE ASSIGNMENT SECTION -->
     <section class="standard-container" style="margin-bottom: 2rem;">
-      <!-- Removed 'standard-card', applied static style without hover, reduced padding to maximize space -->
       <div
         style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 10px 30px rgba(31, 38, 135, 0.1); border: 1px solid rgba(255, 255, 255, 0.6); padding: 1.5rem; overflow: hidden;">
         <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;"
@@ -54,13 +53,22 @@
 
         <form id="assignmentForm" style="display:none; margin-top:1.5rem;">
 
-          <!-- Extended Title Input - Reduced margins -->
-          <div style="margin-bottom:1rem;">
-            <label
-              style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Assignment
-              Title</label>
-            <input type="text" class="form-control" placeholder="e.g., Thermodynamics Lab Report 4"
-              style="width:100%; padding:12px; font-size:1rem; border-radius:8px; border:1px solid #cbd5e0;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:1rem;">
+            <!-- Subject Input -->
+            <div>
+              <label
+                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Subject</label>
+              <input type="text" id="subject" class="form-control" placeholder="e.g. Physics" required
+                style="width:100%; padding:12px; font-size:1rem; border-radius:8px; border:1px solid #cbd5e0;">
+            </div>
+            <!-- Title Input -->
+            <div>
+              <label
+                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Assignment
+                Title</label>
+              <input type="text" id="title" class="form-control" placeholder="e.g., Thermodynamics Lab Report 4"
+                required style="width:100%; padding:12px; font-size:1rem; border-radius:8px; border:1px solid #cbd5e0;">
+            </div>
           </div>
 
           <!-- Extended Description -->
@@ -68,7 +76,7 @@
             <label
               style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Instructions
               & Notes</label>
-            <textarea class="form-control" rows="8"
+            <textarea id="description" class="form-control" rows="8" required
               placeholder="Detailed instructions, grading criteria, special notes..."
               style="width:100%; padding:12px; font-size:1rem; border-radius:8px; border:1px solid #cbd5e0; line-height:1.5;"></textarea>
           </div>
@@ -91,19 +99,19 @@
               <label
                 style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Submission
                 Deadline</label>
-              <input type="date" class="form-control"
+              <input type="date" id="deadline" class="form-control" required
                 style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem;">
             </div>
             <div>
               <label style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Select
                 Batch</label>
-              <select class="form-control"
+              <select id="batch" class="form-control" required
                 style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem; background-color:white;">
                 <option value="">-- Choose Batch --</option>
-                <option>Batch 2023 (Final Year)</option>
-                <option>Batch 2024 (Third Year)</option>
-                <option>Batch 2025 (Second Year)</option>
-                <option>Batch 2026 (First Year)</option>
+                <option value="2023">Batch 2023 (Final Year)</option>
+                <option value="2024">Batch 2024 (Third Year)</option>
+                <option value="2025">Batch 2025 (Second Year)</option>
+                <option value="2026">Batch 2026 (First Year)</option>
               </select>
             </div>
           </div>
@@ -113,30 +121,28 @@
             <div>
               <label
                 style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Department</label>
-              <select class="form-control"
+              <select id="department" class="form-control" required
                 style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem; background-color:white;">
                 <option value="">-- Select Dept --</option>
-                <option>Computer Science (CSE)</option>
-                <option>Electronics (ECE)</option>
-                <option>Mechanical (ME)</option>
-                <option>Civil (CE)</option>
+                <option value="CSE">Computer Science (CSE)</option>
+                <option value="ECE">Electronics (ECE)</option>
+                <option value="ME">Mechanical (ME)</option>
+                <option value="CE">Civil (CE)</option>
               </select>
             </div>
             <div>
               <label style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Group
                 / Section</label>
-              <select class="form-control"
+              <select id="section" class="form-control"
                 style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem; background-color:white;">
                 <option value="">-- Select Group --</option>
-                <option>Section A</option>
-                <option>Section B</option>
-                <option>Group 1 (Lab)</option>
-                <option>Group 2 (Lab)</option>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
               </select>
             </div>
           </div>
 
-          <button onclick="alert('Assignment Pushed Successfully!')" type="button"
+          <button type="submit"
             style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1.1rem; width:100%; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
             <i class="fa-solid fa-paper-plane"></i> Publish Assignment
           </button>
@@ -289,7 +295,8 @@
       </div>
     </section>
 
-    <!-- SCRIPTS FOR INTERACTIVITY -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/teacher.js"></script>
     <script>
       // Toggle Creation Form
       function toggleForm() {
