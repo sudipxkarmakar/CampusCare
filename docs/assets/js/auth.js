@@ -42,6 +42,13 @@ const roleConfig = {
 };
 
 if (loginForm) {
+    // 0. Check for URL Params (Pre-select Role)
+    const urlParams = new URLSearchParams(window.location.search);
+    const roleParam = urlParams.get('role');
+    if (roleParam && roleConfig[roleParam]) {
+        roleSelect.value = roleParam;
+    }
+
     // 1. Initialize UI
     updateFormFields(roleSelect.value);
 
