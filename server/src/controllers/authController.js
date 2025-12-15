@@ -52,7 +52,7 @@ const validateRoleData = (role, data) => {
 // @access  Public
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
+        const { name, email, contactNumber, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
 
         // 1. Email Domain Check - REMOVED
         // if (!isValidEmail(email)) {
@@ -90,6 +90,7 @@ export const registerUser = async (req, res) => {
         let userData = {
             name,
             email,
+            contactNumber,
             password, // Store as is (In production, hash this!)
             role,
             department,

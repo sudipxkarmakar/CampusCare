@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    contactNumber: {
+        type: String,
+        // required: true, // Making it optional for now to avoid breaking existing flow if needed, or strictly required? User asked "Add contact no for all", implies new registers.
+    },
     password: {
         type: String,
         required: true,

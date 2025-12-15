@@ -61,6 +61,9 @@ if (loginForm) {
         // Clear value of Department/Batch/etc to avoid stale data sent on Login
         if (!isRegistering) {
             document.getElementById('department').value = "";
+            document.getElementById('email').value = "";
+            document.getElementById('contactNumber').value = "";
+            document.getElementById('batch').value = "";
             document.getElementById('batch').value = "";
             document.getElementById('section').value = "";
             document.getElementById('hostelName').value = "";
@@ -90,6 +93,7 @@ if (loginForm) {
             // Registration Logic
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
+            const contactNumber = document.getElementById('contactNumber').value;
             const department = document.getElementById('department').value;
             const batch = document.getElementById('batch').value;
             const section = document.getElementById('section').value;
@@ -129,6 +133,7 @@ if (loginForm) {
             const regData = {
                 name,
                 email,
+                contactNumber,
                 password,
                 role,
                 department,
@@ -272,6 +277,7 @@ function updateModeUI() {
 
         document.getElementById('name').required = true;
         document.getElementById('email').required = true;
+        document.getElementById('contactNumber').required = true;
     } else {
         title.innerText = "Welcome Back";
         submitBtn.innerText = "Login";
@@ -281,5 +287,6 @@ function updateModeUI() {
 
         document.getElementById('name').required = false;
         document.getElementById('email').required = false;
+        document.getElementById('contactNumber').required = false;
     }
 }
