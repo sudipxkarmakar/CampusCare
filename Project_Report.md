@@ -1,25 +1,28 @@
 # CampusCare: AI-Driven Campus Management System
-## Project Report
+## Final Project Report
 
 ---
 
 <br><br><br><br>
 <center>
 <h1>CampusCare</h1>
-<h3>A Project Report Submitted to</h3>
+<h2>Next-Generation AI-Integrated Campus ERP</h2>
+<h3>A Comprehensive Project Report Submitted to</h3>
 <h3><b>[University/Institute Name]</b></h3>
+<br>
 <h3>In partial fulfillment of the requirements for the award of the degree of</h3>
 <h3><b>[Degree Name e.g., Bachelor of Technology]</b></h3>
 <h3>in</h3>
 <h3><b>[Department Name e.g., Computer Science & Engineering]</b></h3>
-<br><br>
+<br><br><br>
 <b>Submitted by:</b><br>
 [Student Name] (Roll No: [Number])<br>
 [Partner Name] (Roll No: [Number])
 <br><br>
 <b>Under the Guidance of:</b><br>
 [Guide Name]<br>
-[Designation]
+[Designation]<br>
+[Department]
 </center>
 <br><br><br><br>
 
@@ -68,30 +71,11 @@ I heartily thank our internal project guide, **[Name]**, [Designation], for his 
 
 I am thankful to and fortunate enough to get constant encouragement, support and guidance from all Teaching and Non-Teaching staffs of [Department Name] which helped us in successfully completing our project work.
 
+Finally, I would like to thank my parents and friends for their endless support and motivation.
+
 <br><br>
 
 **[Student Name]**
-
----
-
-### PAGE BREAK
-
-# Abstract
-
-In the modern educational landscape, the efficiency of campus operations significantly impacts the quality of student life and administrative productivity. **CampusCare** is a pioneering Web Application designed to bridge the gap between students, faculty, and administration through a centralized, AI-enhanced digital platform.
-
-Traditionally, university campuses rely on siloed systems for managing student grievances, hostel leave applications, and academic notices. This fragmentation leads to:
-1.  **Inefficiency:** Manual processing of leave letters and paper-based complaints involves physical movement and inherent delays.
-2.  **Lack of Transparency:** Students are often unaware of the status of their requests.
-3.  **Communication Gaps:** Important notices are missed when distributed via disorganized channels like notice boards or chat groups.
-
-CampusCare addresses these challenges by integrating **Complaint Management**, **Hostel Administration**, **Academic Routine Tracking**, and **AI-Assisted Support** into a single cohesive system. Key innovations include:
--   **Role-Based Access Control (RBAC):** Secure, distinct portals for Students, Teachers, and Wardens.
--   **Intelligent Complaint Routing:** An automated system that categorizes complaints (e.g., Ragging, Infrastructure) and assigns priority levels (Critical, High, Low).
--   **AI-Powered Assistant:** A built-in chatbot capable of drafting formal leave applications, answering queries, and triggering SOS procedures in emergencies.
--   **Hostel Automation:** A completely digital workflow for leave approvals and mess menu management.
-
-Built on the **MERN (MongoDB, Express, React-concept, Node.js)** architecture, the system ensures scalability, security, and a responsive user experience. This report details the design, implementation, and testing of CampusCare, demonstrating its potential to transform campus administration into a smart, paperless ecosystem.
 
 ---
 
@@ -101,75 +85,68 @@ Built on the **MERN (MongoDB, Express, React-concept, Node.js)** architecture, t
 
 | S.No | Topic | Page No |
 |---|---|---|
-| 1 | List of Figures | v |
-| 2 | List of Tables | vi |
+| 1 | List of Figures/Tables | v |
+| 2 | Project Synopsis | 1 |
 | 3 | **Chapter 1: Introduction** | 2 |
-| 3.1 | Introduction | 3 |
-| 3.2 | Background and Motivation | 4 |
-| 3.3 | Problem Statement | 5 |
-| 3.4 | Objectives of the Project | 6 |
-| 3.5 | Project Scope | 7 |
-| 3.6 | Feasibility Study | 8 |
-| 4 | **Chapter 2: Literature Survey & Technology Stack** | 10 |
-| 4.1 | Literature Survey | 10 |
-| 4.2 | Technology Stack (MERN Architecture) | 12 |
-| 5 | **Chapter 3: System Requirements & Analysis** | 16 |
-| 5.1 | Functional Requirements | 16 |
-| 5.2 | Non-Functional Requirements | 18 |
-| 5.3 | System Models (Waterfall/Agile) | 19 |
-| 6 | **Chapter 4: System Design** | 20 |
-| 6.1 | System Architecture | 20 |
-| 6.2 | Data Flow Diagrams (DFD) | 22 |
-| 6.3 | UML Diagrams (Use Case, Activity) | 25 |
-| 6.4 | Database Design (ER Diagram, Data Dictionary) | 30 |
-| 7 | **Chapter 5: Implementation Details** | 35 |
-| 7.1 | Directory Structure | 35 |
-| 7.2 | Authentication Logic (JWT) | 36 |
-| 7.3 | AI Service Implementation | 38 |
-| 7.4 | Complaint Management Logic | 41 |
-| 8 | **Chapter 6: Testing** | 43 |
-| 8.1 | Testing Methodology | 43 |
-| 8.2 | Test Cases (Unit & System) | 44 |
-| 9 | **Chapter 7: Results and User Interface** | 48 |
-| 9.1 | Login & Registration | 48 |
-| 9.2 | Student Dashboard | 49 |
-| 9.3 | Complaint Portal | 50 |
-| 9.4 | AI Chatbot | 51 |
-| 10 | **Chapter 8: Conclusion and Future Scope** | 52 |
-| 11 | References | 54 |
+| 3.1 | Overview & Motivation | 3 |
+| 3.2 | Problem Statement | 4 |
+| 3.3 | Objectives (Student & Teacher Driven) | 5 |
+| 3.4 | Scope of the Project | 7 |
+| 3.5 | Technology Stack | 9 |
+| 4 | **Chapter 2: Project Details** | 12 |
+| 4.1 | System Analysis & Requirements | 12 |
+| 4.2 | System Design & Hierarchical Model (RBAC) | 18 |
+| 4.3 | Functional Modules & Implementation | 28 |
+| 4.4 | Testing | 50 |
+| 5 | **Chapter 3: Conclusion and Recommendations** | 55 |
+| 6 | **Chapter 4: Reference** | 58 |
 
 ---
 
 ### PAGE BREAK
 
-# List of Figures
+# List of Figures / Tables
 
+**List of Figures**
 | Figure No | Name of Figure | Page Number |
 |---|---|---|
-| 1 | System Architecture Diagram | 21 |
-| 2 | Level 0 Data Flow Diagram (Context) | 23 |
-| 3 | Level 1 Data Flow Diagram (User Module) | 24 |
-| 4 | Use Case Diagram | 26 |
-| 5 | Activity Diagram for Complaint Filing | 28 |
-| 6 | Entity Relationship (ER) Diagram | 31 |
-| 7 | Login Page Screenshot | 48 |
-| 8 | Student Dashboard Interface | 49 |
-| 9 | Teacher Mentorship Panel | 50 |
-| 10 | Hostel Leave Application Form | 50 |
-| 11 | AI Assistant Chat Interface | 51 |
+| 1 | System Architecture Diagram | 20 |
+| 2 | Level 0 DFD (Context Diagram) | 22 |
+| 3 | Entity Relationship (ER) Diagram | 26 |
+| 4 | Login Page Screenshot | 29 |
+| 5 | Student Dashboard Interface | 31 |
+| 6 | Transparency Wall Interface (Public) | 35 |
+| 7 | HOD "God Mode" View | 40 |
+| 8 | Mobile Responsiveness (Screenshots) | 42 |
 
-# List of Tables
-
+**List of Tables**
 | Table No | Name of Table | Page Number |
 |---|---|---|
-| 1 | Hardware Requirements | 8 |
-| 2 | Software Requirements | 8 |
-| 3 | User Table Schema | 32 |
-| 4 | Complaint Table Schema | 33 |
-| 5 | Leave Table Schema | 33 |
-| 6 | Registration Test Cases | 45 |
-| 7 | Login Test Cases | 45 |
-| 8 | Complaint System Test Cases | 46 |
+| 1 | Hardware Requirements | 14 |
+| 2 | Software Requirements | 14 |
+| 3 | Hierarchical Access Model (RBAC Matrix) | 19 |
+| 4 | User Table Schema | 25 |
+| 5 | Complaint Table Schema | 25 |
+| 6 | Registration Test Cases | 51 |
+| 7 | Complaint System Test Cases | 52 |
+
+---
+
+### PAGE BREAK
+
+# Project Synopsis
+
+**Project Title:** CampusCare - AI-Driven Campus Management System
+
+**Domain:** Web Application / Education Technology
+
+**Abstract:**
+
+"CampusCare" is a web platform born out of a genuine need to bridge the gap between students and the college administration. In our observations, we noticed that while colleges have websites, they lack a dedicated, transparent channel for students to voice their concerns. **CampusCare** solves this by providing a unified portal where complaints are not just filed but are visible, tracked, and redirected to the relevant departments.
+
+The core philosophy of this project is **"Transparency"**. The "Transparency Wall" allows everyone to see if a problem (e.g., broken infrastructure) is genuine and widespread. Crucially, it also highlights the efficiency of the teachers and staff who resolve these issues. By publicly displaying resolution times, hard-working staff get the credit they deserve, and accountability is established.
+
+Beyond complaints, the system integrates features requested directly by students and teachers during our survey phase—such as a **Digital Document Locker**, **AI Assistance**, and **Batch-specific Notices**. It transforms the campus into a responsive, digital ecosystem.
 
 ---
 
@@ -177,372 +154,235 @@ Built on the **MERN (MongoDB, Express, React-concept, Node.js)** architecture, t
 
 # Chapter 1: Introduction
 
-## 1.1 Introduction
-The advent of digital technology has revolutionized the way organizations function. Educational institutions, being the cradle of learning, are expected to be at the forefront of this digital transformation. A **Campus Management System (CMS)** is an integrated solution that converts manual, repetitive, and time-consuming administrative tasks into automated, efficient digital workflows.
+## 1.1 Overview & Motivation
+As developers and students of this institution, we identified a critical gap in our campus infrastructure. While we have academic buildings and hostels, we lack a digital space that truly connects the stakeholders—Students, Teachers, and Administration.
 
-**CampusCare** is a web-based CMS designed specifically to address the nuances of student life—ranging from academic engagements to residential (hostel) needs. Unlike generic ERP systems that focus heavily on finance and admissions, CampusCare prioritizes the day-to-day interaction between the student and the campus ecosystem. It serves as a single touchpoint for a student to check their schedule, apply for leave, file a complaint against infrastructure issues, or even seek guidance on writing a formal application via an AI assistant.
+The primary motivation for **CampusCare** is to create a platform where **"Anyone can come and complain about their problems, and it will get redirected to the related departments."**
 
-## 1.2 Background and Motivation
-In many institutions, despite having a website, the core student processes remain archaic.
--   **The "Notice Board" Culture:** Students are expected to physically walk to specific notice boards to check for updates.
--   **The "Application" Struggle:** Applying for leave involves writing a letter, getting it signed by a mentor, then a warden, and finally submitting it.
--   **The "Complaint" Black Hole:** A broken fan or a ragging incident often goes unreported because report mechanisms are opaque or intimidating.
+Currently, if a fan is broken or a student faces harassment, the process to report it is opaque. Students don't know who to approach, and often, they don't know if their voice is heard. On the other side, many teachers and administrative staff work tirelessly to resolve issues, but their efforts usually go unnoticed in the backend.
 
-The motivation behind CampusCare is to democratize access to campus services. By leveraging the ubiquity of smartphones and the power of the web, we aim to put the administration in the packet of every student. Furthermore, the integration of **Generative AI** is motivated by the need to provide instant, 24/7 support to students who often have queries outside standard office hours.
+CampusCare introduces a **Transparency Wall**, a public dashboard that changes this dynamic.
+-   **For Students:** It validates their problems. seeing that 50 other students face the same issue gives weight to their concern.
+-   **For Teachers/Staff:** It serves as a "Credit Board". When a problem is resolved quickly, the system highlights this efficiency. "How fast everything is going on" becomes visible to everyone.
 
-## 1.3 Problem Statement
-The current manual system suffers from specific deficiencies that CampusCare aims to resolve:
-1.  **Redundancy:** Information (like student details) is often collected multiple times for different departments (Library, Hostel, Academic).
-2.  **Delay:** Physical movement of files (e.g., leave approval) takes days.
-3.  **Data Loss:** Paper records are prone to damage and loss.
-4.  **Lack of Accountability:** It is difficult to track who is responsible for resolving a specific complaint.
-5.  **Mental Health & Safety:** Reporting sensitive issues like ragging or harassment requires a discreet channel, which is often missing.
+## 1.2 Problem Statement
+Our college currently lacks a centralized, interactive website for grievance redressal and daily utility management. The existing manual or fragmented digital systems lead to:
+1.  **Invisible Work:** The hard work of backend staff (Electricians, Wardens, HODs) is never acknowledged publicly.
+2.  **Lack of Trust:** Students feel their complaints go into a "Black Hole" with no feedback loop.
+3.  **Genuine vs Frivolous:** Without a public forum, it's hard to distinguish between an isolated incident and a genuine, widespread problem.
+4.  **Resource Scarcity:** Students felt it would be better if we had our own resources—like a place to store our certificates or a way to get leave approved without running around with paper applications.
+5.  **Teacher Disconnect:** Teachers often miss out on student sentiment or face administrative bottlenecks in managing leave/attendance.
 
-## 1.4 Objectives of the Project
-The primary objectives are:
-1.  **Centralization:** To create a unified database and interface for all campus activities.
-2.  **Automation:** To automate the workflow of leave approvals and complaint routing.
-3.  **Security:** To ensure data privacy through robust authentication (JWT) and role-based access.
-4.  **Responsiveness:** To provide a UI that works seamlessly across desktops, tablets, and mobile devices.
-5.  **Intelligence:** To deploy an AI agent that can classify complaints by severity and assist users in drafting formal communication.
+## 1.3 Objectives
+The objectives of this project were shaped by collecting data and feedback from both **Students** and **Teachers**.
 
-## 1.5 Project Scope
-The scope of CampusCare is defined by its user modules:
--   **Student Module:** View Profile, Check Notices, View Routine, File Complaints, Apply for Leave (Hostelers Only), Access AI Chatbot.
--   **Teacher Module:** View Profile, Manage Mentees, View Complaints assigned to Mentees, View Class Routine.
--   **Admin/Warden Module:** Post Notices, Manage Mess Menu, Approve/Reject Leave Applications, Oversee all complaints.
+**Student-Driven Objectives:**
+1.  **One-Stop Solution:** To provide a single portal for Complaints, Leave Applications, and Notices.
+2.  **Voice & Transparency:** To ensure that if a problem is genuine, everyone knows about it.
+3.  **Personal Resources:** To provide "Extra Features" like a **Digital Document Locker (My Docs)** so students don't need to carry physical files.
+4.  **AI Assistance:** To have a 24/7 assistant that helps in drafting formal applications, addressing the struggle many students face with formal communication.
 
-**Out of Scope:**
--   Online Fee Payment Gateway (integrating standard payment APIs is a future enhancement).
--   Biometric attendance integration.
--    Alumni network features.
+**Teacher-Driven Objectives:**
+1.  **Credit & Visibility:** To create a system where their quick resolution of issues is publicly recorded and acknowledged.
+2.  **Efficient Management:** To streamline Mentee management (attendance, leave approvals) without paperwork.
+3.  **Targeted Communication:** To have the ability to send notices to specific batches (e.g., only 2025 batch) to avoid communication clutter.
 
-## 1.6 Feasibility Study
-Before development, a detailed feasibility analysis was conducted.
+## 1.4 Scope of the Project
+The scope is defined by the needs we identified:
+-   **Public Redressal:** A transparency wall viewable by all.
+-   **Role-Specific Dashboards:** Custom views for Students, Teachers, HODs, and Hostelers.
+-   **Secure Data Handling:** Using JWT for authentication and secure MongoDB storage.
+-   **Responsiveness:** A design that works on the personal devices (Mobile/Tablets) of students and staff.
 
-### 1.6.1 Technical Feasibility
-The project uses the MERN stack (MongoDB, Express, Node.js).
--   **Node.js** is efficient for handling concurrent requests (I/O non-blocking).
--   **MongoDB** offers a flexible schema, perfect for evolving user profiles.
--   **Vanilla JS/HTML/CSS** frontend ensures the app is lightweight and compatible with all browsers.
-*Conclusion:* The project is technically feasible with current available open-source tools.
-
-### 1.6.2 Economic Feasibility
--   **Cost:** The development uses open-source technologies (MIT License), meaning zero licensing cost.
--   **Infrastructure:** It can run on standard cloud instance (like AWS EC2 free tier or Render/Heroku).
-*Conclusion:* The project is highly cost-effective.
-
-### 1.6.3 Operational Feasibility
--   **Usability:** The interface is designed to be intuitive, requiring minimal training for students and staff.
--   **Process:** It mimics existing physical processes (forms, approvals) digitally, reducing resistance to change.
+## 1.5 Technology Stack
+Since we developed this from scratch, we chose a stack that offers flexibility and performance (MERN).
+-   **Frontend:** HTML5, CSS3, Vanilla JavaScript (for raw performance and understanding DOM manipulation).
+-   **Backend:** Node.js & Express.js (for efficient, non-blocking asynchronous event handling).
+-   **Database:** MongoDB Atlas (for flexible schema design, essential when adding new features like "Vaccination Status" or "Documents" later).
+-   **AI:** Custom AI Service logic for Intent Analysis.
 
 ---
 
 ### PAGE BREAK
 
-# Chapter 2: Literature Survey & Technology Stack
+# Chapter 2: Project Details
 
-## 2.1 Literature Survey
-Reviewing existing Campus ERP solutions (like TCS iON, SAP for Higher Ed) reveals they are enterprise-grade, expensive, and often complex. They excel in finance and HR but often lack "student-centric" features like easy complaint usability or AI assistance. Small to medium institutions need a lightweight, agile alternative.
+## 2.1 System Analysis
 
-Studies on **"AI in Education Administration"** suggest that chatbots can reduce administrative query load by up to 60%. CampusCare's inclusion of `AiService` is based on this finding, aiming to automate routine interactions like "How do I apply for leave?" or "What is the mess menu today?".
+### 2.1.1 Requirement Gathering (The " Why")
+During the initial phase, we surveyed students and teachers.
+-   *Students asked:* "Why can't I check my hostel mess menu on my phone?" -> **Result:** Automated Mess Menu Module.
+-   *Teachers asked:* "Why do I see notices meant for 1st years?" -> **Result:** Batch-Specific Notification Logic.
 
-## 2.2 Technology Stack
+### 2.1.2 Functional Requirements
+**Core Features:**
+-   **Req-1 (Complaint Redirection):** Complaints must automatically route to the correct department (e.g., 'Food' -> Hostel Warden).
+-   **Req-2 (Public Tracking):** The status of complaints ('Pending', 'Resolved') must be visible on the Transparency Wall.
+-   **Req-3 (AI Helper):** An intelligent agent to categorize issues and assist in drafting text.
 
-### 2.2.1 Backend: Node.js & Express.js
-**Node.js** is an open-source, cross-platform JavaScript runtime environment. It executes JavaScript code outside a web browser.
--   *Why Node?* It uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. Perfect for data-intensive real-time applications.
-**Express.js** is a web application framework for Node.js.
--   *Why Express?* It simplifies routing and middleware management. We use it to create RESTful APIs (e.g., `GET /api/complaints`, `POST /api/auth/login`).
+**Extended Features (KOMAL List):**
+-   **Req-4 (My Docs):** Users can upload/retrieve IDs and Marksheets.
+-   **Req-5 (God Mode):** HODs can view full student details (excluding passwords) for administrative needs.
+-   **Req-6 (Teacher Profile):** Enhanced profiles showing "Brief Study" and "Experience" to help students know their mentors better.
 
-### 2.2.2 Database: MongoDB
-**MongoDB** is a source-available cross-platform document-oriented database program. Classified as a NoSQL database, it uses JSON-like documents with optional schemas.
--   *Why MongoDB?* In a university, data structures change (e.g., adding a new field 'Vaccination Status' to a user). SQL requires strict schema migration; MongoDB allows flexible document structures. We use **Mongoose** as an ODM (Object Data Modeler) to enforce application-level schema validation.
+## 2.2 System Design & Hierarchical Model
 
-### 2.2.3 Frontend: HTML5, CSS3, Vanilla JavaScript
-While frameworks like React are popular, this project utilizes **Vanilla JavaScript** (ES6+) for the frontend to demonstrate core DOM manipulation and Fetch API concepts without the overhead of a build step (bundlers). This results in an extremely fast "First Contentful Paint" and simple deployment.
--   **CSS3** is used with Flexbox and Grid for responsive layouts.
--   **FontAwesome** provides vector icons.
+### 2.2.1 Hierarchical Access Model (RBAC)
+To ensure security and proper "Paths" for data, we implemented a strict Role-Based Access Control model. This defines exactly **who can access what**.
 
-### 2.2.4 AI Integration
-The AI module is powered by a custom `AiService` logic that processes natural language. It identifies intent ('complaint' vs 'query') and performs sentiment analysis to flag 'Critical' issues like ragging.
+**Table 3: Hierarchical Access Matrix**
+| Feature / Interaction | Student Path (`/api/student`) | Teacher Path (`/api/teacher`) | Hosteler Path (`/api/hostel`) | Admin/HOD Path (`/api/admin`) | Public / Guest |
+|---|---|---|---|---|---|
+| **Complaint Filing** | **Yes** (Can File) | No | **Yes** (Can File) | No | No |
+| **Transparency Wall** | **View Only** | **View Only** | **View Only** | **View Only** | **View Only** |
+| **Resolve Complaint** | No | **Yes** (Own Dept) | No | **Yes** (All) | No |
+| **Escalate Complaint** | No | **Yes** | No | **Yes** | No |
+| **View Student Registry** | No | No | No | **Yes (God Mode)** | No |
+| **Post Notices** | No | No | No | **Yes (Targeted)** | No |
+| **Upload "My Docs"** | **Yes** | **Yes** | **Yes** | No | No |
+| **Hostel Leave Apply** | No | No | **Yes** | No | No |
+| **Approve Leave** | No | **Yes** (Mentee) | No | **Yes** (Warden) | No |
 
----
-
-### PAGE BREAK
-
-# Chapter 3: System Requirements & Analysis
-
-## 3.1 Functional Requirements
-
-### 3.1.1 User Management
--   **Req-1:** The system must allow users to register with specific roles (Student, Teacher, Hosteler).
--   **Req-2:** Passwords must be encrypted (hashed) before storage. (Note: In MVP plain text is used for demo, but design mandates bcrypt).
--   **Req-3:** Login must return a JSON Web Token (JWT) for session management.
-
-### 3.1.2 Complaint Module
--   **Req-4:** Students must be able to select a category (Ragging, Infrastructure, Academic).
--   **Req-5:** The system must automatically assign priority based on keywords (e.g., "fire" -> Critical).
--   **Req-6:** Admins must be able to update complaint status (Open -> Resolved).
-
-### 3.1.3 Hostel Module
--   **Req-7:** Hostelers must be able to define start/end dates for leave.
--   **Req-8:** Wardens must see a list of pending approvals.
--   **Req-9:** The Mess Menu must be editable by the admin and viewable by all.
-
-### 3.1.4 AI Assistant
--   **Req-10:** The chatbot must persist in the UI (floating widget).
--   **Req-11:** It must parse user input to generate formal drafts (e.g., "Write a leave letter for fever").
-
-## 3.2 Non-Functional Requirements
-1.  **Scalability:** The architecture should support adding new routes without rewriting the core server logic.
-2.  **Performance:** API response time should be under 200ms for standard queries.
-3.  **Availability:** 99.9% uptime (achieved via cloud deployment).
-4.  **Security:**
-    -   API endpoints (like `/api/admin/*`) must be protected by middleware ensuring only users with `role: admin` can access.
-    -   Input validation (Regex) to prevent NoSQL injection.
-
-## 3.3 Hardware & Software Requirements
-
-| Category | Requirement |
-|---|---|
-| **Server OS** | Windows / Linux / macOS |
-| **Processor** | Intel Core i3 or higher / AMD equivalent |
-| **RAM** | 4GB Minimum (8GB Recommended) |
-| **Hard Disk** | 500MB free space |
-| **Client** | Any modern web browser (Chrome, Firefox, Edge) |
-| **Internet** | Required for API communication and Database connection |
-
----
-
-### PAGE BREAK
-
-# Chapter 4: System Design
-
-## 4.1 System Architecture
-CampusCare follows the **Client-Server Architecture**.
-1.  **Presentation Layer (Client):** The User Interface (HTML/CSS/JS) located in the `/docs` folder. It handles user interaction and displays data.
-2.  **Application Layer (Server):** The Node.js/Express app. It contains the business logic, API routes, and Controllers.
-3.  **Data Persistence Layer (Database):** MongoDB Atlas (Cloud) storing the collections.
+### 2.2.2 System Architecture
+The system follows a tiered architecture where the **Router** acts as the traffic cop, directing requests based on the paths defined above.
 
 ```mermaid
 graph TD
-    User[User Device]
-    LoadBalancer[Load Balancer / Gateway]
-    Server[Node.js API Server]
-    Auth[Auth Service (JWT)]
-    Complaint[Complaint Service]
-    AI[AI Logic Service]
-    DB[(MongoDB)]
-
-    User -- HTTP/HTTPS --> LoadBalancer
-    LoadBalancer --> Server
-    Server -- Authenticate --> Auth
-    Server -- File Issue --> Complaint
-    Server -- Ask Query --> AI
-    Complaint -- Store/Retrieve --> DB
-    Auth -- Verify User --> DB
+    User-->|Login Request| AuthController
+    AuthController-->|Issue Token + Role| User
+    User-->|Request with Token| Router
+    Router-->|Role: Student| StudentRoutes
+    Router-->|Role: Teacher| TeacherRoutes
+    Router-->|Role: Admin| AdminRoutes
+    StudentRoutes-->|File Complaint| ComplaintService
+    TeacherRoutes-->|Resolve Issue| ComplaintService
+    AdminRoutes-->|View All| Database
 ```
 
-**Figure 1: System Architecture Diagram**
+### 2.2.3 Data Flow Diagrams (DFDs)
+*[Insert Figure 2: Level 0 DFD here showing the flow of data from User to System and back]*
 
-## 4.2 Data Flow Diagrams (DFD)
+**Detailed Flow:**
+1.  **Input:** A student logs in and submits a complaint "Fan not working in Room 101".
+2.  **Processing:**
+    -   The **AI Service** scans the text. Keywords "Fan" + "Room" -> Category: **Infrastructure**.
+    -   The system assigns Priority: **Medium**.
+3.  **Storage:** Saved to MongoDB `complaints` collection.
+4.  **Output:**
+    -   The Maintenance Admin sees this in their dashboard.
+    -   Once clicked "Resolved", the status updates on the **Transparency Wall** for all to see.
 
-### Level 0 DFD (Context Diagram)
-The entire system is viewed as a single process "CampusCare System".
--   **Input:** User Credentials, Complaint Data, Leave Requests.
--   **Output:** Auth Token, Dashboard Data, Approval Status, AI Responses.
+### 2.2.4 Database Design
+The database is the backbone. We used **MongoDB** for its document structure.
 
-### Level 1 DFD (User Authentication)
-```mermaid
-graph LR
-    User -- 1. Login Request --> AuthProc(Authentication Process)
-    AuthProc -- 2. Query User --> DB
-    DB -- 3. User Data --> AuthProc
-    AuthProc -- 4. Generate Token --> User
-```
+**User Collection (`users`)**
+| Field | Access Level | Description |
+|---|---|---|
+| `_id` | System | Unique Key |
+| `role` | System | Defines the hierarchy (student/teacher/admin) |
+| `name` | Public | Visible on profiles |
+| `documents` | Private | Array of file paths (My Docs) |
+| `academicDetails` | Public | Teacher's degree/experience |
 
-### Level 1 DFD (Complaint Filing)
-```mermaid
-graph LR
-    User -- 1. Submit Complaint --> Validation(Validate Input)
-    Validation -- 2. Valid Data --> AIAnalysis(Analyze Priority)
-    AIAnalysis -- 3. Tagged Data --> DB
-    DB -- 4. Confirm ID --> User
-```
+**Complaint Collection (`complaints`)**
+| Field | Logic | Description |
+|---|---|---|
+| `isPublic` | Visibility | **True** if user wants it on Transparency Wall |
+| `status` | Process | Pending -> Resolved (Triggers Visibility) |
+| `priority` | AI Derived | Critical/High/Low |
 
-## 4.3 Database Design
+## 2.3 Functional Modules & Implementation
 
-### 4.3.1 Entity Relationship (ER) Diagram
-The system relies on relational concepts implemented in a NoSQL structure.
--   **User** (1) ---- (N) **Complaint** (One user files many complaints)
--   **User** (1) ---- (N) **Leave** (One student applies for many leaves)
--   **User** (1) ---- (1) **Profile** (Embedded in User schema)
-
-### 4.3.2 Data Dictionary
-
-**Table 1: User Collection (`users`)**
-| Field | Type | Constraint | Description |
-|---|---|---|---|
-| _id | ObjectId | Primary Key | Unique identifier |
-| name | String | Required | Full Name of user |
-| email | String | Unique, Required | Email address |
-| password | String | Required | Hashed password |
-| role | Enum | ['student', 'teacher', 'admin', 'hosteler'] | User categorization |
-| rollNumber | String | Unique (Sparse) | For Students/Hostelers |
-| department | String | Required | Department (e.g., CSE, ECE) |
-
-**Table 2: Complaint Collection (`complaints`)**
-| Field | Type | Constraint | Description |
-|---|---|---|---|
-| title | String | Required | Short subject |
-| description | String | Required | Detailed issue |
-| category | Enum | ['Infrastructure', 'Academic', 'Ragging'] | Classification |
-| priority | Enum | ['Low', 'Medium', 'High', 'Critical'] | Severity |
-| status | Enum | ['Pending', 'In Progress', 'Resolved'] | Default: Pending |
-| student | ObjectId | Ref: User | The complainant |
-
----
-
-### PAGE BREAK
-
-# Chapter 5: Implementation Details
-
-## 5.1 Directory Structure
-The project is organized to separate concerns effectively:
-```
-CampusCare-1/
-├── server/
-│   ├── src/
-│   │   ├── config/       # DB connection logic
-│   │   ├── controllers/  # Business logic (e.g., authController.js)
-│   │   ├── models/       # Mongoose Schemas (User.js, Complaint.js)
-│   │   ├── routes/       # API Definitions (authRoutes.js)
-│   │   ├── services/     # Helper logic (aiService.js)
-│   │   └── server.js     # Entry point
-│   ├── package.json
-├── docs/                 # Frontend (HTML/CSS/JS)
-│   ├── assets/
-│   ├── login.html
-│   └── index.html
-└── README.md
-```
-
-## 5.2 Authentication Logic
-The authentication system is critical for security. It is handled in `authController.js`.
-1.  **Registration (`registerUser`):**
-    -   Receives payload.
-    -   **Validation:** Checks regex for `rollNumber` (e.g., must likely be 11 digits) or `employeeId` (must start with 'T').
-    -   **Duplicate Check:** Queries DB to ensure email or roll number doesn't exist.
-    -   **Creation:** Saves using `User.create()`.
-    -   **Token:** Returns a JWT signed with `process.env.JWT_SECRET`.
-
-2.  **Login (`loginUser`):**
-    -   Accepts `identifier` (Email/RollNo) and `password`.
-    -   Performs a strict query combining `role` and `identifier`.
-    -   If valid, returns the User Object and Token.
+### 2.3.1 Transparency Wall Logic
+This is the standout feature. The code explicitly filters for resolved, public issues to populate the wall.
 
 ```javascript
-// Token Generation Snippet
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+/* controller/complaintController.js */
+export const getPublicComplaints = async (req, res) => {
+    // Only fetch RESOLVED complaints marked PUBLIC
+    const complaints = await Complaint.find({
+        status: 'Resolved',
+        isPublic: true
+    }).select('-student'); // Privacy: Exclude student ID
+    res.json(complaints);
 };
 ```
+*Logic:* By excluding the student ID, we protect the whistleblower while still showing the resolved issue.
 
-## 5.3 AI Service Implementation (`aiService.js`)
-The `AiService` class is a simplified Natural Language Processing (NLP) engine.
--   **Classify Intent:** It checks for keywords like "leave", "application" to identify `PRODUCTIVITY` intent versus `COMPLAINT` intent.
--   **Analyze Complaint:**
-    -   *Category Detection:* Scans for finding categories. E.g., "fan", "light" -> `infrastructure`. "ragging", "bullying" -> `ragging`.
-    -   *Priority Scoring:* Keywords like "blood", "fire", "suicide" trigger `Critical` priority.
-    -   *Routing:* Based on category, it determines the recipient (e.g., Ragging -> Anti-Ragging Committee).
--   **Draft Generation:** If the user asks for a leave letter, it returns a formatted template filling in placeholders.
-
-## 5.4 Frontend Integration
-The frontend uses the `fetch` API to communicate with the backend.
+### 2.3.2 AI Service ("The Brain")
+We allocated a dedicated service to help students articulate problems. `aiService.js` uses keyword mapping.
 ```javascript
-// Example: Posting a complaint
-async function submitComplaint(data) {
-    const res = await fetch('http://localhost:5000/api/complaints', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-    });
-    return res.json();
+/* services/aiService.js */
+analyze(text) {
+    if (text.includes('ragging') || text.includes('harassment')) {
+        return { priority: 'Critical', alert: true }; // Immediate SOS
+    }
+    // ... other logic
 }
 ```
 
----
+### 2.3.3 "God Mode" (Admin Access)
+For HODs/Admins, we created a specialized route that bypasses standard privacy filters (except passwords) to allow full administrative oversight.
+-   *Path:* `/api/admin/god-mode`
+-   *security:* Protected by `adminOnly` middleware.
 
-### PAGE BREAK
+### 2.3.4 Document Locker ("My Docs")
+This was a feature "we as students thought would be better."
+-   Students upload PDFs/Images using `multer`.
+-   Files are stored securely, and links are saved in the User's document array.
+-   Accessible anytime from the dashboard.
 
-# Chapter 6: Testing
+## 2.4 Testing
 
-Testing is a crucial phase to ensure the system is bug-free and meets requirements.
+### 2.4.1 Methodology
+We tested the system from the "User's Perspective".
+1.  **Black Box Testing:** We gave the URL to students and asked them to try and break it (e.g., uploading virus files, SQL injection attempts).
+2.  **Role Testing:** Verifying that a Student CANNOT access the Admin Dashboard.
 
-## 6.1 Testing Methodology
-1.  **Unit Testing:** Testing individual functions. E.g., validating that `aiService.classifyIntent('broken fan')` returns `COMPLAINT`.
-2.  **Integration Testing:** Testing the interaction between the API and the Database. E.g., Registering a user and checking if they appear in the MongoDB collection.
-3.  **System Testing:** End-to-end testing of the full application flow (Login -> Dashboard -> Logout).
+### 2.4.2 Test Cases
 
-## 6.2 Test Cases
-
-**Table 6: Test Cases for Registration**
-| TC ID | Test Description | Input Data | Expected Output | Actual Output | Status |
-|---|---|---|---|---|---|
-| TC-01 | Register with valid Student data | Name: John, Roll: 12345678901, Role: Student | User Created, Token Returned | User Created | PASS |
-| TC-02 | Register with existing Email | Email: john@test.com | Error: "User already exists" | Error Message | PASS |
-| TC-03 | Register with invalid Roll Number | Roll: 123 (too short) | Error: "Invalid Roll Number format" | Error Message | PASS |
-
-**Table 7: Test Cases for Complaint Module**
-| TC ID | Test Description | Input Data | Expected Output | Actual Output | Status |
-|---|---|---|---|---|---|
-| TC-04 | File Complaint with Critical keywords | Desc: "There is a fire in Block A" | Priority: Critical, Alert Triggered | Priority: Critical | PASS |
-| TC-05 | File Complaint without Category | Desc: "Fan broken" | Auto-Category: Infrastructure | Categorized Correctly | PASS |
-
----
-
-### PAGE BREAK
-
-# Chapter 7: Conclusion and Future Scope
-
-## 7.1 Conclusion
-The **CampusCare** project successfully meets its primary objectives of digitizing campus operations. By moving away from manual, paper-intensive workflows, the system introduces a new level of efficiency and transparency.
--   The **Complaint Management System** ensures no grievance goes unheard.
--   The **AI Integration** proves that even simple intelligent agents can significantly enhance user experience by providing instant assistance.
--   The **Role-Based Architecture** ensures that the specific needs of Students, Teachers, and Wardens are met securely.
-
-This project serves as a robust proof-of-concept for a "Smart Campus" initiative.
-
-## 7.2 Future Scope
-The potential for CampusCare is immense. Future iterations could include:
-1.  **Mobile App:** Development of a native mobile application (React Native) for push notifications.
-2.  **Machine Learning:** Replacing the keyword-based AI service with a true LLM (Large Language Model) API like OpenAI or Gemini for more nuanced understanding.
-3.  **IoT Integration:** Using sensors to automatically detect infrastructure faults (e.g., smart meters reporting power outages directly to the system).
-4.  **Alumni Portal:** Connecting current students with alumni for mentorship and job opportunities.
-5.  **Payment Gateway:** Full fee management system integration.
+**Table 6: Hierarchical Access Tests**
+| Test ID | Role | Action | Expected Outcome | Status |
+|---|---|---|---|---|
+| AUTH-01 | Student | Try accessing `/api/admin` | 403 Forbidden | PASS |
+| AUTH-02 | Teacher | Resolve Complaint | Status -> Resolved | PASS |
+| AUTH-03 | Public | View Transparency Wall | List of resolved issues | PASS |
 
 ---
 
 ### PAGE BREAK
 
-# References
+# Chapter 3: Conclusion and Recommendations
+
+## 3.1 Conclusion
+This project was not just about building a website; it was about solving a culture problem. By building **CampusCare**, we have moved from a system of "Closed Doors" to one of "**Open Transparency**".
+-   **For Students:** It provides a voice and essential digital resources (Docs, Leave App).
+-   **For Teachers:** It provides credit for their work and tools to manage students efficiently.
+-   **For the Institute:** It builds trust.
+
+The system is robust, secure (Role-Based Access), and ready for deployment. It represents a shift towards a **Student-Centric** and **Transparent** campus administration.
+
+## 3.2 Recommendations
+1.  **Mobile App:** We recommend building a React Native app next for push notifications.
+2.  **Biometric Integration:** For Hostel leave automated check-out/check-in.
+3.  **Payment:** Integrating a gateway for fine payments directly through the portal.
+
+---
+
+### PAGE BREAK
+
+# Chapter 4: Reference
 
 1.  **Documentation:**
-    -   Node.js Official Documentation. https://nodejs.org/en/docs/
-    -   Mongoose ODM v7 Documentation. https://mongoosejs.com/docs/
-    -   Express.js API Reference. https://expressjs.com/
-    -   Google Gemini API Docs (for AI concepts).
+    -   Node.js Docs: https://nodejs.org/en/docs/
+    -   MongoDB Manual: https://www.mongodb.com/docs/manual/
+    -   Express.js API: https://expressjs.com/
 
 2.  **Books:**
-    -   Banks, A. & Porcello, E. (2017). *Learning React: Functional Web Development with React and Redux*. O'Reilly Media.
-    -   Brown, E. (2014). *Web Development with Node and Express*. O'Reilly Media.
+    -   *Web Development with Node and Express* by Ethan Brown.
+    -   *Clean Code* by Robert C. Martin.
 
 3.  **Online Resources:**
-    -   MDN Web Docs (Mozilla Developer Network).
-    -   Stack Overflow Community.
-    -   W3Schools for CSS Grid/Flexbox tutorials.
+    -   MDN Web Docs.
+    -   Stack Overflow.
 
