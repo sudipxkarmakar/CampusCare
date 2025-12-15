@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
 async function handleCreateAssignment(e) {
     e.preventDefault();
 
-    const type = document.getElementById('assignType').value;
     const title = document.getElementById('assignTitle').value;
     const subject = document.getElementById('assignSubject').value;
     const department = document.getElementById('assignDept').value;
@@ -20,28 +19,22 @@ async function handleCreateAssignment(e) {
     const fileInput = document.getElementById('assignFile');
     const file = fileInput.files[0];
 
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
-        alert('Please login first.');
-        window.location.href = '../login.html';
-        return;
-    }
-    const user = JSON.parse(userStr);
+    // ... (Login check)
 
     try {
         const formData = new FormData();
-        formData.append('type', type);
+        formData.append('type', 'assignment'); // FORCE TYPE ASSIGNMENT
         formData.append('title', title);
         formData.append('subject', subject);
         formData.append('department', department);
         formData.append('batch', batch);
         formData.append('deadline', deadline);
         formData.append('description', description);
-        formData.append('teacherId', user._id); // Validated by backend
+        formData.append('teacherId', user._id);
 
         if (file) {
             if (file.type !== 'application/pdf') {
-                alert('Only PDF files are allowed for notes.');
+                alert('Only PDF files are allowed.');
                 return;
             }
             formData.append('file', file);

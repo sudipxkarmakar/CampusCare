@@ -46,23 +46,15 @@
     <!-- CREATE ASSIGNMENT FORM -->
     <section class="standard-container" style="margin-bottom: 2rem;">
       <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-        <h3 style="margin-bottom: 1rem; color: #2d3748;">Upload New Assignment/Notes</h3>
+        <h3 style="margin-bottom: 1rem; color: #2d3748;">Upload New Assignment</h3>
         <form id="createAssignmentForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-          <div class="row" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
-            <div class="form-group">
-              <select id="assignType"
-                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%;"
-                onchange="toggleDeadlineField()">
-                <option value="assignment">Assignment</option>
-                <option value="note">Study Material / Note</option>
-              </select>
-            </div>
-            <input type="text" id="assignTitle" placeholder="Title (e.g., Chapter 1 Notes)" required
+          <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <input type="text" id="assignTitle" placeholder="Assignment Title (e.g., Chapter 1 Homework)" required
+              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+            <input type="text" id="assignSubject" placeholder="Subject (e.g., Web Development)" required
               style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
           </div>
-          <input type="text" id="assignSubject" placeholder="Subject (e.g., Web Development)" required
-            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
 
           <!-- Row 2 -->
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
@@ -75,22 +67,24 @@
               <option value="CIVIL">CIVIL</option>
               <option value="ME">ME</option>
             </select>
-            <input type="text" id="assignBatch" placeholder="Batch (e.g., 2025)" required
-              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+            <select id="assignBatch" required
+              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+              <option value="">Select Batch</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+            </select>
             <input type="date" id="assignDeadline" required
               style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
           </div>
 
-          <textarea id="assignDesc" placeholder="Description or Notes content..." rows="3" required
+          <textarea id="assignDesc" placeholder="Description or Instructions..." rows="3" required
             style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Poppins';"></textarea>
 
-          <div class="form-group">
-            <label>Upload Notes (PDF)</label>
-            <input type="file" id="assignFile" accept="application/pdf">
-            <!-- Removed text input for Link -->
-          </div>
           <button type="submit" class="btn-login"
-            style="padding: 0.8rem 2rem; background: #3b82f6; color: white; border: none; font-weight: 600; align-self: flex-start;">Upload</button>
+            style="padding: 0.8rem 2rem; background: #3b82f6; color: white; border: none; font-weight: 600; align-self: flex-start;">Create
+            Assignment</button>
         </form>
       </div>
     </section>
@@ -123,25 +117,6 @@
     </section>
 
     <!-- NEW SECTION: MY NOTES -->
-    <section class="standard-container" style="margin-bottom: 2rem;">
-      <div style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-        <h3 style="margin-bottom: 1rem; color: #2d3748;">My Uploaded Notes</h3>
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
-            <thead>
-              <tr style="border-bottom: 2px solid #e2e8f0; text-align: left;">
-                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Title</th>
-                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Dept/Batch</th>
-                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Uploaded On</th>
-                <th style="padding: 1rem; color: #64748b; font-weight: 600;">Action</th>
-              </tr>
-            </thead>
-            <tbody id="teacherNotesTable">
-              <!-- Notes Loaded Here -->
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
 
     <!-- SUBMISSIONS MODAL -->
@@ -178,19 +153,6 @@
   <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') m.style.display = 'none'; else m.style.display = 'flex'; }</script>
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/teacher_assignments.js"></script>
-  <script>
-    function toggleDeadlineField() {
-      const type = document.getElementById('assignType').value;
-      const deadlineInput = document.getElementById('assignDeadline');
-      if (type === 'note') {
-        deadlineInput.style.display = 'none';
-        deadlineInput.required = false;
-      } else {
-        deadlineInput.style.display = 'block';
-        deadlineInput.required = true;
-      }
-    }
-  </script>
 </body>
 
 </html>

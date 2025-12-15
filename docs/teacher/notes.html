@@ -16,21 +16,23 @@
         <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-graduation-cap"></i> CampusCare
         </a>
-        <div id="userProfile"
-            style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
-            <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
-            <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
-                style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
-                onclick="toggleProfileMenu()">
-            <div id="profileMenu" class="glass"
-                style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000; text-align: left;">
-                <p
-                    style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
-                    Account Details</p>
-                <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;"></p>
-                <button onclick="logout()"
-                    style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;"><i
-                        class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <div style="display:flex; align-items:center; gap: 20px;">
+            <a href="index.html" class="dashboard-btn-nav"
+                style="text-decoration:none; color: #2d3748; font-weight: 600; font-size: 1rem; transition: color 0.3s ease;">
+                Dashboard
+            </a>
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000; text-align: left;">
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;"><i
+                            class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
             </div>
         </div>
     </header>
@@ -38,285 +40,125 @@
     <main class="main-container">
         <section class="hero">
             <div class="hero-left">
-                <h1 class="hero-title">Upload Notes</h1>
-                <p class="hero-sub">Share Resources & Reference Materials</p>
+                <h1 class="hero-title">Share New Resource</h1>
+                <p class="hero-sub">Upload study materials, notes, or lab manuals.</p>
             </div>
         </section>
 
-        <!-- UPLOAD SECTION -->
+        <!-- SHARE RESOURCE FORM -->
         <section class="standard-container" style="margin-bottom: 2rem;">
             <div
-                style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 10px 30px rgba(31, 38, 135, 0.1); border: 1px solid rgba(255, 255, 255, 0.6); padding: 1.5rem;">
-                <h2
-                    style="margin:0 0 1.5rem 0; font-size:1.4rem; color:#2d3748; display:flex; align-items:center; gap:10px;">
-                    <i class="fa-solid fa-cloud-arrow-up" style="color:#3b82f6;"></i> Share New Resource
-                </h2>
+                style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
 
-                <form id="notesForm">
-                    <!-- Title & File Row -->
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:1rem;">
-                        <div>
-                            <label
-                                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Topic
-                                / Title</label>
-                            <input type="text" class="form-control" placeholder="e.g., Quantum Physics Notes Unit 1"
-                                style="width:100%; padding:12px; font-size:1rem; border-radius:8px; border:1px solid #cbd5e0;">
+                <form id="createNoteForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+                    <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Topic /
+                                Title</label>
+                            <input type="text" id="noteTitle" placeholder="e.g., Quantum Physics Notes Unit 1" required
+                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%;">
                         </div>
-                        <div>
-                            <label
-                                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Upload
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Upload
                                 File</label>
-                            <input type="file" class="form-control"
-                                style="width:100%; padding:10px; background:#f7fafc; border-radius:8px; border:1px solid #cbd5e0;">
+                            <input type="file" id="noteFile" accept="application/pdf" required
+                                style="padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%;">
                         </div>
                     </div>
 
-                    <!-- Description -->
-                    <div style="margin-bottom:1rem;">
-                        <label
-                            style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Description
+                    <div class="form-group">
+                        <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Description
                             (Optional)</label>
-                        <textarea class="form-control" rows="2" placeholder="Brief description of the content..."
-                            style="width:100%; padding:12px; font-size:1rem; border-radius:8px; border:1px solid #cbd5e0;"></textarea>
+                        <textarea id="noteDesc" placeholder="Brief description of the content..." rows="3"
+                            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Poppins'; width: 100%;"></textarea>
                     </div>
 
-                    <!-- Target Selection Row (3 Columns) -->
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-bottom:1.5rem;">
-                        <div>
-                            <label
-                                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Target
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Target
                                 Department</label>
-                            <select class="form-control"
-                                style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem; background-color:white;">
+                            <select id="noteDept" required
+                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; width: 100%;">
                                 <option value="">-- All Departments --</option>
-                                <option>Computer Science (CSE)</option>
-                                <option>Electronics (ECE)</option>
-                                <option>Mechanical (ME)</option>
-                                <option>Civil (CE)</option>
+                                <option value="CSE">Computer Science (CSE)</option>
+                                <option value="IT">Information Technology (IT)</option>
+                                <option value="ECE">Electronics (ECE)</option>
+                                <option value="ME">Mechanical (ME)</option>
+                                <option value="CIVIL">Civil (CE)</option>
                             </select>
                         </div>
-                        <div>
-                            <label
-                                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Target
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Target
                                 Batch (Year)</label>
-                            <select class="form-control"
-                                style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem; background-color:white;">
+                            <select id="noteBatch" required
+                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; width: 100%;">
                                 <option value="">-- All Batches --</option>
-                                <option>Batch 2023</option>
-                                <option>Batch 2024</option>
-                                <option>Batch 2025</option>
-                                <option>Batch 2026</option>
+                                <option value="2026">Batch 2026</option>
+                                <option value="2027">Batch 2027</option>
+                                <option value="2028">Batch 2028</option>
+                                <option value="2029">Batch 2029</option>
                             </select>
                         </div>
-                        <div>
-                            <label
-                                style="display:block; font-weight:700; font-size:0.95rem; color:#2d3748; margin-bottom:5px;">Target
+                        <div class="form-group">
+                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Target
                                 Group / Section</label>
-                            <select class="form-control"
-                                style="width:100%; padding:12px; border:1px solid #cbd5e0; border-radius:8px; font-size:1rem; background-color:white;">
+                            <select id="noteSection"
+                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; width: 100%;">
                                 <option value="">-- All Groups --</option>
-                                <option>Section A</option>
-                                <option>Section B</option>
-                                <option>Group 1 (Lab)</option>
-                                <option>Group 2 (Lab)</option>
+                                <option value="A">Group A</option>
+                                <option value="B">Group B</option>
                             </select>
                         </div>
                     </div>
 
-                    <button onclick="alert('Note Uploaded Successfully!')" type="button"
-                        style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1.1rem; width:100%; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                    <button type="submit" class="btn-login"
+                        style="padding: 1rem; background: #10b981; color: white; border: none; font-weight: 700; border-radius: 8px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <i class="fa-solid fa-share-from-square"></i> Upload & Share
                     </button>
                 </form>
             </div>
         </section>
 
-        <!-- HISTORY SECTION -->
-        <section class="standard-container">
+        <!-- PREVIOUSLY SHARED NOTES -->
+        <section class="standard-container" style="margin-bottom: 2rem;">
             <div
-                style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 10px 30px rgba(31, 38, 135, 0.1); border: 1px solid rgba(255, 255, 255, 0.6); padding: 2rem; overflow: hidden;">
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <h2
-                        style="margin:0; border-left:6px solid #3b82f6; padding-left:15px; color:#1f2937; font-size:1.5rem; font-weight:700;">
-                        Previously Shared Notes</h2>
-
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-weight:600; font-size:0.9rem; color:#64748b;">Sort By:</span>
-                        <select onchange="sortNotes(this.value)"
-                            style="padding:8px 12px; border-radius:8px; border:1px solid #cbd5e0; background:white; font-weight:500; cursor:pointer;">
-                            <option value="0">Date Shared</option>
-                            <option value="1">Title / Topic</option>
-                            <option value="2">Department</option>
+                style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #2d3748; border-left: 4px solid #3b82f6; padding-left: 10px;">Previously Shared
+                        Notes</h3>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #64748b; font-size: 0.9rem;">Sort By:</span>
+                        <select style="padding: 5px; border-radius: 5px; border: 1px solid #cbd5e1;">
+                            <option>Date Shared</option>
+                            <option>Title</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- TABLE -->
-                <div style="overflow-x:auto; border-radius:12px; border:1px solid #e2e8f0;">
-                    <table id="notesTable"
-                        style="width:100%; border-collapse:collapse; min-width:700px; background:white;">
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
                         <thead>
-                            <tr style="background:#f8fafc; text-align:left; border-bottom:2px solid #e2e8f0;">
-                                <th style="padding:15px; color:#475569; font-weight:600;">Date Shared</th>
-                                <th style="padding:15px; color:#475569; font-weight:600;">Title</th>
-                                <th style="padding:15px; color:#475569; font-weight:600;">Shared With (Dept)</th>
-                                <th style="padding:15px; color:#475569; font-weight:600;">File</th>
-                                <th style="padding:15px; color:#475569; font-weight:600;">Action</th>
+                            <tr style="border-bottom: 2px solid #e2e8f0; text-align: left; color: #64748b;">
+                                <th style="padding: 1rem; font-weight: 600;">Date Shared</th>
+                                <th style="padding: 1rem; font-weight: 600;">Title</th>
+                                <th style="padding: 1rem; font-weight: 600;">Shared With (Dept)</th>
+                                <th style="padding: 1rem; font-weight: 600;">File</th>
+                                <th style="padding: 1rem; font-weight: 600; text-align: center;">Action</th>
                             </tr>
                         </thead>
-                        <tbody style="font-size:0.95rem;">
-                            <!-- MOCK ROW 1 -->
-                            <tr style="border-bottom:1px solid #f1f5f9;">
-                                <td style="padding:15px; color:#64748b;">2025-12-08</td>
-                                <td style="padding:15px; font-weight:600; color:#2d3748;">Data Structures Basics</td>
-                                <td style="padding:15px;"><span
-                                        style="background:#e0f2fe; color:#0369a1; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:600;">CSE
-                                        - Year 2</span></td>
-                                <td style="padding:15px;"><a href="#" style="color:#3b82f6; text-decoration:none;"><i
-                                            class="fa-solid fa-file-pdf"></i> ds_notes.pdf</a></td>
-                                <td style="padding:15px;">
-                                    <button style="color:#ef4444; background:none; border:none; cursor:pointer;"
-                                        onclick="confirm('Delete this note?')"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <!-- MOCK ROW 2 -->
-                            <tr style="border-bottom:1px solid #f1f5f9;">
-                                <td style="padding:15px; color:#64748b;">2025-12-05</td>
-                                <td style="padding:15px; font-weight:600; color:#2d3748;">Thermodynamics Ch.3</td>
-                                <td style="padding:15px;"><span
-                                        style="background:#fce7f3; color:#db2777; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:600;">ME
-                                        - Year 3</span></td>
-                                <td style="padding:15px;"><a href="#" style="color:#3b82f6; text-decoration:none;"><i
-                                            class="fa-solid fa-file-powerpoint"></i> thermo.pptx</a></td>
-                                <td style="padding:15px;">
-                                    <button style="color:#ef4444; background:none; border:none; cursor:pointer;"
-                                        onclick="confirm('Delete this note?')"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <!-- MOCK ROW 3 -->
-                            <tr style="border-bottom:1px solid #f1f5f9;">
-                                <td style="padding:15px; color:#64748b;">2025-12-10</td>
-                                <td style="padding:15px; font-weight:600; color:#2d3748;">Analog Circuits Lab Manual
-                                </td>
-                                <td style="padding:15px;"><span
-                                        style="background:#fef3c7; color:#b45309; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:600;">ECE
-                                        - Group A</span></td>
-                                <td style="padding:15px;"><a href="#" style="color:#3b82f6; text-decoration:none;"><i
-                                            class="fa-solid fa-file-word"></i> manual_v2.docx</a></td>
-                                <td style="padding:15px;">
-                                    <button style="color:#ef4444; background:none; border:none; cursor:pointer;"
-                                        onclick="confirm('Delete this note?')"><i
-                                            class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
+                        <tbody id="notesTableBody">
+                            <!-- Notes Loaded Here -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
+
     </main>
 
-    <!-- FLOATING ACTION BUTTONS (SOS & AI) -->
-    <div class="fab-container"
-        style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; align-items: flex-end;">
-        <button onclick="toggleModal('ai-modal')"
-            style="width: 60px; height: 60px; border-radius: 50%; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s ease;"><i
-                class="fa-solid fa-robot"></i></button>
-        <button onclick="toggleModal('sos-modal')"
-            style="width: 60px; height: 60px; border-radius: 50%; border: none; background: #ef4444; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); animation: pulse-red 2s infinite;"><i
-                class="fa-solid fa-bell-concierge"></i></button>
-    </div>
-    <div id="sos-modal" class="modal-overlay"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
-        <div class="modal-content glass"
-            style="background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; position: relative;">
-            <button onclick="toggleModal('sos-modal')"
-                style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <i class="fa-solid fa-triangle-exclamation"
-                style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-            <h2 style="color: #ef4444; margin-bottom: 0.5rem;">EMERGENCY SOS</h2>
-            <p style="margin-bottom: 1.5rem;">Select your emergency type to alert nearest help.</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <a href="tel:100"
-                    style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;"><i
-                        class="fa-solid fa-shield-halved"></i> Call Security/Police</a>
-                <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
-                    style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;"><i
-                        class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid</button>
-                <button
-                    onclick="const bg = prompt('Please enter required Blood Group:'); if(bg) alert(`Broadcasting Blood Requirement for ${bg}!`)"
-                    style="background: #ef4444; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;"><i
-                        class="fa-solid fa-droplet" style="font-size:1.5rem;"></i> Need Blood</button>
-                <a href="tel:101"
-                    style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display:flex; justify-content:center; align-items:center; gap:5px;"><i
-                        class="fa-solid fa-truck-medical"></i> Ambulance</a>
-                <button onclick="alert('Panic Signal Sent!')"
-                    style="background: #4b5563; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">Panic</button>
-            </div>
-        </div>
-    </div>
-    <div id="ai-modal" class="modal-overlay"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
-        <div class="modal-content glass"
-            style="background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; position: relative;">
-            <button onclick="toggleModal('ai-modal')"
-                style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            <i class="fa-solid fa-robot" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
-            <h2 style="color: #1f2937; margin-bottom: 0.5rem;">AI Assistant</h2>
-            <div id="ai-chat-history"
-                style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid #eee; padding: 10px; border-radius: 10px; background: #f9fafb; display:none;">
-            </div>
-            <input type="text" id="ai-input" placeholder="Ask AI..."
-                style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 1rem;">
-            <button onclick="askAI()"
-                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">Ask</button>
-        </div>
-    </div>
-    <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') { m.style.display = 'none'; } else { m.style.display = 'flex'; } }</script>
     <script src="../assets/js/landing.js"></script>
-    <script src="../assets/js/ai.js"></script>
-    <script>
-        function sortNotes(columnIndex) {
-            const table = document.getElementById("notesTable");
-            let rows, switching, i, x, y, shouldSwitch;
-            switching = true;
-
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                // Loop through all table rows (except header)
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    x = rows[i].getElementsByTagName("TD")[columnIndex];
-                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
-
-                    let xVal = x.textContent || x.innerText;
-                    let yVal = y.textContent || y.innerText;
-
-                    // Date Sort (Index 0) - Descending
-                    if (columnIndex == 0) {
-                        if (xVal < yVal) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else {
-                        // Text Sort - Ascending
-                        if (xVal.toLowerCase() > yVal.toLowerCase()) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                }
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                }
-            }
-        }
-    </script>
+    <script src="../assets/js/teacher_notes.js"></script>
 </body>
 
 </html>
