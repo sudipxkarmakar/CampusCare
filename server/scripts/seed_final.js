@@ -37,19 +37,32 @@ const seedFinal = async () => {
         await User.create({
             name: "Dr. Dean Admin",
             email: "dean@campuscare.com",
-            password: "password123", // Hash if needed, assuming simple plain for dev or pre-save hook
+            password: "password123",
             role: "dean",
+            employeeId: "EMP-DEAN-01",
             designation: "Dean of Student Affairs"
+        });
+
+        // 1.5 Principal
+        await User.create({
+            name: "Dr. Principal",
+            email: "principal@campuscare.com",
+            password: "password123",
+            role: "principal",
+            employeeId: "EMP-PRIN-01",
+            designation: "Principal"
         });
 
         // 2. HODs (3)
         const hodDepts = ['CSE', 'IT', 'ECE'];
+        let hCount = 1;
         for (const dept of hodDepts) {
             await User.create({
                 name: `Dr. HOD ${dept}`,
                 email: `hod.${dept.toLowerCase()}@campuscare.com`,
                 password: "password123",
                 role: "hod",
+                employeeId: `EMP-HOD-${String(hCount++).padStart(2, '0')}`,
                 department: dept,
                 designation: "Head of Department"
             });
@@ -58,6 +71,7 @@ const seedFinal = async () => {
         // 3. Teachers (24)
         // 4 per department for 6 departments
         const teachers = [];
+        let tCount = 1;
         for (const dept of DEPARTMENTS) {
             for (let i = 1; i <= 4; i++) {
                 const teacher = await User.create({
@@ -65,9 +79,10 @@ const seedFinal = async () => {
                     email: `prof.${dept.toLowerCase()}${i}@campuscare.com`,
                     password: "password123",
                     role: "teacher",
+                    employeeId: `EMP-FAC-${String(tCount++).padStart(3, '0')}`,
                     department: dept,
                     designation: "Assistant Professor",
-                    menteesSubBatches: [] // Will populate later
+                    menteesSubBatches: []
                 });
                 teachers.push(teacher);
             }
