@@ -18,6 +18,7 @@ import libraryRoutes from './routes/libraryRoutes.js';
 import alumniRoutes from './routes/alumniRoutes.js';
 import teacherRoutes from './routes/teacherRoutes.js';
 import leaveRoutes from './routes/leaveRoutes.js';
+import academicLeaderRoutes from './routes/academicLeaderRoutes.js';
 
 // ... imports
 
@@ -46,6 +47,7 @@ const startServer = async () => {
   app.use('/api/alumni', alumniRoutes);
   app.use('/api/teacher', teacherRoutes);
   app.use('/api/leaves', leaveRoutes);
+  app.use('/api/academic-leaders', academicLeaderRoutes);
 
   // Serve static assets from 'docs' (formerly client)
   // The docs folder is one level up from server/src (server/../docs -> ../../docs)
