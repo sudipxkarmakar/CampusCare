@@ -40,6 +40,17 @@ const userSchema = new mongoose.Schema({
 
     // Common for Student/Teacher    // Hosteler & Student Common
     batch: { type: String }, // For Student & Hosteler
+    passOutYear: { type: String }, // Requested field
+
+    // Updated by system / HOD (Phase 1 Requirements)
+    year: { type: String }, // Derived from passOutYear e.g. "1st Year"
+    subBatch: { type: String }, // e.g. "1-1", "1-2"
+    subjects: [{ type: String }], // Array of subject codes or names
+    assignedTeachers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    routineId: { type: String },
 
     // Hosteler Specific
     hostelName: { type: String },

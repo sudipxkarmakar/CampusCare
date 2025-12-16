@@ -18,7 +18,7 @@ const validateRoleData = (role, data) => {
     const { rollNumber, employeeId, batch, section, department, hostelName, roomNumber } = data;
 
     if (role === 'student') {
-        if (!/^\d{11}$/.test(rollNumber)) return 'Student Roll Number must be exactly 11 digits.';
+        // if (!/^\d{11}$/.test(rollNumber)) return 'Student Roll Number must be exactly 11 digits.';
         if (!batch) return 'Batch is required for Students.';
         if (!section) return 'Section is required for Students.';
         if (!department) return 'Department is required for Students.';
@@ -32,7 +32,7 @@ const validateRoleData = (role, data) => {
     }
 
     if (role === 'hosteler') {
-        if (!/^H\d{11}$/.test(rollNumber)) return 'Hostel Roll Number must start with H followed by 11 digits.';
+        // if (!/^H\d{11}$/.test(rollNumber)) return 'Hostel Roll Number must start with H followed by 11 digits.';
         if (!department) return 'Department is required for Hostelers.';
         if (!hostelName) return 'Hostel Name is required for Hostelers.';
         if (!roomNumber) return 'Room Number is required for Hostelers.';
