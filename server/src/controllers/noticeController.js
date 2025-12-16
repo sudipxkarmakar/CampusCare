@@ -41,9 +41,13 @@ export const getNotices = async (req, res) => {
 
         // Base Audience Filter
         let audienceList = ['general', 'public'];
-        if (role === 'teacher') audienceList.push('teacher', 'student', 'hosteler'); // Teachers can see Student & Hosteler notices now
-        if (role === 'student') audienceList.push('student');
-        if (role === 'hosteler') audienceList.push('student', 'hosteler');
+
+        if (role === 'student') {
+            audienceList = ['student']; // Students see ONLY student notices (no general)
+        } else {
+            if (role === 'teacher') audienceList.push('teacher', 'student', 'hosteler');
+            if (role === 'hosteler') audienceList.push('student', 'hosteler');
+        }
 
 
         // Construct Query
