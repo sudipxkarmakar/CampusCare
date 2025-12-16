@@ -80,8 +80,11 @@ const userSchema = new mongoose.Schema({
     specialization: { type: String },
 
     // Assignment & Other refs
-    xp: { type: Number, default: 0 },
-    streak: { type: Number, default: 0 },
+    mar: { type: Number, default: 0 },
+    moocs: { type: Number, default: 0 },
+    attendance: { type: Number, default: 0 },
+    cgpa: { type: Number, default: 0 },
+
     lastActive: { type: Date },
     // Common for Student/Teacher/Hosteler
     department: {
