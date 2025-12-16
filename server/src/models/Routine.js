@@ -6,43 +6,45 @@ const routineSchema = new mongoose.Schema({
         enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         required: true,
     },
-    period: {
-        type: Number, // 1, 2, 3...
+    // "timeSlot" from screenshot (replacing period/start/end strictness, or keeping them as helpers)
+    timeSlot: {
+        type: String, // e.g. "10:00 - 11:00" or "Period 1"
         required: true,
     },
-    startTime: {
-        type: String, // e.g. "10:00 AM"
-    },
-    endTime: {
-        type: String, // e.g. "11:00 AM"
-    },
-    subject: {
-        type: mongoose.Schema.Types.ObjectId, // Link to Subject Model
-        ref: 'Subject',
-        // required: true, // relaxed for now to allow string if legacy data exists
-    },
-    subjectName: { type: String }, // Fallback/Cache
-    teacher: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
-    roomNumber: {
-        type: String,
-    },
-    batch: {
-        type: String, // e.g., '2025' or '1'
+    // "year" from screenshot
+    year: {
+        type: String, // e.g. "2nd Year"
         required: true,
-    },
-    subBatch: {
-        type: String, // e.g., '1-1' (Optional, if routine is specific to sub-batch)
-    },
-    section: {
-        type: String, // e.g., 'A'
     },
     department: {
         type: String, // e.g., 'CSE'
         required: true,
-    }
+    },
+    batch: {
+        type: String, // e.g., '1' or '2025'
+        required: true,
+    },
+    // "subject"
+    subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject',
+    },
+    subjectName: { type: String }, // Cache
+
+    // "teacherId" from screenshot (mapped to 'teacher' field for mongoose ref convention, but can alias)
+    teacher: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+
+    // "room" from screenshot
+    room: {
+        type: String,
+    },
+
+    // Extras
+    subBatch: { type: String },
+    period: { type: Number }, // Keeping for sorting if needed
 }, { timestamps: true });
 
 const Routine = mongoose.model('Routine', routineSchema);
