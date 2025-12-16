@@ -15,7 +15,7 @@ const connectDB = async () => {
 
     try {
         const conn = await mongoose.connect(connectionString, {
-            serverSelectionTimeoutMS: 3000, // Wait 3s max before falling back
+            serverSelectionTimeoutMS: 15000, // Increased timeout to 15s
         });
 
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
@@ -24,9 +24,11 @@ const connectDB = async () => {
 
     } catch (error) {
         console.error(`❌ MongoDB Connection Failed: ${error.message}`);
-        console.warn('⚠️  Database Unreachable. Falling back to MOCK MODE.');
-        console.log('🎭 Running in MOCK MODE');
-        global.MOCK_MODE = true;
+        // console.warn('⚠️  Database Unreachable. Falling back to MOCK MODE.');
+        // console.log('🎭 Running in MOCK MODE');
+        // global.MOCK_MODE = true;
+        console.error('❌ Database connection is required. Exiting...');
+        process.exit(1);
     }
 };
 
