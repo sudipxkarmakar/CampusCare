@@ -17,9 +17,11 @@ const routineSchema = new mongoose.Schema({
         type: String, // e.g. "11:00 AM"
     },
     subject: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId, // Link to Subject Model
+        ref: 'Subject',
+        // required: true, // relaxed for now to allow string if legacy data exists
     },
+    subjectName: { type: String }, // Fallback/Cache
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -28,8 +30,11 @@ const routineSchema = new mongoose.Schema({
         type: String,
     },
     batch: {
-        type: String, // e.g., '2025'
+        type: String, // e.g., '2025' or '1'
         required: true,
+    },
+    subBatch: {
+        type: String, // e.g., '1-1' (Optional, if routine is specific to sub-batch)
     },
     section: {
         type: String, // e.g., 'A'
