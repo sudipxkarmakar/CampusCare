@@ -80,10 +80,6 @@ export const registerUser = async (req, res) => {
     }
 
     try {
-<<<<<<< HEAD
-        const { name, email, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
-        // ... rest of registerUser
-=======
         const { name, email, contactNumber, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
 
         // 1. Email Domain Check - REMOVED
@@ -92,7 +88,6 @@ export const registerUser = async (req, res) => {
         // }
 
         // 2. Role specific validation
->>>>>>> d1f5a34ef80b66c98e0b93f1279723f8dcff0c0f
         const validationError = validateRoleData(role, req.body);
         if (validationError) {
             return res.status(400).json({ message: validationError });
