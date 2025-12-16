@@ -20,7 +20,7 @@ const verifyContentDistribution = async () => {
         console.log("🚀 Verifying Content Distribution Logic...");
 
         // 1. Find a Teacher
-        const teacher = await User.findOne({ role: 'Teacher' });
+        const teacher = await User.findOne({ role: 'teacher' });
         if (!teacher) {
             console.error("❌ No teacher found in DB!");
             process.exit(1);

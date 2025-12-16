@@ -1,12 +1,12 @@
 import express from 'express';
-import { applyLeave, getMyLeaves, getMessMenu, getAllLeaves, updateLeaveStatus } from '../controllers/hostelController.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
+import { getMessMenu, updateMessMenu, applyLeave, getMyLeaves } from '../controllers/hostelController.js';
 
 const router = express.Router();
 
-router.post('/leave', applyLeave);
-router.get('/leaves', getAllLeaves); // New route for mentors
-router.put('/leave/:id', updateLeaveStatus); // New route for approval
-router.get('/leave/:studentId', getMyLeaves);
-router.get('/menu', getMessMenu);
+router.get('/mess', getMessMenu);
+router.put('/mess', protect, admin, updateMessMenu); // Dean/Admin
+router.post('/leave', protect, applyLeave);
+router.get('/my-leaves', protect, getMyLeaves);
 
 export default router;

@@ -21,6 +21,8 @@ import leaveRoutes from './routes/leaveRoutes.js';
 import academicLeaderRoutes from './routes/academicLeaderRoutes.js';
 import subjectRoutes from './routes/subjectRoutes.js';
 import routineRoutes from './routes/routineRoutes.js';
+import contentRoutes from './routes/contentRoutes.js';
+import deanRoutes from './routes/deanRoutes.js';
 
 // ... imports
 
@@ -44,6 +46,7 @@ const startServer = async () => {
   app.use('/api/complaints', complaintRoutes);
   app.use('/api/notices', noticeRoutes);
   app.use('/api/hostel', hostelRoutes);
+  app.use('/api/dean', deanRoutes);
   app.use('/api/ai', aiRoutes);
   app.use('/api/library', libraryRoutes);
   app.use('/api/alumni', alumniRoutes);
