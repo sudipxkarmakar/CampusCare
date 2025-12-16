@@ -162,63 +162,49 @@
     */
   </style>
 
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/routine.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const dbSelect = document.getElementById('batch-select');
+      // Just trigger the fetch, the logic is in routine.js
+      // routine.js auto-detects based on 'routine-table-body' existence, 
+      // BUT student page currently has 'routine-container'.
+      // We need to adjust either HTML structure or JS.
+      // Let's adjust HTML to match JS expectance (table with tbody id).
+
+      // Wait, routine.js expects #routine-table-body.
+      // The current HTML generates the whole table in JS.
+      // Let's prep the container with a skeleton table first.
+
       const container = document.getElementById('routine-container');
-
-      // MOCK DATA GENERATOR
-      const generateRoutine = (batch) => {
-        return {
-          'Monday': ['Maths (10-11)', 'Physics (11-12)', 'Break', 'CS Lab (1-3)', 'Library'],
-          'Tuesday': ['Chemistry (10-11)', 'English (11-12)', 'Break', 'Workshop (1-4)'],
-          'Wednesday': ['Maths (10-11)', 'Physics (11-12)', 'Break', 'Sports', 'Self Study'],
-          'Thursday': ['OS (10-11)', 'DBMS (11-12)', 'Break', 'Placement Trg', 'Mentoring'],
-          'Friday': ['Project (9-12)', 'Break', 'Maths (1-2)', 'Club Activity']
-        };
-      };
-
-      const renderRoutine = (batch) => {
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-        const timeSlots = ['10:00 - 11:00', '11:00 - 12:00', '12:00 - 01:00', '01:00 - 02:00', '02:00 - 04:00'];
-        // Simplified Logic: Just projecting subjects into slots for the Excel look
-
-        const routineData = generateRoutine(batch);
-        const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-
-        let html = '<table class="routine-table">';
-        html += '<thead><tr><th>Day / Time</th>';
-        timeSlots.forEach(t => html += `<th>${t}</th>`);
-        html += '</tr></thead><tbody>';
-
-        days.forEach(day => {
-          const isToday = day === todayName;
-          const subjects = routineData[day] || [];
-
-          html += `<tr class="${isToday ? 'current-day' : ''}">`;
-          html += `<td style="font-weight:bold;">${day}</td>`;
-
-          // Fill slots (mock logic: just take first 5 items from array)
-          for (let i = 0; i < 5; i++) {
-            html += `<td>${subjects[i] || '-'}</td>`;
-          }
-          html += '</tr>';
-        });
-
-        html += '</tbody></table>';
-        container.innerHTML = html;
-      };
-
-      // Initial Render
-      renderRoutine('A');
-
-      // Change Handler
-      dbSelect.addEventListener('change', (e) => {
-        container.innerHTML = '<div style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Updating Batch...</div>';
-        setTimeout(() => renderRoutine(e.target.value), 500);
+      container.innerHTML = \`
+          <table class="routine-table">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Subject</th>
+                <th>Room</th>
+                <th>Batch Info</th>
+              </tr>
+            </thead>
+            <tbody id="routine-table-body">
+              <tr><td colspan="5" style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>
+            </tbody>
+          </table>
+        \`;
+        
+        // Now trigger fetch (routine.js auto-runs on DOMContentLoaded but we might need to re-trigger if we just added the element)
+        // Actually routine.js runs on DOMContentLoaded. If this script runs after, we are good?
+        // No, routine.js is imported before or after.
+        // Let's call explicitly to be safe.
+        fetchAndRenderRoutine('student');
+        
+        // Handle Batch Select Change if needed (though backend filters by user profile for students usually)
+        // For HOD/Admin view it matters. For student, they see THEIR routine.
+        // We can keep the select for demo if we want to simulate switching batches? 
+        // For now, let's strictly follow "Student routine fetched dynamically" (which implies their own).
       });
-
-    });
   </script>
 
   <!-- Removed Duplicate Footer (using global footer margin-top: auto) -->
