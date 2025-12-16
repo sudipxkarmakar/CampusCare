@@ -156,3 +156,18 @@ async function upvote(id) {
         loadComplaints();
     } catch (e) { console.error(e); }
 }
+
+function goToDashboard() {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        window.location.href = '../login.html';
+        return;
+    }
+    const user = JSON.parse(userStr);
+    const role = (user.role || '').toLowerCase();
+
+    if (role === 'student') window.location.href = '../student/index.html';
+    else if (role === 'teacher') window.location.href = '../teacher/index.html';
+    else if (role === 'hosteler') window.location.href = '../hostel/index.html';
+    else window.location.href = '../index.html';
+}

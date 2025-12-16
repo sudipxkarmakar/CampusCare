@@ -16,32 +16,53 @@
         <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-graduation-cap"></i> CampusCare
         </a>
-        <div id="userProfile"
-            style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
-            <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
-            <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
-                style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
-                onclick="toggleProfileMenu()">
-            <div id="profileMenu" class="glass"
-                style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000; text-align: left;">
-                <p
-                    style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
-                    Account Details</p>
-                <div id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;"></div>
-                <button onclick="logout()"
-                    style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;"><i
-                        class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <!-- Dashboard Button -->
+            <a href="index.html" class="dashboard-btn-nav"
+                style="text-decoration:none; color: #2d3748; font-weight: 600; font-size: 1rem; transition: color 0.3s ease;">
+                Dashboard
+            </a>
+
+            <!-- Complaint Button -->
+            <a href="../complaints/index.html"
+                style="text-decoration:none; color: #ffffff; background-color: #f59e0b; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: transform 0.2s ease; display: flex; align-items: center; gap: 5px;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Complaint
+            </a>
+
+            <!-- USER PROFILE -->
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p
+                        style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
+                        Account Details</p>
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;"><i
+                            class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="main-container">
         <!-- HERO -->
-        <section class="hero">
-            <div class="hero-left">
-                <h1 class="hero-title">Leave Applications</h1>
-                <p class="hero-sub">Manage Leave Requests from Your Mentees</p>
+        <!-- HERO SECTION (Constant) -->
+        <!-- HERO SECTION (Specific) -->
+        <section class="hero teacher-hero" style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 class="hero-title" style="font-size: 2.5rem; color: #2d3748; margin-bottom: 0.5rem;">Leave
+                    Applications</h1>
+                <p class="hero-sub" style="font-size: 1.1rem; color: #64748b; margin-bottom: 1rem;">Manage Leave
+                    Requests from Your Mentees</p>
             </div>
+        </section>
 
         </section>
 

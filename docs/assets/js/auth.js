@@ -20,23 +20,23 @@ let isRegistering = false;
 const roleConfig = {
     student: {
         label: 'Roll Number',
-        placeholder: 'Enter 11-digit Roll Number',
-        regex: /^\d{11}$/,
-        error: 'Roll Number must be exactly 11 digits (Numbers only).',
+        placeholder: 'Enter Roll Number',
+        regex: /.+/,
+        error: 'Roll Number is required.',
         extras: ['dept', 'batch', 'section']
     },
     teacher: {
         label: 'Employee ID',
-        placeholder: 'Enter Employee ID (TXXXXXXXXXXX)',
-        regex: /^T\d{11}$/,
-        error: 'Employee ID must start with "T" followed by 11 digits.',
+        placeholder: 'Enter Employee ID',
+        regex: /.+/,
+        error: 'Employee ID is required.',
         extras: ['dept', 'teacherDetails']
     },
     hosteler: {
         label: 'Hostel Roll Number',
-        placeholder: 'Enter Hostel Roll Number (HXXXXXXXXXXX)',
-        regex: /^H\d{11}$/,
-        error: 'Hostel Roll Number must start with "H" followed by 11 digits.',
+        placeholder: 'Enter Hostel Roll Number',
+        regex: /.+/,
+        error: 'Hostel Roll Number is required.',
         extras: ['dept', 'batch', 'hostel']
     }
 };

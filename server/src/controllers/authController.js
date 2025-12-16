@@ -26,7 +26,7 @@ const validateRoleData = (role, data) => {
     }
 
     if (role === 'teacher') {
-        if (!/^T\d{11}$/.test(employeeId)) return 'Employee ID must start with T followed by 11 digits.';
+        // if (!/^T\d{11}$/.test(employeeId)) return 'Employee ID must start with T followed by 11 digits.';
         if (!department) return 'Department is required for Teachers.';
         return null; // Batch/Section not required
     }
