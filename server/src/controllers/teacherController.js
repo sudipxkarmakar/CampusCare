@@ -60,6 +60,15 @@ export const getMenteeIssues = async (req, res) => {
 // @route   GET /api/teacher/all-students
 // @access  Teacher
 export const getAllStudents = async (req, res) => {
+    // --- MOCK MODE ---
+    if (global.MOCK_MODE) {
+        return res.json([
+            { _id: 'm1', name: 'Mock Student 1', rollNumber: 'CSE-101', department: 'CSE', mobile: '9998887771' },
+            { _id: 'm2', name: 'Mock Student 2', rollNumber: 'CSE-102', department: 'CSE', mobile: '9998887772' },
+            { _id: 'm3', name: 'Mock Student 3', rollNumber: 'CSE-103', department: 'CSE', mobile: '9998887773' },
+        ]);
+    }
+
     try {
         // Ensure strictly limiting to teacher's department
         const teacherDept = req.user.department;

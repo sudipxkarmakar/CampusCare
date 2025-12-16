@@ -9,6 +9,9 @@ const assignmentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    link: {
+        type: String, // Optional URL for notes
+    },
     subject: {
         type: String,
         required: true,
@@ -32,9 +35,13 @@ const assignmentSchema = new mongoose.Schema({
     },
     deadline: {
         type: Date,
-        required: true,
+        // required: true, // Made optional for Notes
     },
-    // submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Submission' }] // later
+    type: {
+        type: String,
+        enum: ['assignment', 'note'],
+        default: 'assignment'
+    }
 }, { timestamps: true });
 
 const Assignment = mongoose.model('Assignment', assignmentSchema);

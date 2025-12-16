@@ -333,10 +333,13 @@
       // 1. Check if Logged In
       if (!userStr) {
         event.preventDefault();
-        // Optional: Alert before redirecting? User requested "redirected to login page"
-        // Let's just redirect for smoother UX, or maybe a small confirm?
-        // "I should be redirected to the login page" implies action.
-        window.location.href = 'login.html';
+
+        // Determine target role for login redirect
+        let targetRole = 'student'; // Default
+        if (allowedRoles.includes('teacher')) targetRole = 'teacher';
+        else if (allowedRoles.includes('hosteler') && !allowedRoles.includes('student')) targetRole = 'hosteler';
+
+        window.location.href = `login.html?role=${targetRole}`;
         return;
       }
 

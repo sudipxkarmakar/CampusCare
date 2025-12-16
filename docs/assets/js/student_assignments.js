@@ -1,127 +1,234 @@
-document.addEventListener('DOMContentLoaded', async () => {
+const ASSIGN_API_URL = 'http://localhost:5000/api/assignments';
+let fetchedAssignments = [];
+let currentAssignmentId = null;
+
+// Run immediately if DOM is ready, otherwise wait
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadAssignments);
+} else {
+    loadAssignments();
+}
+
+async function loadAssignments() {
     const tableBody = document.getElementById('assignments-table-body');
+    if (!tableBody) return;
+
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Please login to view assignments.</td></tr>';
+        return;
+    }
+
+    const user = JSON.parse(userStr);
+    const { department, batch, section, token } = user;
+
+    if (!department || !batch) {
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">Profile incomplete (Dept/Batch missing). Contact admin.</td></tr>';
+        return;
+    }
 
     try {
-        const token = localStorage.getItem('token');
-        const userStr = localStorage.getItem('user');
-        const user = userStr ? JSON.parse(userStr) : null;
-
-        // --- 1. MOCK FALLBACK IF NO TOKEN OR USER ---
-        if (!token || !user) {
-            console.warn('No authentication or user found. Using mock data.');
-            renderMockAssignments(tableBody);
-            return;
-        }
-
-        const dept = user.department || 'CSE';
-        const batch = user.batch || '2025';
-        const section = user.section || '';
-
-        // FIX: Use correct endpoint and query params
-        const response = await fetch(`${API_BASE_URL}/assignments?dept=${dept}&batch=${batch}&section=${section}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const query = `?dept=${department}&batch=${batch}${section ? `&section=${section}` : ''}`;
+        const response = await fetch(`${ASSIGN_API_URL}${query}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
 
-
-        // --- 2. MOCK FALLBACK IF API FAILS ---
         if (!response.ok) {
-            throw new Error('API request failed');
+            throw new Error('Failed to fetch assignments');
         }
 
         const assignments = await response.json();
+        fetchedAssignments = assignments;
 
-        if (assignments.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">
-                        No pending assignments. Great job!
+        const assignmentsList = assignments.filter(a => a.type !== 'note');
+        const notesList = assignments.filter(a => a.type === 'note');
+
+        // Render ASSIGNMENTS
+        if (assignmentsList.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No pending assignments! 🎉</td></tr>';
+        } else {
+            tableBody.innerHTML = assignmentsList.map((assign, index) => {
+                const date = new Date(assign.deadline).toLocaleDateString('en-GB');
+                const teacherName = assign.teacher ? assign.teacher.name : 'Unknown';
+
+                // Find original index in fetchedAssignments for viewAssignment to work correctly
+                const originalIndex = fetchedAssignments.indexOf(assign);
+
+                // Status Logic
+                let statusBadge;
+                if (assign.submitted) {
+                    statusBadge = `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Submitted</span>`;
+                } else {
+                    const isOverdue = new Date(assign.deadline) < new Date();
+                    statusBadge = isOverdue
+                        ? `<span style="background: #fee2e2; color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Overdue</span>`
+                        : `<span style="background: #fff7ed; color: #f59e0b; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending</span>`;
+                }
+
+                return `
+                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                    <td style="padding: 1rem; font-weight: 600; color: #2d3748;">
+                        ${assign.title}
+                        <div style="font-size: 0.75rem; color: #64748b; font-weight: 400;">${assign.subject}</div>
                     </td>
-                </tr>`;
-            return;
+                    <td style="padding: 1rem; color: #64748b;">${teacherName}</td>
+                    <td style="padding: 1rem; color: #64748b;">${date}</td>
+                    <td style="padding: 1rem;">${statusBadge}</td>
+                    <td style="padding: 1rem;">
+                        <button onclick="viewAssignment(${originalIndex})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
         }
 
-        renderAssignments(tableBody, assignments);
+        // Render NOTES
+        const notesTableBody = document.getElementById('notes-table-body');
+        if (notesTableBody) {
+            if (notesList.length === 0) {
+                notesTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #64748b;">No notes available.</td></tr>';
+            } else {
+                notesTableBody.innerHTML = notesList.map((note) => {
+                    const teacherName = note.teacher ? note.teacher.name : 'Unknown';
+                    const originalIndex = fetchedAssignments.indexOf(note);
+
+                    return `
+                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <td style="padding: 1rem; font-weight: 600; color: #2d3748;">
+                            ${note.title}
+                        </td>
+                        <td style="padding: 1rem; color: #64748b;">${note.subject}</td>
+                        <td style="padding: 1rem; color: #64748b;">${teacherName}</td>
+                        <td style="padding: 1rem;">
+                            <button onclick="viewAssignment(${originalIndex})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #6366f1; color:white; border:none; border-radius:6px; cursor:pointer;">
+                                <i class="fa-solid fa-book-open"></i> Read Note
+                            </button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+        }
 
     } catch (error) {
-        console.error('Error fetching assignments:', error);
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">
-                    <i class="fa-solid fa-circle-exclamation"></i> Error loading assignments. Ensure server is online.
-                </td>
-            </tr>`;
+        console.error('Error:', error);
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading assignments.</td></tr>';
     }
-});
+}
 
-function renderAssignments(container, data) {
-    // 1. Sort by Due Date (Ascending)
-    data.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+// Update viewAssignment to clear file input
+function viewAssignment(index) {
+    const assignment = fetchedAssignments[index];
+    if (!assignment) return;
 
-    container.innerHTML = data.map(a => {
-        // 2. Determine Priority Color
-        const dayDiff = Math.ceil((new Date(a.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
-        let priorityClass = 'priority-green';
-        let badgeColor = '#10b981';
-        let badgeBg = 'rgba(16, 185, 129, 0.2)';
-        let statusText = 'Pending';
+    currentAssignmentId = assignment._id;
 
-        if (a.submitted) {
-            priorityClass = 'priority-green';
-            badgeColor = '#10b981';
-            badgeBg = 'rgba(16, 185, 129, 0.2)';
-            statusText = 'Submitted';
-        } else if (dayDiff < 0) {
-            priorityClass = 'priority-red';
-            badgeColor = '#ef4444';
-            badgeBg = 'rgba(239, 68, 68, 0.2)';
-            statusText = 'Overdue';
-        } else if (dayDiff <= 2) {
-            priorityClass = 'priority-red';
-            badgeColor = '#ef4444';
-            badgeBg = 'rgba(239, 68, 68, 0.2)';
-            statusText = `Pending (${dayDiff} Days)`;
-        } else if (dayDiff <= 5) {
-            priorityClass = 'priority-yellow';
-            badgeColor = '#f59e0b';
-            badgeBg = 'rgba(245, 158, 11, 0.2)';
-            statusText = `Pending (${dayDiff} Days)`;
-        } else {
-            statusText = `Pending (${dayDiff} Days)`;
+    // Populate Modal
+    document.getElementById('modalTitle').innerText = assignment.title;
+    document.getElementById('modalSubject').innerText = assignment.subject;
+    document.getElementById('modalTeacher').innerText = 'By: ' + (assignment.teacher ? assignment.teacher.name : 'Unknown');
+    document.getElementById('modalDeadline').innerText = assignment.deadline ? 'Due: ' + new Date(assignment.deadline).toLocaleDateString('en-GB') : 'No Deadline';
+
+    document.getElementById('modalDescription').innerText = assignment.description;
+
+    const linkContainer = document.getElementById('modalLinkContainer');
+    const linkBtn = document.getElementById('modalLink');
+
+    if (assignment.link && assignment.link.trim() !== "") {
+        let href = assignment.link;
+        if (href.startsWith('/')) {
+            href = 'http://localhost:5000' + href; // Prepend Backend URL
         }
 
-        // 3. Render Row with 'list-row-hover'
-        return `
-        <tr class="list-row-hover ${priorityClass}" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: 0.3s;">
-            <td style="padding: 1rem; font-weight: 500; color: #1f2937;">${a.title}</td>
-            <td style="padding: 1rem; color: #64748b;">${a.teacher?.name || 'Unknown'}</td>
-            <td style="padding: 1rem; color: #4b5563;">${new Date(a.dueDate).toLocaleDateString()}</td>
-            <td style="padding: 1rem;">
-                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">
-                    ${statusText}
-                </span>
-            </td>
-            <td style="padding: 1rem; display: flex; gap: 10px;">
-                <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 5px; cursor: pointer; background: #334155 !important; color: white !important; border: none;" onclick="viewAssignment('${a._id}')">
-                    View
-                </button>
-                <button class="submit-btn" style="padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 5px; cursor: pointer; background: #1f2937; color: white !important; border: none;" onclick="alert('Submit Feature Coming Soon!')">
-                    Submit
-                </button>
-            </td>
-        </tr>
-    `}).join('');
+        linkContainer.style.display = 'block';
+        linkBtn.href = href;
+        linkBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Download Attached Notes';
+    } else {
+        linkContainer.style.display = 'none';
+    }
+
+    // Toggle Submission Form
+    const submissionForm = document.getElementById('submissionForm');
+    const submissionStatus = document.getElementById('submissionStatus');
+    const submissionSection = document.getElementById('submissionSection');
+    const submissionInput = document.getElementById('submissionFile');
+
+    // If TYPE is NOTE, hide submission entirely
+    if (assignment.type === 'note') {
+        submissionSection.style.display = 'none';
+    } else {
+        submissionSection.style.display = 'block';
+        if (assignment.submitted) {
+            submissionForm.style.display = 'none';
+            submissionStatus.style.display = 'block';
+        } else {
+            submissionForm.style.display = 'block';
+            submissionStatus.style.display = 'none';
+            if (submissionInput) submissionInput.value = ''; // Clear previous input
+        }
+    }
+
+    // Show Modal
+    toggleModal('assignment-modal');
 }
 
-function viewAssignment(id) {
-    alert(`Viewing assignment ${id}`);
-}
+async function submitAssignment() {
+    const fileInput = document.getElementById('submissionFile');
+    const submitBtn = document.getElementById('submitBtn');
 
+    if (!currentAssignmentId) return;
 
-function renderMockAssignments(container) {
-    const mockData = [
-        { _id: 'm1', title: 'Data Structures Algo', teacher: { name: 'Dr. Smith' }, dueDate: new Date(Date.now() + 86400000 * 5).toISOString() },
-        { _id: 'm2', title: 'Database Systems', teacher: { name: 'Prof. Jones' }, dueDate: new Date(Date.now() + 86400000 * 2).toISOString() },
-        { _id: 'm3', title: 'Web Development', teacher: { name: 'Ms. Lee' }, dueDate: new Date(Date.now() - 86400000).toISOString() }
-    ];
-    renderAssignments(container, mockData);
+    if (!fileInput.files.length) {
+        alert('Please select a PDF file to upload.');
+        return;
+    }
+
+    const file = fileInput.files[0];
+    if (file.type !== 'application/pdf') {
+        alert('Only PDF files are allowed.');
+        return;
+    }
+
+    submitBtn.innerText = 'Submitting...';
+    submitBtn.disabled = true;
+
+    try {
+        const userStr = localStorage.getItem('user');
+        const user = JSON.parse(userStr);
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${ASSIGN_API_URL}/${currentAssignmentId}/submit`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+                // Content-Type not needed for FormData
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || 'Submission failed');
+        }
+
+        // Success
+        document.getElementById('submissionForm').style.display = 'none';
+        document.getElementById('submissionStatus').style.display = 'block';
+
+        // Refresh List to update status
+        loadAssignments();
+        alert('Assignment Submitted Successfully!');
+
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        submitBtn.innerText = 'Mark as Done & Submit';
+        submitBtn.disabled = false;
+    }
 }
