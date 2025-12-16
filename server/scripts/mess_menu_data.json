@@ -1,0 +1,51 @@
+[
+    {
+        "day": "Monday",
+        "breakfast": "Poha, Tea",
+        "lunch": "Rice, Dale, Aloo Gobi(Dry), Salad",
+        "snacks": "Samosa, Tea",
+        "dinner": "Roti, Mix Veg, Rice, Dal"
+    },
+    {
+        "day": "Tuesday",
+        "breakfast": "Idli Sambar, Coffee",
+        "lunch": "Rice, Rajma, Jeera Aloo, Chaas",
+        "snacks": "Biscuit, Tea",
+        "dinner": "Roti, Kofta Curry, Rice"
+    },
+    {
+        "day": "Wednesday",
+        "breakfast": "Paratha, Curd",
+        "lunch": "Rice, Egg Curry / Paneer, Salad",
+        "snacks": "Bread Pakora",
+        "dinner": "Fried Rice, Manchurian"
+    },
+    {
+        "day": "Thursday",
+        "breakfast": "Upma, Tea",
+        "lunch": "Rice, Kadhi Pakora, Bhindi Fry",
+        "snacks": "Kachori",
+        "dinner": "Roti, Chicken / Mushroom Curry"
+    },
+    {
+        "day": "Friday",
+        "breakfast": "Sandwich, Milk",
+        "lunch": "Rice, Dal Makhani, Naan",
+        "snacks": "Maggi",
+        "dinner": "Roti, Seasonal Veg, Rice"
+    },
+    {
+        "day": "Saturday",
+        "breakfast": "Poori Sabzi",
+        "lunch": "Khichdi, Begun Bhaja, Chutney",
+        "snacks": "Patties",
+        "dinner": "Biryani (Veg/Non-Veg), Raita"
+    },
+    {
+        "day": "Sunday",
+        "breakfast": "Chole Bhature",
+        "lunch": "Rice, Chicken / Paneer Butter Masala",
+        "snacks": "Cake / Pastry",
+        "dinner": "Light Meal (Dalia or Soup)"
+    }
+]

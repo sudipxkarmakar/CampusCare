@@ -14,10 +14,15 @@ const noticeSchema = new mongoose.Schema({
         ref: 'User', // Teacher or Admin
     },
     audience: {
-        type: String, // 'general', 'student', 'teacher', 'hosteler'
+        type: String,
         enum: ['general', 'student', 'teacher', 'hosteler'],
         default: 'general',
     },
+    // Specific Targeting (Smart Filtering)
+    targetDept: { type: String }, // e.g. CSE
+    targetYear: { type: String }, // e.g. 2nd Year
+    targetBatch: { type: String }, // e.g. 1
+    targetSubBatch: { type: String }, // e.g. 1-1
     date: {
         type: Date,
         default: Date.now,

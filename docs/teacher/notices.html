@@ -78,6 +78,35 @@
               <option value="hosteler">Hostelers Only</option>
             </select>
 
+            <!-- Student Targeting Controls (Hidden by default) -->
+            <div id="studentTargeting" style="display:none; gap:10px; flex-wrap:wrap;">
+              <select id="noticeDept" style="padding:0.5rem; border-radius:5px; border:1px solid #cbd5e1;">
+                <option value="">All Depts</option>
+                <option value="CSE">CSE</option>
+                <option value="IT">IT</option>
+                <option value="AIML">AIML</option>
+              </select>
+              <select id="noticeYear" style="padding:0.5rem; border-radius:5px; border:1px solid #cbd5e1;">
+                <option value="">All Years</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+              </select>
+              <select id="noticeBatch" style="padding:0.5rem; border-radius:5px; border:1px solid #cbd5e1;">
+                <option value="">All Batches</option>
+                <option value="1">Batch 1</option>
+                <option value="2">Batch 2</option>
+              </select>
+              <select id="noticeSubBatch" style="padding:0.5rem; border-radius:5px; border:1px solid #cbd5e1;">
+                <option value="">All Sub-B</option>
+                <option value="1-1">1-1</option>
+                <option value="1-2">1-2</option>
+                <option value="2-1">2-1</option>
+                <option value="2-2">2-2</option>
+              </select>
+            </div>
+
             <button type="submit" class="btn-login"
               style="padding: 0.8rem 2rem; background: #3b82f6; color: white; border: none; font-weight: 600;">Post</button>
           </div>

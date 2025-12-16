@@ -26,7 +26,7 @@ const validateRoleData = (role, data) => {
     }
 
     if (role === 'teacher') {
-        // if (!/^T\d{11}$/.test(employeeId)) return 'Employee ID must start with T followed by 11 digits.';
+        if (!employeeId || employeeId.length < 5) return 'Valid Employee ID is required.';
         if (!department) return 'Department is required for Teachers.';
         return null; // Batch/Section not required
     }
@@ -188,20 +188,24 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Please provide ID, Password, and Role.' });
         }
         // ... rest of loginUser logic
-        // 1. Construct Strict Query
+        // 1. Construct Flexible Query (Email OR ID)
         let query = { role: role };
 
-        if (role === 'student' || role === 'hosteler') {
-            query.rollNumber = identifier;
-            // If they provided a department (from frontend), verify it too.
-            // However, current login.html hides Dept. We need to check if we can rely on Email OR strict combination.
-            if (req.body.department) {
-                query.department = req.body.department;
-            }
-        } else if (role === 'teacher') {
-            query.employeeId = identifier;
+        // Check if identifier looks like an email
+        if (identifier.includes('@')) {
+            query.email = identifier;
         } else {
-            return res.status(400).json({ message: 'Invalid Role' });
+            // ID-based lookup
+            if (role === 'student' || role === 'hosteler') {
+                query.rollNumber = identifier;
+                if (req.body.department) query.department = req.body.department;
+            } else if (role === 'teacher') {
+                query.employeeId = identifier;
+            } else if (role === 'dean' || role === 'principal' || role === 'hod' || role === 'admin') {
+                // Allow these roles to login via EmployeeID if they have one, or handle generic
+                // For now, if not email, assume employeeId or generic ID they set
+                if (req.body.employeeId || identifier) query.employeeId = identifier;
+            }
         }
 
         // 2. Find User

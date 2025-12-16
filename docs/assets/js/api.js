@@ -1,6 +1,22 @@
 const API_URL = 'http://localhost:5000/api';
 
 const api = {
+    // Generic Fetch with Auth (GET)
+    fetchWithAuth: async (endpoint) => {
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        return await fetch(`${API_URL}${endpoint}`, {
+            method: 'GET',
+            headers: headers
+        });
+    },
+
     post: async (endpoint, data) => {
         try {
             const token = localStorage.getItem('token');

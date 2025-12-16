@@ -234,48 +234,30 @@
         </section>
 
         <!-- SCRIPT TO RENDER GRID -->
+        <script src="../assets/js/api.js"></script>
+        <script src="../assets/js/routine.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const container = document.getElementById('routine-container');
-
-                const routineData = {
-                    'Monday': ['Calculus<br><span class="sub-detail">Room 301</span>', 'Physics<br><span class="sub-detail">Room 402</span>', 'Break', 'CS Lab<br><span class="sub-detail">Lab 2</span>', 'Library'],
-                    'Tuesday': ['Chemistry<br><span class="sub-detail">Room 305</span>', 'English<br><span class="sub-detail">Room 101</span>', 'Break', 'Workshop<br><span class="sub-detail">Mech Shed</span>', '-'],
-                    'Wednesday': ['Calculus<br><span class="sub-detail">Room 301</span>', 'Physics<br><span class="sub-detail">Room 402</span>', 'Break', 'Sports', 'Self Study'],
-                    'Thursday': ['OS<br><span class="sub-detail">Room 204</span>', 'See Teacher', 'Break', 'Placement<br><span class="sub-detail">Seminar Hall</span>', 'Mentoring'],
-                    'Friday': ['Project<br><span class="sub-detail">Lab 1</span>', 'Break', 'Calculus<br><span class="sub-detail">Room 301</span>', 'Club Activity', '-']
-                };
-
-                const renderRoutine = () => {
-                    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-                    const timeSlots = ['10:00 - 11:00', '11:00 - 12:00', '12:00 - 01:00', '01:00 - 03:00', '03:00 - 05:00'];
-                    const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-
-                    let html = '<table class="routine-table">';
-                    html += '<thead><tr><th>Day / Time</th>';
-                    timeSlots.forEach(t => html += `<th>${t}</th>`);
-                    html += '</tr></thead><tbody>';
-
-                    days.forEach(day => {
-                        const isToday = day === todayName;
-                        const subjects = routineData[day] || [];
-
-                        html += `<tr class="${isToday ? 'current-day' : ''}">`;
-                        html += `<td style="font-weight:700; color:#2d3748;">${day}</td>`;
-
-                        subjects.forEach(sub => {
-                            html += `<td>${sub}</td>`;
-                        });
-
-                        html += '</tr>';
-                    });
-
-                    html += '</tbody></table>';
-                    container.innerHTML = html;
-                };
-
-                setTimeout(renderRoutine, 100);
-            });
+                container.innerHTML = \`
+                <table class="routine-table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Subject</th>
+                            <th>Room</th>
+                            <th>Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routine-table-body">
+                         <tr><td colspan="5" style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Schedule...</td></tr>
+                    </tbody>
+                </table>
+            \`;
+            
+            fetchAndRenderRoutine('teacher');
+        });
         </script>
     </main>
 

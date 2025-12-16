@@ -1,84 +1,76 @@
+import MessMenu from '../models/MessMenu.js';
 import Leave from '../models/Leave.js';
 
-// @desc    Get All Leaves (for Mentor/Warden)
-// @route   GET /api/hostel/leaves
-export const getAllLeaves = async (req, res) => {
+// @desc    Get Mess Menu
+// @route   GET /api/hostel/mess
+// @access  Public/Auth
+export const getMessMenu = async (req, res) => {
     try {
-        const query = {};
-        if (req.query.status) {
-            query.status = req.query.status;
-        }
-
-        const leaves = await Leave.find(query)
-            .populate('student', 'name rollNumber department batch section')
-            .sort({ createdAt: -1 });
-
-        res.json(leaves);
+        const menu = await MessMenu.find({});
+        res.json(menu);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error menu' });
     }
 };
 
-// @desc    Update Leave Status
-// @route   PUT /api/hostel/leave/:id
-export const updateLeaveStatus = async (req, res) => {
+// @desc    Update Mess Menu (Dean/Admin)
+// @route   PUT /api/hostel/mess
+// @access  Dean/Admin
+export const updateMessMenu = async (req, res) => {
     try {
-        const { status } = req.body;
-        const leave = await Leave.findById(req.params.id);
+        const { day, breakfast, lunch, snacks, dinner } = req.body;
 
-        if (!leave) {
-            return res.status(404).json({ message: 'Leave application not found' });
+        let menu = await MessMenu.findOne({ day });
+        if (menu) {
+            menu.breakfast = breakfast;
+            menu.lunch = lunch;
+            menu.snacks = snacks;
+            menu.dinner = dinner;
+            await menu.save();
+        } else {
+            menu = await MessMenu.create({ day, breakfast, lunch, snacks, dinner });
         }
 
-        leave.status = status;
-        await leave.save();
-
-        res.json(leave);
+        res.json(menu);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error update menu' });
     }
 };
 
 // @desc    Apply for Leave
 // @route   POST /api/hostel/leave
+// @access  Hosteler
 export const applyLeave = async (req, res) => {
-    const { studentId, type, startDate, endDate, reason } = req.body;
     try {
+        const { type, startDate, endDate, reason } = req.body;
+
         const leave = await Leave.create({
-            student: studentId,
+            student: req.user._id,
             type,
             startDate,
             endDate,
-            reason
+            reason,
+            status: 'Pending'
         });
+
         res.status(201).json(leave);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error leave' });
     }
 };
 
 // @desc    Get My Leaves
-// @route   GET /api/hostel/leave/:studentId
+// @route   GET /api/hostel/my-leaves
+// @access  Hosteler
 export const getMyLeaves = async (req, res) => {
     try {
-        const leaves = await Leave.find({ student: req.params.studentId }).sort({ createdAt: -1 });
+        const leaves = await Leave.find({ student: req.user._id }).sort({ createdAt: -1 });
         res.json(leaves);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error my leaves' });
     }
-};
-
-// @desc    Get Mess Menu (Static for now)
-// @route   GET /api/hostel/menu
-export const getMessMenu = (req, res) => {
-    const menu = {
-        Monday: { Breakfast: "Aloo Paratha", Lunch: "Rice & Fish Curry", Dinner: "Chicken Stew" },
-        Tuesday: { Breakfast: "Idli Sambar", Lunch: "Rice & Dal", Dinner: "Egg Curry" },
-        Wednesday: { Breakfast: "Bread Omelette", Lunch: "Fried Rice", Dinner: "Paneer Butter Masala" },
-        Thursday: { Breakfast: "Puri Sabji", Lunch: "Khichdi", Dinner: "Chicken Biryani" },
-        Friday: { Breakfast: "Poha", Lunch: "Rice & Veggies", Dinner: "Fish Fry" },
-        Saturday: { Breakfast: "Chole Bhature", Lunch: "Rice & Egg", Dinner: "Mutton Curry" },
-        Sunday: { Breakfast: "Masala Dosa", Lunch: "Feast", Dinner: "Light Soup" },
-    };
-    res.json(menu);
 };

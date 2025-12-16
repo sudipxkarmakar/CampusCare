@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dean Dashboard | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="#" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
+                style="font-size:0.8rem; background:#7c3aed; color:white; padding:2px 6px; border-radius:4px;">DEAN</span>
+        </a>
+        <div style="display:flex; align-items:center; gap: 20px;">
+            <div id="userProfile" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Dean</span>
+                <img src="https://ui-avatars.com/api/?name=Dean&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%;">
+                <button onclick="logout()"
+                    style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero">
+            <h1 class="hero-title">Hostel & Student Welfare</h1>
+            <p class="hero-sub">Oversee hostel operations, leaves, and grievances.</p>
+        </section>
+
+        <!-- STATS -->
+        <div class="stats-grid" id="deanStats" style="margin-bottom: 2rem;">
+            <!-- Loaded dynamically -->
+            <div class="stat-card">
+                <h3>Loading...</h3>
+            </div>
+        </div>
+
+        <!-- LEAVE REQUESTS -->
+        <section class="standard-container" style="margin-bottom: 2rem;">
+            <h3><i class="fa-solid fa-bed"></i> Pending Hostel Leaves</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                    <thead style="background: #f8fafc;">
+                        <tr>
+                            <th style="padding: 1rem; text-align: left;">Student</th>
+                            <th style="padding: 1rem; text-align: left;">Hostel/Room</th>
+                            <th style="padding: 1rem; text-align: left;">Type</th>
+                            <th style="padding: 1rem; text-align: left;">Duration</th>
+                            <th style="padding: 1rem; text-align: left;">Reason</th>
+                            <th style="padding: 1rem; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:1rem;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- COMPLAINTS -->
+        <section class="standard-container">
+            <h3><i class="fa-solid fa-circle-exclamation"></i> Hostel Complaints</h3>
+            <div id="complaintList" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/dean_dashboard.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+
+</html>
