@@ -4,18 +4,17 @@ import Complaint from '../models/Complaint.js';
 // @desc    Get logged in teacher's mentees (with optional filtering)
 // @route   GET /api/teacher/my-mentees
 // @access  Teacher
+// @desc    Get logged in teacher's mentees (Enriched View)
+// @route   GET /api/teacher/my-mentees
+// @access  Teacher
 export const getMyMentees = async (req, res) => {
-    const { search } = req.query; // Search by Roll Number or Name
-
     try {
-        const teacher = await User.findById(req.user._id).populate('mentees', 'name email rollNumber department batch section mobile');
+        // 1. Find all students where mentor equals this teacher
+        let mentees = await User.find({ mentor: req.user._id })
+            .select('name email rollNumber department batch subBatch section mobile attendance cgpa mar moocs');
 
-        if (!teacher) {
-            return res.status(404).json({ message: 'Teacher profile not found' });
-        }
-
-        let mentees = teacher.mentees;
-
+        // Optional Search Filter
+        const { search } = req.query;
         if (search) {
             const searchRegex = new RegExp(search, 'i');
             mentees = mentees.filter(student =>
@@ -24,7 +23,22 @@ export const getMyMentees = async (req, res) => {
             );
         }
 
-        res.json(mentees);
+        // 2. Aggregate Extra Data (Complaints, Leaves)
+        // Ideally use $lookup aggregate, but efficient enough for <50 students loop
+        const enrichedMentees = await Promise.all(mentees.map(async (student) => {
+            const complaintCount = await Complaint.countDocuments({ student: student._id, status: { $ne: 'Resolved' } });
+            const leaveCount = 0; // Placeholder until Leave model is fully integrated or checked
+            // const leaveCount = await Leave.countDocuments({ student: student._id, status: 'Pending' });
+
+            return {
+                ...student.toObject(),
+                activeComplaints: complaintCount,
+                pendingLeaves: leaveCount,
+                status: (parseFloat(student.attendance) < 75) ? 'Critical' : 'Good'
+            };
+        }));
+
+        res.json(enrichedMentees);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error fetching mentees' });
