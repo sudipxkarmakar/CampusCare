@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['student', 'teacher', 'hod', 'admin', 'hosteler', 'alumni', 'librarian'],
+        enum: ['student', 'teacher', 'hod', 'admin', 'hosteler', 'alumni', 'librarian', 'principal', 'warden'],
         default: 'student',
     },
     // Student Specific
@@ -29,6 +29,23 @@ const userSchema = new mongoose.Schema({
         sparse: true,
     },
     batch: String,
+
+    // ... (Student fields) ...
+
+    // Teacher Specific (Registration)
+    designation: { type: String }, // Assistant Professor, Lab Faculty, etc.
+    yearsExperience: { type: Number },
+    joiningYear: { type: Number },
+    specialization: { type: String },
+
+    // Teacher System/HOD Updates (Phase 2)
+    teachingBatches: [{ type: String }],
+    teachingSubjects: [{ type: String }],
+    menteesSubBatches: [{ type: String }], // Exactly 2 as per req
+    weeklyLoad: { type: Number },
+    availabilitySlots: [{ type: String }], // Time slots
+
+    // Assignment & Other refs
     section: String,
     bloodGroup: String, // New Field
 
