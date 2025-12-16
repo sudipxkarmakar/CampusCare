@@ -38,8 +38,6 @@ export const getNotices = async (req, res) => {
     }
 
     try {
-        console.log('[DEBUG] getNotices called');
-        console.log('[DEBUG] Role:', role, 'UserId:', userId);
 
         // Base Audience Filter
         let audienceList = ['general', 'public'];
@@ -47,7 +45,6 @@ export const getNotices = async (req, res) => {
         if (role === 'student') audienceList.push('student');
         if (role === 'hosteler') audienceList.push('student', 'hosteler');
 
-        console.log('[DEBUG] Audience List:', audienceList);
 
         // Construct Query
         const query = {
@@ -58,13 +55,11 @@ export const getNotices = async (req, res) => {
             ]
         };
 
-        console.log('[DEBUG] Notice Query:', JSON.stringify(query));
 
         const notices = await Notice.find(query)
             .sort({ date: -1 })
             .limit(20);
 
-        console.log('[DEBUG] Notices found:', notices.length);
 
         // Duplicate execution removed
 
