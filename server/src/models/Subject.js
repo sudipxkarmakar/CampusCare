@@ -25,6 +25,11 @@ const subjectSchema = new mongoose.Schema({
         type: Number,
         default: 3
     },
+    teacher: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     // Assigned Faculty (handled here for direct lookup)
     teachers: [{
         type: mongoose.Schema.Types.ObjectId,
