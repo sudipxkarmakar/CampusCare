@@ -120,7 +120,17 @@ async function handleCreateNotice(e) {
 
     const title = document.getElementById('noticeTitle').value;
     const content = document.getElementById('noticeContent').value;
-    const audience = document.getElementById('noticeAudience').value;
+    // Toggle Targeting UI
+    const audienceSelect = document.getElementById('noticeAudience');
+    const studentTargeting = document.getElementById('studentTargeting');
+
+    audienceSelect.addEventListener('change', (e) => {
+        if (e.target.value === 'student') {
+            studentTargeting.style.display = 'flex';
+        } else {
+            studentTargeting.style.display = 'none';
+        }
+    });
 
     const userStr = localStorage.getItem('user');
     if (!userStr) {
@@ -130,18 +140,33 @@ async function handleCreateNotice(e) {
     const user = JSON.parse(userStr);
 
     try {
-        const response = await fetch(API_URL, {
+        const payload = {
+            title,
+            content,
+            audience,
+            userId: user._id
+        };
+
+        if (audience === 'student') {
+            const tDept = document.getElementById('noticeDept').value;
+            const tYear = document.getElementById('noticeYear').value;
+            const tBatch = document.getElementById('noticeBatch').value;
+            const tSub = document.getElementById('noticeSubBatch').value;
+            if (tDept) payload.targetDept = tDept;
+            if (tYear) payload.targetYear = tYear;
+            if (tBatch) payload.targetBatch = tBatch;
+            if (tSub) payload.targetSubBatch = tSub;
+        }
+
+        const response = await fetch('http://localhost:5000/api/content/notice', { // Using NEW Endpoint for Notices too? 
+            // My contentController has createNotice. I should use that or update this URL.
+            // I'll update the URL to use content API.
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${user.token}`
             },
-            body: JSON.stringify({
-                title,
-                content,
-                audience,
-                userId: user._id // Fixed: Login returns _id
-            })
+            body: JSON.stringify(payload)
         });
 
         if (response.ok) {

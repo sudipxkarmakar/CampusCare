@@ -52,6 +52,7 @@ const startServer = async () => {
   app.use('/api/academic-leaders', academicLeaderRoutes);
   app.use('/api/subjects', subjectRoutes);
   app.use('/api/routine', routineRoutes);
+  app.use('/api/content', contentRoutes);
 
   // Serve static assets from 'docs' (formerly client)
   // The docs folder is one level up from server/src (server/../docs -> ../../docs)

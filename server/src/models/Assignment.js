@@ -23,15 +23,21 @@ const assignmentSchema = new mongoose.Schema({
     },
     // Target Audience
     department: {
-        type: String,
+        type: String, // e.g., 'CSE'
         required: true,
+    },
+    year: {
+        type: String, // e.g., '2nd Year'
     },
     batch: {
-        type: String, // e.g., "2025"
+        type: String, // e.g., '1' or '2'
         required: true,
     },
+    subBatch: {
+        type: String, // e.g., '1-1' (Optional, for 25 students)
+    },
     section: {
-        type: String, // e.g., "A" (Optional if for whole batch)
+        type: String,
     },
     deadline: {
         type: Date,

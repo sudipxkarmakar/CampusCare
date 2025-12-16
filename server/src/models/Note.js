@@ -22,11 +22,20 @@ const noteSchema = new mongoose.Schema({
         required: true,
     },
     department: {
-        type: String,
+        type: String, // e.g., 'CSE'
         required: true,
     },
+    year: {
+        type: String, // e.g., '2nd Year'
+    },
+    batch: {
+        type: String, // e.g., '1'
+    },
+    subBatch: {
+        type: String, // e.g., '1-1'
+    },
     semester: {
-        type: String, // e.g., "6"
+        type: String, // keeping for backward compatibility
     }
 }, { timestamps: true });
 
