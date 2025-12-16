@@ -38,16 +38,17 @@ export const getNotices = async (req, res) => {
     }
 
     try {
-        console.log('[DEBUG] getNotices called');
-        console.log('[DEBUG] Role:', role, 'UserId:', userId);
 
         // Base Audience Filter
         let audienceList = ['general', 'public'];
-        if (role === 'teacher') audienceList.push('teacher', 'student', 'hosteler'); // Teachers can see Student & Hosteler notices now
-        if (role === 'student') audienceList.push('student');
-        if (role === 'hosteler') audienceList.push('student', 'hosteler');
 
-        console.log('[DEBUG] Audience List:', audienceList);
+        if (role === 'student') {
+            audienceList = ['student']; // Students see ONLY student notices (no general)
+        } else {
+            if (role === 'teacher') audienceList.push('teacher', 'student', 'hosteler');
+            if (role === 'hosteler') audienceList.push('student', 'hosteler');
+        }
+
 
         // Construct Query
         const query = {
@@ -58,13 +59,11 @@ export const getNotices = async (req, res) => {
             ]
         };
 
-        console.log('[DEBUG] Notice Query:', JSON.stringify(query));
 
         const notices = await Notice.find(query)
             .sort({ date: -1 })
             .limit(20);
 
-        console.log('[DEBUG] Notices found:', notices.length);
 
         // Duplicate execution removed
 
