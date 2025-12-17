@@ -151,7 +151,7 @@
         <h2 style="color: #2d3748; margin-bottom: 1.5rem; font-size: 1.5rem;"><i class="fa-solid fa-cloud-arrow-up"
             style="color: #10b981;"></i> Upload New</h2>
 
-        <form onsubmit="event.preventDefault(); alert('Document Uploaded Successfully!');">
+        <form>
           <label style="display: block; margin-bottom: 0.5rem; color: #4a5568; font-size: 0.9rem;">Document Name</label>
           <input type="text" class="upload-input" placeholder="e.g. Semester 5 Marksheet" required>
 
@@ -178,31 +178,9 @@
     <p>© 2025 CampusCare</p>
   </footer>
 
-  <script>
-    // Simple Mock Preview Script
-    const fileInput = document.getElementById('fileInput');
-    const previewArea = document.getElementById('previewArea');
-
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        previewArea.innerHTML = `
-                <i class="fa-solid fa-file-circle-check" style="font-size: 2rem; margin-bottom: 0.5rem; color: #10b981;"></i>
-                <span style="font-weight: 600; color: #2d3748;">${file.name}</span>
-                <span style="font-size: 0.8rem;">(${(file.size / 1024).toFixed(1)} KB)</span>
-              `;
-        previewArea.style.borderColor = '#10b981';
-        previewArea.style.background = 'rgba(16, 185, 129, 0.05)';
-      } else {
-        previewArea.innerHTML = `
-                <i class="fa-solid fa-eye" style="font-size: 2rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i>
-                <span>No file selected</span>
-              `;
-        previewArea.style.borderColor = '#cbd5e1';
-        previewArea.style.background = 'rgba(0,0,0,0.05)';
-      }
-    });
-  </script>
+  <script src="../assets/js/landing.js"></script>
+  <script src="../assets/js/student_documents.js"></script>
+  <script src="../assets/js/ai.js"></script>
 
   <!-- FLOATING ACTION BUTTONS (SOS & AI) -->
   <div class="fab-container"

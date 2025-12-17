@@ -24,6 +24,7 @@ import routineRoutes from './routes/routineRoutes.js';
 import contentRoutes from './routes/contentRoutes.js';
 import deanRoutes from './routes/deanRoutes.js';
 import marMoocRoutes from './routes/marMoocRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
 
 // ... imports
 
@@ -47,6 +48,7 @@ const startServer = async () => {
   app.use('/api/complaints', complaintRoutes);
   app.use('/api/notices', noticeRoutes);
   app.use('/api/mar-moocs', marMoocRoutes);
+  app.use('/api/documents', documentRoutes);
   app.use('/api/hostel', hostelRoutes);
   app.use('/api/dean', deanRoutes);
   app.use('/api/ai', aiRoutes);
