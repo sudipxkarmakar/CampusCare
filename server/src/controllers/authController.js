@@ -242,6 +242,8 @@ export const loginUser = async (req, res) => {
                 department: user.department,
                 batch: user.batch,
                 section: user.section,
+                rollNumber: user.rollNumber,
+                employeeId: user.employeeId,
                 token: generateToken(user._id),
             });
         } else {
@@ -251,5 +253,51 @@ export const loginUser = async (req, res) => {
     } catch (error) {
         console.error('Login Error:', error);
         res.status(500).json({ message: 'Server Error during login' });
+    }
+};
+// @desc    Get User Profile (Full Details)
+// @route   GET /api/auth/profile
+// @access  Private
+export const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Upload Profile Picture
+// @route   POST /api/auth/profile-picture
+// @access  Private
+export const uploadProfilePicture = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            // Path relative to static serve 'docs' folder
+            // File saved in docs/uploads/profiles/filename.ext
+            // Served at http://localhost:5000/uploads/profiles/filename.ext
+            user.profilePicture = `/uploads/profiles/${req.file.filename}`;
+            await user.save();
+
+            res.json({
+                message: 'Profile picture updated',
+                profilePicture: user.profilePicture
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };

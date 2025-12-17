@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         // required: true, // Making it optional for now to avoid breaking existing flow if needed, or strictly required? User asked "Add contact no for all", implies new registers.
     },
+    profilePicture: {
+        type: String, // URL/Path to image
+        default: ''
+    },
     password: {
         type: String,
         required: true,

@@ -189,10 +189,19 @@ window.checkAuthState = function () {
         if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
 
         if (userDetails) {
+            // Determine path to profile.html based on current location
+            const currentPath = window.location.pathname;
+            const profilePath = (currentPath.includes('/student/') || currentPath.includes('/teacher/') || currentPath.includes('/hostel/') || currentPath.includes('/complaints/') || currentPath.includes('/notices/'))
+                ? '../profile.html'
+                : 'profile.html';
+
             userDetails.innerHTML = `
-                <strong>${user.name || 'User'}</strong><br>
-                <span style="text-transform: capitalize;">${user.role || 'Member'}</span><br>
-                <span style="font-size:0.8rem;">${user.identifier || 'ID: --'}</span>
+                <div onclick="window.location.href='${profilePath}'" style="cursor: pointer; padding: 5px; border-radius: 5px; transition: background 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+                    <strong>${user.name || 'User'}</strong><br>
+                    <span style="text-transform: capitalize;">${user.role || 'Member'}</span><br>
+                    <span style="font-size:0.8rem;">ID: ${user.rollNumber || user.employeeId || user.identifier || '--'}</span>
+                    <div style="font-size: 0.75rem; color: #3b82f6; margin-top: 5px;">Click to view full profile <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
             `;
         }
 
