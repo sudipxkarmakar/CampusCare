@@ -263,6 +263,7 @@ export const loginUser = async (req, res) => {
                 rollNumber: user.rollNumber,
                 employeeId: user.employeeId,
                 hostelName: user.hostelName, // Return hostel info if needed
+                profilePicture: user.profilePicture, // Return profile picture path
                 token: generateToken(user._id),
             });
         } else {
