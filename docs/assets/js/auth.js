@@ -43,10 +43,16 @@ const roleConfig = {
 
 if (loginForm) {
     // 0. Check for URL Params (Pre-select Role)
+    // 0. Check for URL Params (Pre-select Role)
     const urlParams = new URLSearchParams(window.location.search);
     const roleParam = urlParams.get('role');
     if (roleParam && roleConfig[roleParam]) {
         roleSelect.value = roleParam;
+        // Hide the role selector since it's implied
+        const roleGroup = document.getElementById('roleGroup');
+        if (roleGroup) {
+            roleGroup.style.display = 'none';
+        }
     }
 
     // 1. Initialize UI
