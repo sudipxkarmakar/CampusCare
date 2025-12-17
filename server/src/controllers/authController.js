@@ -191,6 +191,11 @@ export const loginUser = async (req, res) => {
         // 1. Construct Flexible Query (Email OR ID)
         let query = { role: role };
 
+        // Relaxed Role Matching: 'teacher' login should allow other academic leaders
+        if (role === 'teacher') {
+            query.role = { $in: ['teacher', 'principal', 'dean', 'hod', 'admin'] };
+        }
+
         // Check if identifier looks like an email
         if (identifier.includes('@')) {
             query.email = identifier;
@@ -199,12 +204,9 @@ export const loginUser = async (req, res) => {
             if (role === 'student' || role === 'hosteler') {
                 query.rollNumber = identifier;
                 if (req.body.department) query.department = req.body.department;
-            } else if (role === 'teacher') {
+            } else {
+                // For Teacher/Principal/Dean/HOD, use Employee ID
                 query.employeeId = identifier;
-            } else if (role === 'dean' || role === 'principal' || role === 'hod' || role === 'admin') {
-                // Allow these roles to login via EmployeeID if they have one, or handle generic
-                // For now, if not email, assume employeeId or generic ID they set
-                if (req.body.employeeId || identifier) query.employeeId = identifier;
             }
         }
 

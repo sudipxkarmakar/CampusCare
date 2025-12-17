@@ -3,7 +3,19 @@ const API_URL = 'http://localhost:5000/api';
 const api = {
     // Generic Fetch with Auth (GET)
     fetchWithAuth: async (endpoint) => {
-        const token = localStorage.getItem('token');
+        // Fix: Token is likely inside the 'user' object
+        const userStr = localStorage.getItem('user');
+        let token = localStorage.getItem('token'); // Fallback
+
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.token) token = user.token;
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+            }
+        }
+
         const headers = {
             'Content-Type': 'application/json'
         };
@@ -19,7 +31,16 @@ const api = {
 
     post: async (endpoint, data) => {
         try {
-            const token = localStorage.getItem('token');
+            // Fix: Token retrieval
+            const userStr = localStorage.getItem('user');
+            let token = localStorage.getItem('token');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    if (user.token) token = user.token;
+                } catch (e) { }
+            }
+
             const headers = {
                 'Content-Type': 'application/json'
             };
@@ -37,16 +58,13 @@ const api = {
             console.warn('Backend unavailable, switching to Demo Mode:', error);
 
             // --- DEMO MODE FALLBACK ---
-            // If the server is down, we allow login with the provided credentials
-            // to demonstrate the UI functionality.
-
             if (endpoint === '/auth/login' || endpoint === '/auth/register') {
                 // Simulate a slight delay for realism
                 await new Promise(r => setTimeout(r, 800));
 
                 return {
                     token: 'mock-jwt-token-12345',
-                    name: 'Sumit Modi', // Default to the user's preferred name
+                    name: 'Sumit Modi',
                     role: data.role || 'student',
                     identifier: data.identifier || data.rollNumber || '10800222026',
                     department: data.department || 'CSE',
