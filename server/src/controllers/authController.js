@@ -144,6 +144,15 @@ export const registerUser = async (req, res) => {
             userData.specialization = specialization;
         }
 
+        // 5. Handle Profile Picture
+        if (req.file) {
+            // Convert to relative path for generic "static" serving
+            // Current path: c:\.../docs/uploads/profiles/filename.jpg
+            // We want: /uploads/profiles/filename.jpg
+            const relativePath = `/uploads/profiles/${req.file.filename}`;
+            userData.profilePicture = relativePath;
+        }
+
         // 5. Create User
         const user = await User.create(userData);
 
