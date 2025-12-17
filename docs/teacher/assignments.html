@@ -67,21 +67,18 @@
           <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <input type="text" id="assignTitle" placeholder="Assignment Title (e.g., Chapter 1 Homework)" required
               style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
-            <input type="text" id="assignSubject" placeholder="Subject (e.g., Web Development)" required
-              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+            <select id="assignSubject" required
+              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+              <option value="">Select Subject</option>
+            </select>
           </div>
 
           <!-- Row 2 -->
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
             <select id="assignDept" required
               style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+              <!-- Populated by JS -->
               <option value="">Select Department</option>
-              <option value="CSE">CSE</option>
-              <option value="IT">IT</option>
-              <option value="AIML">AIML</option>
-              <option value="ECE">ECE</option>
-              <option value="CIVIL">CIVIL</option>
-              <option value="ME">ME</option>
             </select>
 
             <select id="assignYear" required
@@ -93,23 +90,11 @@
               <option value="4th Year">4th Year</option>
             </select>
 
-            <div style="display:flex; gap:10px;">
-              <select id="assignBatch" required
-                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; flex:1;">
-                <option value="">Select Batch</option>
-                <option value="1">Batch 1</option>
-                <option value="2">Batch 2</option>
-              </select>
-
-              <select id="assignSubBatch"
-                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white; flex:1; display:none;">
-                <option value="">Full Batch</option>
-                <option value="1-1">Sub-Batch 1-1</option>
-                <option value="1-2">Sub-Batch 1-2</option>
-                <option value="2-1">Sub-Batch 2-1</option>
-                <option value="2-2">Sub-Batch 2-2</option>
-              </select>
-            </div>
+            <select id="assignBatch" required
+              style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+              <!-- Populated by JS -->
+              <option value="">Select Batch</option>
+            </select>
             <input type="date" id="assignDeadline" required
               style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
           </div>

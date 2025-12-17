@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api/content/assignment'; // NEW Endpoint
+const API_URL = 'http://localhost:5000/api/content/assignment'; // Check if this endpoint exists/matches
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createAssignmentForm');
@@ -6,43 +6,54 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', handleCreateAssignment);
     }
 
-    // Check for Mentor Role to show/hide SubBatch
-    checkMentorAccess();
+    // Populate Dropdowns from User Profile
+    populateDropdowns();
 
-    // Smart Batch Filtering Logic
-    const batchSelect = document.getElementById('assignBatch');
-    const subBatchSelect = document.getElementById('assignSubBatch');
-
-    if (batchSelect && subBatchSelect) {
-        batchSelect.addEventListener('change', (e) => {
-            const batch = e.target.value;
-            // Reset options
-            Array.from(subBatchSelect.options).forEach(opt => {
-                if (opt.value === "") return;
-                // If batch is 1, show 1-1, 1-2. If 2, show 2-1, 2-2
-                if (opt.value.startsWith(batch)) {
-                    opt.style.display = 'block';
-                } else {
-                    opt.style.display = 'none';
-                }
-            });
-            subBatchSelect.value = ""; // Reset value
-        });
-    }
+    // Load created assignments
+    loadCreatedAssignments();
 });
 
-function checkMentorAccess() {
+function populateDropdowns() {
     const userStr = localStorage.getItem('user');
     if (!userStr) return;
     const user = JSON.parse(userStr);
 
-    // If user has mentee groups or role implies mentor
-    // Phase 6: All teachers are assigned 2 sub-batches (menteesSubBatches)
-    if (user.menteesSubBatches && user.menteesSubBatches.length > 0) {
-        const subBatchSelect = document.getElementById('assignSubBatch');
-        if (subBatchSelect) {
-            subBatchSelect.style.display = 'block';
-            subBatchSelect.title = "Target specific Mentee group";
+    // 1. Department
+    const deptSelect = document.getElementById('assignDept');
+    if (deptSelect) {
+        if (user.department) {
+            deptSelect.innerHTML = `<option value="${user.department}">${user.department}</option>`;
+        } else {
+            deptSelect.innerHTML = `<option value="">No Dept Assigned</option>`;
+        }
+    }
+
+    // 2. Subjects
+    const subjectSelect = document.getElementById('assignSubject');
+    if (subjectSelect) {
+        if (user.teachingSubjects && user.teachingSubjects.length > 0) {
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
+                user.teachingSubjects.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+        } else {
+            // Fallback if no subjects assigned yet
+            subjectSelect.innerHTML = `<option value="">No Subjects Assigned</option>`;
+        }
+    }
+
+    // 3. Batches
+    const batchSelect = document.getElementById('assignBatch');
+    if (batchSelect) {
+        if (user.teachingBatches && user.teachingBatches.length > 0) {
+            // Assuming teachingBatches are like ["Batch 1", "Batch 2"] or ["1", "2"]
+            // If they are "1", ensure value is "1" and text is "Batch 1"
+            batchSelect.innerHTML = '<option value="">Select Batch</option>' +
+                user.teachingBatches.map(batch => {
+                    const label = batch.startsWith('Batch') ? batch : `Batch ${batch}`;
+                    const value = batch.replace('Batch ', ''); // Normalized value
+                    return `<option value="${value}">${label}</option>`;
+                }).join('');
+        } else {
+            batchSelect.innerHTML = `<option value="">No Batches Assigned</option>`;
         }
     }
 }
@@ -55,30 +66,25 @@ async function handleCreateAssignment(e) {
     const department = document.getElementById('assignDept').value;
     const year = document.getElementById('assignYear').value;
     const batch = document.getElementById('assignBatch').value;
-    const subBatch = document.getElementById('assignSubBatch') ? document.getElementById('assignSubBatch').value : '';
     const deadline = document.getElementById('assignDeadline').value;
     const description = document.getElementById('assignDesc').value;
-    const fileInput = document.getElementById('assignFile'); // May not exist in form yet if not added
-    // const file = fileInput ? fileInput.files[0] : null;
+
+    if (!subject || !batch || !department || !year) {
+        alert("Please ensure all fields are selected (Subject, Batch, Department, Year).");
+        return;
+    }
 
     const userStr = localStorage.getItem('user');
     const user = JSON.parse(userStr);
 
     try {
-        // Using JSON for now as contentController handles JSON body well unless file upload is strictly multipart in new controller?
-        // Wait, creating an assignment often involves a file.
-        // My contentController implementation for 'createAssignment' takes JSON body fields.
-        // It DOES NOT handle file upload yet in the snippet I wrote?
-        // Wait, createAssignment logic: `const { ... } = req.body`.
-        // It doesn't seem to process `req.file`.
-        // For Assignments, often just a link or description is enough, but notes need file.
-        // The previous implementation used Multer.
-        // I should probably stick to JSON for basic Assignment and add a 'link' field if I didn't verify file upload in new controller.
-        // Or I update new controller to handle files.
-        // For Phase 6 "Logic" part, the distribution logic is key.
-        // Let's assume for now we send data as JSON.
+        // Note: The controller at /api/content/assignment or /api/assignments (check controller import)
+        // assignmentController.js exports to assignmentRoutes using /api/assignments usually.
+        // Let's verify the URL. The previous file had http://localhost:5000/api/content/assignment
+        // I should probably use http://localhost:5000/api/assignments based on standard REST.
+        // I will assume /api/assignments for now but if 404 I check routes.
 
-        const response = await fetch(API_URL, {
+        const response = await fetch('http://localhost:5000/api/assignments', { // Updated URL
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${user.token}`,
@@ -91,16 +97,18 @@ async function handleCreateAssignment(e) {
                 department,
                 year,
                 batch,
-                subBatch,
                 deadline
+                // No subBatch
             })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            alert('Assignment created successfully with Smart Targeting!');
+            alert('Assignment created successfully!');
             document.getElementById('createAssignmentForm').reset();
+            // Re-populate because reset clears dynamic single-options?
+            // Actually reset affects value. department has only 1 option, so it selects it.
             loadCreatedAssignments();
         } else {
             alert(data.message || 'Failed to create assignment.');
@@ -111,9 +119,6 @@ async function handleCreateAssignment(e) {
     }
 }
 
-// --- VIEW ASSIGNMENTS SECTION ---
-
-// Load Created Assignments
 async function loadCreatedAssignments() {
     const tableBody = document.getElementById('teacherAssignmentsTable');
     if (!tableBody) return;
@@ -126,7 +131,10 @@ async function loadCreatedAssignments() {
     const user = JSON.parse(userStr);
 
     try {
-        const response = await fetch(`${API_URL}/created`, {
+        // Endpoint for getting assignments created by teacher
+        // Checked controller: getTeacherAssignments => GET /api/assignments/created (implied)
+
+        const response = await fetch('http://localhost:5000/api/assignments/created', {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -138,11 +146,9 @@ async function loadCreatedAssignments() {
 
         const assignments = await response.json();
 
-        // Split into Assignments and Notes
+        // Filter out Notes if mixed
         const assignmentsList = assignments.filter(a => a.type !== 'note');
-        const notesList = assignments.filter(a => a.type === 'note');
 
-        // Render Assignments
         if (assignmentsList.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No assignments created.</td></tr>';
         } else {
@@ -157,7 +163,7 @@ async function loadCreatedAssignments() {
                     <td style="padding: 1rem; color: #64748b;">${assign.department} - ${assign.batch}</td>
                     <td style="padding: 1rem; color: #64748b;">${date}</td>
                     <td style="padding: 1rem;">
-                        <button onclick="viewSubmissions('${assign._id}', '${assign.title}')" class="btn-login" 
+                        <button onclick="viewSubmissions('${assign._id}', '${assign.title}')" 
                             style="padding: 5px 15px; font-size: 0.8rem; background: #3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">
                             View Submissions
                         </button>
@@ -167,50 +173,12 @@ async function loadCreatedAssignments() {
             }).join('');
         }
 
-        // Render Notes
-        const notesTableBody = document.getElementById('teacherNotesTable');
-        if (notesTableBody) {
-            if (notesList.length === 0) {
-                notesTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No notes uploaded.</td></tr>';
-            } else {
-                notesTableBody.innerHTML = notesList.map(note => {
-                    const date = new Date(note.createdAt).toLocaleDateString('en-GB');
-
-                    let notesLink = '';
-                    if (note.link) {
-                        let href = note.link;
-                        if (href.startsWith('/')) {
-                            href = 'http://localhost:5000' + href;
-                        }
-                        notesLink = `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight:600; text-decoration:none;"><i class="fa-solid fa-file-pdf"></i> View File</a>`;
-                    } else {
-                        notesLink = '<span style="color: #94a3b8;">No File</span>';
-                    }
-
-                    return `
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 1rem; color: #2d3748; font-weight: 500;">
-                            ${note.title}
-                            <div style="font-size: 0.8rem; color: #64748b;">${note.subject}</div>
-                        </td>
-                        <td style="padding: 1rem; color: #64748b;">${note.department} - ${note.batch}</td>
-                        <td style="padding: 1rem; color: #64748b;">${date}</td>
-                        <td style="padding: 1rem;">
-                            ${notesLink}
-                        </td>
-                    </tr>
-                    `;
-                }).join('');
-            }
-        }
-
     } catch (error) {
         console.error('Error:', error);
         tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error loading assignments.</td></tr>';
     }
 }
 
-// Check Submissions for an Assignment
 async function viewSubmissions(assignmentId, title) {
     document.getElementById('modalAssignmentTitle').innerText = `For Assignment: ${title}`;
     const tableBody = document.getElementById('submissionsTableBody');
@@ -222,7 +190,7 @@ async function viewSubmissions(assignmentId, title) {
     const user = JSON.parse(userStr);
 
     try {
-        const response = await fetch(`${API_URL}/${assignmentId}/submissions`, {
+        const response = await fetch(`http://localhost:5000/api/assignments/${assignmentId}/submissions`, {
             headers: { 'Authorization': `Bearer ${user.token}` }
         });
 
@@ -246,15 +214,11 @@ async function viewSubmissions(assignmentId, title) {
                 <td style="padding: 0.8rem; color: #64748b;">${rollNo}</td>
                 <td style="padding: 0.8rem; color: #64748b; font-size: 0.85rem;">${date}</td>
                 <td style="padding: 0.8rem;">
-                    ${(() => {
+                     ${(() => {
                     if (!sub.link) return '<span style="color:#94a3b8;">No Link</span>';
                     let href = sub.link;
                     if (sub.link.startsWith('/')) {
-                        // It's a relative path to the backend, prepend server origin
-                        // API_URL is http://localhost:5000/api/assignments
-                        // We need http://localhost:5000
-                        const origin = 'http://localhost:5000';
-                        href = origin + sub.link;
+                        href = 'http://localhost:5000' + href;
                     }
                     return `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight: 600; text-decoration: none;"><i class="fa-solid fa-file-pdf"></i> View File</a>`;
                 })()}
@@ -267,6 +231,3 @@ async function viewSubmissions(assignmentId, title) {
         tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error fetching submissions.</td></tr>';
     }
 }
-
-// Init
-document.addEventListener('DOMContentLoaded', loadCreatedAssignments);

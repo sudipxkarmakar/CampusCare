@@ -34,6 +34,22 @@ const complaintSchema = new mongoose.Schema({
     },
     image: {
         type: String, // URL if we implement upload
+    },
+    againstUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // If the complaint is against a specific teacher/staff
+    },
+    isUplifted: {
+        type: Boolean,
+        default: false,
+    },
+    upliftedTo: {
+        type: String,
+        enum: ['HOD', 'Warden', 'Principal'],
+    },
+    resolvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     }
 }, { timestamps: true });
 

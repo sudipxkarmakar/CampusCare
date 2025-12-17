@@ -84,10 +84,27 @@ export const getAllStudents = async (req, res) => {
     }
 
     try {
-        // Ensure strictly limiting to teacher's department
-        const teacherDept = req.user.department;
+        // Ensure strictly limiting to teacher's department AND teaching batches
+        const teacher = await User.findById(req.user._id);
+        const teacherDept = teacher.department;
+        const teachingBatches = teacher.teachingBatches || []; // e.g. ["1", "2"]
 
-        const students = await User.find({ role: 'student', department: teacherDept })
+        const query = {
+            role: 'student',
+            department: teacherDept
+        };
+
+        // If teacher has assigned batches, filter by them. 
+        // If no batches assigned (e.g. new teacher), maybe show none or all? 
+        // Requirement says "Not all department students". So imply strict filter.
+        if (teachingBatches.length > 0) {
+            query.batch = { $in: teachingBatches };
+        } else {
+            // If no batches assigned, return empty to be safe/strict
+            return res.json([]);
+        }
+
+        const students = await User.find(query)
             .select('-password')
             .sort({ rollNumber: 1 }); // Sort by Roll Number
         res.json(students);
