@@ -63,6 +63,7 @@ async function handleCreateNote(e) {
     const description = document.getElementById('noteDesc').value;
     const fileInput = document.getElementById('noteFile');
 
+
     if (!title || !subject || !batch || !department || !year || !fileInput.files[0]) {
         alert("Please ensure all fields are selected and a file is uploaded.");
         return;
@@ -70,6 +71,17 @@ async function handleCreateNote(e) {
 
     const userStr = localStorage.getItem('user');
     const user = JSON.parse(userStr);
+
+    try {
+        const formData = new FormData();
+        formData.append('subject', "General Resource");
+        formData.append('topic', title);
+        formData.append('description', description);
+        formData.append('department', department);
+        formData.append('year', year);
+        formData.append('batch', batch);
+        if (subBatch) formData.append('subBatch', subBatch);
+        formData.append('file', file);
 
     // Prepare FormData
     const formData = new FormData();
@@ -86,6 +98,9 @@ async function handleCreateNote(e) {
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: formData
                 'Authorization': `Bearer ${user.token}`
                 // Content-Type not set for FormData, browser sets boundary
             },
@@ -132,6 +147,10 @@ async function loadCreatedNotes() {
 
         const allResources = await response.json();
 
+        const allItems = await response.json();
+        // The API now returns only notes, and the Note model doesn't have a 'type' field by default.
+        // So we shouldn't filter by type unless we added it in the backend.
+        const notes = allItems;
         // Filter Notes
         const notes = allResources.filter(r => r.type === 'note');
 
@@ -141,9 +160,28 @@ async function loadCreatedNotes() {
         }
 
         tableBody.innerHTML = notes.map(note => {
+            const date = new Date(note.createdAt).toISOString().split('T')[0];
+
+            // Map Backend Fields (Note model uses 'topic' and 'fileUrl')
+            const title = note.topic || note.title || 'Untitled';
+            const link = note.fileUrl || note.link;
             const date = new Date(note.createdAt).toLocaleDateString('en-GB');
 
             let fileLink = '<span style="color:#94a3b8">No File</span>';
+            let fileName = 'No File';
+
+            if (link) {
+                let href = link;
+                if (href.startsWith('/')) {
+                    href = 'http://localhost:5000' + href;
+                    fileName = link.split('/').pop();
+                } else {
+                    // If it's a full URL
+                    fileName = link.split('/').pop();
+                }
+                fileLink = `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight: 600; text-decoration: none; display:flex; align-items:center; gap:5px;">
+                                <i class="fa-solid fa-file-pdf"></i> ${fileName.substring(0, 20)}...
+                            </a>`;
             if (note.link) {
                 let href = note.link;
                 if (href.startsWith('/')) href = 'http://localhost:5000' + href;
@@ -153,6 +191,8 @@ async function loadCreatedNotes() {
             return `
             <tr style="border-bottom: 1px solid #e2e8f0;">
                 <td style="padding: 1rem; color: #64748b;">${date}</td>
+                <td style="padding: 1rem; color: #2d3748; font-weight: 600;">${title}</td>
+                <td style="padding: 1rem;">${deptBadge}</td>
                 <td style="padding: 1rem; color: #2d3748; font-weight: 500;">
                     ${note.title}
                     <div style="font-size: 0.8rem; color: #64748b;">${note.subject}</div>

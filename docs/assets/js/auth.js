@@ -9,6 +9,7 @@ const registerExtras = document.getElementById('registerExtras'); // New contain
 
 // Helper references for extras
 const deptGroup = document.getElementById('deptGroup');
+const yearGroup = document.getElementById('yearGroup'); // New
 const batchGroup = document.getElementById('batchGroup');
 const sectionGroup = document.getElementById('sectionGroup');
 const hostelFields = document.getElementById('hostelFields'); // Hosteler Fields
@@ -23,7 +24,7 @@ const roleConfig = {
         placeholder: 'Enter Roll Number',
         regex: /.+/,
         error: 'Roll Number is required.',
-        extras: ['dept', 'batch', 'section']
+        extras: ['dept', 'year', 'batch', 'section']
     },
     teacher: {
         label: 'Employee ID',
@@ -37,7 +38,7 @@ const roleConfig = {
         placeholder: 'Enter Hostel Roll Number',
         regex: /.+/,
         error: 'Hostel Roll Number is required.',
-        extras: ['dept', 'batch', 'hostel']
+        extras: ['dept', 'year', 'batch', 'hostel']
     }
 };
 
@@ -57,6 +58,7 @@ if (loginForm) {
 
     // 1. Initialize UI
     updateFormFields(roleSelect.value);
+    updateModeUI(); // Ensure initial state is correct (Hide Role if Login)
 
     // 2. Handle Role Change
     roleSelect.addEventListener('change', (e) => {
@@ -76,6 +78,7 @@ if (loginForm) {
             document.getElementById('department').value = "";
             document.getElementById('email').value = "";
             document.getElementById('contactNumber').value = "";
+            document.getElementById('year').value = ""; // New
             document.getElementById('batch').value = "";
             document.getElementById('batch').value = "";
             document.getElementById('section').value = "";
@@ -108,6 +111,7 @@ if (loginForm) {
             const email = document.getElementById('email').value;
             const contactNumber = document.getElementById('contactNumber').value;
             const department = document.getElementById('department').value;
+            const year = document.getElementById('year').value; // New
             const batch = document.getElementById('batch').value;
             const section = document.getElementById('section').value;
             const bloodGroup = document.getElementById('bloodGroup').value;
@@ -131,7 +135,7 @@ if (loginForm) {
 
             // 2. Required Extra Fields
             if (role === 'student') {
-                if (!department || !batch || !section) return alert('All fields (Dept, Batch, Section) are required for Students.');
+                if (!department || !year || !batch || !section) return alert('All fields (Dept, Year, Batch, Section) are required for Students.');
             } else if (role === 'teacher') {
                 if (!department) return alert('Department is required for Teachers.');
                 // Optional: Validate teacher fields if strictly required
@@ -139,7 +143,7 @@ if (loginForm) {
                     return alert('All Teacher details (Designation, Experience, Joining Year, Specialization) are required.');
                 }
             } else if (role === 'hosteler') {
-                if (!department || !batch) return alert('Dept and Batch are required for Hostelers.');
+                if (!department || !year || !batch) return alert('Dept, Year, and Batch are required for Hostelers.');
                 if (!hostelName || !roomNumber) return alert('Hostel Name and Room Number are required.');
             }
 
@@ -150,6 +154,7 @@ if (loginForm) {
                 password,
                 role,
                 department,
+                year: (role === 'student' || role === 'hosteler') ? year : undefined,
                 batch: role !== 'teacher' ? batch : undefined,
                 section: role === 'student' ? section : undefined,
                 bloodGroup: bloodGroup, // Send for ALL roles now
@@ -183,11 +188,12 @@ if (loginForm) {
         } else {
             // Login Logic
             const department = document.getElementById('department').value;
-            const data = { identifier, password, role };
+            // Removed role from data payload for Login
+            const data = { identifier, password };
 
             // Send Department if selected and relevant (and visible)
             // Note: We clear department on mode switch, so this check handles it.
-            if (department && (role === 'student' || role === 'hosteler')) {
+            if (department) {
                 data.department = department;
             }
 
@@ -195,7 +201,14 @@ if (loginForm) {
                 const result = await api.post('/auth/login', data);
                 if (result.token) {
                     localStorage.setItem('user', JSON.stringify(result));
-                    window.location.href = 'index.html';
+                    // Redirect based on role returned from Backend
+                    if (result.role === 'teacher') window.location.href = 'teacher/index.html';
+                    else if (result.role === 'hod') window.location.href = 'hod/index.html';
+                    else if (result.role === 'warden') window.location.href = 'warden/index.html';
+                    else if (result.role === 'principal') window.location.href = 'principal/index.html';
+                    else if (result.role === 'hosteler') window.location.href = 'hostel/index.html';
+                    else window.location.href = 'index.html';
+
                 } else {
                     if (result.requiresDepartment) {
                         alert(result.message);
@@ -225,6 +238,7 @@ function updateFormFields(role) {
         if (isRegistering) {
             // Register Mode: Strict rules
             deptGroup.style.display = config.extras.includes('dept') ? 'block' : 'none';
+            yearGroup.style.display = config.extras.includes('year') ? 'block' : 'none'; // New
             batchGroup.style.display = config.extras.includes('batch') ? 'block' : 'none';
             sectionGroup.style.display = config.extras.includes('section') ? 'block' : 'none';
 
@@ -281,12 +295,15 @@ function updateModeUI() {
     const title = document.querySelector('.login-header h2');
     const submitBtn = document.querySelector('.btn-submit');
 
+    const roleGroup = document.getElementById('roleGroup'); // Assuming ID exists
+
     if (isRegistering) {
         title.innerText = "Create Account";
         submitBtn.innerText = "Register";
         toggleRegister.innerText = "Already have an account? Login";
         nameGroup.style.display = 'block';
         registerExtras.style.display = 'block';
+        if (roleGroup) roleGroup.style.display = 'block'; // Show for Register
 
         document.getElementById('name').required = true;
         document.getElementById('email').required = true;
@@ -297,10 +314,15 @@ function updateModeUI() {
         toggleRegister.innerText = "New here? Register";
         nameGroup.style.display = 'none';
         registerExtras.style.display = 'none';
+        if (roleGroup) roleGroup.style.display = 'none'; // Hide for Login
 
         document.getElementById('name').required = false;
         document.getElementById('email').required = false;
         document.getElementById('contactNumber').required = false;
+
+        // Generic Label for Login
+        idLabel.innerText = "Roll Number / Employee ID";
+        identifierInput.placeholder = "Enter ID or Email";
     }
 
     // Toggle Reset Password Link

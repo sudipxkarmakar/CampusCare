@@ -80,7 +80,7 @@ export const registerUser = async (req, res) => {
     }
 
     try {
-        const { name, email, contactNumber, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
+        const { name, email, contactNumber, password, role, rollNumber, employeeId, year, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
 
         // 1. Email Domain Check - REMOVED
         // if (!isValidEmail(email)) {
@@ -127,10 +127,12 @@ export const registerUser = async (req, res) => {
 
         if (role === 'student') {
             userData.rollNumber = rollNumber;
+            userData.year = year;
             userData.batch = batch;
             userData.section = section;
         } else if (role === 'hosteler') {
             userData.rollNumber = rollNumber;
+            userData.year = year;
             userData.batch = batch;
             userData.hostelName = hostelName;
             userData.roomNumber = roomNumber;
@@ -184,70 +186,81 @@ export const loginUser = async (req, res) => {
     try {
         const { identifier, password, role } = req.body;
 
-        if (!identifier || !password || !role) {
-            return res.status(400).json({ message: 'Please provide ID, Password, and Role.' });
-        }
-        // ... rest of loginUser logic
-        // 1. Construct Flexible Query (Email OR ID)
-        let query = { role: role };
-
-        // Relaxed Role Matching: 'teacher' login should allow other academic leaders
-        if (role === 'teacher') {
-            query.role = { $in: ['teacher', 'principal', 'dean', 'hod', 'admin'] };
+        if (!identifier || !password) {
+            return res.status(400).json({ message: 'Please provide ID/Email and Password.' });
         }
 
-        // Check if identifier looks like an email
+        console.log('flexible login for:', identifier);
+
+        // Broad Search QueryRequest
+        let query = {};
+
         if (identifier.includes('@')) {
-            query.email = identifier;
+            query = { email: identifier };
         } else {
-            // ID-based lookup
-            if (role === 'student' || role === 'hosteler') {
-                query.rollNumber = identifier;
-                if (req.body.department) query.department = req.body.department;
-            } else {
-                // For Teacher/Principal/Dean/HOD, use Employee ID
-                query.employeeId = identifier;
+            // Search in both RollNumber and EmployeeId if role not specified or strictly
+            // Since we want to remove role restriction, we search both.
+            // However, rollNumber is sparse unique, employeeId is sparse unique.
+            // We can use $or.
+            query = {
+                $or: [
+                    { rollNumber: identifier },
+                    { employeeId: identifier }
+                ]
+            };
+
+            // If department is provided (e.g. for student disambiguation in rare cases), add it? 
+            // Broad search usually finds the unique user.
+            if (req.body.department) {
+                // If department provided, it applies to valid fields
+                // But $or structure makes strict $and tricky without complex nesting or aggregation.
+                // Let's rely on global uniqueness of identifiers first. 
+                // If duplicates exist (same rollNo in diff depts?), we handle below.
             }
         }
 
         // 2. Find User
-        // Issue: If Dept is NOT provided during login, and multiple users exist with same RollNo...
-        // We find the first one. This is unavoidable without UI change.
-        // Enhanced Logic: Try to find *all* matches.
         const users = await User.find(query);
 
         if (users.length === 0) {
-            return res.status(401).json({ message: 'Invalid credentials or Role mismatch' });
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         let user;
         if (users.length === 1) {
             user = users[0];
         } else {
-            // Multiple users found! ambiguous.
-            // If department is part of request, this shouldn't happen unless duplicate in same dept (which is blocked by register).
-            // If dept NOT provided, ask for it.
-            return res.status(400).json({
-                message: 'Multiple users found with this ID. Please login with Email or provide Department.',
-                requiresDepartment: true
-            });
+            // Multiple users found (e.g. Identical Roll No in different Depts and no Email used)
+            if (req.body.department) {
+                user = users.find(u => u.department === req.body.department);
+                if (!user) return res.status(401).json({ message: 'Invalid credentials for this Department' });
+            } else {
+                return res.status(400).json({
+                    message: 'Multiple users found. Please login with Email or provide Department.',
+                    requiresDepartment: true
+                });
+            }
         }
 
-        if (user && (user.password === password)) { // Compare plain text for now
+        if (user && (user.password === password)) {
             res.json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
+                role: user.role, // Return DB role
                 department: user.department,
                 batch: user.batch,
                 section: user.section,
+<<<<<<< HEAD
                 rollNumber: user.rollNumber,
                 employeeId: user.employeeId,
+=======
+                hostelName: user.hostelName, // Return hostel info if needed
+>>>>>>> f2f10a2d6e756a7cf31b015b4e41d057279f7897
                 token: generateToken(user._id),
             });
         } else {
-            res.status(401).json({ message: 'Invalid credentials or Role mismatch' });
+            res.status(401).json({ message: 'Invalid credentials' });
         }
 
     } catch (error) {

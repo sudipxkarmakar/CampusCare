@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gate Pass Approvals | Warden Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
+                style="font-size:0.8rem; background:#10b981; color:white; padding:2px 8px; border-radius:10px;">Warden</span>
+        </a>
+        <div>
+            <a href="index.html" style="text-decoration:none; color:#2d3748; font-weight:600;">Dashboard</a>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent;">
+            <div class="hero-left">
+                <h1 class="hero-title" style="color:#2d3748;">Gate Pass & Leave Approvals</h1>
+                <p class="hero-sub" style="color:#4a5568;">Final Authorization for Hostelers</p>
+            </div>
+        </section>
+
+        <section class="standard-container">
+            <div style="background:white; padding:1.5rem; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <h3 style="margin-bottom:1rem; color:#2d3748;">Pending Final Approval</h3>
+
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:800px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid #e2e8f0; text-align:left; color:#64748b;">
+                                <th style="padding:1rem;">Student (Room)</th>
+                                <th style="padding:1rem;">Type</th>
+                                <th style="padding:1rem;">Duration</th>
+                                <th style="padding:1rem;">HOD Info</th>
+                                <th style="padding:1rem; width:250px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leavesTableBody">
+                            <!-- Dynamic Content -->
+                            <tr>
+                                <td colspan="5" style="text-align:center; padding:2rem;">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- REJECTION MODAL -->
+    <div id="rejectModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:white; padding:2rem; border-radius:15px; width:90%; max-width:400px;">
+            <h3 style="margin-bottom:1rem; color:#ef4444;">Reject Application</h3>
+            <textarea id="rejectRemark" placeholder="Reason for rejection..." rows="3"
+                style="width:100%; padding:0.8rem; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:1rem;"></textarea>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button onclick="closeRejectModal()"
+                    style="padding:0.5rem 1rem; border:1px solid #cbd5e1; background:white; border-radius:5px; cursor:pointer;">Cancel</button>
+                <button onclick="confirmReject()"
+                    style="padding:0.5rem 1rem; border:none; background:#ef4444; color:white; border-radius:5px; cursor:pointer;">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/warden_leaves.js"></script>
+</body>
+
+</html>
