@@ -34,8 +34,8 @@ async function fetchStats() {
 
         const assignments = await res.json();
 
-        // Filter Pending (All unsubmitted, including overdue)
-        const pendingCount = assignments.filter(a => !a.submitted).length;
+        // Filter Pending (Only Assignments, not notes)
+        const pendingCount = assignments.filter(a => a.type === 'assignment' && !a.submitted).length;
 
         // Update DOM
         const pendingCard = document.querySelector('a[href="assignments.html"] .stat-value');

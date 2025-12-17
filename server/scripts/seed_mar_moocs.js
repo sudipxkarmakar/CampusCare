@@ -1,83 +1,108 @@
+
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import User from '../src/models/User.js';
+import connectDB from '../src/config/db.js';
 import MarMooc from '../src/models/MarMooc.js';
+import User from '../src/models/User.js';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const COURSES = [
-    { title: 'Introduction to Python', platform: 'Coursera', points: 10 },
-    { title: 'Data Structures and Algorithms', platform: 'NPTEL', points: 20 },
-    { title: 'Web Development Bootcamp', platform: 'Udemy', points: 15 },
-    { title: 'Machine Learning', platform: 'Coursera', points: 20 },
-    { title: 'Cloud Computing 101', platform: 'AWS', points: 10 },
-    { title: 'Soft Skills Development', platform: 'Internal', points: 5 },
-    { title: 'Cyber Security Basics', platform: 'EdX', points: 10 },
-    { title: 'IoT Workshop', platform: 'Workshop', points: 5 }
-];
-
-const STATUSES = ['Proposed', 'Ongoing', 'Completed', 'Verified'];
-
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
-const seedMarMoocs = async () => {
+const seedMarMooc = async () => {
     try {
-        const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/campuscare';
-        await mongoose.connect(mongoURI);
-        console.log('MongoDB Connected');
+        await connectDB();
 
-        // Clear existing MAR/MOOCs
-        await MarMooc.deleteMany({});
-        console.log('Cleared existing MAR/MOOC entries.');
+        console.log("Seeding MAR/MOOCs...");
 
-        // Get all students
-        const students = await User.find({ role: 'student' });
-        console.log(`Found ${students.length} students.`);
+        // Ensure MarMooc collection exists and is clean for this student
+        const student = await User.findOne({ rollNumber: '1001' });
+        if (!student) {
+            console.log("Student 1001 not found.");
+            process.exit(1);
+        }
 
-        const marMoocEntries = [];
+        await MarMooc.deleteMany({ student: student._id });
 
-        for (const student of students) {
-            // Assign 1 to 4 courses per student
-            const numberOfCourses = getRandomInt(1, 4);
-
-            for (let i = 0; i < numberOfCourses; i++) {
-                const course = COURSES[getRandomInt(0, COURSES.length - 1)];
-                const status = STATUSES[getRandomInt(0, STATUSES.length - 1)];
-
-                let completionDate = null;
-                let certificateUrl = null;
-
-                if (status === 'Completed' || status === 'Verified') {
-                    completionDate = new Date();
-                    completionDate.setMonth(completionDate.getMonth() - getRandomInt(0, 12)); // Random past date
-                    certificateUrl = `https://certificates.example.com/${student.rollNumber}/${i}`;
-                }
-
-                marMoocEntries.push({
-                    student: student._id,
-                    title: course.title,
-                    platform: course.platform,
-                    points: status === 'Verified' ? course.points : 0, // Points usually just for verified? Or maybe potential points. let's stick to verified having points counted.
-                    status: status,
-                    completionDate: completionDate,
-                    certificateUrl: certificateUrl
-                });
+        const data = [
+            // MAR Records (as per screenshot)
+            {
+                student: student._id,
+                category: 'mar',
+                title: 'Tree Plantation Drive',
+                platform: 'NSS',
+                points: 10,
+                status: 'Verified'
+            },
+            {
+                student: student._id,
+                category: 'mar',
+                title: 'Tech Fest Volunteer',
+                platform: 'College',
+                points: 15,
+                status: 'Verified'
+            },
+            {
+                student: student._id,
+                category: 'mar',
+                title: 'Blood Donation Camp',
+                platform: 'NSS',
+                points: 10,
+                status: 'Verified'
+            },
+            {
+                student: student._id,
+                category: 'mar',
+                title: 'Library Assistance',
+                platform: 'Library',
+                points: 7,
+                status: 'Verified'
+            },
+            // MOOC Records (as per screenshot)
+            {
+                student: student._id,
+                category: 'mooc',
+                title: 'NPTEL: Data Science',
+                platform: 'NPTEL',
+                points: 3,
+                status: 'Verified'
+            },
+            {
+                student: student._id,
+                category: 'mooc',
+                title: 'AI for Everyone',
+                platform: 'Coursera',
+                points: 2,
+                status: 'Verified'
+            },
+            {
+                student: student._id,
+                category: 'mooc',
+                title: 'Web Development',
+                platform: 'Udemy',
+                points: 4,
+                status: 'Verified'
+            },
+            {
+                student: student._id,
+                category: 'mooc',
+                title: 'Soft Skills',
+                platform: 'Swayam',
+                points: 3,
+                status: 'Verified'
             }
-        }
+        ];
 
-        if (marMoocEntries.length > 0) {
-            await MarMooc.insertMany(marMoocEntries);
-            console.log(`Successfully seeded ${marMoocEntries.length} MAR/MOOC entries.`);
-        } else {
-            console.log('No entries to seed (no students found?)');
-        }
-
+        await MarMooc.insertMany(data);
+        console.log(`✅ Seeded ${data.length} records for ${student.name}`);
         process.exit(0);
 
-    } catch (error) {
-        console.error('Seeding MAR/MOOCs Failed:', error);
+    } catch (e) {
+        console.error(e);
         process.exit(1);
     }
 };
 
-seedMarMoocs();
+seedMarMooc();

@@ -151,29 +151,11 @@
 
                 <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 1rem;">Recent Activities</h3>
                 <ul class="activity-list">
-                    <li class="activity-item">
-                        <span>Tree Plantation Drive</span>
-                        <span class="activity-points">+10</span>
-                    </li>
-                    <li class="activity-item">
-                        <span>Tech Fest Volunteer</span>
-                        <span class="activity-points">+15</span>
-                    </li>
-                    <li class="activity-item">
-                        <span>Blood Donation Camp</span>
-                        <span class="activity-points">+10</span>
-                    </li>
-                    <li class="activity-item">
-                        <span>Library Assistance</span>
-                        <span class="activity-points">+7</span>
-                    </li>
-                </ul>
+                    <!-- Loaded via JS -->
                 </ul>
                 <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
                     <h4 style="margin-bottom: 0.5rem; color: #374151;">Submit New Activity</h4>
-                    <form
-                        onsubmit="event.preventDefault(); if(document.getElementById('marFile').files.length === 0) { alert('Please upload a proof file.'); return; } alert('Activity Submitted!');"
-                        style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <form id="marForm" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <label style="font-size: 0.9rem; color: #4b5563;">Select Activity</label>
                         <select required
                             style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8); font-family: 'Poppins';">
@@ -210,28 +192,12 @@
 
                 <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 1rem;">Completed Courses</h3>
                 <ul class="activity-list">
-                    <li class="activity-item">
-                        <span>NPTEL: Data Science</span>
-                        <span class="activity-points">3 Credits</span>
-                    </li>
-                    <li class="activity-item">
-                        <span>Coursera: AI for Everyone</span>
-                        <span class="activity-points">2 Credits</span>
-                    </li>
-                    <li class="activity-item">
-                        <span>Udemy: Web Development</span>
-                        <span class="activity-points">4 Credits</span>
-                    </li>
-                    <li class="activity-item">
-                        <span>Swayam: Soft Skills</span>
-                        <span class="activity-points">3 Credits</span>
-                    </li>
+                    <!-- Loaded via JS -->
                 </ul>
                 </ul>
                 <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.1);">
                     <h4 style="margin-bottom: 0.5rem; color: #374151;">Submit Certificate</h4>
-                    <form onsubmit="handleMoocsSubmit(event)"
-                        style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <form id="moocForm" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         <input type="text" id="courseName" placeholder="Course Name (e.g. NPTEL Java)" required
                             style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8);">
                         <input type="url" id="courseLink" placeholder="Certificate / Course Link" required
@@ -239,7 +205,6 @@
 
                         <label style="font-size: 0.9rem; color: #4b5563;">Course Duration (Hours)</label>
                         <input type="number" id="courseHours" placeholder="Total Hours" min="1" required
-                            oninput="calcPoints()"
                             style="padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.8);">
 
                         <div id="pointsPreview"
@@ -266,43 +231,7 @@
         <p>© 2025 CampusCare</p>
     </footer>
 
-    <script>
-        function calcPoints() {
-            const hrs = document.getElementById('courseHours').value;
-            const preview = document.getElementById('pointsPreview');
-            if (hrs) {
-                const points = Math.floor(hrs / 8);
-                if (points > 0) {
-                    preview.innerHTML = `<i class="fa-solid fa-check"></i> Eligible for ${points} Credit Point(s)`;
-                    preview.style.color = '#10b981';
-                } else {
-                    preview.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Less than 8 hours (0 Points)`;
-                    preview.style.color = '#ef4444';
-                }
-            } else {
-                preview.innerHTML = '';
-            }
-        }
 
-        function handleMoocsSubmit(e) {
-            e.preventDefault();
-
-            // Validate File
-            const fileInput = document.getElementById('moocFile');
-            if (fileInput.files.length === 0) {
-                alert('Please upload a certificate file.');
-                return;
-            }
-
-            const hrs = document.getElementById('courseHours').value;
-            const points = Math.floor(hrs / 8);
-            if (points > 0) {
-                alert(`Successfully submitted! You will receive ${points} credits after verification.`);
-            } else {
-                alert('Sorry, course must be at least 8 hours long to claim credits.');
-            }
-        }
-    </script>
 
     <!-- FLOATING ACTION BUTTONS (SOS & AI) -->
     <div class="fab-container"
@@ -363,7 +292,7 @@
     <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') { m.style.display = 'none'; } else { m.style.display = 'flex'; } }</script>
     <script src="../assets/js/landing.js"></script>
     <script src="../assets/js/ai.js"></script>
-
+    <script src="../assets/js/student_mar_moocs.js"></script>
 </body>
 
 </html>

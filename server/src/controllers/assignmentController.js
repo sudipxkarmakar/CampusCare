@@ -52,18 +52,36 @@ export const getAssignments = async (req, res) => {
     const { dept, batch, section } = req.query;
 
     try {
-        let filter = {
-            department: dept,
-            batch: batch
-        };
+        let filter = {};
 
-        // Logic: (dept == X AND batch == Y) AND (section == Z OR section does not exist)
-        if (section) {
-            filter.$or = [
-                { section: section },
-                { section: { $exists: false } },
-                { section: null }
-            ];
+        // Strict Filtering for Students
+        if (req.user && req.user.role === 'student') {
+            filter.department = req.user.department;
+            filter.year = req.user.year;
+            // Allow batch specific OR 'All'
+            filter.batch = { $in: [req.user.batch, 'All'] };
+
+            // Section filtering can be strict or optional depending on logic.
+            // If assignments are section-specific:
+            if (req.user.section) {
+                filter.$or = [
+                    { section: req.user.section },
+                    { section: { $exists: false } },
+                    { section: null }
+                ];
+            }
+        } else {
+            // Teacher/Admin or Public View (if allowed)
+            if (dept) filter.department = dept;
+            if (batch) filter.batch = batch;
+
+            if (section) {
+                filter.$or = [
+                    { section: section },
+                    { section: { $exists: false } },
+                    { section: null }
+                ];
+            }
         }
 
         const assignments = await Assignment.find(filter)

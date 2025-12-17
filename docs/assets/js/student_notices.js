@@ -8,33 +8,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('.page-title').textContent = 'Personal Notices';
     }
 
+    const userStr = localStorage.getItem('user');
+    let token = null;
+    let user = null;
+
+    if (userStr) {
+        user = JSON.parse(userStr);
+        token = user.token;
+    }
+
     try {
-        // Fetch public notices first (or all notices if we had a unified endpoint)
-        // For now, using the public notices endpoint and simulating "personal" ones if mock mode
-        const response = await fetch(`${API_BASE_URL}/notices/public`);
-        const notices = await response.json();
+        // Fetch all notices (authenticated)
+        const response = await fetch(`${API_BASE_URL}/notices`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch notices');
+
+        const allNotices = await response.json();
+        let displayNotices = [];
+
+        if (filter === 'personal') {
+            // Filter: Audience 'student', or Specific Dept/Year match
+            // Assuming the API returns all applicable, but we double-check here for strict tab view
+            displayNotices = allNotices.filter(n =>
+                n.audience === 'student' ||
+                (user && n.targetDept === user.department)
+            );
+        } else {
+            // General Notices (General + Student) - Standard View
+            displayNotices = allNotices.filter(n => n.audience === 'general' || !n.audience);
+        }
 
         container.innerHTML = '';
 
-
-        if (filter === 'personal') {
-            // Fetch Personal Notices (Assuming endpoint exists or filtering from public for now if not)
-            // Ideally: const response = await fetch(`${API_BASE_URL}/notices/personal`, ...);
-            // Since we seeded general notices mostly, let's just show an empty state or filter if we had user ID.
-            // For rigorous "No Mock", we strictly fallback to "No personal notices found" if we can't fetch them.
-            container.innerHTML = '<p style="text-align:center; padding:2rem; color:#64748b;">Personal notices feature coming soon (API Integration Pending).</p>';
-
-        } else {
-            // Display Public Notices
-            if (notices.length === 0) {
-                container.innerHTML = '<p style="text-align:center;">No active notices.</p>';
-                return;
-            }
-            notices.forEach(notice => {
-                const card = createNoticeCard(notice);
-                container.appendChild(card);
-            });
+        if (displayNotices.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding: 2rem; color: #64748b;">No notices found.</p>';
+            return;
         }
+
+        displayNotices.forEach(notice => {
+            const isPersonal = notice.audience === 'student' || notice.targetDept;
+            const card = createNoticeCard(notice, isPersonal);
+            container.appendChild(card);
+        });
 
     } catch (error) {
         console.error('Error fetching notices:', error);
