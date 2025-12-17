@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Principal Portal | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="#" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-building-columns"></i> CampusCare <span
+                style="font-size:0.8rem; background:#7c3aed; color:white; padding:2px 8px; border-radius:10px;">PRINCIPAL</span>
+        </a>
+
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <!-- USER PROFILE -->
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, Principal</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=Principal&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p
+                        style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
+                        Account Details
+                    </p>
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                        <!-- Injected by JS -->
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent;">
+            <div class="hero-left">
+                <h1 class="hero-title" style="color:#2d3748;">Institutional Oversight</h1>
+                <p class="hero-sub" style="color:#4a5568;">Administration, Monitoring & Control</p>
+            </div>
+        </section>
+
+        <!-- DASHBOARD STATS ROW -->
+        <div class="row" style="display:flex; gap:1rem; margin-top:2rem; padding: 0 5%; flex-wrap:wrap;">
+            <div class="standard-card" style="flex:1; min-width:200px; padding:1.5rem; text-align:center;">
+                <div id="totalStudents" style="font-size:2rem; font-weight:bold; color:#3b82f6;">0</div>
+                <div style="color:#64748b;">Total Students</div>
+            </div>
+            <div class="standard-card" style="flex:1; min-width:200px; padding:1.5rem; text-align:center;">
+                <div id="totalTeachers" style="font-size:2rem; font-weight:bold; color:#10b981;">0</div>
+                <div style="color:#64748b;">Faculty Members</div>
+            </div>
+            <div class="standard-card" style="flex:1; min-width:200px; padding:1.5rem; text-align:center;">
+                <div id="activeLeaves" style="font-size:2rem; font-weight:bold; color:#f59e0b;">0</div>
+                <div style="color:#64748b;">Active Leaves</div>
+            </div>
+            <div class="standard-card" style="flex:1; min-width:200px; padding:1.5rem; text-align:center;">
+                <div id="openComplaints" style="font-size:2rem; font-weight:bold; color:#ef4444;">0</div>
+                <div style="color:#64748b;">Open Complaints</div>
+            </div>
+        </div>
+
+        <!-- MAIN ACTIONS -->
+        <div class="row"
+            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem; margin-top:2rem; padding: 0 5%;">
+
+            <section class="standard-container" style="margin:0; width:100%;">
+                <h2
+                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #ef4444; padding-left:10px; font-size:1.3rem;">
+                    Resolution Center</h2>
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                    <a href="complaints_review.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-list-check module-icon" style="font-size:2rem; color:#ef4444;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Review Complaints</div>
+                        <div class="module-desc">Resolve High Priority Issues</div>
+                    </a>
+                </div>
+            </section>
+
+            <section class="standard-container" style="margin:0; width:100%;">
+                <h2
+                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #3b82f6; padding-left:10px; font-size:1.3rem;">
+                    Administration</h2>
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+                    <a href="staff_directory.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-user-tie module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Staff Directory</div>
+                        <div class="module-desc">HODs, Wardens, Faculty</div>
+                    </a>
+
+                    <a href="notices.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-bullhorn module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Global Notices</div>
+                        <div class="module-desc">Announce to All</div>
+                    </a>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../assets/js/landing.js"></script>
+    <script src="../assets/js/principal.js"></script>
+</body>
+
+</html>

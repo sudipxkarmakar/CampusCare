@@ -57,6 +57,7 @@ if (loginForm) {
 
     // 1. Initialize UI
     updateFormFields(roleSelect.value);
+    updateModeUI(); // Ensure initial state is correct (Hide Role if Login)
 
     // 2. Handle Role Change
     roleSelect.addEventListener('change', (e) => {
@@ -183,11 +184,12 @@ if (loginForm) {
         } else {
             // Login Logic
             const department = document.getElementById('department').value;
-            const data = { identifier, password, role };
+            // Removed role from data payload for Login
+            const data = { identifier, password };
 
             // Send Department if selected and relevant (and visible)
             // Note: We clear department on mode switch, so this check handles it.
-            if (department && (role === 'student' || role === 'hosteler')) {
+            if (department) {
                 data.department = department;
             }
 
@@ -195,7 +197,14 @@ if (loginForm) {
                 const result = await api.post('/auth/login', data);
                 if (result.token) {
                     localStorage.setItem('user', JSON.stringify(result));
-                    window.location.href = 'index.html';
+                    // Redirect based on role returned from Backend
+                    if (result.role === 'teacher') window.location.href = 'teacher/index.html';
+                    else if (result.role === 'hod') window.location.href = 'hod/index.html';
+                    else if (result.role === 'warden') window.location.href = 'warden/index.html';
+                    else if (result.role === 'principal') window.location.href = 'principal/index.html';
+                    else if (result.role === 'hosteler') window.location.href = 'hostel/index.html';
+                    else window.location.href = 'index.html';
+
                 } else {
                     if (result.requiresDepartment) {
                         alert(result.message);
@@ -281,12 +290,15 @@ function updateModeUI() {
     const title = document.querySelector('.login-header h2');
     const submitBtn = document.querySelector('.btn-submit');
 
+    const roleGroup = document.getElementById('roleGroup'); // Assuming ID exists
+
     if (isRegistering) {
         title.innerText = "Create Account";
         submitBtn.innerText = "Register";
         toggleRegister.innerText = "Already have an account? Login";
         nameGroup.style.display = 'block';
         registerExtras.style.display = 'block';
+        if (roleGroup) roleGroup.style.display = 'block'; // Show for Register
 
         document.getElementById('name').required = true;
         document.getElementById('email').required = true;
@@ -297,10 +309,15 @@ function updateModeUI() {
         toggleRegister.innerText = "New here? Register";
         nameGroup.style.display = 'none';
         registerExtras.style.display = 'none';
+        if (roleGroup) roleGroup.style.display = 'none'; // Hide for Login
 
         document.getElementById('name').required = false;
         document.getElementById('email').required = false;
         document.getElementById('contactNumber').required = false;
+
+        // Generic Label for Login
+        idLabel.innerText = "Roll Number / Employee ID";
+        identifierInput.placeholder = "Enter ID or Email";
     }
 
     // Toggle Reset Password Link

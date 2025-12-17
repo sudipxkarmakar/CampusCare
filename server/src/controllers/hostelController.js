@@ -52,7 +52,7 @@ export const applyLeave = async (req, res) => {
             startDate,
             endDate,
             reason,
-            status: 'Pending'
+            status: 'Pending HOD Approval'
         });
 
         res.status(201).json(leave);

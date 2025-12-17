@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HOD Portal | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="#" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
+                style="font-size:0.8rem; background:#3b82f6; color:white; padding:2px 8px; border-radius:10px;">HOD</span>
+        </a>
+
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <!-- USER PROFILE -->
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, HOD</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=HOD&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p
+                        style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
+                        Account Details
+                    </p>
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                        <!-- Injected by JS -->
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent;">
+            <div class="hero-left">
+                <h1 class="hero-title" style="color:#2d3748;">Department Control</h1>
+                <p class="hero-sub" style="color:#4a5568;">Academic Planning & Supervision</p>
+            </div>
+        </section>
+
+        <!-- HOD DASHBOARD GRID -->
+        <div class="row"
+            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem; margin-top:2rem; padding: 0 5%;">
+
+            <!-- SECTION 1: APPROVALS & REQUESTS -->
+            <section class="standard-container" style="margin:0; width:100%;">
+                <h2
+                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #ef4444; padding-left:10px; font-size:1.3rem;">
+                    Approvals</h2>
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+                    <a href="leaves.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <div style="position:absolute; top:10px; right:15px; background:red; color:white; border-radius:50%; width:25px; height:25px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.8rem;"
+                            id="leaveCountBadge">0</div>
+                        <i class="fa-solid fa-file-signature module-icon" style="font-size:2rem; color:#ef4444;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Leave Requets</div>
+                        <div class="module-desc">Review & Forward</div>
+                    </a>
+
+                    <a href="complaints.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-gavel module-icon" style="font-size:2rem; color:#ef4444;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Dept Complaints</div>
+                        <div class="module-desc">Uplifted Issues</div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- SECTION 2: ACADEMIC PLANNING -->
+            <section class="standard-container" style="margin:0; width:100%;">
+                <h2
+                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #3b82f6; padding-left:10px; font-size:1.3rem;">
+                    Academic Planning</h2>
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+                    <a href="subject_allocation.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-book-open-reader module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Subject Allocation</div>
+                        <div class="module-desc">Assign Teachers</div>
+                    </a>
+
+                    <a href="routine_management.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-calendar-week module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Routine Management</div>
+                        <div class="module-desc">Create/Edit Time Table</div>
+                    </a>
+
+                    <a href="mentors.html" class="module-card-dashboard standard-card"
+                        style="text-decoration:none; padding:1.5rem; text-align:center;">
+                        <i class="fa-solid fa-chalkboard-user module-icon" style="font-size:2rem; color:#3b82f6;"></i>
+                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Mentor Assignment</div>
+                        <div class="module-desc">Assign Batches</div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- SECTION 3: DEPARTMENT STATS -->
+            <section class="standard-container" style="margin:0; width:100%;">
+                <h2
+                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #10b981; padding-left:10px; font-size:1.3rem;">
+                    Department Insight</h2>
+                <div style="background:white; padding:1.5rem; border-radius:15px; text-align:center; height:100%;">
+                    <h3 id="deptNameDisplay" style="color:#1e3a8a; margin-bottom:1rem;">Loading...</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                        <div style="background:#f0f9ff; padding:1rem; border-radius:10px;">
+                            <div id="studentCountVal" style="font-size:2rem; font-weight:bold; color:#0369a1;">0</div>
+                            <div style="font-size:0.8rem; color:#64748b;">Students</div>
+                        </div>
+                        <div style="background:#f0fdf4; padding:1rem; border-radius:10px;">
+                            <div id="teacherCountVal" style="font-size:2rem; font-weight:bold; color:#15803d;">0</div>
+                            <div style="font-size:0.8rem; color:#64748b;">Teachers</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="notices.html"
+                            style="display:block; width:100%; padding:0.8rem; background:#1e293b; color:white; text-decoration:none; border-radius:8px; font-weight:600;">Post
+                            Dept Notice</a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <script src="../assets/js/landing.js"></script>
+    <script src="../assets/js/hod.js"></script>
+</body>
+
+</html>
