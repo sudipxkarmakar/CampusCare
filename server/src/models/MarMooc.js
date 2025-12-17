@@ -6,13 +6,18 @@ const marMoocSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    title: {
+    category: {
         type: String,
+        enum: ['mar', 'mooc'],
+        required: true
+    },
+    title: {
+        type: String, // Course Name or Activity Name
         required: true,
     },
     platform: {
-        type: String, // e.g., Coursera, NPTEL, Udemy
-        required: true,
+        type: String, // e.g., Coursera (for MOOC) or 'NSS' (for MAR)
+        required: false, // Not always needed for MAR
     },
     completionDate: {
         type: Date,
