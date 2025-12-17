@@ -26,16 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchStats() {
     try {
-        // Fetch Assignments
-        const res = await fetch(`http://localhost:5000/api/assignments?dept=${user.department}&batch=${user.batch}&section=${user.section}`, {
+        // Fetch Content (Assignments + Notes)
+        // matching logic of assignments.html
+        const res = await fetch(`http://localhost:5000/api/content/my-content`, {
             headers: { 'Authorization': `Bearer ${user.token}` }
         });
-        if (!res.ok) throw new Error('Failed to fetch assignments');
+        if (!res.ok) throw new Error('Failed to fetch content');
 
-        const assignments = await res.json();
+        const data = await res.json();
+        const assignments = data.assignments || [];
 
-        // Filter Pending (Only Assignments, not notes)
-        const pendingCount = assignments.filter(a => a.type === 'assignment' && !a.submitted).length;
+        // Filter Pending (Only Assignments, not submitted)
+        // Note: Backend now populates 'submitted' field correctly
+        const pendingCount = assignments.filter(a => !a.submitted).length;
 
         // Update DOM
         const pendingCard = document.querySelector('a[href="assignments.html"] .stat-value');
