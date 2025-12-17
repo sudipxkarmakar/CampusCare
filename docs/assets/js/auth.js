@@ -302,4 +302,10 @@ function updateModeUI() {
         document.getElementById('email').required = false;
         document.getElementById('contactNumber').required = false;
     }
+
+    // Toggle Reset Password Link
+    const resetPassGroup = document.getElementById('resetPasswordGroup');
+    if (resetPassGroup) {
+        resetPassGroup.style.display = isRegistering ? 'none' : 'flex';
+    }
 }
