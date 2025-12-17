@@ -45,11 +45,11 @@ const startServer = async () => {
   }));
   app.use(express.json());
 
-  // Request logger
-  app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-  });
+  // Request logger (Disabled to reduce noise)
+  // app.use((req, res, next) => {
+  //   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  //   next();
+  // });
 
   app.use('/api/auth', authRoutes);
   app.use('/api/admin', adminRoutes);

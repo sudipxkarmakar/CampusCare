@@ -41,6 +41,7 @@ const userSchema = new mongoose.Schema({
     yearsExperience: { type: Number },
     joiningYear: { type: Number },
     specialization: { type: String },
+    expertise: [{ type: String }],
 
     // Teacher System/HOD Updates (Phase 2)
     teachingBatches: [{ type: String }],
