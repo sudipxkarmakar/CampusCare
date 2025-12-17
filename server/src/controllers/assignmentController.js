@@ -58,7 +58,9 @@ export const getAssignments = async (req, res) => {
         if (req.user && req.user.role === 'student') {
             filter.department = req.user.department;
             filter.year = req.user.year;
-            filter.batch = req.user.batch;
+            // Allow batch specific OR 'All'
+            filter.batch = { $in: [req.user.batch, 'All'] };
+
             // Section filtering can be strict or optional depending on logic.
             // If assignments are section-specific:
             if (req.user.section) {

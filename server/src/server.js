@@ -27,7 +27,7 @@ import marMoocRoutes from './routes/marMoocRoutes.js';
 
 // ... imports
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const startServer = async () => {
   await connectDB();
