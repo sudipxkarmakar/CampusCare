@@ -122,8 +122,74 @@ const handleLeaveAction = async (req, res) => {
     }
 };
 
+// @desc    Get All Students of Department
+// @route   GET /api/hod/students
+// @access  Private/HOD
+const getDepartmentStudents = async (req, res) => {
+    try {
+        const { department } = req.user;
+
+        // Explicitly select only safe fields. 
+        // derived 'year' or 'batch' is usually stored in 'batch' or 'year'. 
+        // User schema has 'rollNumber', 'name', 'batch', 'email', 'section'.
+        // STRICTLY EXCLUDE PASSWORD
+        const students = await User.find({ role: 'student', department })
+            .select('rollNumber name batch year email section _id')
+            .sort({ rollNumber: 1 });
+
+        // Add status: 'Active' (Mock logic as requested)
+        const safeStudents = students.map(s => ({
+            _id: s._id,
+            rollNumber: s.rollNumber || 'N/A',
+            name: s.name,
+            batch: s.batch || s.year || 'N/A', // fallback
+            email: s.email,
+            status: 'Active' // Default per req
+        }));
+
+        res.json(safeStudents);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get All Teachers of Department
+// @route   GET /api/hod/teachers
+// @access  Private/HOD
+const getDepartmentTeachers = async (req, res) => {
+    try {
+        const { department } = req.user;
+
+        // Fetch teachers
+        // fields: Teacher ID (maybe employeeId or _id), Name, Subject/Expertise, Email, Designation
+        const teachers = await User.find({ role: 'teacher', department })
+            .select('employeeId name expertise specialization email designation _id')
+            .sort({ name: 1 });
+
+        const safeTeachers = teachers.map(t => ({
+            _id: t._id,
+            teacherId: t.employeeId || 'N/A',
+            name: t.name,
+            subjectExpertise: t.expertise && t.expertise.length > 0 ? t.expertise.join(', ') : (t.specialization || 'N/A'),
+            email: t.email,
+            designation: t.designation || 'Faculty'
+        }));
+
+        res.json(safeTeachers);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getHodDashboardStats,
     getPendingLeaves,
-    handleLeaveAction
+    handleLeaveAction,
+    getDepartmentStudents,
+    getDepartmentTeachers
 };
+
