@@ -25,9 +25,9 @@ const validateRoleData = (role, data) => {
         return null;
     }
 
-    if (role === 'teacher') {
+    if (role === 'teacher' || role === 'hod') {
         if (!employeeId || employeeId.length < 5) return 'Valid Employee ID is required.';
-        if (!department) return 'Department is required for Teachers.';
+        if (!department) return 'Department is required for Teachers/HODs.';
         return null; // Batch/Section not required
     }
 
@@ -100,7 +100,7 @@ export const registerUser = async (req, res) => {
         }
         // ...
         let idQuery;
-        if (role === 'teacher') {
+        if (role === 'teacher' || role === 'hod') {
             idQuery = { employeeId };
         } else {
             // Students & Hostelers: Roll Number is unique ONLY within the department
@@ -110,7 +110,7 @@ export const registerUser = async (req, res) => {
         const idExists = await User.findOne(idQuery);
 
         if (idExists) {
-            const idType = role === 'teacher' ? 'Employee ID' : 'Roll Number in this Department';
+            const idType = (role === 'teacher' || role === 'hod') ? 'Employee ID' : 'Roll Number in this Department';
             return res.status(400).json({ message: `${idType} already exists.` });
         }
 
@@ -136,7 +136,7 @@ export const registerUser = async (req, res) => {
             userData.batch = batch;
             userData.hostelName = hostelName;
             userData.roomNumber = roomNumber;
-        } else if (role === 'teacher') {
+        } else if (role === 'teacher' || role === 'hod') {
             userData.employeeId = employeeId;
             userData.designation = designation;
             userData.yearsExperience = yearsExperience;
