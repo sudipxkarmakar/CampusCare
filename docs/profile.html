@@ -420,12 +420,25 @@
                 <!-- JS Injected -->
             </div>
 
+            <!-- New Section: Activity Log (MAR/MOOCs) -->
+            <div class="section-header" style="margin-top: 3rem;">
+                <div class="section-icon"
+                    style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706;"><i
+                        class="fa-solid fa-award"></i></div>
+                <h2 class="section-title">Activity Log</h2>
+            </div>
+
+            <div id="activity-log-container" class="grid-container" style="grid-template-columns: 1fr;">
+                <!-- Activity Items will be injected here -->
+                <div style="text-align:center; color: var(--text-light);">Loading activities...</div>
+            </div>
+
 
         </div>
 
     </div>
 
-    <script src="assets/js/profile.js"></script>
+    <script src="assets/js/profile.js?v=1.2"></script>
     <script>
         // Simple element animation on load
         document.addEventListener('DOMContentLoaded', () => {
