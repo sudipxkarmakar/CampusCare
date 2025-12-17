@@ -106,87 +106,10 @@
                                 <th style="padding:15px; color:#475569; font-weight:600;">Action</th>
                             </tr>
                         </thead>
-                        <tbody style="font-size:0.95rem;">
-                            <!-- ROW 1: LOW / LAGGING -->
-                            <tr style="border-bottom:1px solid #f1f5f9; transition:0.2s;">
-                                <td style="padding:15px; font-weight:600; color:#334155;">CSE-001</td>
-                                <td style="padding:15px;">
-                                    <div style="font-weight:600; color:#2d3748;">Sudip Karmakar</div>
-                                    <div style="font-size:0.75rem; color:#64748b;">Batch 2025</div>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span style="font-weight:700; color:#dc2626;">65%</span>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span
-                                        style="background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">12/25
-                                        (Low)</span>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span
-                                        style="background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">5/20
-                                        (Low)</span>
-                                </td>
-                                <td style="padding:15px; text-align:center; font-weight:700; color:#0f172a;">6.5</td>
-                                <td style="padding:15px;">
-                                    <button
-                                        style="background:#8b5cf6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
-                                        onclick="alert('Opening Full Report for Sudip...')">View Full</button>
-                                </td>
-                            </tr>
-                            <!-- ROW 2: DONE / MET REQUIREMENTS -->
-                            <tr style="border-bottom:1px solid #f1f5f9;">
-                                <td style="padding:15px; font-weight:600; color:#334155;">CSE-005</td>
-                                <td style="padding:15px;">
-                                    <div style="font-weight:600; color:#2d3748;">Rahul Verma</div>
-                                    <div style="font-size:0.75rem; color:#64748b;">Batch 2025</div>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span style="font-weight:700; color:#166534;">88%</span>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span
-                                        style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">25/25
-                                        (Done)</span>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span
-                                        style="background:#dcfce7; color:#166534; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">20/20
-                                        (Done)</span>
-                                </td>
-                                <td style="padding:15px; text-align:center; font-weight:700; color:#0f172a;">8.2</td>
-                                <td style="padding:15px;">
-                                    <button
-                                        style="background:#8b5cf6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
-                                        onclick="alert('Opening Full Report for Rahul...')">View Full</button>
-                                </td>
-                            </tr>
-                            <!-- ROW 3: EXCELLENT / SURPASSED -->
-                            <tr style="border-bottom:1px solid #f1f5f9;">
-                                <td style="padding:15px; font-weight:600; color:#334155;">CSE-012</td>
-                                <td style="padding:15px;">
-                                    <div style="font-weight:600; color:#2d3748;">Anita Roy</div>
-                                    <div style="font-size:0.75rem; color:#64748b;">Batch 2025</div>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span style="font-weight:700; color:#166534;">95%</span>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span
-                                        style="background:#fef9c3; color:#854d0e; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">32/25
-                                        (Excellent)</span>
-                                </td>
-                                <td style="padding:15px; text-align:center;">
-                                    <span
-                                        style="background:#fef9c3; color:#854d0e; padding:4px 10px; border-radius:15px; font-size:0.8rem; font-weight:700;">25/20
-                                        (Excellent)</span>
-                                </td>
-                                <td style="padding:15px; text-align:center; font-weight:700; color:#0f172a;">9.5</td>
-                                <td style="padding:15px;">
-                                    <button
-                                        style="background:#8b5cf6; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
-                                        onclick="alert('Opening Full Report for Anita...')">View Full</button>
-                                </td>
+                        <tbody id="menteesTableBody" style="font-size:0.95rem;">
+                            <tr>
+                                <td colspan="7" style="text-align:center; padding:2rem; color:#64748b;">Loading
+                                    mentees...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -194,7 +117,9 @@
             </div>
         </section>
 
-        <!-- SCRIPT -->
+        <script src="../assets/js/landing.js"></script>
+        <script src="../assets/js/ai.js"></script>
+        <script src="../assets/js/teacher_mentees.js"></script>
         <script>
             function filterMentees() {
                 const input = document.getElementById("searchInput");

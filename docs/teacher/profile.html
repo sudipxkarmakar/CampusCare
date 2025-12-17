@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Teacher Profile — CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #3b82f6;
+            object-fit: cover;
+        }
+
+        .profile-info h2 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info p {
+            color: #64748b;
+            margin-bottom: 0.2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .list-container {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .list-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare
+        </a>
+
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <a href="index.html" style="text-decoration:none; color: #4b5563; font-weight: 600;">Dashboard</a>
+
+            <!-- USER PROFILE -->
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Loading...</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container" style="max-width: 1000px; margin-top: 2rem;">
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="https://ui-avatars.com/api/?name=Teacher&background=random" alt="Avatar"
+                    class="profile-avatar" id="profilePageAvatar">
+                <div class="profile-info">
+                    <h2 id="profileName">Loading Name...</h2>
+                    <p id="profileDesignation"><i class="fa-solid fa-briefcase"></i> Designation</p>
+                    <p id="profileDept"><i class="fa-solid fa-building"></i> Department</p>
+                    <p id="profileEmail"><i class="fa-solid fa-envelope"></i> email@example.com</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Joining Year</div>
+                    <div class="info-value" id="profileJoining">20XX</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Experience</div>
+                    <div class="info-value" id="profileExperience">X Years</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Specialization</div>
+                    <div class="info-value" id="profileSpecialization">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+            <!-- Subjects Taught -->
+            <div class="profile-card" style="margin-bottom: 0;">
+                <div class="section-title">
+                    <i class="fa-solid fa-book-open" style="color: #3b82f6;"></i> Subjects Taught
+                </div>
+                <div class="list-container" id="subjectsList">
+                    <p style="text-align:center; color:#64748b;">Loading subjects...</p>
+                </div>
+            </div>
+
+            <!-- Mentees List -->
+            <div class="profile-card" style="margin-bottom: 0;">
+                <div class="section-title">
+                    <i class="fa-solid fa-users-line" style="color: #10b981;"></i> Assigned Mentees
+                </div>
+                <div class="list-container">
+                    <div id="menteesSummary" style="margin-bottom: 1rem; font-weight: 500;">
+                        Total Mentees: <span id="menteeCount">0</span>
+                    </div>
+                    <a href="mentees.html" style="color: #3b82f6; text-decoration: none; font-weight: 600;">
+                        View Detailed List <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="section-title" style="margin-top: 2rem;">
+                    <i class="fa-solid fa-chalkboard-user" style="color: #f59e0b;"></i> Classes Handled
+                </div>
+                <div class="list-container" id="classesList">
+                    <p style="text-align:center; color:#64748b;">Loading classes...</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="profile-card" style="margin-top: 2rem;">
+            <div class="section-title">
+                <i class="fa-solid fa-calendar-check" style="color: #6366f1;"></i> Weekly Routine
+            </div>
+            <p style="color: #64748b; margin-bottom: 1rem;">View your full weekly academic schedule including lecture
+                halls and timings.</p>
+            <a href="routine.html"
+                style="background: #3b82f6; color: white; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                View Full Routine
+            </a>
+        </div>
+
+    </main>
+
+    <script src="../assets/js/api.js"></script>
+    <script>
+        // Inline script for now to fetch profile data
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '../../index.html';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(localStorage.getItem('user')); // Or fetch from /me
+                if (user) {
+                    document.getElementById('profileName').textContent = user.name;
+                    document.getElementById('userName').textContent = user.name;
+                    document.getElementById('profileEmail').textContent = user.email;
+                    document.getElementById('profileDesignation').textContent = user.designation || 'Assistant Professor';
+                    document.getElementById('profileDept').textContent = user.department || 'N/A';
+                    document.getElementById('profileJoining').textContent = user.joiningYear || 'N/A';
+                    document.getElementById('profileExperience').textContent = (user.yearsExperience || '0') + ' Years';
+                    document.getElementById('profileSpecialization').textContent = user.specialization || 'Not Specified';
+
+                    document.getElementById('profilePageAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random&size=128`;
+                    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
+                    document.getElementById('userProfile').style.display = 'flex';
+
+                    // Render Subjects
+                    const subjectsList = document.getElementById('subjectsList');
+                    if (user.teachingSubjects && user.teachingSubjects.length > 0) {
+                        subjectsList.innerHTML = user.teachingSubjects.map(sub => `
+                        <div class="list-item">
+                            <span style="font-weight:600;">${sub}</span>
+                        </div>
+                    `).join('');
+                    } else {
+                        subjectsList.innerHTML = '<p style="color:#64748b; text-align:center;">No subjects assigned yet.</p>';
+                    }
+
+                    // Render Classes
+                    const classesList = document.getElementById('classesList');
+                    if (user.teachingBatches && user.teachingBatches.length > 0) {
+                        classesList.innerHTML = user.teachingBatches.map(batch => `
+                        <div class="list-item">
+                            <span style="font-weight:600;">${batch}</span>
+                        </div>
+                    `).join('');
+                    } else {
+                        classesList.innerHTML = '<p style="color:#64748b; text-align:center;">No classes assigned yet.</p>';
+                    }
+
+                    // Render Mentees Count (Placeholder for now, requires API to fetch count)
+                    // For now, use menteesSubBatches length as proxy or 0
+                    // Real count should come from an API call
+                    if (user.mentees && user.mentees.length > 0) {
+                        document.getElementById('menteeCount').textContent = user.mentees.length;
+                    } else if (user.menteesSubBatches) {
+                        document.getElementById('menteeCount').textContent = user.menteesSubBatches.join(', ');
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../../index.html';
+        }
+    </script>
+</body>
+
+</html>

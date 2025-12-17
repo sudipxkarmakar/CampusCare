@@ -129,94 +129,53 @@
         <section class="standard-container" style="margin-bottom: 2rem;">
             <div
                 style="background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-
+                <h3 style="margin-bottom: 1rem; color: #2d3748;">Upload New Note</h3>
                 <form id="createNoteForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
 
                     <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="form-group">
-                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Topic /
-                                Title</label>
-                            <input type="text" id="noteTitle" placeholder="e.g., Quantum Physics Notes Unit 1" required
-                                style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%;">
-                        </div>
-                        <div class="form-group">
-                            <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Upload
-                                File</label>
-                            <input type="file" id="noteFile" accept="application/pdf" required
+                        <input type="text" id="noteTitle" placeholder="Topic / Title (e.g., Quantum Physics Unit 1)"
+                            required style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+
+                        <div style="position:relative;">
+                            <input type="file" id="noteFile"
+                                accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                required
                                 style="padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%;">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Description
-                            (Optional)</label>
-                        <textarea id="noteDesc" placeholder="Brief description of the content..." rows="3"
-                            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Poppins'; width: 100%;"></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem;">
+                        <select id="noteSubject" required
+                            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+                            <option value="">Select Subject</option>
+                        </select>
+
+                        <select id="noteDept" required
+                            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+                            <option value="">Select Department</option>
+                        </select>
+
+                        <select id="noteYear" required
+                            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+                            <option value="">Select Year</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+
+                        <select id="noteBatch" required
+                            style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; background:white;">
+                            <option value="">Select Batch</option>
+                        </select>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem;">
-                        <div class="form-group">
-                            <label
-                                style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Dept</label>
-                            <div class="custom-dropdown" id="deptDropdown">
-                                <div class="dropdown-selected">Select</div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="CSE">CSE</div>
-                                    <div class="dropdown-option" data-value="IT">IT</div>
-                                    <div class="dropdown-option" data-value="AIML">AIML</div>
-                                    <div class="dropdown-option" data-value="ECE">ECE</div>
-                                    <div class="dropdown-option" data-value="CIVIL">CIVIL</div>
-                                    <div class="dropdown-option" data-value="ME">ME</div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="noteDept" value="">
-                        </div>
-                        <div class="form-group">
-                            <label
-                                style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Year</label>
-                            <div class="custom-dropdown" id="yearDropdown">
-                                <div class="dropdown-selected">Select</div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="1st Year">1st Year</div>
-                                    <div class="dropdown-option" data-value="2nd Year">2nd Year</div>
-                                    <div class="dropdown-option" data-value="3rd Year">3rd Year</div>
-                                    <div class="dropdown-option" data-value="4th Year">4th Year</div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="noteYear" value="">
-                        </div>
-                        <div class="form-group">
-                            <label
-                                style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Batch</label>
-                            <div class="custom-dropdown" id="batchDropdown">
-                                <div class="dropdown-selected">Select</div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="1">Batch 1</div>
-                                    <div class="dropdown-option" data-value="2">Batch 2</div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="noteBatch" value="">
-                        </div>
-                        <div class="form-group" id="subBatchContainer" style="display:none;">
-                            <label
-                                style="display:block; margin-bottom: 5px; font-weight: 600; color: #4b5563;">Sub-Batch</label>
-                            <div class="custom-dropdown" id="subBatchDropdown">
-                                <div class="dropdown-selected">All</div>
-                                <div class="dropdown-options">
-                                    <div class="dropdown-option" data-value="">All</div>
-                                    <div class="dropdown-option" data-value="1-1">1-1</div>
-                                    <div class="dropdown-option" data-value="1-2">1-2</div>
-                                    <div class="dropdown-option" data-value="2-1">2-1</div>
-                                    <div class="dropdown-option" data-value="2-2">2-2</div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="noteSubBatch" value="">
-                        </div>
-                    </div>
+                    <textarea id="noteDesc" placeholder="Description (Optional)..." rows="3"
+                        style="padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Poppins';"></textarea>
 
                     <button type="submit" class="btn-login"
-                        style="padding: 1rem; background: #10b981; color: white; border: none; font-weight: 700; border-radius: 8px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <i class="fa-solid fa-share-from-square"></i> Upload & Share
+                        style="padding: 0.8rem 2rem; background: #10b981; color: white; border: none; font-weight: 600; align-self: flex-start;">
+                        <i class="fa-solid fa-share-from-square"></i> Upload & Share Result
                     </button>
                 </form>
             </div>

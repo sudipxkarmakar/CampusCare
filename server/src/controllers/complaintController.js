@@ -4,8 +4,10 @@ import { analyzeComplaint } from '../utils/aiService.js';
 
 // @desc    File a new complaint
 // @route   POST /api/complaints
+// @desc    File a new complaint
+// @route   POST /api/complaints
 export const fileComplaint = async (req, res) => {
-    const { title, description, studentId } = req.body;
+    const { title, description, studentId, againstUser } = req.body;
 
     try {
         // AI Processing
@@ -24,7 +26,8 @@ export const fileComplaint = async (req, res) => {
                     status: 'Submitted',
                     upvotes: 0,
                     createdAt: new Date(),
-                    student: studentId || 'mock_student'
+                    student: studentId || 'mock_student',
+                    againstUser: againstUser || null
                 },
                 aiNote: `Auto-classified as ${analysis.category} with ${analysis.priority} priority.`
             });
@@ -36,6 +39,7 @@ export const fileComplaint = async (req, res) => {
             student: studentId,
             category: analysis.category,
             priority: analysis.priority,
+            againstUser: againstUser || null
         });
 
         res.status(201).json({
@@ -115,23 +119,31 @@ export const upvoteComplaint = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-// @desc    Get complaints from mentees of the logged-in teacher
+// @desc    Get complaints relevant to the logged-in teacher (By Mentees OR Against Me)
 // @route   GET /api/complaints/mentees
 export const getMenteeComplaints = async (req, res) => {
     try {
-        // 1. Get Teacher and their mentees
-        // 1. Get Teacher and their mentees
-        const teacher = await User.findById(req.user._id);
+        const teacherId = req.user._id;
+        const teacher = await User.findById(teacherId);
 
-        if (!teacher || !teacher.mentees || teacher.mentees.length === 0) {
-            return res.json([]); // No mentees, no complaints
+        if (!teacher) {
+            return res.status(404).json({ message: 'Teacher not found' });
         }
 
-        // 2. Find complaints from these students
+        const menteeIds = teacher.mentees || [];
+
+        // Find complaints where:
+        // 1. student is in menteeIds (By Mentees)
+        // OR
+        // 2. againstUser is me (Against Me)
         const complaints = await Complaint.find({
-            student: { $in: teacher.mentees }
+            $or: [
+                { student: { $in: menteeIds } },
+                { againstUser: teacherId }
+            ]
         })
             .populate('student', 'name department roomNumber rollNumber')
+            .populate('againstUser', 'name designation')
             .sort({ createdAt: -1 });
 
         res.json(complaints);
@@ -143,7 +155,7 @@ export const getMenteeComplaints = async (req, res) => {
 // @desc    Update complaint status (Resolve/Escalate)
 // @route   PUT /api/complaints/:id/status
 export const updateComplaintStatus = async (req, res) => {
-    const { status } = req.body; // 'Resolved', 'Escalated', 'In Progress'
+    const { status } = req.body; // 'Resolved', 'In Progress'
 
     try {
         const complaint = await Complaint.findById(req.params.id);
@@ -152,15 +164,45 @@ export const updateComplaintStatus = async (req, res) => {
             return res.status(404).json({ message: 'Complaint not found' });
         }
 
-        // Optional: Check if teacher is actually the mentor (security)
-        // For now, simpler implementation assuming teacher has access
-
         complaint.status = status;
+        if (status === 'Resolved') {
+            complaint.resolvedBy = req.user._id;
+        }
         await complaint.save();
 
         res.json(complaint);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Uplift (Forward) a complaint
+// @route   PUT /api/complaints/:id/uplift
+export const upliftComplaint = async (req, res) => {
+    const { target } = req.body; // 'HOD', 'Warden', 'Principal'
+
+    if (!['HOD', 'Warden', 'Principal'].includes(target)) {
+        return res.status(400).json({ message: 'Invalid target for uplift' });
+    }
+
+    try {
+        const complaint = await Complaint.findById(req.params.id);
+
+        if (!complaint) {
+            return res.status(404).json({ message: 'Complaint not found' });
+        }
+
+        complaint.status = 'In Progress'; // Automatically set to in-progress if forwarded
+        complaint.isUplifted = true;
+        complaint.upliftedTo = target;
+
+        await complaint.save();
+
+        res.json(complaint);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error uplifting complaint' });
     }
 };

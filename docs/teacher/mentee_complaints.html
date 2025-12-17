@@ -66,65 +66,18 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
 
-            <!-- SECTION 1: REPORTS AGAINST MENTEE (Disciplinary) -->
+            <!-- SECTION 1: COMPLAINTS AGAINST ME -->
             <section class="standard-container" style="margin:0;">
-                <div
+                <div id="complaintsAgainstMeList"
                     style="background: rgba(255, 241, 242, 0.9); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid #fecdd3; padding: 1.5rem; box-shadow: 0 10px 30px rgba(190, 18, 60, 0.05);">
                     <h2 style="margin:0 0 1.5rem 0; color:#881337; font-size:1.4rem; display:flex; align-items:center;">
-                        <i class="fa-solid fa-user-xmark" style="margin-right:10px;"></i> Reports Against Mentees
+                        <i class="fa-solid fa-user-xmark" style="margin-right:10px;"></i> Complaints Against Me
                     </h2>
-
-                    <!-- Report Item 1 -->
-                    <div
-                        style="background:white; padding:1.2rem; border-radius:12px; margin-bottom:1rem; border-left:5px solid #e11d48; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div>
-                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Disruptive Behavior in
-                                    Lab</h3>
-                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
-                                    <strong>Student:</strong> Rahul Verma (CSE-005)<br>
-                                    <strong>Reported By:</strong> Prof. S. Gupta (Physics)
-                                </p>
-                            </div>
-                            <span
-                                style="background:#ffe4e6; color:#be123c; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Critical</span>
-                        </div>
-                        <div
-                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end;">
-                            <button onclick="alert('Student Counseled. Report Closed.')"
-                                style="background:#e11d48; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:5px;">
-                                <i class="fa-solid fa-check"></i> Mark Resolved (Counseled)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Report Item 2 -->
-                    <div
-                        style="background:white; padding:1.2rem; border-radius:12px; border-left:5px solid #f59e0b; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div>
-                                <h3 style="margin:0 0 5px 0; color:#1f2937; font-size:1.1rem;">Frequent Absenteeism</h3>
-                                <p style="margin:0; color:#4b5563; font-size:0.9rem;">
-                                    <strong>Student:</strong> Sudip Karmakar (CSE-001)<br>
-                                    <strong>Reported By:</strong> Attendance System (Auto)
-                                </p>
-                            </div>
-                            <span
-                                style="background:#fef3c7; color:#b45309; font-size:0.75rem; padding:3px 8px; border-radius:10px; font-weight:700;">Warning</span>
-                        </div>
-                        <div
-                            style="margin-top:1rem; padding-top:1rem; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end;">
-                            <button onclick="alert('Parent Called. Report Closed.')"
-                                style="background:#d97706; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:5px;">
-                                <i class="fa-solid fa-phone"></i> Resolved (Parent Informed)
-                            </button>
-                        </div>
-                    </div>
-
+                    <div style="text-align:center; color:#64748b; padding: 2rem;">Loading...</div>
                 </div>
             </section>
 
-            <!-- SECTION 2: GRIEVANCES BY MENTEE (Problems) -->
+            <!-- SECTION 2: ISSUES REPORTED BY MENTEES -->
             <section class="standard-container" style="margin:0;">
                 <div id="menteeComplaintsList"
                     style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.05);">
@@ -132,8 +85,7 @@
                         <i class="fa-solid fa-triangle-exclamation" style="margin-right:10px;"></i> Issues Reported by
                         Mentees
                     </h2>
-                    <!-- Dynamic Content Loaded Here -->
-                    <div style="text-align:center; color:#64748b; padding: 2rem;">Loading complaints...</div>
+                    <div style="text-align:center; color:#64748b; padding: 2rem;">Loading...</div>
                 </div>
             </section>
 
