@@ -80,7 +80,7 @@ export const registerUser = async (req, res) => {
     }
 
     try {
-        const { name, email, contactNumber, password, role, rollNumber, employeeId, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
+        const { name, email, contactNumber, password, role, rollNumber, employeeId, year, batch, section, department, bloodGroup, hostelName, roomNumber, designation, yearsExperience, joiningYear, specialization } = req.body;
 
         // 1. Email Domain Check - REMOVED
         // if (!isValidEmail(email)) {
@@ -127,10 +127,12 @@ export const registerUser = async (req, res) => {
 
         if (role === 'student') {
             userData.rollNumber = rollNumber;
+            userData.year = year;
             userData.batch = batch;
             userData.section = section;
         } else if (role === 'hosteler') {
             userData.rollNumber = rollNumber;
+            userData.year = year;
             userData.batch = batch;
             userData.hostelName = hostelName;
             userData.roomNumber = roomNumber;

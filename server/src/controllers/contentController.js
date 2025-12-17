@@ -34,7 +34,17 @@ export const createAssignment = async (req, res) => {
 // @access  Teacher
 export const createNote = async (req, res) => {
     try {
-        const { subject, topic, description, fileUrl, department, year, batch, subBatch } = req.body;
+        const { subject, topic, description, department, year, batch, subBatch } = req.body;
+
+        let fileUrl = '';
+        if (req.file) {
+            // Construct the file URL (assuming static serve enabled for 'docs')
+            // The file is saved in 'docs/uploads/assignments'
+            // We need to store a relative path accessible from the browser
+            // Since Multer saves to .../docs/uploads/assignments',
+            // And if we serve 'docs' statically, the path should be '/uploads/assignments/filename'
+            fileUrl = `/uploads/assignments/${req.file.filename}`;
+        }
 
         const note = await Note.create({
             subject,
@@ -85,19 +95,16 @@ export const createNotice = async (req, res) => {
 // @access  Student
 export const getMyContent = async (req, res) => {
     try {
-        const { department, year, batch, subBatch } = req.user;
+        const { department, year, batch, subBatch, section } = req.user;
 
         // Fetch Assignments
         // Logic: 
         // 1. Matches Dept AND Year
         // 2. Matches Batch (OR Batch is not set/all)
         // 3. Matches SubBatch (OR SubBatch is not set/all)
+        // 4. Matches Section (If user has one, and Assignment has one)
 
-        // Actually, simpler:
-        // Student is in Batch 1. They should see Batch 1 content.
-        // Student is in SubBatch 1-1. They should see SubBatch 1-1 content AND Batch 1 content.
-
-        const assignments = await Assignment.find({
+        let assignmentQuery = {
             department: department,
             year: year,
             $or: [
@@ -105,7 +112,24 @@ export const getMyContent = async (req, res) => {
                 { batch: batch, subBatch: null }, // Batch level
                 { batch: batch, subBatch: subBatch } // Specific Sub-batch
             ]
-        }).sort({ createdAt: -1 });
+        };
+
+        // Section Filtering (Assignments only)
+        if (section) {
+            assignmentQuery.$and = [
+                {
+                    $or: [
+                        { section: section },
+                        { section: { $exists: false } },
+                        { section: null }
+                    ]
+                }
+            ];
+        }
+
+        const assignments = await Assignment.find(assignmentQuery)
+            .sort({ createdAt: -1 })
+            .populate('teacher', 'name email');
 
         const notes = await Note.find({
             department: department,
@@ -115,7 +139,8 @@ export const getMyContent = async (req, res) => {
                 { batch: batch, subBatch: null },
                 { batch: batch, subBatch: subBatch }
             ]
-        }).sort({ createdAt: -1 });
+        }).sort({ createdAt: -1 })
+            .populate('uploadedBy', 'name email');
 
         // Notices: General OR (Dept matches, and optional granular matches)
         const notices = await Notice.find({
@@ -142,5 +167,49 @@ export const getMyContent = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error fetching content' });
+    }
+};
+
+// @desc    Get all notes created by the logged-in teacher
+// @route   GET /api/content/note/created
+// @access  Teacher
+export const getTeacherNotes = async (req, res) => {
+    try {
+        const notes = await Note.find({ uploadedBy: req.user._id })
+            .sort({ createdAt: -1 });
+
+        res.json(notes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error fetching notes' });
+    }
+
+};
+
+// @desc    Delete Note
+// @route   DELETE /api/content/note/:id
+// @access  Teacher
+export const deleteNote = async (req, res) => {
+    try {
+        const note = await Note.findById(req.params.id);
+
+        if (!note) {
+            return res.status(404).json({ message: 'Note not found' });
+        }
+
+        // Check user
+        if (note.uploadedBy.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'User not authorized' });
+        }
+
+        // Optional: Delete file from filesystem if needed (using fs.unlink)
+        // For now, just delete the DB record.
+
+        await note.deleteOne();
+
+        res.json({ message: 'Note removed' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error deleting note' });
     }
 };

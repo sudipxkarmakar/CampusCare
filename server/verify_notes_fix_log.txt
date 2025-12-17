@@ -1,0 +1,6 @@
+Starting Notes Test...
+MongoDB Connected
+Teacher: Prof. IT 1
+Fetching URL: http://localhost:5000/api/content/note/created
+Status: 200
+Error: Unexpected token '<', "<!DOCTYPE "... is not valid JSON

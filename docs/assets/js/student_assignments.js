@@ -1,5 +1,6 @@
-const ASSIGN_API_URL = 'http://localhost:5000/api/assignments';
+const CONTENT_API_URL = 'http://localhost:5000/api/content/my-content';
 let fetchedAssignments = [];
+let fetchedNotes = [];
 let currentAssignmentId = null;
 
 // Run immediately if DOM is ready, otherwise wait
@@ -20,30 +21,29 @@ async function loadAssignments() {
     }
 
     const user = JSON.parse(userStr);
-    const { department, batch, section, token } = user;
-
-    if (!department || !batch) {
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b;">Profile incomplete (Dept/Batch missing). Contact admin.</td></tr>';
-        return;
-    }
+    // Backend 'getMyContent' uses req.user, so we just need the token.
+    // We don't need to manually pass query params.
 
     try {
-        const query = `?dept=${department}&batch=${batch}${section ? `&section=${section}` : ''}`;
-        const response = await fetch(`${ASSIGN_API_URL}${query}`, {
+        const response = await fetch(CONTENT_API_URL, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${user.token}`
             }
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch assignments');
+            throw new Error('Failed to fetch content');
         }
 
-        const assignments = await response.json();
-        fetchedAssignments = assignments;
+        const data = await response.json();
 
-        const assignmentsList = assignments.filter(a => a.type !== 'note');
-        const notesList = assignments.filter(a => a.type === 'note');
+        // Data structure: { assignments: [], notes: [], notices: [] }
+        const assignmentsList = data.assignments || [];
+        const notesList = data.notes || [];
+
+        // Store globally for modal access
+        fetchedAssignments = assignmentsList;
+        fetchedNotes = notesList; // Store notes too if needed for modal logic differentiation
 
         // Render ASSIGNMENTS
         if (assignmentsList.length === 0) {
@@ -92,19 +92,20 @@ async function loadAssignments() {
             if (notesList.length === 0) {
                 notesTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #64748b;">No notes available.</td></tr>';
             } else {
-                notesTableBody.innerHTML = notesList.map((note) => {
-                    const teacherName = note.teacher ? note.teacher.name : 'Unknown';
-                    const originalIndex = fetchedAssignments.indexOf(note);
+                notesTableBody.innerHTML = notesList.map((note, index) => {
+                    // Note: Backend must populate 'uploadedBy'
+                    const teacherName = note.uploadedBy ? note.uploadedBy.name : 'Unknown';
+                    const title = note.topic || note.title || 'Untitled';
 
                     return `
                     <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
                         <td style="padding: 1rem; font-weight: 600; color: #2d3748;">
-                            ${note.title}
+                            ${title}
                         </td>
                         <td style="padding: 1rem; color: #64748b;">${note.subject}</td>
                         <td style="padding: 1rem; color: #64748b;">${teacherName}</td>
                         <td style="padding: 1rem;">
-                            <button onclick="viewAssignment(${originalIndex})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #6366f1; color:white; border:none; border-radius:6px; cursor:pointer;">
+                            <button onclick="viewNote(${index})" class="btn-login" style="padding: 5px 15px; font-size: 0.8rem; background: #6366f1; color:white; border:none; border-radius:6px; cursor:pointer;">
                                 <i class="fa-solid fa-book-open"></i> Read Note
                             </button>
                         </td>
@@ -157,22 +158,53 @@ function viewAssignment(index) {
     const submissionSection = document.getElementById('submissionSection');
     const submissionInput = document.getElementById('submissionFile');
 
-    // If TYPE is NOTE, hide submission entirely
-    if (assignment.type === 'note') {
-        submissionSection.style.display = 'none';
+    submissionSection.style.display = 'block';
+    if (assignment.submitted) {
+        submissionForm.style.display = 'none';
+        submissionStatus.style.display = 'block';
     } else {
-        submissionSection.style.display = 'block';
-        if (assignment.submitted) {
-            submissionForm.style.display = 'none';
-            submissionStatus.style.display = 'block';
-        } else {
-            submissionForm.style.display = 'block';
-            submissionStatus.style.display = 'none';
-            if (submissionInput) submissionInput.value = ''; // Clear previous input
-        }
+        submissionForm.style.display = 'block';
+        submissionStatus.style.display = 'none';
+        if (submissionInput) submissionInput.value = ''; // Clear previous input
     }
 
     // Show Modal
+    toggleModal('assignment-modal');
+}
+
+function viewNote(index) {
+    const note = fetchedNotes[index];
+    if (!note) return;
+
+    // Use same modal but adapt fields
+    document.getElementById('modalTitle').innerText = note.topic || note.title;
+    document.getElementById('modalSubject').innerText = note.subject;
+    document.getElementById('modalTeacher').innerText = 'By: ' + (note.uploadedBy ? note.uploadedBy.name : 'Unknown');
+    document.getElementById('modalDeadline').innerText = 'Resource'; // No deadline for notes
+
+    document.getElementById('modalDescription').innerText = note.description || 'No description.';
+
+    const linkContainer = document.getElementById('modalLinkContainer');
+    const linkBtn = document.getElementById('modalLink');
+    const noteLink = note.fileUrl || note.link;
+
+    if (noteLink && noteLink.trim() !== "") {
+        let href = noteLink;
+        if (href.startsWith('/')) {
+            href = 'http://localhost:5000' + href;
+        }
+
+        linkContainer.style.display = 'block';
+        linkBtn.href = href;
+        linkBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Download Note';
+    } else {
+        linkContainer.style.display = 'none';
+    }
+
+    // Hide Submission Section for Notes
+    const submissionSection = document.getElementById('submissionSection');
+    if (submissionSection) submissionSection.style.display = 'none';
+
     toggleModal('assignment-modal');
 }
 
