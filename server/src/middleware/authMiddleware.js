@@ -50,3 +50,19 @@ export const teacher = (req, res, next) => {
         res.status(401).json({ message: 'Not authorized as Teacher' });
     }
 };
+
+export const warden = (req, res, next) => {
+    if (req.user && (req.user.role === 'warden' || req.user.role === 'admin')) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Not authorized as Warden' });
+    }
+};
+
+export const principal = (req, res, next) => {
+    if (req.user && (req.user.role === 'principal' || req.user.role === 'admin')) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Not authorized as Principal' });
+    }
+};

@@ -25,6 +25,9 @@ import contentRoutes from './routes/contentRoutes.js';
 import deanRoutes from './routes/deanRoutes.js';
 import marMoocRoutes from './routes/marMoocRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
+import hodRoutes from './routes/hodRoutes.js';
+import wardenRoutes from './routes/wardenRoutes.js';
+import principalRoutes from './routes/principalRoutes.js';
 
 // ... imports
 
@@ -60,6 +63,9 @@ const startServer = async () => {
   app.use('/api/subjects', subjectRoutes);
   app.use('/api/routine', routineRoutes);
   app.use('/api/content', contentRoutes);
+  app.use('/api/hod', hodRoutes);
+  app.use('/api/warden', wardenRoutes);
+  app.use('/api/principal', principalRoutes);
 
   // Serve static assets from 'docs' (formerly client)
   // The docs folder is one level up from server/src (server/../docs -> ../../docs)

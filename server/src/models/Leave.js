@@ -25,11 +25,30 @@ const leaveSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending',
+        enum: ['Pending HOD Approval', 'Approved by HOD', 'Rejected by HOD', 'Approved by Warden', 'Rejected by Warden'],
+        default: 'Pending HOD Approval',
+    },
+    // HOD Action
+    hodActionBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    hodActionDate: {
+        type: Date
+    },
+    hodRemark: {
+        type: String
+    },
+    // Warden Action
+    wardenActionBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    wardenActionDate: {
+        type: Date
     },
     wardenRemark: {
-        type: String,
+        type: String
     }
 }, { timestamps: true });
 
