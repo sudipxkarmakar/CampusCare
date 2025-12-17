@@ -116,11 +116,11 @@
 
         .avatar-wrapper {
             position: relative;
-            width: 180px;
-            /* 160 -> 180 */
-            height: 180px;
-            /* 160 -> 180 */
-            margin: 1.5rem auto;
+            width: 220px;
+            /* 180 -> 220 */
+            height: 220px;
+            /* 180 -> 220 */
+            margin: 2rem auto;
             z-index: 1;
         }
 
@@ -129,7 +129,8 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid white;
+            border: 6px solid white;
+            /* Thicker border */
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
         }
@@ -140,10 +141,11 @@
 
         .edit-btn {
             position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 42px;
-            height: 42px;
+            bottom: 10px;
+            right: 10px;
+            width: 48px;
+            /* Larger button */
+            height: 48px;
             background: #fff;
             color: var(--primary);
             border-radius: 50%;
@@ -154,7 +156,7 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transition: all 0.2s;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         .edit-btn:hover {
@@ -164,9 +166,11 @@
         }
 
         .user-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0.5rem 0;
+            font-size: 2.2rem;
+            /* Larger Name */
+            font-weight: 800;
+            /* Extra Bold */
+            margin: 0.8rem 0;
             color: var(--text-main);
             position: relative;
             z-index: 1;
@@ -174,13 +178,13 @@
 
         .role-badge {
             display: inline-block;
-            padding: 6px 16px;
+            padding: 8px 20px;
             border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             position: relative;
             z-index: 1;
         }
@@ -189,30 +193,30 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 15px;
-            /* Increased gap */
+            gap: 18px;
             color: var(--text-main);
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 14px;
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            padding: 16px 20px;
+            /* Larger padding */
+            background: rgba(255, 255, 255, 0.5);
+            /* Slightly more opaque */
+            border-radius: 16px;
             transition: background 0.2s;
             text-align: left;
         }
 
         .info-row:hover {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
         }
 
         .info-row i {
             color: var(--primary);
-            min-width: 24px;
-            /* Fixed width for perfect alignment */
+            min-width: 28px;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
+            /* Larger Icon */
             display: flex;
-            /* Flex center for icon */
             align-items: center;
             justify-content: center;
         }
@@ -223,17 +227,20 @@
             line-height: 1.4;
             display: flex;
             flex-direction: column;
-            /* Stack Label and Value */
+            font-weight: 700;
+            /* Bolder Value */
+            color: #1e293b;
         }
 
         .info-row strong {
-            color: var(--text-main);
+            color: #64748b;
             font-weight: 600;
+            /* Bolder Label */
             display: block;
             font-size: 0.8rem;
-            color: var(--text-light);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
+            margin-bottom: 2px;
         }
 
         /* Right Column: Content */
@@ -268,9 +275,16 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            /* Wider default cards */
             gap: 1.5rem;
-            margin-bottom: 3rem;
+            margin-bottom: 0;
+        }
+
+        /* Activity Log Specifics */
+        #activity-log-container .detail-card {
+            /* Make list items look good in narrow column */
+            padding: 1.2rem;
         }
 
         .detail-card {
@@ -282,7 +296,6 @@
             position: relative;
             overflow: hidden;
             display: flex;
-            /* Horizontal layout for icon + text */
             align-items: center;
             gap: 15px;
         }
@@ -293,7 +306,6 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            /* Bottom border highlight */
             height: 4px;
             background: var(--primary);
             opacity: 0;
@@ -304,6 +316,8 @@
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            /* Fix for hover opacity if set elsewhere */
         }
 
         .detail-card:hover::after {
@@ -321,26 +335,49 @@
             font-size: 1.4rem;
             color: var(--primary);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            min-width: 50px;
+            /* Prevent shrink */
         }
 
         .detail-content {
             flex: 1;
+            min-width: 0;
+            /* Text truncation fix */
         }
 
         .detail-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            /* Slightly larger */
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: #94a3b8;
+            color: #64748b;
+            /* Keep muted but readable */
             margin-bottom: 6px;
             display: block;
+            font-weight: 600;
+            /* Bolder label */
         }
 
         .detail-value {
-            font-size: 1.05rem;
-            color: #1e293b;
-            font-weight: 600;
+            font-size: 1.2rem;
+            /* Larger value */
+            color: #0f172a;
+            /* Darker black */
+            font-weight: 800;
+            /* Extra Bold */
             word-wrap: break-word;
+        }
+
+        /* Final 2-Column Layout */
+        .profile-page-container {
+            max-width: 1350px;
+            /* Much wider container */
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Two Equal Columns */
+            gap: 2.5rem;
+            align-items: start;
         }
 
         @media (max-width: 900px) {
@@ -359,20 +396,6 @@
                 height: 100px;
             }
         }
-
-        /* Loading Spinner */
-        #loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2rem 4rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            z-index: 1000;
-        }
     </style>
 </head>
 
@@ -390,7 +413,7 @@
 
     <div class="profile-page-container" id="profileContent" style="display: none; animation: fadeIn 0.6s ease-out;">
 
-        <!-- Left: Identity Panel -->
+        <!-- 1. Identity Panel -->
         <div class="glass-panel identity-card">
             <div class="avatar-wrapper">
                 <img id="p-avatar" src="" alt="Profile" class="profile-avatar">
@@ -410,7 +433,7 @@
             </div>
         </div>
 
-        <!-- Right: Details Panel -->
+        <!-- 2. Academic Details Panel -->
         <div class="glass-panel">
             <div class="section-header">
                 <div class="section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -419,26 +442,13 @@
             <div class="grid-container" id="academic-grid">
                 <!-- JS Injected -->
             </div>
-
-            <!-- New Section: Activity Log (MAR/MOOCs) -->
-            <div class="section-header" style="margin-top: 3rem;">
-                <div class="section-icon"
-                    style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706;"><i
-                        class="fa-solid fa-award"></i></div>
-                <h2 class="section-title">Activity Log</h2>
-            </div>
-
-            <div id="activity-log-container" class="grid-container" style="grid-template-columns: 1fr;">
-                <!-- Activity Items will be injected here -->
-                <div style="text-align:center; color: var(--text-light);">Loading activities...</div>
-            </div>
-
-
         </div>
+
+
 
     </div>
 
-    <script src="assets/js/profile.js?v=1.2"></script>
+    <script src="assets/js/profile.js?v=1.4"></script>
     <script>
         // Simple element animation on load
         document.addEventListener('DOMContentLoaded', () => {
