@@ -81,15 +81,24 @@
                 </div>
             </div>
 
-            <!-- Filters -->
-            <div class="filter-container" style="display:flex; gap:10px; margin-bottom:1.5rem; flex-wrap:wrap;">
-                <button class="filter-btn active" onclick="filterNotices('all', this)">All</button>
-                <button class="filter-btn" onclick="filterNotices('hosteler', this)">Hostelers</button>
-                <button class="filter-btn" onclick="filterNotices('general', this)">General</button>
+            <!-- Filter Tabs (Pill Style) -->
+            <div
+                style="background: white; padding: 8px 15px; border-radius: 50px; margin: 0 auto 1.5rem auto; display: flex; gap: 10px; overflow-x: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.05); width: fit-content; align-items: center;">
+                <button class="filter-btn active" onclick="filterNotices('all', this)"
+                    style="padding: 8px 16px; border: none; background: #3b82f6; color: white; border-radius: 20px; cursor: pointer; font-weight: 600; white-space: nowrap;">All</button>
+                <button class="filter-btn" onclick="filterNotices('hosteler', this)"
+                    style="padding: 8px 16px; border: none; background: transparent; color: #64748b; border-radius: 20px; cursor: pointer; font-weight: 600; white-space: nowrap;">Hostelers</button>
+                <button class="filter-btn" onclick="filterNotices('student', this)"
+                    style="padding: 8px 16px; border: none; background: transparent; color: #64748b; border-radius: 20px; cursor: pointer; font-weight: 600; white-space: nowrap;">Students</button>
+                <button class="filter-btn" onclick="filterNotices('teacher', this)"
+                    style="padding: 8px 16px; border: none; background: transparent; color: #64748b; border-radius: 20px; cursor: pointer; font-weight: 600; white-space: nowrap;">Teachers</button>
+                <button class="filter-btn" onclick="filterNotices('general', this)"
+                    style="padding: 8px 16px; border: none; background: transparent; color: #64748b; border-radius: 20px; cursor: pointer; font-weight: 600; white-space: nowrap;">General</button>
             </div>
 
-            <!-- Notices List -->
-            <div id="notices-list" style="display:flex; flex-direction:column; gap:15px;">
+            <!-- Notices List (Glassmorphism & New Card Style) -->
+            <div id="notices-list" class="notice-wrapper"
+                style="background: rgba(255, 255, 255, 0.65); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 30px rgba(31, 38, 135, 0.05); padding: 2rem; display: flex; flex-direction: column; gap: 15px;">
                 <!-- Notices will be loaded here -->
                 <p style="text-align:center; color:#718096;">
                     <i class="fa-solid fa-circle-notch fa-spin"></i> Loading notices...
