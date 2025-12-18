@@ -46,6 +46,7 @@ async function loadMessMenu() {
                 <td>${m.day}</td>
                 <td>${m.breakfast}</td>
                 <td>${m.lunch}</td>
+                <td>${m.snacks}</td>
                 <td>${m.dinner}</td>
             </tr>
         `).join('');
