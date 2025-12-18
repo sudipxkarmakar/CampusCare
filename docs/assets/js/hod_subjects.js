@@ -416,6 +416,62 @@ const subjectDataMap = {
     "2029": { semesters: [1, 2] }
 };
 
+// --- SUBJECT CATALOG FOR AUTO-FILL ---
+const SUBJECT_CATALOG = [
+    { name: "Internet Technology", code: "IT701" },
+    { name: "Cyber Security", code: "CS702" },
+    { name: "Soft Skills", code: "HU701" },
+    { name: "Project Management & Entrepreneurship", code: "HU702" },
+    { name: "Cryptography", code: "CS801" },
+    { name: "Network Security", code: "CS802" },
+    { name: "Internet of Things", code: "CS803" },
+    { name: "Software Engineering", code: "CS501" },
+    { name: "Compiler Design", code: "CS502" },
+    { name: "Operating Systems", code: "CS503" },
+    { name: "Introduction to Industrial Management", code: "HU501" },
+    { name: "Artificial Intelligence", code: "CS504" },
+    { name: "Database Management System", code: "CS601" },
+    { name: "Computer Networks", code: "CS602" },
+    { name: "Distributed System", code: "CS603" },
+    { name: "Data Warehouse & Data Mining", code: "CS604" },
+    { name: "Analog & Digital Electronics", code: "CS301" },
+    { name: "Data Structures & Algorithms", code: "CS302" },
+    { name: "Computer Organization", code: "CS303" },
+    { name: "Differential Calculus", code: "BS301" },
+    { name: "Economics for Engineers", code: "HU301" },
+    { name: "Discrete Mathematics", code: "M401" },
+    { name: "Computer Architecture", code: "CS401" },
+    { name: "Formal Languages & Automata Theory", code: "CS402" },
+    { name: "Design & Analysis of Algorithms", code: "CS403" },
+    { name: "Biology for Engineers", code: "BS401" },
+    { name: "Environmental Science", code: "HU401" },
+    { name: "Physics for Engineers", code: "PH101" },
+    { name: "Chemistry for Engineers", code: "CH101" },
+    { name: "Mathematics for Engineers", code: "M101" },
+    { name: "Calculus & Integration", code: "M201" },
+    { name: "Basic Electrical Engineering", code: "EE201" }
+];
+
+function populateSubjectDatalist() {
+    const datalist = document.getElementById('subjectOptions');
+    if (!datalist) return;
+    datalist.innerHTML = '';
+    SUBJECT_CATALOG.forEach(sub => {
+        const option = document.createElement('option');
+        option.value = sub.name;
+        datalist.appendChild(option);
+    });
+}
+
+function handleSubjectNameInput(input) {
+    const val = input.value;
+    const match = SUBJECT_CATALOG.find(s => s.name.toLowerCase() === val.toLowerCase());
+    if (match) {
+        document.getElementById('manualCode').value = match.code;
+    }
+}
+
+
 // --- MODAL FUNCTIONS (Legacy wrap for Add Subject) ---
 
 function openAddSubjectModal() {
@@ -427,6 +483,7 @@ function openAddSubjectModal() {
     const modalYearSelect = document.getElementById('modalAcademicYear');
     modalYearSelect.value = year;
     handleModalYearChange();
+    populateSubjectDatalist(); // Populate choices
     document.getElementById('addSubjectModal').style.display = 'block';
 }
 
@@ -579,4 +636,5 @@ window.unassignTeacher = unassignTeacher;
 window.openTeacherExpertiseModalForSubject = openTeacherExpertiseModalForSubject;
 window.openAddSubjectModal = openAddSubjectModal;
 window.handleAddSubject = handleAddSubject;
+window.handleSubjectNameInput = handleSubjectNameInput;
 window.handleAssignTeacher = (e) => { e.preventDefault(); /* Legacy/stub if needed or actual function? Logic seems embedded in modal */ };

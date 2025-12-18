@@ -247,7 +247,8 @@
                     <label style="font-weight: 500; font-size: 0.9rem; color: #4a5568;">Subject Details</label>
                     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
                         <input type="text" id="manualName" name="name" placeholder="Subject Name" class="filter-select"
-                            required>
+                            required list="subjectOptions" autocomplete="off" oninput="handleSubjectNameInput(this)">
+                        <datalist id="subjectOptions"></datalist>
                         <input type="text" id="manualCode" name="code" placeholder="Code (e.g. CS901)"
                             class="filter-select" required>
                     </div>

@@ -42,28 +42,48 @@
                     </select>
                 </div>
 
-                <div class="batches-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem;">
-                    <!-- Batch 1 Column -->
+                <div class="batches-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem;">
+                    <!-- Batch 1-1 -->
                     <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
                         <h4
-                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem;">
-                            Batch 1
+                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem; text-align:center;">
+                            Batch 1-1
                         </h4>
-                        <div id="batch1List" class="student-list">
-                            <div style="text-align:center; color:#94a3b8; padding:2rem;">Select a Year to load students
-                            </div>
+                        <div id="batch11List" class="student-list" style="min-height:200px;">
+                            <div style="text-align:center; color:#94a3b8; font-size:0.8rem;">Loading...</div>
                         </div>
                     </div>
 
-                    <!-- Batch 2 Column -->
+                    <!-- Batch 1-2 -->
                     <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
                         <h4
-                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem;">
-                            Batch 2
+                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem; text-align:center;">
+                            Batch 1-2
                         </h4>
-                        <div id="batch2List" class="student-list">
-                            <div style="text-align:center; color:#94a3b8; padding:2rem;">Select a Year to load students
-                            </div>
+                        <div id="batch12List" class="student-list" style="min-height:200px;">
+                            <div style="text-align:center; color:#94a3b8; font-size:0.8rem;">Loading...</div>
+                        </div>
+                    </div>
+
+                    <!-- Batch 2-1 -->
+                    <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
+                        <h4
+                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem; text-align:center;">
+                            Batch 2-1
+                        </h4>
+                        <div id="batch21List" class="student-list" style="min-height:200px;">
+                            <div style="text-align:center; color:#94a3b8; font-size:0.8rem;">Loading...</div>
+                        </div>
+                    </div>
+
+                    <!-- Batch 2-2 -->
+                    <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
+                        <h4
+                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem; text-align:center;">
+                            Batch 2-2
+                        </h4>
+                        <div id="batch22List" class="student-list" style="min-height:200px;">
+                            <div style="text-align:center; color:#94a3b8; font-size:0.8rem;">Loading...</div>
                         </div>
                     </div>
                 </div>
@@ -72,7 +92,7 @@
 
         <!-- Teacher Selection Modal -->
         <div id="assignMentorModal" class="modal">
-            <div class="modal-content" style="max-width:500px;">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="assignModalTitle">Assign Mentor</h2>
                     <span class="close-modal-btn"
@@ -90,7 +110,7 @@
             </div>
         </div>
 
-        <script src="../assets/js/hod_mentors.js"></script>
+        <script src="../assets/js/hod_mentors.js?v=2"></script>
     </main>
 </body>
 

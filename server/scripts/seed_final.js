@@ -69,52 +69,114 @@ const seedFinal = async () => {
         }
 
         // 3. Teachers (24)
-        // 4 per department for 6 departments
+        // 3. Teachers (8 Total - All IT)
+        const SUBJECT_CATALOG = [
+            "Internet Technology", "Cyber Security", "Soft Skills", "Project Management & Entrepreneurship",
+            "Cryptography", "Network Security", "Internet of Things",
+            "Software Engineering", "Compiler Design", "Operating Systems", "Introduction to Industrial Management", "Artificial Intelligence",
+            "Database Management System", "Computer Networks", "Distributed System", "Data Warehouse & Data Mining",
+            "Analog & Digital Electronics", "Data Structures & Algorithms", "Computer Organization", "Differential Calculus", "Economics for Engineers",
+            "Discrete Mathematics", "Computer Architecture", "Formal Languages & Automata Theory", "Design & Analysis of Algorithms", "Biology for Engineers", "Environmental Science",
+            "Physics for Engineers", "Chemistry for Engineers", "Mathematics for Engineers",
+            "Calculus & Integration", "Basic Electrical Engineering"
+        ];
+
+        // Create specific expertise distribution to ensure 2x coverage
+        // We have 8 teachers. 32 subjects x 2 = 64 slots. 8 slots per teacher.
+        let expertiseDeck = [...SUBJECT_CATALOG, ...SUBJECT_CATALOG];
+
+        // Shuffle deck
+        for (let i = expertiseDeck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [expertiseDeck[i], expertiseDeck[j]] = [expertiseDeck[j], expertiseDeck[i]];
+        }
+
         const teachers = [];
-        let tCount = 1;
-        for (const dept of DEPARTMENTS) {
-            for (let i = 1; i <= 4; i++) {
-                const teacher = await User.create({
-                    name: `Prof. ${dept} ${i}`,
-                    email: `prof.${dept.toLowerCase()}${i}@campuscare.com`,
-                    password: "password123",
-                    role: "teacher",
-                    employeeId: `EMP-FAC-${String(tCount++).padStart(3, '0')}`,
-                    department: dept,
-                    designation: "Assistant Professor",
-                    menteesSubBatches: []
-                });
-                teachers.push(teacher);
+        for (let i = 1; i <= 8; i++) {
+            // Take 8 subjects for this teacher
+            const teacherExpertise = expertiseDeck.splice(0, 8);
+
+            // Fallback if deck runs out (unlikely with exact math, but good safety)
+            if (teacherExpertise.length < 5) {
+                teacherExpertise.push(...SUBJECT_CATALOG.slice(0, 5 - teacherExpertise.length));
             }
+
+            const teacher = await User.create({
+                name: `Prof. IT Faculty ${i}`,
+                email: `prof.it${i}@campuscare.com`,
+                password: "password123",
+                role: "teacher",
+                employeeId: `EMP-IT-${String(i).padStart(3, '0')}`,
+                department: "IT",
+                designation: "Assistant Professor",
+                menteesSubBatches: [], // Will be assigned
+                expertise: teacherExpertise
+            });
+            teachers.push(teacher);
         }
 
         // 4. Students (1200)
         // 300 per year. 50 per department per year (6 depts).
+        // 4. Students (400 Total - 100 per year)
+        // Strict Rules:
+        // Dept: IT (All)
+        // Years: 4th, 3rd, 2nd, 1st
+        // Batch 1: 1-50 (SubBatch 11: 1-25, SubBatch 12: 26-50)
+        // Batch 2: 51-100 (SubBatch 21: 51-75, SubBatch 22: 76-100)
+        // Hostelers: Last 5 of each sub-batch (21-25, 46-50, 71-75, 96-100)
+
         const students = [];
-        let rollCounter = 1000;
+        let globalRollCounter = 1001; // Started at 1001 as per request
 
-        for (const year of YEARS) {
-            for (const dept of DEPARTMENTS) {
-                // 50 students per Dept/Year combo
-                for (let i = 1; i <= 50; i++) {
-                    const batch = i <= 25 ? '1' : '2';
-                    const subBatch = i <= 25 ? (i <= 12 ? '1-1' : '1-2') : (i <= 37 ? '2-1' : '2-2');
+        // Order mapping for clean roll numbers if needed, assuming 4th year starts at 1
+        const YEAR_ORDER = ['4th Year', '3rd Year', '2nd Year', '1st Year'];
 
-                    students.push({
-                        name: getRandomName(),
-                        email: `student${rollCounter}@campuscare.com`, // Unique email
-                        password: "password123",
-                        role: "student",
-                        department: dept,
-                        year: year,
-                        batch: batch,
-                        subBatch: subBatch, // Important for logic
-                        rollNumber: rollCounter.toString(),
-                        hostelName: Math.random() > 0.7 ? "Boys Hostel A" : null, // 30% hostelers
-                        roomNumber: Math.random() > 0.7 ? "101" : null
-                    });
-                    rollCounter++;
+        for (const year of YEAR_ORDER) {
+            console.log(`... Preparing ${year} (IT Only)`);
+
+            for (let i = 1; i <= 100; i++) {
+                // Determine Batch & SubBatch
+                let batch = '';
+                let subBatch = '';
+                let isHosteler = false;
+
+                if (i <= 25) {
+                    batch = 'Batch 1';
+                    subBatch = 'Batch 11';
+                    if (i > 20) isHosteler = true; // 21-25
+                } else if (i <= 50) {
+                    batch = 'Batch 1';
+                    subBatch = 'Batch 12';
+                    if (i > 45) isHosteler = true; // 46-50
+                } else if (i <= 75) {
+                    batch = 'Batch 2';
+                    subBatch = 'Batch 21';
+                    if (i > 70) isHosteler = true; // 71-75
+                } else { // 76-100
+                    batch = 'Batch 2';
+                    subBatch = 'Batch 22';
+                    if (i > 95) isHosteler = true; // 96-100
                 }
+
+                const role = isHosteler ? 'hosteler' : 'student';
+
+                students.push({
+                    name: getRandomName(),
+                    email: `studentIT${globalRollCounter}@campuscare.com`,
+                    password: "password123",
+                    role: role,
+                    department: "IT", // STRICTLY IT
+                    year: year,
+                    batch: batch,
+                    subBatch: subBatch,
+                    rollNumber: globalRollCounter.toString(),
+
+                    // Hosteler Details
+                    hostelName: isHosteler ? "Boys Hostel A" : undefined,
+                    roomNumber: isHosteler ? "101" : undefined
+                });
+
+                globalRollCounter++;
             }
         }
 

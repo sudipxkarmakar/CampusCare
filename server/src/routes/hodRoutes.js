@@ -10,7 +10,8 @@ import {
     getRoutine,
     assignMentor,
     assignSubjectTeacher,
-    unassignSubjectTeacher
+    unassignSubjectTeacher,
+    assignBatchMentor
 } from '../controllers/hodController.js';
 
 const router = express.Router();
@@ -25,5 +26,6 @@ router.get('/routine', protect, hod, getRoutine);
 router.post('/students/assign-mentor', protect, hod, assignMentor);
 router.post('/subjects/:id/assign', protect, hod, assignSubjectTeacher);
 router.post('/subjects/:id/unassign', protect, hod, unassignSubjectTeacher);
+router.post('/batches/assign-mentor', protect, hod, assignBatchMentor);
 
 export default router;

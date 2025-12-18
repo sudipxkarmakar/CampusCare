@@ -764,6 +764,82 @@ footer {
 .delete-btn-hover:hover {
     background-color: #fee2e2 !important;
     border-radius: 50%;
-    transform: scale(1.1);
     transition: all 0.2s ease;
+}
+
+/* --- MODAL UTILITY (Added for Popups) --- */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+    backdrop-filter: blur(5px);
+    /* Flexbox centering for strict control */
+    display: none;
+    /* Override below with JS block */
+    /* proper display is set by JS (block/flex) */
+}
+
+/* When active, we want flex to center */
+.modal[style*="display: block"] {
+    display: flex !important;
+    align-items: flex-start;
+    /* Top alignment */
+    justify-content: center;
+    /* Center horizontal */
+    padding-top: 100px;
+    /* Offset from top (Middle Top) */
+}
+
+.modal-content {
+    background-color: #ffffff;
+    /* margin: 5% auto; Removed in favor of flex parent */
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-modal-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal-btn:hover,
+.close-modal-btn:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }

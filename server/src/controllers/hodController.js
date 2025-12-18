@@ -132,26 +132,32 @@ const getDepartmentStudents = async (req, res) => {
     try {
         const { department } = req.user;
 
-        // Explicitly select only safe fields. 
-        // derived 'year' or 'batch' is usually stored in 'batch' or 'year'. 
-        // User schema has 'rollNumber', 'name', 'batch', 'email', 'section'.
-        // STRICTLY EXCLUDE PASSWORD
-        const students = await User.find({ role: 'student', department })
-            .select('rollNumber name batch year email section _id')
+        // Fetch both 'student' and 'hosteler' roles
+        const students = await User.find({
+            role: { $in: ['student', 'hosteler'] },
+            department
+        })
+            .select('rollNumber name batch subBatch year passOutYear email section _id mentor role')
+            .populate('mentor', 'name')
             .sort({ rollNumber: 1 });
 
-        // Add status: 'Active' (Mock logic as requested)
         const safeStudents = students.map(s => ({
             _id: s._id,
             rollNumber: s.rollNumber || 'N/A',
             name: s.name,
-            batch: s.batch || s.year || 'N/A', // fallback
+            batch: s.batch || 'N/A',
+            subBatch: s.subBatch,
+            year: s.year,                // Required for filtering
+            passOutYear: s.passOutYear,  // Required for filtering
             email: s.email,
-            status: 'Active' // Default per req
+            mentorName: s.mentor ? s.mentor.name : null,
+            status: 'Active', // Default per req
+            role: s.role // useful for debugging
         }));
 
-        res.json(safeStudents);
+        // console.log("DEBUG STUDENT RESPONSE:", JSON.stringify(safeStudents.find(s => s.mentorName), null, 2));
 
+        res.json(safeStudents);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
@@ -175,7 +181,8 @@ const getDepartmentTeachers = async (req, res) => {
             _id: t._id,
             teacherId: t.employeeId || 'N/A',
             name: t.name,
-            expertise: t.expertise || [], // Send raw array
+            expertise: t.expertise || [],
+            subjectExpertise: (t.expertise && t.expertise.length > 0) ? t.expertise.join(', ') : (t.specialization || 'N/A'), // Mapped for frontend
             specialization: t.specialization || '',
             email: t.email,
             designation: t.designation || 'Faculty'
@@ -435,5 +442,40 @@ export {
     getRoutine,
     assignMentor,
     assignSubjectTeacher,
-    unassignSubjectTeacher // Export new function
+    unassignSubjectTeacher,
+    assignBatchMentor // Export new function
+};
+
+// @desc    Assign Mentor to Entire Batch
+// @route   POST /api/hod/batches/assign-mentor
+// @access  Private/HOD
+const assignBatchMentor = async (req, res) => {
+    try {
+        const { teacherId, year, subBatch } = req.body;
+        const { department } = req.user;
+
+        if (!teacherId || !year || !subBatch) {
+            return res.status(400).json({ message: 'Teacher, Year, and Sub-Batch are required' });
+        }
+
+        const teacher = await User.findById(teacherId);
+        if (!teacher) {
+            return res.status(404).json({ message: 'Teacher not found' });
+        }
+
+        // Bulk Update
+        const result = await User.updateMany(
+            { role: 'student', department, year, subBatch },
+            { $set: { mentor: teacherId } }
+        );
+
+        res.json({
+            message: `Mentor assigned to ${result.modifiedCount} students in ${subBatch}`,
+            modifiedCount: result.modifiedCount
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };
