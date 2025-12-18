@@ -55,8 +55,11 @@ function renderTable(students) {
     }
 
     noResults.style.display = 'none';
-    tableBody.innerHTML = students.map(student => `
+    tableBody.innerHTML = students.map((student, index) => `
         <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+            <td style="padding:1rem; color:#64748b; font-weight:500;">
+                ${index + 1 < 10 ? '0' + (index + 1) : index + 1}
+            </td>
             <td style="padding:1rem; display:flex; align-items:center; gap:10px;">
                 <img src="${student.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`}" 
                     style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #e2e8f0;">
