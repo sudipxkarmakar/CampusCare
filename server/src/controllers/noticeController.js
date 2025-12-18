@@ -30,6 +30,8 @@ export const getNotices = async (req, res) => {
             audienceList = ['student', 'hosteler', 'general'];
         } else if (role === 'hod') {
             audienceList = ['teacher', 'general', 'student', 'hosteler'];
+        } else if (role === 'warden') {
+            audienceList = ['student', 'hosteler', 'general', 'teacher', 'hod', 'principal', 'warden'];
         }
 
         // Construct Query
@@ -39,22 +41,31 @@ export const getNotices = async (req, res) => {
         //    - If notice HAS targetDept -> Show ONLY if matches userDept
         // 3. User's own posts are always visible
 
-        const query = {
-            $or: [
-                // Case 1: Standard match (Audience + Dept check)
-                {
-                    audience: { $in: audienceList },
-                    $or: [
-                        { targetDept: { $exists: false } }, // General notices (no dept specific)
-                        { targetDept: userDept }, // Matches my department
-                        { targetDept: null },
-                        { targetDept: "" }
-                    ]
-                },
-                // Case 2: My own posts (regardless of audience/dept)
-                ...(userId ? [{ postedBy: userId }] : [])
-            ]
-        };
+        let query;
+
+        // Special Case: Wardens and Admins see ALL relevant audience notices, ignoring department
+        if (role === 'warden' || role === 'admin') {
+            query = {
+                audience: { $in: audienceList }
+                // No targetDept check, so they see notices for all departments
+            };
+        } else {
+            // Standard User: Must match Audience AND (General OR My Dept)
+            query = {
+                $or: [
+                    {
+                        audience: { $in: audienceList },
+                        $or: [
+                            { targetDept: { $exists: false } },
+                            { targetDept: userDept },
+                            { targetDept: null },
+                            { targetDept: "" }
+                        ]
+                    },
+                    ...(userId ? [{ postedBy: userId }] : [])
+                ]
+            };
+        }
 
         const notices = await Notice.find(query)
             .sort({ date: -1 })

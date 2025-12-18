@@ -26,13 +26,116 @@
                 <p class="hero-sub" style="color:#4a5568;">List of Active Residents</p>
             </div>
         </section>
-        <section class="standard-container">
-            <div style="background:white; padding:2rem; border-radius:15px; text-align:center; color:#64748b;">
-                <i class="fa-solid fa-users" style="font-size:3rem; margin-bottom:1rem; color:#cbd5e1;"></i>
-                <h3>Student List Coming Soon</h3>
-                <p>This module is under construction.</p>
+        <section class="standard-container" style="max-width: 1400px;">
+            <div
+                style="background:white; padding:1.5rem; border-radius:15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                    <h2 style="color:#2d3748; margin:0; border-left:5px solid #10b981; padding-left:10px;">Active
+                        Residents</h2>
+
+                    <div class="search-box" style="position:relative;">
+                        <i class="fa-solid fa-search"
+                            style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8;"></i>
+                        <input type="text" id="studentSearch" placeholder="Search students..."
+                            style="padding:0.7rem 0.7rem 0.7rem 2.5rem; border:1px solid #e2e8f0; border-radius:8px; outline:none; transition: all 0.2s; width: 250px;">
+                    </div>
+                </div>
+
+                <div class="table-container" style="overflow-x: auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:800px;">
+                        <thead>
+                            <tr style="background:#f8fafc; color:#64748b; text-align:left;">
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0; border-top-left-radius:8px;">
+                                    S.No</th>
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0;">
+                                    Student</th>
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0;">Roll No</th>
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0;">Dept & Year</th>
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0;">Hostel Info</th>
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0;">Contact</th>
+                                <th style="padding:1rem; border-bottom:2px solid #e2e8f0; border-top-right-radius:8px;">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <!-- Populated via JS -->
+                            <tr>
+                                <td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">
+                                    <i class="fa-solid fa-spinner fa-spin" style="margin-right:10px;"></i> Loading
+                                    students...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noResults" style="display:none; text-align:center; padding:2rem; color:#64748b;">
+                    <i class="fa-solid fa-user-slash" style="font-size:2rem; margin-bottom:1rem; color:#cbd5e1;"></i>
+                    <p>No students found matching your search.</p>
+                </div>
             </div>
         </section>
+
+        <script src="../assets/js/warden_students.js"></script>
+
+        <!-- STUDENT DETAILS MODAL -->
+        <div id="studentModal" class="modal-overlay"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000; justify-content: center; align-items: center;">
+            <div class="modal-content glass"
+                style="background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 600px; position: relative; max-height: 90vh; overflow-y: auto;">
+                <button onclick="closeModal()"
+                    style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <img id="modalImg" src="" alt="Profile"
+                        style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #f1f5f9; margin-bottom: 1rem;">
+                    <h2 id="modalName" style="color: #1e293b; margin: 0;">Student Name</h2>
+                    <p id="modalRoll" style="color: #64748b; margin-top: 0.5rem; font-weight: 500;">Roll No: -</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.3rem;">Department</label>
+                        <div id="modalDept" style="font-weight: 600; color: #334155;">-</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.3rem;">Year /
+                            Batch</label>
+                        <div id="modalYear" style="font-weight: 600; color: #334155;">-</div>
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.3rem;">Hostel</label>
+                        <div id="modalHostel" style="font-weight: 600; color: #334155;">-</div>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.3rem;">Room
+                            Number</label>
+                        <div id="modalRoom" style="font-weight: 600; color: #334155;">-</div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.3rem;">Email</label>
+                        <div id="modalEmail" style="font-weight: 600; color: #334155;">-</div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label
+                            style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.3rem;">Contact
+                            Number</label>
+                        <div id="modalContact" style="font-weight: 600; color: #334155;">-</div>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                    <button onclick="closeModal()"
+                        style="padding: 0.6rem 1.5rem; background: #cbd5e1; color: #334155; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Close</button>
+                    <!-- Future: Add 'Edit' or 'Message' buttons here -->
+                </div>
+            </div>
+        </div>
     </main>
 </body>
 

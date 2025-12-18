@@ -15,9 +15,29 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMessMenu();
     loadHostelNotices();
 
+
     const leaveForm = document.getElementById('leaveForm');
     if (leaveForm) {
         leaveForm.addEventListener('submit', handleLeaveSubmit);
+
+        // Initialize Flatpickr
+        flatpickr("#startDate", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i", // Internal value format (Standard ISO for DB)
+            altInput: true,
+            altFormat: "d/m/Y H:i",   // User friendly format
+            minDate: "today",
+            time_24hr: true
+        });
+
+        flatpickr("#endDate", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            altInput: true,
+            altFormat: "d/m/Y H:i",
+            minDate: "today",
+            time_24hr: true
+        });
     }
 });
 
@@ -46,6 +66,7 @@ async function loadMessMenu() {
                 <td>${m.day}</td>
                 <td>${m.breakfast}</td>
                 <td>${m.lunch}</td>
+                <td>${m.snacks}</td>
                 <td>${m.dinner}</td>
             </tr>
         `).join('');

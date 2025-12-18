@@ -1,5 +1,6 @@
 import MessMenu from '../models/MessMenu.js';
 import Leave from '../models/Leave.js';
+import User from '../models/User.js';
 
 // @desc    Get Mess Menu
 // @route   GET /api/hostel/mess
@@ -74,3 +75,27 @@ export const getMyLeaves = async (req, res) => {
         res.status(500).json({ message: 'Server Error my leaves' });
     }
 };
+
+// @desc    Search Hostelers (for complaints)
+// @route   GET /api/hostel/search
+// @access  Hosteler
+export const searchHostelers = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) return res.json([]);
+
+        const users = await User.find({
+            role: 'hosteler',
+            $or: [
+                { name: { $regex: q, $options: 'i' } },
+                { rollNumber: { $regex: q, $options: 'i' } }
+            ]
+        }).select('name rollNumber roomNumber hostelName').limit(10);
+
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error searching' });
+    }
+};
+
+// ... existing exports ...

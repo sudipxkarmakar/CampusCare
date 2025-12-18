@@ -26,13 +26,121 @@
                 <p class="hero-sub" style="color:#4a5568;">Update Weekly Schedule</p>
             </div>
         </section>
-        <section class="standard-container">
-            <div style="background:white; padding:2rem; border-radius:15px; text-align:center; color:#64748b;">
-                <i class="fa-solid fa-utensils" style="font-size:3rem; margin-bottom:1rem; color:#cbd5e1;"></i>
-                <h3>Menu Editor Coming Soon</h3>
-                <p>This module is under construction.</p>
+        <section class="standard-container" style="max-width: 1400px; padding: 0;">
+            <div
+                style="background: white; border-radius: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden;">
+
+                <!-- Days Navigation -->
+                <div class="days-nav"
+                    style="display: flex; overflow-x: auto; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                    <button class="day-tab active" onclick="switchDay('Monday')" id="tab-Monday">Monday</button>
+                    <button class="day-tab" onclick="switchDay('Tuesday')" id="tab-Tuesday">Tuesday</button>
+                    <button class="day-tab" onclick="switchDay('Wednesday')" id="tab-Wednesday">Wednesday</button>
+                    <button class="day-tab" onclick="switchDay('Thursday')" id="tab-Thursday">Thursday</button>
+                    <button class="day-tab" onclick="switchDay('Friday')" id="tab-Friday">Friday</button>
+                    <button class="day-tab" onclick="switchDay('Saturday')" id="tab-Saturday">Saturday</button>
+                    <button class="day-tab" onclick="switchDay('Sunday')" id="tab-Sunday">Sunday</button>
+                </div>
+
+                <!-- Editor Form -->
+                <div style="padding: 2rem;">
+                    <h3 id="currentDayTitle"
+                        style="color: #2d3748; margin-bottom: 1.5rem; border-left: 5px solid #3b82f6; padding-left: 10px;">
+                        Monday Menu</h3>
+
+                    <form id="menuForm" onsubmit="saveMenu(event)">
+                        <input type="hidden" id="currentDayInput" value="Monday">
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-mug-hot" style="color: #f59e0b; width: 20px;"></i> Breakfast
+                                </label>
+                                <textarea id="breakfastInput" rows="3" class="menu-input"
+                                    placeholder="e.g. Idli, Sambar, Chutney, Coffee"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-bowl-rice" style="color: #ef4444; width: 20px;"></i> Lunch
+                                </label>
+                                <textarea id="lunchInput" rows="3" class="menu-input"
+                                    placeholder="e.g. Rice, Dal, Mixed Veg, Curd"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-cookie-bite" style="color: #8b5cf6; width: 20px;"></i> Snacks
+                                </label>
+                                <textarea id="snacksInput" rows="3" class="menu-input"
+                                    placeholder="e.g. Samosa, Tea"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-utensils" style="color: #10b981; width: 20px;"></i> Dinner
+                                </label>
+                                <textarea id="dinnerInput" rows="3" class="menu-input"
+                                    placeholder="e.g. Chapati, Paneer Butter Masala, Rice"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                            <button type="submit"
+                                style="background: #3b82f6; color: white; border: none; padding: 0.8rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s;">
+                                <i class="fa-solid fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </section>
+
+        <style>
+            .day-tab {
+                padding: 1rem 1.5rem;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-weight: 600;
+                color: #64748b;
+                border-bottom: 3px solid transparent;
+                transition: all 0.2s;
+                white-space: nowrap;
+            }
+
+            .day-tab:hover {
+                color: #3b82f6;
+                background: #eff6ff;
+            }
+
+            .day-tab.active {
+                color: #3b82f6;
+                border-bottom-color: #3b82f6;
+                background: white;
+            }
+
+            .menu-input {
+                width: 100%;
+                padding: 0.8rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                outline: none;
+                font-family: inherit;
+                resize: vertical;
+                transition: border-color 0.2s;
+            }
+
+            .menu-input:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+        </style>
+
+        <script src="../assets/js/warden_mess.js"></script>
     </main>
 </body>
 

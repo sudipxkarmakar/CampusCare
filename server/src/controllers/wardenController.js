@@ -1,4 +1,5 @@
 import Leave from '../models/Leave.js';
+import Complaint from '../models/Complaint.js';
 import MessMenu from '../models/MessMenu.js';
 import User from '../models/User.js';
 
@@ -97,9 +98,109 @@ const updateMessMenu = async (req, res) => {
     }
 };
 
+// @desc    Get All Hostelers
+// @route   GET /api/warden/students
+// @access  Private/Warden
+const getHostelers = async (req, res) => {
+    try {
+        const hostelers = await User.find({ role: 'hosteler' })
+            .select('name rollNumber department year hostelName roomNumber contactNumber email profilePicture')
+            .sort({ name: 1 });
+        res.json(hostelers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get Mess Menu
+// @route   GET /api/warden/mess
+// @access  Private/Warden
+const getMessMenu = async (req, res) => {
+    try {
+        const menu = await MessMenu.find({});
+        res.json(menu);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+
+// @desc    Get Hostel Complaints (Facility & Disciplinary)
+// @route   GET /api/warden/complaints
+// @access  Private/Warden
+const getHostelComplaints = async (req, res) => {
+    try {
+        const complaints = await Complaint.find({
+            $or: [
+                { category: { $in: ['Electrical', 'Sanitation', 'Civil', 'Mess', 'Other'] } }, // Facility
+                { category: 'Disciplinary' } // Disciplinary
+            ]
+        })
+            .populate('student', 'name roomNumber hostelName')
+            .populate('againstUser', 'name')
+            .sort({ createdAt: -1 });
+
+        res.json(complaints);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error fetching complaints' });
+    }
+};
+
+// @desc    Resolve Complaint
+// @route   PUT /api/warden/complaints/:id/resolve
+// @access  Private/Warden
+const resolveComplaint = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const complaint = await Complaint.findById(id);
+
+        if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+        complaint.status = 'Resolved';
+        complaint.resolvedBy = req.user._id;
+        await complaint.save();
+
+        res.json(complaint);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error resolving complaint' });
+    }
+};
+
+// @desc    Escalate Complaint
+// @route   PUT /api/warden/complaints/:id/escalate
+// @access  Private/Warden
+const escalateComplaint = async (req, res) => {
+    const { target } = req.body; // 'Principal', 'Disciplinary Committee'
+    try {
+        const { id } = req.params;
+        const complaint = await Complaint.findById(id);
+
+        if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+        complaint.status = 'In Progress';
+        complaint.isUplifted = true;
+        complaint.upliftedTo = target;
+        await complaint.save();
+
+        res.json(complaint);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error escalating complaint' });
+    }
+};
+
 export {
     getWardenDashboardStats,
     getPendingLeaves,
     handleLeaveAction,
-    updateMessMenu
+    updateMessMenu,
+    getHostelers,
+    getMessMenu,
+    getHostelComplaints,
+    resolveComplaint,
+    escalateComplaint
 };
