@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, getProfile, uploadProfilePicture } from '../controllers/authController.js';
+import { registerUser, loginUser, getProfile, uploadProfilePicture, updateProfile } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import multer from 'multer';
 import path from 'path';
@@ -42,6 +42,7 @@ const router = express.Router();
 router.post('/register', upload.single('profileImage'), registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protect, getProfile);
+router.put('/profile', protect, updateProfile); // Edit Profile
 router.post('/profile-picture', protect, upload.single('profileImage'), uploadProfilePicture);
 
 export default router;
