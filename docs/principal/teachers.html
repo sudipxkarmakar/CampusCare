@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>All Faculty Members | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        .status-active {
+            color: #166534;
+            background: #dcfce7;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Principal</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=Principal&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent; padding: 2rem 0;">
+            <div class="hero-left">
+                <h1 class="hero-title" style="color:#2d3748;">All Faculty Members</h1>
+                <p class="hero-sub" style="color:#4a5568;">View complete list of teachers across all departments</p>
+            </div>
+        </section>
+
+        <!-- No loading spinner as per request -->
+
+        <div id="contentArea" style="display:block; padding: 0 5%;">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serial No</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherTableBody">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" style="display:none; text-align: center; padding: 3rem; color: #94a3b8;">
+                <i class="fa-solid fa-users-slash" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>No teachers found.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/principal';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            fetchTeachers();
+        });
+
+        function checkAuth() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                window.location.href = '../login.html';
+                return;
+            }
+            const user = JSON.parse(userStr);
+            if (user.role !== 'principal' && user.role !== 'admin') {
+                alert('Unauthorized Access');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            document.getElementById('userProfile').style.display = 'flex';
+            document.getElementById('userName').innerText = user.name;
+            document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Campus Admin`;
+        }
+
+        async function fetchTeachers() {
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            // Default empty state, no loading text
+
+            try {
+                const response = await fetch(`${API_URL}/teachers`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch data');
+
+                const teachers = await response.json();
+
+                renderTable(teachers);
+            } catch (error) {
+                console.error(error);
+                const tbody = document.getElementById('teacherTableBody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:2rem;">Error loading teachers.</td></tr>';
+            }
+        }
+
+        function renderTable(teachers) {
+            const tbody = document.getElementById('teacherTableBody');
+            tbody.innerHTML = '';
+
+            if (teachers.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            teachers.forEach((t, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:#64748b;">${index + 1}</td>
+                    <td style="font-family:monospace; font-weight:600;">${t.employeeId || '-'}</td>
+                    <td>
+                        <div style="font-weight:600; color:#1e293b;">${t.name}</div>
+                    </td>
+                    <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.8rem; font-weight:600;">${t.department || 'N/A'}</span></td>
+                    <td>${t.email}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+
+</html>

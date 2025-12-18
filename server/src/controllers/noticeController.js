@@ -31,7 +31,7 @@ export const getNotices = async (req, res) => {
         } else if (role === 'hod') {
             audienceList = ['teacher', 'general', 'student', 'hosteler'];
         } else if (role === 'warden') {
-            audienceList = ['student', 'hosteler', 'general', 'teacher'];
+            audienceList = ['student', 'hosteler', 'general', 'teacher', 'hod', 'principal', 'warden'];
         }
 
         // Construct Query

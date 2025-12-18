@@ -3,13 +3,21 @@ import { protect, principal } from '../middleware/authMiddleware.js';
 import {
     getPrincipalDashboardStats,
     getAllStaff,
-    resolveComplaintDirectly
+    resolveComplaintDirectly,
+    getAllStudents,
+    getAllTeachers,
+    getAllHODs,
+    getAllWardens
 } from '../controllers/principalController.js';
 
 const router = express.Router();
 
 router.get('/dashboard', protect, principal, getPrincipalDashboardStats);
 router.get('/staff', protect, principal, getAllStaff);
+router.get('/students', protect, principal, getAllStudents);
+router.get('/teachers', protect, principal, getAllTeachers);
+router.get('/hods', protect, principal, getAllHODs);
+router.get('/wardens', protect, principal, getAllWardens);
 router.put('/complaints/:id/resolve', protect, principal, resolveComplaintDirectly);
 
 export default router;

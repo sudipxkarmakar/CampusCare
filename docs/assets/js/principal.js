@@ -40,6 +40,10 @@ async function loadDashboardStats() {
             document.getElementById('activeLeaves').innerText = data.activeLeaves;
         if (document.getElementById('openComplaints'))
             document.getElementById('openComplaints').innerText = data.openComplaints;
+        if (document.getElementById('totalHODs'))
+            document.getElementById('totalHODs').innerText = data.hodCount;
+        if (document.getElementById('totalWardens'))
+            document.getElementById('totalWardens').innerText = data.wardenCount;
 
     } catch (error) {
         console.error(error);
@@ -63,5 +67,5 @@ function toggleProfileMenu() {
 
 function logout() {
     localStorage.removeItem('user');
-    window.location.href = '../login.html';
+    window.location.href = '../index.html';
 }

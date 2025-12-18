@@ -71,8 +71,76 @@ const resolveComplaintDirectly = async (req, res) => {
     }
 };
 
+// @desc    Get All Students
+// @route   GET /api/principal/students
+// @access  Private/Principal
+// @desc    Get All Students
+// @route   GET /api/principal/students
+// @access  Private/Principal
+const getAllStudents = async (req, res) => {
+    try {
+        // Optimized: Select only fields needed for the table
+        const students = await User.find({ role: 'student' })
+            .select('name rollNumber department batch email')
+            .lean(); // Faster execution
+        res.json(students);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get All Teachers
+// @route   GET /api/principal/teachers
+// @access  Private/Principal
+const getAllTeachers = async (req, res) => {
+    try {
+        const teachers = await User.find({ role: 'teacher' })
+            .select('name employeeId department email')
+            .lean();
+        res.json(teachers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get All HODs
+// @route   GET /api/principal/hods
+// @access  Private/Principal
+const getAllHODs = async (req, res) => {
+    try {
+        const hods = await User.find({ role: 'hod' })
+            .select('name employeeId department email')
+            .lean();
+        res.json(hods);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get All Wardens
+// @route   GET /api/principal/wardens
+// @access  Private/Principal
+const getAllWardens = async (req, res) => {
+    try {
+        const wardens = await User.find({ role: 'warden' })
+            .select('name employeeId hostelName email')
+            .lean();
+        res.json(wardens);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getPrincipalDashboardStats,
     getAllStaff,
-    resolveComplaintDirectly
+    resolveComplaintDirectly,
+    getAllStudents,
+    getAllTeachers,
+    getAllHODs,
+    getAllWardens
 };

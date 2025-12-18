@@ -264,6 +264,7 @@ export const loginUser = async (req, res) => {
                 rollNumber: user.rollNumber,
                 employeeId: user.employeeId,
                 hostelName: user.hostelName, // Return hostel info if needed
+                profilePicture: user.profilePicture,
                 token: generateToken(user._id),
             });
         } else {
@@ -319,5 +320,78 @@ export const uploadProfilePicture = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Update User Profile (Restricted Fields)
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            // Editable Fields ALLOWLIST
+            // We consciously exclude Name, Role, RollNumber, etc. for integrity.
+            // 1. Basic Fields
+            if (req.body.name) user.name = req.body.name;
+            if (req.body.contactNumber) user.contactNumber = req.body.contactNumber;
+            if (req.body.bloodGroup) user.bloodGroup = req.body.bloodGroup;
+            if (req.body.about) user.about = req.body.about;
+
+            // 2. Sensitive Fields (Duplicate Checks)
+            if (req.body.email && req.body.email !== user.email) {
+                const exists = await User.findOne({ email: req.body.email });
+                if (exists) return res.status(400).json({ message: 'Email already taken.' });
+                user.email = req.body.email;
+            }
+
+            if (req.body.rollNumber && req.body.rollNumber !== user.rollNumber && user.role === 'student') {
+                // Check uniqueness within department if needed, or globally. Assuming global unique for simplicity here or strictly check
+                const exists = await User.findOne({ rollNumber: req.body.rollNumber, department: user.department });
+                if (exists) return res.status(400).json({ message: 'Roll Number already exists in this department.' });
+                user.rollNumber = req.body.rollNumber;
+            }
+
+            // 3. Academic / Other Fields (Allowing update if provided)
+            if (req.body.department) user.department = req.body.department;
+            if (req.body.batch) user.batch = req.body.batch;
+            if (req.body.section) user.section = req.body.section;
+            if (req.body.hostelName) user.hostelName = req.body.hostelName;
+            if (req.body.roomNumber) user.roomNumber = req.body.roomNumber;
+
+            // Teacher specific
+            if (user.role === 'teacher') {
+                if (req.body.designation) user.designation = req.body.designation;
+                if (req.body.yearsExperience) user.yearsExperience = req.body.yearsExperience;
+                if (req.body.specialization) user.specialization = req.body.specialization;
+            }
+
+            // Backend Validation (Basic)
+            if (req.body.contactNumber && !/^\d{10}$/.test(req.body.contactNumber)) {
+                return res.status(400).json({ message: 'Contact Number must be 10 digits.' });
+            }
+
+            const updatedUser = await user.save();
+
+            res.json(updatedUser); // Return full object for simplicity
+            /*
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                contactNumber: updatedUser.contactNumber,
+                bloodGroup: updatedUser.bloodGroup,
+                token: generateToken(updatedUser._id), // Optional token refresh
+            });
+            */
+
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error updating profile' });
     }
 };

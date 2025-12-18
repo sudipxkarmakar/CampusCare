@@ -15,7 +15,7 @@ const noticeSchema = new mongoose.Schema({
     },
     audience: {
         type: String,
-        enum: ['general', 'student', 'teacher', 'hosteler'],
+        enum: ['general', 'student', 'teacher', 'hosteler', 'hod', 'principal', 'warden'],
         default: 'general',
     },
     // Specific Targeting (Smart Filtering)

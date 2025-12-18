@@ -422,7 +422,14 @@
                     <i class="fa-solid fa-camera"></i>
                 </button>
                 <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+
             </div>
+            <!-- Edit Profile Button -->
+            <button onclick="openEditModal()"
+                style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #6b7280; position: absolute; top: 20px; right: 20px; transition: color 0.3s;"
+                title="Edit Profile">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
 
             <h1 id="p-name" class="user-name">--</h1>
             <span id="p-role-badge" class="role-badge">--</span>
@@ -446,6 +453,99 @@
 
 
 
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal"
+        style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+        <div class="modal-content glass"
+            style="margin: 5% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; position: relative; background: #fff;">
+            <span class="close-modal" onclick="closeEditModal()"
+                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
+            <h2 style="margin-bottom: 20px; color: #333; text-align: center;">Edit Profile</h2>
+            <form id="editProfileForm"
+                style="display: flex; flex-direction: column; gap: 15px; max-height: 80vh; overflow-y: auto;">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="editName" style="font-weight: 600; font-size: 0.9rem; color: #555;">Full
+                            Name</label>
+                        <input type="text" id="editName" name="name" placeholder="Full Name"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail" style="font-weight: 600; font-size: 0.9rem; color: #555;">Email
+                            (Unique)</label>
+                        <input type="email" id="editEmail" name="email" placeholder="Email Address"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="editRoll" style="font-weight: 600; font-size: 0.9rem; color: #555;">ID (Roll /
+                            Emp)</label>
+                        <input type="text" id="editRoll" name="rollNumber" placeholder="ID"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDept"
+                            style="font-weight: 600; font-size: 0.9rem; color: #555;">Department</label>
+                        <input type="text" id="editDept" name="department" placeholder="Department"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="editBatch" style="font-weight: 600; font-size: 0.9rem; color: #555;">Batch</label>
+                        <input type="text" id="editBatch" name="batch" placeholder="e.g. 2024"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                    <div class="form-group">
+                        <label for="editSection"
+                            style="font-weight: 600; font-size: 0.9rem; color: #555;">Section</label>
+                        <input type="text" id="editSection" name="section" placeholder="Section"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="editContact"
+                            style="font-weight: 600; font-size: 0.9rem; color: #555;">Contact</label>
+                        <input type="text" id="editContact" name="contactNumber" placeholder="10-digit number"
+                            pattern="\d{10}"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width:100%;">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBloodGroup" style="font-weight: 600; font-size: 0.9rem; color: #555;">Blood
+                            Group</label>
+                        <select id="editBloodGroup" name="bloodGroup"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; height:40px; background:#fff;">
+                            <option value="">Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editAbout" style="font-weight: 600; font-size: 0.9rem; color: #555;">About (Bio)</label>
+                    <textarea id="editAbout" name="about" rows="3" placeholder="Tell us about yourself..."
+                        style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; resize: vertical; width: 100%;"></textarea>
+                </div>
+                <button type="submit"
+                    style="margin-top: 10px; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; transition: opacity 0.3s;">Save
+                    Changes</button>
+            </form>
+        </div>
     </div>
 
     <script src="assets/js/profile.js?v=1.4"></script>

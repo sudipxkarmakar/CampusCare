@@ -51,9 +51,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const data = await res.json();
             console.log('Upload success:', data);
-            // alert('Profile Picture Updated!'); 
-            // Update LocalStorage user object if we want to persist avatar there too, 
-            // but for now profile page fetches fresh data always.
+
+            // Update LocalStorage to reflect in header immediately
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const userObj = JSON.parse(userStr);
+                userObj.profilePicture = data.profilePicture;
+                localStorage.setItem('user', JSON.stringify(userObj));
+
+                // Force header update if checkAuthState is available
+                if (window.checkAuthState) window.checkAuthState();
+            }
+            alert('Profile Picture Updated!');
 
         } catch (error) {
             console.error(error);
@@ -307,4 +316,98 @@ async function fetchMarMoocs(token, grid, count) {
             </div>
         `;
     }
+}
+
+// --- Edit Profile Logic ---
+
+const modal = document.getElementById('editProfileModal');
+const editForm = document.getElementById('editProfileForm');
+
+function openEditModal() {
+    if (!modal) return;
+
+    // Populate Form with current UI values
+    // Using a more robust selector or fallback
+    const contactEl = document.getElementById('profileContact');
+    const bloodEl = document.getElementById('profileBloodGroup');
+    const currentContact = contactEl ? contactEl.innerText : '';
+    const currentBlood = bloodEl ? bloodEl.innerText : '';
+
+    const contactInput = document.getElementById('editContact');
+    const bloodInput = document.getElementById('editBloodGroup');
+
+    if (contactInput) contactInput.value = (currentContact === '--' || currentContact === 'N/A') ? '' : currentContact;
+    if (bloodInput) bloodInput.value = (currentBlood === '--' || currentBlood === 'Not Provided') ? '' : currentBlood;
+
+    modal.style.display = 'flex';
+}
+
+function closeEditModal() {
+    if (modal) modal.style.display = 'none';
+}
+
+window.openEditModal = openEditModal;
+window.closeEditModal = closeEditModal;
+
+// Close on outside click
+window.onclick = function (event) {
+    if (event.target == modal) {
+        closeEditModal();
+    }
+}
+
+// Handle Form Submit
+if (editForm) {
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const contact = document.getElementById('editContact').value;
+        const blood = document.getElementById('editBloodGroup').value;
+        const about = document.getElementById('editAbout').value;
+
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const token = JSON.parse(userStr).token;
+
+        const submitBtn = editForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Saving...';
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('http://localhost:5000/api/auth/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    contactNumber: contact,
+                    bloodGroup: blood,
+                    about: about
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || 'Update failed');
+            }
+
+            const updatedUser = await res.json();
+
+            // Success!
+            alert('Profile Updated Successfully');
+            closeEditModal();
+
+            // Refresh
+            window.location.reload();
+
+        } catch (error) {
+            console.error(error);
+            alert(`Error: ${error.message}`);
+        } finally {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
+    });
 }
