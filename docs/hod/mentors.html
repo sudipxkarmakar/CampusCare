@@ -27,12 +27,70 @@
             </div>
         </section>
         <section class="standard-container">
-            <div style="background:white; padding:2rem; border-radius:15px; text-align:center; color:#64748b;">
-                <i class="fa-solid fa-chalkboard-user" style="font-size:3rem; margin-bottom:1rem; color:#cbd5e1;"></i>
-                <h3>Mentorship Module Coming Soon</h3>
-                <p>This module is under construction.</p>
+            <div style="background:white; padding:1.5rem; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <div>
+                        <h3 style="color:#2d3748; margin-bottom:5px;">Mentor Assignment</h3>
+                        <p style="color:#64748b; font-size:0.9rem;">Assign a faculty mentor to each student.</p>
+                    </div>
+
+                    <select id="mentorYearFilter" class="filter-select" onchange="loadStudentsForMentorship()">
+                        <option value="4th Year">4th Year (2026)</option>
+                        <option value="3rd Year">3rd Year (2027)</option>
+                        <option value="2nd Year">2nd Year (2028)</option>
+                        <option value="1st Year">1st Year (2029)</option>
+                    </select>
+                </div>
+
+                <div class="batches-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem;">
+                    <!-- Batch 1 Column -->
+                    <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
+                        <h4
+                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem;">
+                            Batch 1
+                        </h4>
+                        <div id="batch1List" class="student-list">
+                            <div style="text-align:center; color:#94a3b8; padding:2rem;">Select a Year to load students
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Batch 2 Column -->
+                    <div style="background:#f8fafc; padding:1rem; border-radius:12px; border:1px solid #e2e8f0;">
+                        <h4
+                            style="margin-bottom:1rem; color:#1e40af; border-bottom:2px solid #bfdbfe; padding-bottom:0.5rem;">
+                            Batch 2
+                        </h4>
+                        <div id="batch2List" class="student-list">
+                            <div style="text-align:center; color:#94a3b8; padding:2rem;">Select a Year to load students
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <!-- Teacher Selection Modal -->
+        <div id="assignMentorModal" class="modal">
+            <div class="modal-content" style="max-width:500px;">
+                <div class="modal-header">
+                    <h2 id="assignModalTitle">Assign Mentor</h2>
+                    <span class="close-modal-btn"
+                        onclick="document.getElementById('assignMentorModal').style.display='none'">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="teacherSearch" placeholder="Search Teacher..."
+                        style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #cbd5e1; border-radius:8px;">
+
+                    <div id="teacherList"
+                        style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                        <!-- Teacher Items populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="../assets/js/hod_mentors.js"></script>
     </main>
 </body>
 

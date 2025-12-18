@@ -44,7 +44,10 @@ const userSchema = new mongoose.Schema({
     expertise: [{ type: String }],
 
     // Teacher System/HOD Updates (Phase 2)
-    teachingBatches: [{ type: String }],
+    teachingBatches: [{
+        passOutYear: String, // e.g. "2026"
+        batch: String // "Batch 1"
+    }],
     teachingSubjects: [{ type: String }],
     menteesSubBatches: [{ type: String }], // Exactly 2 as per req
     weeklyLoad: { type: Number },
@@ -77,6 +80,7 @@ const userSchema = new mongoose.Schema({
     // Hosteler Specific
     hostelName: { type: String },
     roomNumber: { type: String },
+    roomNumber: { type: String },
 
     // Teacher Specific
     designation: { type: String },
@@ -90,7 +94,6 @@ const userSchema = new mongoose.Schema({
     attendance: { type: Number, default: 0 },
     cgpa: { type: Number, default: 0 },
 
-    lastActive: { type: Date },
     // Common for Student/Teacher/Hosteler
     department: {
         type: String, // e.g. 'CSE'
@@ -101,10 +104,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
-    mentees: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    }],
+    // Mentees removed - queried by 'mentor' field on Student
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

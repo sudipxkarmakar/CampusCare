@@ -27,12 +27,74 @@
             </div>
         </section>
         <section class="standard-container">
-            <div style="background:white; padding:2rem; border-radius:15px; text-align:center; color:#64748b;">
-                <i class="fa-solid fa-calendar-week" style="font-size:3rem; margin-bottom:1rem; color:#cbd5e1;"></i>
-                <h3>Routine Module Coming Soon</h3>
-                <p>This module is under construction.</p>
+            <div style="background:white; padding:1.5rem; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <h3 style="color:#2d3748;">Weekly Class Routine</h3>
+                    <div style="display:flex; gap:10px;">
+                        <select id="routineYear" class="filter-select" onchange="loadRoutine()">
+                            <option value="" disabled selected>Select Year</option>
+                            <option value="4th Year">4th Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="1st Year">1st Year</option>
+                        </select>
+                        <select id="routineBatch" class="filter-select" onchange="loadRoutine()">
+                            <option value="1">Batch 1</option>
+                            <option value="2">Batch 2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:800px; border:1px solid #e2e8f0;">
+                        <thead>
+                            <tr style="background:#f8fafc; color:#475569;">
+                                <th style="padding:1rem; border:1px solid #e2e8f0; width:100px;">Day / Time</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">09:30 - 10:30</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">10:30 - 11:30</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">11:30 - 12:30</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">12:30 - 01:30</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0; background:#f1f5f9;">Break</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">02:30 - 03:30</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">03:30 - 04:30</th>
+                                <th style="padding:1rem; border:1px solid #e2e8f0;">04:30 - 05:30</th>
+                            </tr>
+                        </thead>
+                        <tbody id="routineTableBody">
+                            <!-- Rows for Mon-Fri -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
+
+        <style>
+            .routine-cell {
+                padding: 1rem;
+                border: 1px solid #e2e8f0;
+                text-align: center;
+                vertical-align: top;
+                height: 100px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+            .routine-cell:hover {
+                background: #f8fafc;
+            }
+
+            .assigned-box {
+                background: #eff6ff;
+                color: #1e3a8a;
+                padding: 5px;
+                border-radius: 6px;
+                border-left: 3px solid #3b82f6;
+                margin-bottom: 5px;
+            }
+        </style>
+
+        <script src="../assets/js/hod_routine.js"></script>
     </main>
 </body>
 

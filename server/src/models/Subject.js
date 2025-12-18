@@ -25,6 +25,9 @@ const subjectSchema = new mongoose.Schema({
     semester: {
         type: Number, // 1 to 8
     },
+    batch: {
+        type: String, // e.g., "Batch 1", "Batch 2" (Optional, for labs etc)
+    },
     credits: {
         type: Number,
         default: 3
@@ -38,6 +41,11 @@ const subjectSchema = new mongoose.Schema({
     teachers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    }],
+    // New structure for Batch-wise assignment
+    batchAssignments: [{
+        batch: { type: String, required: true }, // "Batch 1", "Batch 2"
+        teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     }]
 }, { timestamps: true });
 

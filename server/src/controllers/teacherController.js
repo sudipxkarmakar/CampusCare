@@ -50,13 +50,9 @@ export const getMyMentees = async (req, res) => {
 // @access  Teacher
 export const getMenteeIssues = async (req, res) => {
     try {
-        const teacher = await User.findById(req.user._id);
-
-        if (!teacher) {
-            return res.status(404).json({ message: 'Teacher profile not found' });
-        }
-
-        const menteeIds = teacher.mentees;
+        // Find students who have this teacher as mentor
+        const mentees = await User.find({ mentor: req.user._id }).select('_id');
+        const menteeIds = mentees.map(m => m._id);
 
         const issues = await Complaint.find({ student: { $in: menteeIds } })
             .populate('student', 'name rollNumber')
@@ -70,7 +66,7 @@ export const getMenteeIssues = async (req, res) => {
     }
 };
 
-// @desc    Get All Students (Same Department Only)
+// @desc    Get All Students (Filtered by Teacher's Department & Batches)
 // @route   GET /api/teacher/all-students
 // @access  Teacher
 export const getAllStudents = async (req, res) => {
@@ -87,26 +83,34 @@ export const getAllStudents = async (req, res) => {
         // Ensure strictly limiting to teacher's department AND teaching batches
         const teacher = await User.findById(req.user._id);
         const teacherDept = teacher.department;
-        const teachingBatches = teacher.teachingBatches || []; // e.g. ["1", "2"]
+        const teachingBatches = teacher.teachingBatches || [];
+        // teachingBatches is now [{ year: "2026", batch: "Batch 1" }, ...]
 
         const query = {
             role: 'student',
             department: teacherDept
         };
 
-        // If teacher has assigned batches, filter by them. 
-        // If no batches assigned (e.g. new teacher), maybe show none or all? 
-        // Requirement says "Not all department students". So imply strict filter.
+        // If teacher has assigned batches, filter by them.
         if (teachingBatches.length > 0) {
-            query.batch = { $in: teachingBatches };
+            // Construct $or query for (year A AND batch B) OR (year X AND batch Y)
+
+            const batchConditions = teachingBatches.map(tb => ({
+                passOutYear: tb.passOutYear,
+                batch: tb.batch
+            }));
+
+            // Filter students who match ANY of the teaching batches
+            query.$or = batchConditions;
         } else {
-            // If no batches assigned, return empty to be safe/strict
+            // If no batches assigned, return empty to be safe/strict as per request
             return res.json([]);
         }
 
         const students = await User.find(query)
             .select('-password')
-            .sort({ rollNumber: 1 }); // Sort by Roll Number
+            .sort({ rollNumber: 1 });
+
         res.json(students);
     } catch (error) {
         console.error(error);

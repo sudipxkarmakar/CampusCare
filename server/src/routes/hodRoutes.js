@@ -5,7 +5,12 @@ import {
     getPendingLeaves,
     handleLeaveAction,
     getDepartmentStudents,
-    getDepartmentTeachers
+    getDepartmentTeachers,
+    getDepartmentComplaints,
+    getRoutine,
+    assignMentor,
+    assignSubjectTeacher,
+    unassignSubjectTeacher
 } from '../controllers/hodController.js';
 
 const router = express.Router();
@@ -15,5 +20,10 @@ router.get('/leaves', protect, hod, getPendingLeaves);
 router.put('/leaves/:id/action', protect, hod, handleLeaveAction);
 router.get('/students', protect, hod, getDepartmentStudents);
 router.get('/teachers', protect, hod, getDepartmentTeachers);
+router.get('/complaints', protect, hod, getDepartmentComplaints);
+router.get('/routine', protect, hod, getRoutine);
+router.post('/students/assign-mentor', protect, hod, assignMentor);
+router.post('/subjects/:id/assign', protect, hod, assignSubjectTeacher);
+router.post('/subjects/:id/unassign', protect, hod, unassignSubjectTeacher);
 
 export default router;

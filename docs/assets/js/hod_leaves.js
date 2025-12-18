@@ -1,7 +1,10 @@
 const API_URL = 'http://localhost:5000/api/hod';
 let currentRejectId = null;
 
-document.addEventListener('DOMContentLoaded', loadLeaves);
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    loadLeaves();
+});
 
 async function loadLeaves() {
     const tableBody = document.getElementById('leavesTableBody');
@@ -27,6 +30,30 @@ async function loadLeaves() {
             const startDate = new Date(leave.startDate).toLocaleDateString();
             const endDate = new Date(leave.endDate).toLocaleDateString();
 
+            let actionButtons = '';
+            let statusBadge = '';
+
+            if (leave.status === 'Pending HOD Approval') {
+                actionButtons = `
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="approveLeave('${leave._id}')" 
+                            style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
+                            <i class="fa-solid fa-check"></i> Forward
+                        </button>
+                        <button onclick="openRejectModal('${leave._id}')" 
+                            style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
+                            <i class="fa-solid fa-xmark"></i> Reject
+                        </button>
+                    </div>
+                `;
+            } else if (leave.status === 'Approved by HOD') {
+                statusBadge = `<span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">Forwarded</span>`;
+            } else if (leave.status === 'Rejected by HOD') {
+                statusBadge = `<span style="background:#fee2e2; color:#991b1b; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">Rejected</span>`;
+            } else {
+                statusBadge = `<span style="background:#e2e8f0; color:#475569; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">${leave.status}</span>`;
+            }
+
             return `
             <tr style="border-bottom:1px solid #f1f5f9;">
                 <td style="padding:1rem;">
@@ -39,16 +66,7 @@ async function loadLeaves() {
                 <td style="padding:1rem; font-size:0.9rem;">${startDate} - ${endDate}</td>
                 <td style="padding:1rem; color:#475569;">${leave.reason}</td>
                 <td style="padding:1rem;">
-                    <div style="display:flex; gap:10px;">
-                        <button onclick="approveLeave('${leave._id}')" 
-                            style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
-                            <i class="fa-solid fa-check"></i> Forward
-                        </button>
-                        <button onclick="openRejectModal('${leave._id}')" 
-                            style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
-                            <i class="fa-solid fa-xmark"></i> Reject
-                        </button>
-                    </div>
+                    ${leave.status === 'Pending HOD Approval' ? actionButtons : statusBadge}
                 </td>
             </tr>
             `;
@@ -110,5 +128,38 @@ async function processAction(id, action, remark = '') {
     } catch (error) {
         console.error(error);
         alert('Server Error');
+    }
+}
+
+function checkAuth() {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        window.location.href = '../login.html';
+        return;
+    }
+    const user = JSON.parse(userStr);
+    if (user.role !== 'hod' && user.role !== 'admin') {
+        alert('Unauthorized Access');
+        window.location.href = '../index.html';
+        return;
+    }
+
+    const userNameEl = document.getElementById('userName');
+    const userProfileEl = document.getElementById('userProfile');
+    const userDetailsEl = document.getElementById('userDetails');
+
+    if (userNameEl) userNameEl.innerText = `Hello, ${user.name}`;
+    if (userProfileEl) userProfileEl.style.display = 'flex';
+    if (userDetailsEl) {
+        userDetailsEl.innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
+    }
+
+    window.toggleProfileMenu = function () {
+        const menu = document.getElementById('profileMenu');
+        if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+    window.logout = function () {
+        localStorage.removeItem('user');
+        window.location.href = '../login.html';
     }
 }

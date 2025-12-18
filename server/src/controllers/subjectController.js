@@ -55,13 +55,43 @@ export const assignTeacherToSubject = async (req, res) => {
 // @access  HOD
 export const deleteSubject = async (req, res) => {
     try {
-        const subject = await Subject.findById(req.params.id);
-        if (!subject) return res.status(404).json({ message: 'Subject not found' });
+        const { id } = req.params;
+        const subject = await Subject.findById(id);
 
-        await Subject.findByIdAndDelete(req.params.id);
+        if (!subject) {
+            return res.status(404).json({ message: 'Subject not found' });
+        }
+
+        // 1. Dependency Check: Routine
+        // Import Routine dynamically or at top if not circular (Dynamic is safer here if not top-level)
+        const Routine = (await import('../models/Routine.js')).default;
+        const routineUsage = await Routine.findOne({ subject: id });
+
+        if (routineUsage) {
+            return res.status(400).json({
+                message: 'Cannot delete subject because it is assigned to a Routine. Please remove it from the routine first.'
+            });
+        }
+
+        // 2. Dependency Cleanup: Teachers (User model)
+        // Remove subject name from teachers' teachingSubjects array
+        // We find all teachers who have this subject assigned (legacy or batch)
+        // The 'teachers' array in Subject model tracks this.
+        if (subject.teachers && subject.teachers.length > 0) {
+            await User.updateMany(
+                { _id: { $in: subject.teachers } },
+                { $pull: { teachingSubjects: subject.name } }
+            );
+        }
+
+        // 3. Delete the subject
+        await Subject.findByIdAndDelete(id);
+
+        console.log(`Subject deleted: ${subject.name} (${subject.code})`);
         res.json({ message: 'Subject deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error deleting subject:', error);
+        res.status(500).json({ message: 'Server Error: ' + error.message });
     }
 };
 
@@ -80,7 +110,11 @@ export const getSubjects = async (req, res) => {
             console.log('Filtering subjects by semester:', query.semester);
         }
 
-        const subjects = await Subject.find(query).populate('teachers', 'name');
+        const subjects = await Subject.find(query)
+            .populate('teachers', 'name')
+            .populate('batchAssignments.teacher', 'name');
+
+
 
         res.json(subjects);
     } catch (error) {

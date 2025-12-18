@@ -27,12 +27,32 @@
             </div>
         </section>
         <section class="standard-container">
-            <div style="background:white; padding:2rem; border-radius:15px; text-align:center; color:#64748b;">
-                <i class="fa-solid fa-gavel" style="font-size:3rem; margin-bottom:1rem; color:#cbd5e1;"></i>
-                <h3>Complaint Review Coming Soon</h3>
-                <p>This module is under construction.</p>
+            <div style="background:white; padding:1.5rem; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <h3 style="margin-bottom:1rem; color:#2d3748;">Recent Complaints</h3>
+
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width:800px;">
+                        <thead>
+                            <tr style="border-bottom:2px solid #e2e8f0; text-align:left; color:#64748b;">
+                                <th style="padding:1rem;">Student</th>
+                                <th style="padding:1rem;">Title</th>
+                                <th style="padding:1rem;">Category</th>
+                                <th style="padding:1rem;">Against</th>
+                                <th style="padding:1rem;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaintsTableBody">
+                            <!-- Dynamic Content -->
+                            <tr>
+                                <td colspan="5" style="text-align:center; padding:2rem;">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
+
+        <script src="../assets/js/hod_complaints.js"></script>
     </main>
 </body>
 
