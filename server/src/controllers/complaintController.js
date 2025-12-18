@@ -206,3 +206,16 @@ export const upliftComplaint = async (req, res) => {
         res.status(500).json({ message: 'Server Error uplifting complaint' });
     }
 };
+
+// @desc    Get My Complaints (Hosteler)
+// @route   GET /api/complaints/my
+export const getMyComplaints = async (req, res) => {
+    try {
+        const complaints = await Complaint.find({ student: req.user._id })
+            .populate('againstUser', 'name')
+            .sort({ createdAt: -1 });
+        res.json(complaints);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

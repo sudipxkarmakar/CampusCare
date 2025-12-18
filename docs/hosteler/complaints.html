@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Complaints | Hosteler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #e2e8f0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .search-results {
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .search-result-item:hover {
+            background: #f8fafc;
+        }
+
+        .complaint-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .submitted {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Assuming pending is reddish? No defaults to blue usually */
+        .status-badge.submitted {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .status-badge.in-progress {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-badge.resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
+                style="font-size:0.8rem; background:#3b82f6; color:white; padding:2px 8px; border-radius:10px;">Hostel</span>
+        </a>
+        <div><a href="index.html" style="text-decoration:none; color:#2d3748; font-weight:600;">Dashboard</a></div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent;">
+            <div class="hero-left">
+                <h1 class="hero-title" style="color:#2d3748;">My Complaints</h1>
+                <p class="hero-sub" style="color:#4a5568;">Report facility issues or concerns</p>
+            </div>
+        </section>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-target="new-complaint">File Complaint</button>
+            <button class="tab-btn" data-target="my-complaints">History</button>
+        </div>
+
+        <section id="new-complaint" class="tab-content active">
+            <div class="form-card">
+                <form id="complaintForm">
+                    <div class="form-group">
+                        <label>Issue Category</label>
+                        <select id="category" class="input-field" required>
+                            <option value="">Select Category</option>
+                            <option value="Electrical">Electrical (Fan, Light, etc.)</option>
+                            <option value="Sanitation">Sanitation (Water, Cleanliness)</option>
+                            <option value="Civil">Civil (Furniture, Door, etc.)</option>
+                            <option value="Mess">Mess Food/Hygiene</option>
+                            <option value="IT">Internet / Wi-Fi</option>
+                            <option value="Disciplinary">Disciplinary / Against Student</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div id="studentSearchSection" class="form-group" style="display:none;">
+                        <label>Search Student (Name or Roll No)</label>
+                        <input type="text" id="studentSearch" class="input-field" placeholder="Type to search..."
+                            autocomplete="off">
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="title" class="input-field" placeholder="Brief subject" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="priority" class="input-field">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description" class="input-field" rows="4"
+                            placeholder="Describe the issue in detail..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width:100%;">Submit Complaint</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="my-complaints" class="tab-content">
+            <div id="complaintsListContainer">
+                <div style="text-align:center; padding:2rem;">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> Loading...
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="complaints.js"></script>
+</body>
+
+</html>

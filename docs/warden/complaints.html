@@ -8,6 +8,108 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .complaint-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .complaint-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            border-left: 5px solid #3b82f6;
+        }
+
+        .complaint-card.disciplinary {
+            border-left-color: #ef4444;
+            background-color: #fff1f2;
+        }
+
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-blue {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .complaint-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .resolve {
+            background: #10b981;
+            color: white;
+        }
+
+        .escalate {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .alert-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 10px;
+            border-radius: 8px;
+            color: #991b1b;
+        }
+
+        .uplift-info {
+            font-size: 0.8rem;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,21 +122,60 @@
         <div><a href="index.html" style="text-decoration:none; color:#2d3748; font-weight:600;">Dashboard</a></div>
     </header>
     <main class="main-container">
-        <section class="hero teacher-hero" style="background: transparent;">
-            <div class="hero-left">
-                <h1 class="hero-title" style="color:#2d3748;">Hostel Complaints</h1>
-                <p class="hero-sub" style="color:#4a5568;">Address Resident Issues</p>
+        <section class="hero teacher-hero" style="background: transparent; padding-bottom: 1rem;">
+            <div
+                style="max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; align-items: flex-start;">
+                <div class="hero-left" style="width: 100%; margin-bottom: 1rem;">
+                    <h1 class="hero-title" style="color:#2d3748;">Hostel Complaints</h1>
+                    <p class="hero-sub" style="color:#4a5568;">Manage facility issues and student conflicts</p>
+                </div>
+                <div class="filter-controls" style="width: 100%; display: flex; gap: 10px; align-items: center;">
+                    <label for="priorityFilter" style="font-weight: 600; color: #4a5568;">Priority:</label>
+                    <select id="priorityFilter"
+                        style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; cursor: pointer;">
+                        <option value="All">All Priorities</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
             </div>
         </section>
-        <section class="standard-container">
-            <div style="background:white; padding:2rem; border-radius:15px; text-align:center; color:#64748b;">
-                <i class="fa-solid fa-triangle-exclamation"
-                    style="font-size:3rem; margin-bottom:1rem; color:#cbd5e1;"></i>
-                <h3>Complaint System Coming Soon</h3>
-                <p>This module is under construction.</p>
+
+        <section class="complaint-container" id="complaintList">
+            <!-- Loaded via JS -->
+            <div style="text-align:center; padding:2rem;">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Loading complaints...
             </div>
         </section>
     </main>
+
+    <!-- Escalate Modal -->
+    <div id="escalateModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background:white; max-width:400px; margin:15% auto; padding:20px; border-radius:12px;">
+            <h3>Escalate Complaint</h3>
+            <p>Forward this issue to higher authority.</p>
+            <div class="form-group">
+                <label>Forward To:</label>
+                <select id="escalateTarget" class="input-field" style="width:100%; padding:10px; margin-top:5px;">
+                    <option value="">Select Authority</option>
+                    <option value="Principal">Principal</option>
+                    <option value="Disciplinary Committee">Disciplinary Committee</option>
+                </select>
+            </div>
+            <div style="margin-top:20px; text-align:right;">
+                <button onclick="closeEscalateModal()"
+                    style="padding:8px 16px; background:#e2e8f0; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+                <button onclick="confirmEscalate()"
+                    style="padding:8px 16px; background:#f59e0b; color:white; border:none; border-radius:6px; cursor:pointer;">Escalate</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="warden_complaints.js"></script>
 </body>
 
 </html>

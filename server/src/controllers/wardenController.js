@@ -1,4 +1,5 @@
 import Leave from '../models/Leave.js';
+import Complaint from '../models/Complaint.js';
 import MessMenu from '../models/MessMenu.js';
 import User from '../models/User.js';
 
@@ -125,11 +126,81 @@ const getMessMenu = async (req, res) => {
     }
 };
 
+
+// @desc    Get Hostel Complaints (Facility & Disciplinary)
+// @route   GET /api/warden/complaints
+// @access  Private/Warden
+const getHostelComplaints = async (req, res) => {
+    try {
+        const complaints = await Complaint.find({
+            $or: [
+                { category: { $in: ['Electrical', 'Sanitation', 'Civil', 'Mess', 'Other'] } }, // Facility
+                { category: 'Disciplinary' } // Disciplinary
+            ]
+        })
+            .populate('student', 'name roomNumber hostelName')
+            .populate('againstUser', 'name')
+            .sort({ createdAt: -1 });
+
+        res.json(complaints);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error fetching complaints' });
+    }
+};
+
+// @desc    Resolve Complaint
+// @route   PUT /api/warden/complaints/:id/resolve
+// @access  Private/Warden
+const resolveComplaint = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const complaint = await Complaint.findById(id);
+
+        if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+        complaint.status = 'Resolved';
+        complaint.resolvedBy = req.user._id;
+        await complaint.save();
+
+        res.json(complaint);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error resolving complaint' });
+    }
+};
+
+// @desc    Escalate Complaint
+// @route   PUT /api/warden/complaints/:id/escalate
+// @access  Private/Warden
+const escalateComplaint = async (req, res) => {
+    const { target } = req.body; // 'Principal', 'Disciplinary Committee'
+    try {
+        const { id } = req.params;
+        const complaint = await Complaint.findById(id);
+
+        if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+        complaint.status = 'In Progress';
+        complaint.isUplifted = true;
+        complaint.upliftedTo = target;
+        await complaint.save();
+
+        res.json(complaint);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error escalating complaint' });
+    }
+};
+
 export {
     getWardenDashboardStats,
     getPendingLeaves,
     handleLeaveAction,
     updateMessMenu,
     getHostelers,
-    getMessMenu
+    getMessMenu,
+    getHostelComplaints,
+    resolveComplaint,
+    escalateComplaint
 };
