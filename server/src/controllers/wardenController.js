@@ -112,10 +112,24 @@ const getHostelers = async (req, res) => {
     }
 };
 
+// @desc    Get Mess Menu
+// @route   GET /api/warden/mess
+// @access  Private/Warden
+const getMessMenu = async (req, res) => {
+    try {
+        const menu = await MessMenu.find({});
+        res.json(menu);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getWardenDashboardStats,
     getPendingLeaves,
     handleLeaveAction,
     updateMessMenu,
-    getHostelers
+    getHostelers,
+    getMessMenu
 };
