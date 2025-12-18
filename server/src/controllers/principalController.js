@@ -71,8 +71,22 @@ const resolveComplaintDirectly = async (req, res) => {
     }
 };
 
+// @desc    Get All Students
+// @route   GET /api/principal/students
+// @access  Private/Principal
+const getAllStudents = async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' }).select('-password');
+        res.json(students);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getPrincipalDashboardStats,
     getAllStaff,
-    resolveComplaintDirectly
+    resolveComplaintDirectly,
+    getAllStudents
 };
