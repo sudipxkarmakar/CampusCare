@@ -65,9 +65,9 @@ function renderNotices(filterType) {
 
         if (fType === 'all') return true;
 
-        // Teachers Filter: Shows 'teacher' and 'hod'
+        // Teachers Filter: Shows 'teacher', 'hod', 'principal', 'warden'
         if (fType === 'teacher') {
-            return nAudience === 'teacher' || nAudience === 'hod';
+            return ['teacher', 'hod', 'principal', 'warden'].includes(nAudience);
         }
 
         // Students Filter: Shows 'student'
