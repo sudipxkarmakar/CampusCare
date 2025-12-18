@@ -251,12 +251,11 @@ export const loginUser = async (req, res) => {
                 department: user.department,
                 batch: user.batch,
                 section: user.section,
-<<<<<<< HEAD
+
                 rollNumber: user.rollNumber,
                 employeeId: user.employeeId,
-=======
                 hostelName: user.hostelName, // Return hostel info if needed
->>>>>>> f2f10a2d6e756a7cf31b015b4e41d057279f7897
+
                 token: generateToken(user._id),
             });
         } else {
