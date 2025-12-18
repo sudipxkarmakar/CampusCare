@@ -65,6 +65,25 @@ export const submitMarMooc = async (req, res) => {
             status: 'Proposed' // Default status
         });
 
+        // --- SYNC UPDATE: Recalculate Totals for User Profile ---
+        const allRecords = await MarMooc.find({ student: req.user._id });
+
+        const totalMar = allRecords
+            .filter(r => r.category === 'mar')
+            .reduce((acc, curr) => acc + (curr.points || 0), 0);
+
+        const totalMooc = allRecords
+            .filter(r => r.category === 'mooc')
+            .reduce((acc, curr) => acc + (curr.points || 0), 0);
+
+        console.log(`[SYNC] Updating User ${req.user._id}: MAR ${totalMar}, MOOC ${totalMooc}`);
+
+        await User.findByIdAndUpdate(req.user._id, {
+            mar: totalMar,
+            moocs: totalMooc
+        });
+        // -------------------------------------------------------
+
         res.status(201).json(newRecord);
     } catch (error) {
         res.status(500).json({ message: error.message });
