@@ -314,7 +314,7 @@ const assignSubjectTeacher = async (req, res) => {
                 subject.batchAssignments[existingIndex].teacher = teacherId;
             } else {
                 // Add new assignment
-                subject.batchAssignments.push({ batch, teacher: teacherId });
+                subject.batchAssignments.push({ batch, teacher: teacherId, time: 0 });
             }
 
             // Atomic update for persistence

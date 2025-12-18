@@ -45,7 +45,8 @@ const subjectSchema = new mongoose.Schema({
     // New structure for Batch-wise assignment
     batchAssignments: [{
         batch: { type: String, required: true }, // "Batch 1", "Batch 2"
-        teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+        teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        time: { type: Number, default: 0 }
     }]
 }, { timestamps: true });
 

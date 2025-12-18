@@ -32,13 +32,28 @@ async function loadTeachers() {
     }
 }
 
-async function loadStudentsForMentorship() {
-    const year = document.getElementById('mentorYearFilter').value;
-    const b1List = document.getElementById('batch1List');
-    const b2List = document.getElementById('batch2List');
+const yearMapping = {
+    "4th Year": "2026",
+    "3rd Year": "2027",
+    "2nd Year": "2028",
+    "1st Year": "2029"
+};
 
-    b1List.innerHTML = '<div class="loading-spinner"></div>';
-    b2List.innerHTML = '<div class="loading-spinner"></div>';
+async function loadStudentsForMentorship() {
+    const yearLabel = document.getElementById('mentorYearFilter').value; // "4th Year"
+    const targetYear = yearMapping[yearLabel]; // "2026"
+
+    const containers = {
+        '1-1': document.getElementById('batch11List'),
+        '1-2': document.getElementById('batch12List'),
+        '2-1': document.getElementById('batch21List'),
+        '2-2': document.getElementById('batch22List')
+    };
+
+    // Show loading
+    Object.values(containers).forEach(c => {
+        if (c) c.innerHTML = '<div class="loading-spinner"></div>';
+    });
 
     const userStr = localStorage.getItem('user');
     const user = JSON.parse(userStr);
@@ -49,16 +64,65 @@ async function loadStudentsForMentorship() {
         });
         const allStudents = await res.json();
 
-        // Filter by Year (Client side for now as getStudents returns all for dept)
-        const yearFiltered = allStudents.filter(s => s.year === year || s.batch === year);
+        // Filter by Year (Check year label OR passOutYear)
+        const yearFiltered = allStudents.filter(s =>
+            s.year === yearLabel ||
+            s.passOutYear === targetYear ||
+            (s.batch && s.batch.includes(yearLabel))
+        );
 
-        // Split by Batch (Mock split or using available data)
-        renderStudentList(b1List, yearFiltered.slice(0, Math.ceil(yearFiltered.length / 2)));
-        renderStudentList(b2List, yearFiltered.slice(Math.ceil(yearFiltered.length / 2)));
+        // Clear containers
+        Object.values(containers).forEach(c => {
+            if (c) c.innerHTML = '';
+        });
+
+        if (yearFiltered.length === 0) {
+            Object.values(containers).forEach(c => {
+                if (c) c.innerHTML = '<div style="color:#94a3b8; font-style:italic; padding:10px;">No students found for this year</div>';
+            });
+            return;
+        }
+
+        // Distribute by Sub-Batch
+        // If subBatch is missing, try to infer or put in 'Misc'
+        // Assuming data has subBatch: "1-1", "1-2", "2-1", "2-2"
+        const distributed = {
+            '1-1': [], '1-2': [], '2-1': [], '2-2': []
+        };
+
+        yearFiltered.forEach(s => {
+            if (s.subBatch && distributed[s.subBatch]) {
+                distributed[s.subBatch].push(s);
+            } else {
+                // Fallback logic if subBatch is missing but we want to split evenly?
+                // Or maybe check 'batch' field if it says "Batch 1"
+                // For now, let's assume if unknown, we just don't show or put in 1-1?
+                // Better: Check batch "1" -> 1-1, "2" -> 2-1 if strictly 2 main batches.
+                // But USER asked for 4 sub batches. Data SHOULD have 1-1 etc.
+                // Let's fallback to checking batch string
+                if (s.subBatch) {
+                    // unrecognized subbatch
+                } else if (s.batch === '1') {
+                    // evenly split batch 1? No, just put in 1-1 for now or warn
+                    distributed['1-1'].push(s);
+                } else if (s.batch === '2') {
+                    distributed['2-1'].push(s);
+                }
+            }
+        });
+
+        // Use keys to render
+        for (const [key, list] of Object.entries(distributed)) {
+            if (containers[key]) {
+                renderStudentList(containers[key], list);
+            }
+        }
 
     } catch (err) {
         console.error(err);
-        b1List.innerHTML = 'Error loading students';
+        Object.values(containers).forEach(c => {
+            if (c) c.innerHTML = 'Error loading students';
+        });
     }
 }
 
