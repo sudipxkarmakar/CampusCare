@@ -97,10 +97,9 @@ export const getMyContent = async (req, res) => {
     try {
         const { department, year, batch, subBatch, section } = req.user;
 
-        // Fetch Assignments
         // Logic: 
         // 1. Matches Dept AND Year
-        // 2. Matches Batch (OR Batch is not set/all)
+        // 2. Matches Batch (OR 'All', OR Batch matches)
         // 3. Matches SubBatch (OR SubBatch is not set/all)
         // 4. Matches Section (If user has one, and Assignment has one)
 
@@ -108,9 +107,8 @@ export const getMyContent = async (req, res) => {
             department: department,
             year: year,
             $or: [
-                { batch: batch, subBatch: { $exists: false } }, // Batch level
-                { batch: batch, subBatch: null }, // Batch level
-                { batch: batch, subBatch: subBatch } // Specific Sub-batch
+                { batch: batch },
+                { batch: 'All' }
             ]
         };
 
@@ -127,9 +125,19 @@ export const getMyContent = async (req, res) => {
             ];
         }
 
-        const assignments = await Assignment.find(assignmentQuery)
+        const assignmentsData = await Assignment.find(assignmentQuery)
             .sort({ createdAt: -1 })
             .populate('teacher', 'name email');
+
+        // Check for submissions
+        const submissions = await import('../models/Submission.js').then(m => m.default.find({ student: req.user._id }));
+        const submissionMap = new Set(submissions.map(s => s.assignment.toString()));
+
+        const assignments = assignmentsData.map(a => {
+            const doc = a.toObject();
+            doc.submitted = submissionMap.has(a._id.toString());
+            return doc;
+        });
 
         const notes = await Note.find({
             department: department,

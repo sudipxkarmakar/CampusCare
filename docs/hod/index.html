@@ -123,14 +123,24 @@
                 <div style="background:white; padding:1.5rem; border-radius:15px; text-align:center; height:100%;">
                     <h3 id="deptNameDisplay" style="color:#1e3a8a; margin-bottom:1rem;">Loading...</h3>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-                        <div style="background:#f0f9ff; padding:1rem; border-radius:10px;">
-                            <div id="studentCountVal" style="font-size:2rem; font-weight:bold; color:#0369a1;">0</div>
-                            <div style="font-size:0.8rem; color:#64748b;">Students</div>
-                        </div>
-                        <div style="background:#f0fdf4; padding:1rem; border-radius:10px;">
-                            <div id="teacherCountVal" style="font-size:2rem; font-weight:bold; color:#15803d;">0</div>
-                            <div style="font-size:0.8rem; color:#64748b;">Teachers</div>
-                        </div>
+                        <a href="students.html" style="text-decoration:none; display:block;">
+                            <div style="background:#f0f9ff; padding:1rem; border-radius:10px; transition: transform 0.2s;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                                <div id="studentCountVal" style="font-size:2rem; font-weight:bold; color:#0369a1;">0
+                                </div>
+                                <div style="font-size:0.8rem; color:#64748b;">Students</div>
+                            </div>
+                        </a>
+                        <a href="teachers.html" style="text-decoration:none; display:block;">
+                            <div style="background:#f0fdf4; padding:1rem; border-radius:10px; transition: transform 0.2s;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'">
+                                <div id="teacherCountVal" style="font-size:2rem; font-weight:bold; color:#15803d;">0
+                                </div>
+                                <div style="font-size:0.8rem; color:#64748b;">Teachers</div>
+                            </div>
+                        </a>
                     </div>
                     <div style="margin-top:1.5rem;">
                         <a href="notices.html"

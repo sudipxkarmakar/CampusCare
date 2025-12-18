@@ -17,15 +17,22 @@ const api = {
         }
 
         const headers = {
-            'Content-Type': 'application/json'
+            ...options.headers // Merge existing headers from options
         };
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
+        // Only set JSON content type if body is NOT FormData and not explicitly set
+        if (options.body && !(options.body instanceof FormData) && !headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(options.body);
+        }
+
         return await fetch(`${API_URL}${endpoint}`, {
-            method: 'GET',
-            headers: headers
+            method: 'GET', // Default to GET, can be overridden by options
+            ...options, // Spread the rest of the options
+            headers: headers // Use the merged headers
         });
     },
 

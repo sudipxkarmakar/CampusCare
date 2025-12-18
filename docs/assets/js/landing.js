@@ -186,7 +186,41 @@ window.checkAuthState = function () {
         else if (role === 'hosteler') roleColor = 'f59e0b'; // Orange
         else if (role === 'teacher') roleColor = '10b981'; // Green
 
-        if (userAvatar) userAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+        // Determine path depth for relative links (Profile & Image)
+        const currentPath = window.location.pathname;
+        const isSubDir = currentPath.includes('/student/') || currentPath.includes('/teacher/') || currentPath.includes('/hostel/') || currentPath.includes('/complaints/') || currentPath.includes('/notices/');
+
+        // Default Avatar
+        let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+
+        // Custom Avatar (if exists)
+        if (user.profilePicture) {
+            let cleanPath = user.profilePicture;
+            // Ensure we have a clean relative string "uploads/profiles/..."
+            if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
+
+            const isFileProtocol = window.location.protocol === 'file:';
+
+            if (isFileProtocol) {
+                // FILE PROTOCOL: Must use relative paths
+                // If in subdir (student/), use '../uploads...'
+                // If in root (index.html), use 'uploads...'
+                const prefix = isSubDir ? '../' : '';
+                avatarSrc = prefix + cleanPath;
+            } else {
+                // SERVER PROTOCOL: Best to use absolute path from root
+                avatarSrc = '/' + cleanPath;
+            }
+
+            // Add timestamp to prevent caching
+            avatarSrc += `?t=${new Date().getTime()}`;
+        }
+
+        if (userAvatar) {
+            userAvatar.src = avatarSrc;
+            // Add style to ensure object-fit matches
+            userAvatar.style.objectFit = 'cover';
+        }
 
         if (userDetails) {
             // Determine path to profile.html based on current location

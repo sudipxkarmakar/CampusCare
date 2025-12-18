@@ -147,34 +147,47 @@ if (loginForm) {
                 if (!hostelName || !roomNumber) return alert('Hostel Name and Room Number are required.');
             }
 
-            const regData = {
-                name,
-                email,
-                contactNumber,
-                password,
-                role,
-                department,
-                year: (role === 'student' || role === 'hosteler') ? year : undefined,
-                batch: role !== 'teacher' ? batch : undefined,
-                section: role === 'student' ? section : undefined,
-                bloodGroup: bloodGroup, // Send for ALL roles now
-                ...(role === 'student' || role === 'hosteler' ? { rollNumber: identifier } : { employeeId: identifier })
-            };
+            // FormData for File Upload
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('contactNumber', contactNumber);
+            formData.append('password', password);
+            formData.append('role', role);
+            formData.append('department', department);
+            formData.append('bloodGroup', bloodGroup);
+
+            if (role === 'student' || role === 'hosteler') {
+                formData.append('year', year);
+                formData.append('rollNumber', identifier);
+            } else {
+                formData.append('employeeId', identifier);
+            }
+
+            if (role !== 'teacher') formData.append('batch', batch);
+            if (role === 'student') formData.append('section', section);
+
+            // Picture
+            const fileInput = document.getElementById('reg-profile-pic');
+            if (fileInput && fileInput.files[0]) {
+                formData.append('profileImage', fileInput.files[0]);
+            }
 
             if (role === 'teacher') {
-                regData.designation = designation;
-                regData.yearsExperience = yearsExperience;
-                regData.joiningYear = joiningYear;
-                regData.specialization = specialization;
+                formData.append('designation', designation);
+                formData.append('yearsExperience', yearsExperience);
+                formData.append('joiningYear', joiningYear);
+                formData.append('specialization', specialization);
             }
 
             if (role === 'hosteler') {
-                regData.hostelName = hostelName;
-                regData.roomNumber = roomNumber;
+                formData.append('hostelName', hostelName);
+                formData.append('roomNumber', roomNumber);
             }
 
             try {
-                const result = await api.post('/auth/register', regData);
+                // Send FormData directly (No Content-Type header manually set)
+                const result = await api.post('/auth/register', formData);
                 if (result.token) {
                     alert('Registration Successful! Please login with your credentials.');
                     toggleRegister.click();

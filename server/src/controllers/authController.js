@@ -25,9 +25,9 @@ const validateRoleData = (role, data) => {
         return null;
     }
 
-    if (role === 'teacher') {
+    if (role === 'teacher' || role === 'hod') {
         if (!employeeId || employeeId.length < 5) return 'Valid Employee ID is required.';
-        if (!department) return 'Department is required for Teachers.';
+        if (!department) return 'Department is required for Teachers/HODs.';
         return null; // Batch/Section not required
     }
 
@@ -100,7 +100,7 @@ export const registerUser = async (req, res) => {
         }
         // ...
         let idQuery;
-        if (role === 'teacher') {
+        if (role === 'teacher' || role === 'hod') {
             idQuery = { employeeId };
         } else {
             // Students & Hostelers: Roll Number is unique ONLY within the department
@@ -110,7 +110,7 @@ export const registerUser = async (req, res) => {
         const idExists = await User.findOne(idQuery);
 
         if (idExists) {
-            const idType = role === 'teacher' ? 'Employee ID' : 'Roll Number in this Department';
+            const idType = (role === 'teacher' || role === 'hod') ? 'Employee ID' : 'Roll Number in this Department';
             return res.status(400).json({ message: `${idType} already exists.` });
         }
 
@@ -136,12 +136,21 @@ export const registerUser = async (req, res) => {
             userData.batch = batch;
             userData.hostelName = hostelName;
             userData.roomNumber = roomNumber;
-        } else if (role === 'teacher') {
+        } else if (role === 'teacher' || role === 'hod') {
             userData.employeeId = employeeId;
             userData.designation = designation;
             userData.yearsExperience = yearsExperience;
             userData.joiningYear = joiningYear;
             userData.specialization = specialization;
+        }
+
+        // 5. Handle Profile Picture
+        if (req.file) {
+            // Convert to relative path for generic "static" serving
+            // Current path: c:\.../docs/uploads/profiles/filename.jpg
+            // We want: /uploads/profiles/filename.jpg
+            const relativePath = `/uploads/profiles/${req.file.filename}`;
+            userData.profilePicture = relativePath;
         }
 
         // 5. Create User
@@ -255,7 +264,6 @@ export const loginUser = async (req, res) => {
                 rollNumber: user.rollNumber,
                 employeeId: user.employeeId,
                 hostelName: user.hostelName, // Return hostel info if needed
-
                 token: generateToken(user._id),
             });
         } else {

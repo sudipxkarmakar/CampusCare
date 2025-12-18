@@ -39,7 +39,7 @@ const upload = multer({
 
 const router = express.Router();
 
-router.post('/register', registerUser);
+router.post('/register', upload.single('profileImage'), registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protect, getProfile);
 router.post('/profile-picture', protect, upload.single('profileImage'), uploadProfilePicture);
