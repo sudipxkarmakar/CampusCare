@@ -97,9 +97,25 @@ const updateMessMenu = async (req, res) => {
     }
 };
 
+// @desc    Get All Hostelers
+// @route   GET /api/warden/students
+// @access  Private/Warden
+const getHostelers = async (req, res) => {
+    try {
+        const hostelers = await User.find({ role: 'hosteler' })
+            .select('name rollNumber department year hostelName roomNumber contactNumber email profilePicture')
+            .sort({ name: 1 });
+        res.json(hostelers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getWardenDashboardStats,
     getPendingLeaves,
     handleLeaveAction,
-    updateMessMenu
+    updateMessMenu,
+    getHostelers
 };
