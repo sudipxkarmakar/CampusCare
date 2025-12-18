@@ -84,9 +84,23 @@ const getAllStudents = async (req, res) => {
     }
 };
 
+// @desc    Get All Teachers
+// @route   GET /api/principal/teachers
+// @access  Private/Principal
+const getAllTeachers = async (req, res) => {
+    try {
+        const teachers = await User.find({ role: 'teacher' }).select('-password');
+        res.json(teachers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getPrincipalDashboardStats,
     getAllStaff,
     resolveComplaintDirectly,
-    getAllStudents
+    getAllStudents,
+    getAllTeachers
 };
