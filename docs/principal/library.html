@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Library | Principal Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .book-cover {
+            height: 200px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 3rem;
+        }
+
+        .book-info {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .book-author {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-borrowed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Grid layout for equal height cards */
+        .grid-books {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-building-columns"></i> CampusCare <span
+                style="font-size:0.8rem; background:#7c3aed; color:white; padding:2px 8px; border-radius:10px;">PRINCIPAL</span>
+        </a>
+        <div><a href="index.html" style="text-decoration:none; color:#2d3748; font-weight:600;">Dashboard</a></div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent;">
+            <div class="hero-left">
+                <h1 class="hero-title" style="color:#2d3748;">Central Library</h1>
+                <p class="hero-sub" style="color:#4a5568;">Browse and Manage Library Resources</p>
+            </div>
+        </section>
+
+        <!-- SEARCH and FILTERS -->
+        <section class="standard-container" style="margin-bottom:2rem;">
+            <div
+                style="background:white; padding:15px; border-radius:15px; display:flex; flex-wrap:wrap; gap:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); align-items:center;">
+
+                <i class="fa-solid fa-search"
+                    style="color:#94a3b8; align-self:center; font-size:1.2rem; margin-left:10px;"></i>
+                <input type="text" id="searchInput" placeholder="Search by Title..."
+                    style="flex:1; border:none; outline:none; font-size:1rem; color:#4a5568; min-width: 200px;">
+
+                <select id="categoryFilter"
+                    style="padding:10px; border:1px solid #e2e8f0; border-radius:10px; outline:none; color:#4a5568;">
+                    <option value="">All Categories</option>
+                    <option value="CSE">CSE</option>
+                    <option value="IT">IT</option>
+                    <option value="ECE">ECE</option>
+                    <option value="CIVIL">CIVIL</option>
+                    <option value="General">General</option>
+                </select>
+
+                <button
+                    style="padding:10px 25px; background:#3b82f6; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600;">Search</button>
+            </div>
+        </section>
+
+        <!-- BOOK GRID -->
+        <section class="standard-container" style="padding:0; background:transparent; box-shadow:none;">
+            <div id="bookList"
+                style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:2rem;">
+                <div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#64748b;">
+                    Loading library...
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const bookList = document.getElementById('bookList');
+
+            // Debounce Timer
+            let timeout = null;
+
+            // Load Initial Books
+            fetchBooks();
+
+            // Event Listeners
+            searchInput.addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(fetchBooks, 300); // 300ms debounce
+            });
+
+            categoryFilter.addEventListener('change', fetchBooks);
+
+            async function fetchBooks() {
+                const search = searchInput.value.trim();
+                const category = categoryFilter.value;
+
+                // Constraint: Client-side validation for search length (Min 1 char)
+                if (search.length > 0 && search.length < 1) {
+                    bookList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#dc2626;">Please enter at least 1 character to search.</div>`;
+                    return;
+                }
+
+                // Build Query URL
+                const queryParams = new URLSearchParams({
+                    search,
+                    category: category === "" ? "" : category
+                });
+
+                try {
+                    const res = await fetch(`${API_URL}/library?${queryParams}`);
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.message || 'Failed to fetch books');
+                    }
+                    const books = await res.json();
+                    renderBooks(books);
+                } catch (error) {
+                    console.error(error);
+                    bookList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:red;">${error.message}</div>`;
+                }
+            }
+
+            function renderBooks(books) {
+                if (books.length === 0) {
+                    bookList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#64748b;">No books found matching your criteria.</div>`;
+                    return;
+                }
+
+                let html = '';
+                books.forEach(book => {
+                    html += `
+                    <div style="background:white; border-radius:15px; padding:1.5rem; text-align:center; transition: transform 0.2s; box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1);"
+                        onmouseover="this.style.transform='translateY(-5px)'"
+                        onmouseout="this.style.transform='translateY(0)'">
+                        
+                        <div style="width:100px; height:140px; background:#e2e8f0; margin:0 auto 1rem auto; border-radius:5px; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-book" style="font-size:3rem; color:#94a3b8;"></i>
+                        </div>
+                        
+                        <h3 style="font-size:1rem; margin:0 0 5px 0; color:#2d3748; font-weight:600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" title="${book.title}">${book.title}</h3>
+                        <p style="font-size:0.85rem; color:#64748b; margin:0 0 10px 0;">${book.author}</p>
+                        
+                        <div style="margin-bottom:10px;">
+                            <span style="font-size:0.75rem; background:#f3f4f6; color:#4b5563; padding:2px 8px; border-radius:10px;">${book.category}</span>
+                        </div>
+                    </div>
+                    `;
+                });
+
+                bookList.innerHTML = html;
+            }
+        });
+    </script>
+</body>
+
+</html>
