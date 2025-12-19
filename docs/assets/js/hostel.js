@@ -20,17 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (leaveForm) {
         leaveForm.addEventListener('submit', handleLeaveSubmit);
 
-        // Initialize Flatpickr
-        flatpickr("#startDate", {
+        // Initialize Flatpickr Logic for Linked Dates
+        const startDatePicker = flatpickr("#startDate", {
             enableTime: true,
-            dateFormat: "Y-m-d H:i", // Internal value format (Standard ISO for DB)
+            dateFormat: "Y-m-d H:i",
             altInput: true,
-            altFormat: "d/m/Y H:i",   // User friendly format
+            altFormat: "d/m/Y H:i",
             minDate: "today",
-            time_24hr: true
+            time_24hr: true,
+            onChange: function (selectedDates, dateStr, instance) {
+                // When start date updates, set end date's minDate to the start date
+                // This prevents selecting an end date before the start date
+                endDatePicker.set('minDate', dateStr);
+            }
         });
 
-        flatpickr("#endDate", {
+        const endDatePicker = flatpickr("#endDate", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             altInput: true,
