@@ -1,5 +1,6 @@
 import Routine from '../models/Routine.js';
 import User from '../models/User.js';
+import Subject from '../models/Subject.js'; // Required for populate('subject')
 
 // @desc    Get Student Routine (My Class)
 // @route   GET /api/routine/student
@@ -21,7 +22,9 @@ export const getStudentRoutine = async (req, res) => {
 
         const query = {
             department,
-            year,
+            // If user has a specific semester (e.g. 7), prefer that. 
+            // Fallback to year if semester is missing in user OR query params.
+            ...(req.user?.semester ? { semester: req.user.semester } : { year }),
             batch
         };
 

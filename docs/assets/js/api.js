@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:5000/api';
 
 const api = {
     // Generic Fetch with Auth (GET)
-    fetchWithAuth: async (endpoint) => {
+    fetchWithAuth: async (endpoint, options = {}) => {
         // Fix: Token is likely inside the 'user' object
         const userStr = localStorage.getItem('user');
         let token = localStorage.getItem('token'); // Fallback
