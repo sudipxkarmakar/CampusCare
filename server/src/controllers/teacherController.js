@@ -12,7 +12,7 @@ export const getMyMentees = async (req, res) => {
     try {
         // 1. Find all students where mentor equals this teacher
         let mentees = await User.find({ mentor: req.user._id })
-            .select('name email rollNumber department batch subBatch section mobile attendance cgpa mar moocs');
+            .select('name email rollNumber department year batch subBatch section mobile contactNumber attendance cgpa mar moocs profilePicture');
 
         // Optional Search Filter
         const { search } = req.query;
