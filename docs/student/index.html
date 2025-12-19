@@ -192,11 +192,12 @@
     <!-- TOP OVERVIEW BAR -->
     <!-- TOP OVERVIEW BAR (Row 1) -->
     <section class="dashboard-grid standard-container" style="padding-bottom: 0;">
-      <a href="routine.html?view=today" class="stat-card">
-        <div class="stat-title">Today's First Class</div>
-        <div class="stat-value" style="font-size: 1.5rem;">Maths</div>
-        <div style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Using DeepSeek AI</div>
-        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;">Ends at 10:30 AM</div>
+      <a href="routine.html?view=today" class="stat-card" id="routine-link">
+        <div class="stat-title" id="routine-title">Today's Class</div>
+        <div class="stat-value" style="font-size: 1.5rem;" id="routine-subject">Loading...</div>
+        <div style="font-size: 0.85rem; color: #64748b; margin-top: 5px;" id="routine-teacher">Checking schedule...
+        </div>
+        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;" id="routine-time">Please wait</div>
       </a>
       <a href="assignments.html" class="stat-card">
         <div class="stat-title">Pending Assignments</div>
