@@ -80,6 +80,10 @@ const startServer = async () => {
   const docsPath = path.join(__dirname, '../../docs');
   app.use(express.static(docsPath));
 
+  // Serve uploads directory
+  const uploadsPath = path.join(__dirname, '../../uploads');
+  app.use('/uploads', express.static(uploadsPath));
+
   // Fallback to index.html for any other route (SPA behavior)
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(docsPath, 'index.html'));

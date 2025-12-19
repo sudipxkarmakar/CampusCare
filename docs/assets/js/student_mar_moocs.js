@@ -126,19 +126,20 @@ async function handleMarSubmit(e, token) {
     const points = parseInt(select.value);
 
     try {
+        const formData = new FormData();
+        formData.append('category', 'mar');
+        formData.append('title', title);
+        formData.append('platform', 'College');
+        formData.append('points', points);
+        formData.append('file', file.files[0]);
+
         const res = await fetch('http://localhost:5000/api/mar-moocs', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Authorization': `Bearer ${token}`
+                // Content-Type not set (browser sets multipart/form-data)
             },
-            body: JSON.stringify({
-                category: 'mar',
-                title: title,
-                platform: 'College', // Default
-                points: points,
-                link: 'pending_verification.pdf'
-            })
+            body: formData
         });
 
         if (res.ok) {
@@ -175,19 +176,20 @@ async function handleMoocsSubmit(e, token) {
     }
 
     try {
+        const formData = new FormData();
+        formData.append('category', 'mooc');
+        formData.append('title', title);
+        formData.append('platform', 'Online'); // Default or extract from link
+        formData.append('points', points);
+        formData.append('link', link);
+        formData.append('file', file.files[0]);
+
         const res = await fetch('http://localhost:5000/api/mar-moocs', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({
-                category: 'mooc',
-                title: title,
-                platform: 'Online',
-                points: points,
-                link: link
-            })
+            body: formData
         });
 
         if (res.ok) {

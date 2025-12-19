@@ -10,11 +10,11 @@ export const getStudentMarMoocs = async (req, res) => {
         const records = await MarMooc.find({ student: req.user._id }).sort({ createdAt: -1 });
 
         const marPoints = records
-            .filter(r => r.category === 'mar')
+            .filter(r => r.category === 'mar' && r.status === 'Verified')
             .reduce((acc, curr) => acc + (curr.points || 0), 0);
 
         const moocCredits = records
-            .filter(r => r.category === 'mooc')
+            .filter(r => r.category === 'mooc' && r.status === 'Verified')
             .reduce((acc, curr) => acc + (curr.points || 0), 0);
 
         res.json({
@@ -55,13 +55,19 @@ export const submitMarMooc = async (req, res) => {
             });
         }
 
+        let certificateUrl = link || '';
+        if (req.file) {
+            // If file uploaded, use the server path
+            certificateUrl = `/uploads/${req.file.filename}`;
+        }
+
         const newRecord = await MarMooc.create({
             student: req.user._id,
             category,
             title,
             platform: platform || 'Self',
             points,
-            certificateUrl: link || '',
+            certificateUrl,
             status: 'Proposed' // Default status
         });
 
@@ -69,11 +75,11 @@ export const submitMarMooc = async (req, res) => {
         const allRecords = await MarMooc.find({ student: req.user._id });
 
         const totalMar = allRecords
-            .filter(r => r.category === 'mar')
+            .filter(r => r.category === 'mar' && r.status === 'Verified')
             .reduce((acc, curr) => acc + (curr.points || 0), 0);
 
         const totalMooc = allRecords
-            .filter(r => r.category === 'mooc')
+            .filter(r => r.category === 'mooc' && r.status === 'Verified')
             .reduce((acc, curr) => acc + (curr.points || 0), 0);
 
         console.log(`[SYNC] Updating User ${req.user._id}: MAR ${totalMar}, MOOC ${totalMooc}`);
@@ -85,6 +91,69 @@ export const submitMarMooc = async (req, res) => {
         // -------------------------------------------------------
 
         res.status(201).json(newRecord);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
+// @desc    Get submissions from mentees (Teacher only)
+// @route   GET /api/mar-moocs/mentees
+// @access  Teacher
+export const getMenteeSubmissions = async (req, res) => {
+    try {
+        // Find mentees for this teacher
+        const mentees = await User.find({ mentor: req.user._id });
+        const menteeIds = mentees.map(m => m._id);
+
+        const submissions = await MarMooc.find({ student: { $in: menteeIds } })
+            .populate('student', 'name rollNumber batch section')
+            .sort({ createdAt: -1 });
+
+        res.json(submissions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Update submission status (Approve/Reject)
+// @route   PUT /api/mar-moocs/:id/status
+// @access  Teacher
+export const updateMarMoocStatus = async (req, res) => {
+    try {
+        const { status, remark } = req.body; // status: 'Verified' or 'Rejected'
+        const record = await MarMooc.findById(req.params.id);
+
+        if (!record) {
+            return res.status(404).json({ message: 'Record not found' });
+        }
+
+        // Optional: specific mentor check could go here, but generic Protect is ok for now
+
+        record.status = status;
+        if (remark) record.remark = remark;
+        await record.save();
+
+        // --- Recalculate Totals for Student ---
+        const studentId = record.student;
+        const allRecords = await MarMooc.find({ student: studentId });
+
+        const totalMar = allRecords
+            .filter(r => r.category === 'mar' && r.status === 'Verified')
+            .reduce((acc, curr) => acc + (curr.points || 0), 0);
+
+        const totalMooc = allRecords
+            .filter(r => r.category === 'mooc' && r.status === 'Verified')
+            .reduce((acc, curr) => acc + (curr.points || 0), 0);
+
+        await User.findByIdAndUpdate(studentId, {
+            mar: totalMar,
+            moocs: totalMooc
+        });
+        // -------------------------------------
+
+        res.json({ message: `Status updated to ${status}`, record });
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

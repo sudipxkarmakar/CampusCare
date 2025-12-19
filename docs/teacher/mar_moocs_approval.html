@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAR/MOOCs Approval | CampusCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .split-container {
+            display: flex;
+            width: 100%;
+            min-height: 80vh;
+            gap: 2rem;
+        }
+
+        .split-section {
+            flex: 1;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .split-section:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .points-display {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-mar {
+            background: linear-gradient(135deg, #ca8a04 0%, #eab308 100%);
+        }
+
+        .header-mooc {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .student-info {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+
+        .activity-points {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .reject-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass"
+        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
+        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-chalkboard-user"></i> CampusCare <span class="badge badge-teacher"
+                style="background:#10b981; color:white; padding:4px 8px; border-radius:12px; font-size:0.75rem;">TEACHER</span>
+        </a>
+
+        <div style="display:flex; align-items:center; gap: 1rem;">
+            <a href="index.html" class="btn-login"
+                style="text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Dashboard</a>
+
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Prof. User</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p
+                        style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
+                        Account Details</p>
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;"><i
+                            class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="standard-container">
+
+        <div class="standard-card"
+            style="text-align: center; margin-bottom: 2rem; background: rgba(255,255,255,0.8); border:none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            <h1 style="color: #1e293b; font-size: 1.8rem; margin: 0;">MAR & MOOCs Approvals</h1>
+        </div>
+
+        <div class="split-container">
+            <section class="split-section">
+                <div class="points-display header-mar">
+                    <div style="font-size: 1.5rem; font-weight: 700;"><i class="fa-solid fa-medal"></i> MAR Submissions
+                    </div>
+                    <div style="opacity: 0.8; font-size: 0.9rem;">Pending Reviews</div>
+                </div>
+                <ul id="mar-list" class="activity-list">
+                    <li style="text-align: center; color: #64748b;">Loading...</li>
+                </ul>
+            </section>
+
+            <section class="split-section">
+                <div class="points-display header-mooc">
+                    <div style="font-size: 1.5rem; font-weight: 700;"><i class="fa-solid fa-laptop-code"></i> MOOC
+                        Submissions</div>
+                    <div style="opacity: 0.8; font-size: 0.9rem;">Pending Reviews</div>
+                </div>
+                <ul id="mooc-list" class="activity-list">
+                    <li style="text-align: center; color: #64748b;">Loading...</li>
+                </ul>
+            </section>
+        </div>
+
+    </main>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/landing.js"></script>
+    <script src="../assets/js/teacher_mar_moocs.js"></script>
+</body>
+
+</html>
