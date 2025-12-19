@@ -320,24 +320,34 @@ async function fetchMarMoocs(token, grid, count) {
 
 // --- Edit Profile Logic ---
 
+// --- Edit Profile Logic ---
+
 const modal = document.getElementById('editProfileModal');
 const editForm = document.getElementById('editProfileForm');
 
 function openEditModal() {
     if (!modal) return;
 
-    // Populate Form with current UI values
-    // Using a more robust selector or fallback
-    const contactEl = document.getElementById('profileContact');
-    const bloodEl = document.getElementById('profileBloodGroup');
-    const currentContact = contactEl ? contactEl.innerText : '';
-    const currentBlood = bloodEl ? bloodEl.innerText : '';
+    // Get current user data from LocalStorage (Source of Truth)
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    const user = JSON.parse(userStr);
 
-    const contactInput = document.getElementById('editContact');
-    const bloodInput = document.getElementById('editBloodGroup');
+    // Populate Form Fields
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+    };
 
-    if (contactInput) contactInput.value = (currentContact === '--' || currentContact === 'N/A') ? '' : currentContact;
-    if (bloodInput) bloodInput.value = (currentBlood === '--' || currentBlood === 'Not Provided') ? '' : currentBlood;
+    setVal('editName', user.name);
+    setVal('editEmail', user.email);
+    setVal('editRoll', user.rollNumber || user.employeeId);
+    setVal('editDept', user.department);
+    setVal('editBatch', user.batch);
+    setVal('editSection', user.section);
+    setVal('editContact', user.contactNumber);
+    setVal('editBloodGroup', user.bloodGroup);
+    setVal('editAbout', user.about);
 
     modal.style.display = 'flex';
 }
@@ -361,13 +371,23 @@ if (editForm) {
     editForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const contact = document.getElementById('editContact').value;
-        const blood = document.getElementById('editBloodGroup').value;
-        const about = document.getElementById('editAbout').value;
+        // payload construction
+        const payload = {
+            name: document.getElementById('editName').value,
+            email: document.getElementById('editEmail').value,
+            rollNumber: document.getElementById('editRoll').value,
+            department: document.getElementById('editDept').value,
+            batch: document.getElementById('editBatch').value,
+            section: document.getElementById('editSection').value,
+            contactNumber: document.getElementById('editContact').value,
+            bloodGroup: document.getElementById('editBloodGroup').value,
+            about: document.getElementById('editAbout').value
+        };
 
         const userStr = localStorage.getItem('user');
         if (!userStr) return;
-        const token = JSON.parse(userStr).token;
+        const oldUser = JSON.parse(userStr);
+        const token = oldUser.token;
 
         const submitBtn = editForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerText;
@@ -381,11 +401,7 @@ if (editForm) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    contactNumber: contact,
-                    bloodGroup: blood,
-                    about: about
-                })
+                body: JSON.stringify(payload)
             });
 
             if (!res.ok) {
@@ -395,11 +411,17 @@ if (editForm) {
 
             const updatedUser = await res.json();
 
+            // IMPORTANT: Update LocalStorage with new data while keeping the token
+            // The backend might return the full user object, or we merge it.
+            // Assuming backend returns the updated user object.
+            updatedUser.token = token; // Ensure token is preserved if backend doesn't send it back
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
             // Success!
             alert('Profile Updated Successfully');
             closeEditModal();
 
-            // Refresh
+            // Refresh to show changes
             window.location.reload();
 
         } catch (error) {
