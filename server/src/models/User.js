@@ -100,11 +100,14 @@ const userSchema = new mongoose.Schema({
         type: String, // e.g. 'CSE'
     },
 
-    // Relationships (Optional based on requirements)
+    // Mentor (For Student & Hosteler)
     mentor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+
+    // Relationships (Optional based on requirements)
+    // Mentees removed - queried by 'mentor' field on Student
     // Mentees removed - queried by 'mentor' field on Student
 }, { timestamps: true });
 
