@@ -1,6 +1,7 @@
 import Assignment from '../models/Assignment.js';
 import Note from '../models/Note.js';
 import Notice from '../models/Notice.js';
+import Submission from '../models/Submission.js';
 
 // @desc    Create Assignment (with Smart Targeting)
 // @route   POST /api/content/assignment
@@ -129,8 +130,7 @@ export const getMyContent = async (req, res) => {
             .sort({ createdAt: -1 })
             .populate('teacher', 'name email');
 
-        // Check for submissions
-        const submissions = await import('../models/Submission.js').then(m => m.default.find({ student: req.user._id }));
+        const submissions = await Submission.find({ student: req.user._id });
         const submissionMap = new Set(submissions.map(s => s.assignment.toString()));
 
         const assignments = assignmentsData.map(a => {
