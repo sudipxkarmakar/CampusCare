@@ -25,8 +25,19 @@ const leaveSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending HOD Approval', 'Approved by HOD', 'Rejected by HOD', 'Approved by Warden', 'Rejected by Warden'],
+        enum: ['Pending HOD Approval', 'Approved by HOD', 'Rejected by HOD', 'Approved by Warden', 'Rejected by Warden', 'Approved', 'Rejected'],
         default: 'Pending HOD Approval',
+    },
+    // Independent Statuses for Parallel Approval
+    hodStatus: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending'
+    },
+    wardenStatus: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending'
     },
     // HOD Action
     hodActionBy: {

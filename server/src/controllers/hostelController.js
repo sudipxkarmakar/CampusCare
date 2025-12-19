@@ -53,7 +53,9 @@ export const applyLeave = async (req, res) => {
             startDate,
             endDate,
             reason,
-            status: 'Pending HOD Approval'
+            status: 'Pending HOD Approval',
+            hodStatus: 'Pending',
+            wardenStatus: 'Pending'
         });
 
         res.status(201).json(leave);
