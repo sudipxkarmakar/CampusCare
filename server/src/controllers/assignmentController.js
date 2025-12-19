@@ -10,7 +10,7 @@ import fs from 'fs';
 // @route   POST /api/assignments
 // @access  Teacher/HOD
 export const createAssignment = async (req, res) => {
-    const { type, title, description, link, subject, batch, section, deadline } = req.body; // Remove 'department' from destructuring
+    const { type, title, description, link, subject, batch, section, deadline, year } = req.body; // Remove 'department' from destructuring
 
     try {
         // Validate Teacher
@@ -35,6 +35,7 @@ export const createAssignment = async (req, res) => {
             subject,
             teacher: req.user._id,
             department: teacher.department, // Use Teacher's Department
+            year,
             batch,
             section,
             deadline

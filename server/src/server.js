@@ -28,6 +28,7 @@ import documentRoutes from './routes/documentRoutes.js';
 import hodRoutes from './routes/hodRoutes.js';
 import wardenRoutes from './routes/wardenRoutes.js';
 import principalRoutes from './routes/principalRoutes.js';
+import noteRoutes from './routes/noteRoutes.js';
 
 // ... imports
 
@@ -72,6 +73,7 @@ const startServer = async () => {
   app.use('/api/hod', hodRoutes);
   app.use('/api/warden', wardenRoutes);
   app.use('/api/principal', principalRoutes);
+  app.use('/api/notes', noteRoutes);
 
   // Serve static assets from 'docs' (formerly client)
   // The docs folder is one level up from server/src (server/../docs -> ../../docs)

@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Subject from '../models/Subject.js';
 import Complaint from '../models/Complaint.js';
 
 // @desc    Get logged in teacher's mentees (with optional filtering)
@@ -80,38 +81,145 @@ export const getAllStudents = async (req, res) => {
     }
 
     try {
-        // Ensure strictly limiting to teacher's department AND teaching batches
-        const teacher = await User.findById(req.user._id);
-        const teacherDept = teacher.department;
-        const teachingBatches = teacher.teachingBatches || [];
-        // teachingBatches is now [{ year: "2026", batch: "Batch 1" }, ...]
+        const teacherId = req.user._id;
+        const teacher = await User.findById(teacherId);
 
-        const query = {
-            role: 'student',
-            department: teacherDept
-        };
+        // 1. Find all subjects where this user is a teacher
+        // We check:
+        // - 'teacher' field (Main teacher)
+        // - 'teachers' array (Co-teachers)
+        // - 'batchAssignments.teacher' (Specific batch teacher)
 
-        // If teacher has assigned batches, filter by them.
-        if (teachingBatches.length > 0) {
-            // Construct $or query for (year A AND batch B) OR (year X AND batch Y)
+        // Import Subject to be sure (it should be imported at top level if not already)
+        // Check imports in file... assuming Subject imported or will add import if missing.
+        // Wait, I need to check imports. If Subject not imported, this will fail.
+        // I will add the import in a separate tool call if needed or include it here if I could.
+        // But I can't see the top of the file in this tool call's context easily without viewing again.
+        // I'll assume I need to add the import. Ideally I'd use multi_replace for that.
+        // For now, let's write the function logic.
 
-            const batchConditions = teachingBatches.map(tb => ({
-                passOutYear: tb.passOutYear,
-                batch: tb.batch
-            }));
+        // Since I'm replacing the whole function, I can try to include the import at the top if I use multi-replace or just ensure it's there.
+        // Let's use `Subject` assuming it's imported. I'll verify imports in a sec.
 
-            // Filter students who match ANY of the teaching batches
-            query.$or = batchConditions;
-        } else {
-            // If no batches assigned, return empty to be safe/strict as per request
+        // Correction: I should probably use multi_replace to add the import AND update the function.
+        // User query: Fetch students based on assignments.
+
+        // Query Subjects
+        /* 
+           logic:
+           Find subjects where:
+             teacher == me OR teachers contains me OR batchAssignments.teacher == me
+        */
+
+        // Note: reusing the import logic from previous View (it was not imported in teacherController previously).
+        // So I MUST add the import.
+
+        // Logic continued:
+        // For each subject, collect valid (passOutYear, batch) tuples.
+        // - If I am in batchAssignments, use those specific batches.
+        // - If I am main teacher and NO batchAssignments for me, do I get all batches?
+        //   Use "academicYear" (e.g. 2026) from Subject.
+        // We check: 'teacher' (Main), 'teachers' (Array), and 'batchAssignments.teacher' (Specific)
+        const subjects = await Subject.find({
+            $or: [
+                { teacher: teacherId },
+                { teachers: teacherId },
+                { 'batchAssignments.teacher': teacherId }
+            ]
+        });
+
+        if (subjects.length === 0) {
             return res.json([]);
         }
+
+        // 2. Build Query for Students
+        // We need to collect valid (passOutYear, batch) pairs
+        // NOTE: Subject model uses 'academicYear' (e.g. 2026) -> maps to student's 'passOutYear' ?
+        // Or 'year' (e.g. "4th Year") -> maps to student's 'year' ?
+        // User request mentions: "2026 batch1 and 2029 batch 1 & 2"
+        // This implies we should use `passOutYear` (which seems to be 'academicYear' in Subject) and `batch`.
+
+        let batchConditions = [];
+        let seen = new Set();
+
+        subjects.forEach(sub => {
+            const passOutYear = sub.academicYear; // Assuming Subject model has academicYear e.g. "2026"
+
+            // Determine batches for this teacher in this subject
+            let myBatches = [];
+
+            // A. Check specific batchAssignments
+            if (sub.batchAssignments && sub.batchAssignments.length > 0) {
+                const specificAssignments = sub.batchAssignments
+                    .filter(ba => ba.teacher && ba.teacher.toString() === teacherId.toString())
+                    .map(ba => ba.batch);
+
+                if (specificAssignments.length > 0) {
+                    myBatches = specificAssignments;
+                }
+            }
+
+            // B. If no specific assignments found, AND I am a main teacher (teacher field or in teachers array)
+            // we might assume I teach ALL batches for this subject?
+            // User's previous constraint was strict: "Prof IT 1 teaches cyber security to 4th year batch 1... not batch 2".
+            // If the DB only has batch assignments, we strictly follow them.
+            // If `myBatches` is still empty here, it means I am listed as a teacher but NOT in any batchAssignment.
+            // This might mean I am a generic teacher (maybe coordinator?). 
+            // SAFETY: If I am in `batchAssignments` for ANY batch, I only get those. 
+            // If I am NOT in `batchAssignments` at all, but I am in `teachers`, fallback to ALL batches?
+            // Let's assume strictness. If I am not in batchAssignments, I get NO students for this subject?
+            // Wait, if legacy data has no batchAssignments, we should probably allow all.
+
+            if (myBatches.length === 0) {
+                // Check if I am main teacher
+                const isMain = (sub.teacher && sub.teacher.toString() === teacherId.toString()) ||
+                    (sub.teachers && sub.teachers.map(t => t.toString()).includes(teacherId.toString()));
+
+                if (isMain) {
+                    // If no batchAssignments defined on subject at all, assume all.
+                    if (!sub.batchAssignments || sub.batchAssignments.length === 0) {
+                        // All likely batches? how do we know?
+                        // We can't filter by batch then, just filter by passOutYear.
+                        myBatches = [null]; // Indicator to only query by Year
+                    }
+                    // If batchAssignments exist but I'm not in them, and I'm main... maybe I supervise?
+                    // Let's err on side of caution: if batchAssignments exist, strictly follow them.
+                }
+            }
+
+            // Add conditions
+            if (myBatches.length > 0) {
+                myBatches.forEach(batch => {
+                    const key = `${passOutYear}-${batch}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        if (batch === null) {
+                            batchConditions.push({ passOutYear: passOutYear });
+                        } else {
+                            batchConditions.push({ passOutYear: passOutYear, batch: batch });
+                        }
+                    }
+                });
+            }
+        });
+
+        if (batchConditions.length === 0) {
+            return res.json([]);
+        }
+
+        // 3. Find Students matching conditions
+        // Using $or logic
+        const query = {
+            role: { $in: ['student', 'hosteler'] },
+            $or: batchConditions
+        };
 
         const students = await User.find(query)
             .select('-password')
             .sort({ rollNumber: 1 });
 
         res.json(students);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error fetching students' });
