@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // --- AUTH FUNCTIONS ---
 // --- AUTH FUNCTIONS ---
 window.checkAuthState = function () {
+    console.log('[Auth] Checking auth state...');
     const userStr = localStorage.getItem('user');
     const loginBtn = document.getElementById('loginBtn');
     const userProfile = document.getElementById('userProfile');
@@ -242,8 +243,13 @@ window.checkAuthState = function () {
         }
 
         if (userAvatar) {
+            // Fallback for 404 (Define BEFORE setting src)
+            userAvatar.onerror = function () {
+                this.onerror = null;
+                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+            };
+
             userAvatar.src = avatarSrc;
-            // Add style to ensure object-fit matches
             userAvatar.style.objectFit = 'cover';
         }
 

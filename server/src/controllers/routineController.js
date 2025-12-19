@@ -21,6 +21,11 @@ export const getStudentRoutine = async (req, res) => {
             subBatch = req.user.subBatch; // "1-1"
         }
 
+        // Normalize Batch: Ensure we query "Batch X" pattern if DB uses that
+        if (batch && /^\d+$/.test(batch)) {
+            batch = `Batch ${batch}`;
+        }
+
         const query = {
             department,
             // If user has a specific semester (e.g. 7), prefer that. 

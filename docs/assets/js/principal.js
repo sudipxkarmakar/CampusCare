@@ -55,7 +55,7 @@ function setupProfile() {
     if (userStr) {
         const user = JSON.parse(userStr);
         document.getElementById('userProfile').style.display = 'flex';
-        document.getElementById('userName').innerText = user.name;
+        document.getElementById('userName').innerText = `Hello, ${user.name}`;
         document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Campus Admin`;
     }
 }

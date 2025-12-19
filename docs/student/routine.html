@@ -170,7 +170,7 @@
   </style>
 
   <script src="../assets/js/api.js"></script>
-  <script src="../assets/js/routine.js"></script>
+  <script src="../assets/js/routine.js?v=2.2"></script>
 
   <!-- Removed Duplicate Footer (using global footer margin-top: auto) -->
   <!-- But keeping footer tag as per request to have it at bottom -->
@@ -205,7 +205,7 @@
         <a href="tel:100"
           style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;"><i
             class="fa-solid fa-shield-halved"></i> Call Security / Police</a>
-        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+        <button onclick="toggleModal('sos-modal'); alert('Requesting First Aid Kit... Warden Notified!')"
           style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;"><i
             class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid</button>
         <button
@@ -243,7 +243,7 @@
   </div>
 
   <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') { m.style.display = 'none'; } else { m.style.display = 'flex'; } }</script>
-  <script src="../assets/js/landing.js"></script>
+  <script src="../assets/js/landing.js?v=1.8"></script>
   <script src="../assets/js/ai.js"></script>
 </body>
 
