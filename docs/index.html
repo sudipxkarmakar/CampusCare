@@ -350,6 +350,23 @@
 
       if (!allowedRoles.includes(user.role)) {
         event.preventDefault();
+
+        // Smart Redirect for Admin/Specific Roles
+        const role = (user.role || '').toLowerCase();
+
+        if (role === 'principal') {
+          window.location.href = 'principal/index.html';
+          return;
+        }
+        if (role === 'hod') {
+          window.location.href = 'hod/index.html';
+          return;
+        }
+        if (role === 'warden') {
+          window.location.href = 'warden/index.html';
+          return;
+        }
+
         alert('Access Restricted: You do not have permission to view this module.');
       }
     }
