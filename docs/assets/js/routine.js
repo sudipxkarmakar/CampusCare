@@ -20,38 +20,62 @@ async function fetchAndRenderRoutine(role) {
 }
 
 function renderRoutineTable(data, tableBody) {
-    tableBody.innerHTML = ''; // Clear hardcoded/loading content
-
     if (data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No classes scheduled</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500">No classes scheduled</td></tr>';
         return;
     }
 
-    // Sort by day and time (backend already sorts, but double check if needed)
-    // Mapping for Day Order if needed
-    const dayOrder = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 7 };
+    // 1. Extract Unique Time Slots & Sort Chronologically
+    // Assumes timeSlot format "10:30 - 11:30" or compatible string sorting
+    const timeSlots = [...new Set(data.map(d => d.timeSlot))].sort();
 
-    // Grouping or List View? 
-    // Screenshot implies a standard table. Let's render a simple list for now or a formatted timetable.
-    // Spec says "No hardcoded tables", implies we fill the rows.
+    // 2. Build Dynamic Header
+    const thead = document.querySelector('.routine-table thead');
+    if (thead) {
+        let headerHTML = '<tr><th style="width: 100px;">Day / Time</th>';
+        timeSlots.forEach(slot => {
+            headerHTML += `<th>${slot}</th>`;
+        });
+        headerHTML += '</tr>';
+        thead.innerHTML = headerHTML;
+    }
 
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        row.className = "border-b hover:bg-gray-50";
+    // 3. Define Row Order
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        row.innerHTML = `
-            <td class="p-3">${item.day}</td>
-            <td class="p-3">${item.timeSlot}</td>
-            <td class="p-3 font-semibold">${item.subject ? item.subject.name : 'N/A'}</td>
-            <td class="p-3">${item.room || 'TBD'}</td>
-            <td class="p-3">
-                <span class="px-2 py-1 rounded text-xs ${item.subBatch ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
-                    ${item.subBatch ? 'Sub-batch ' + item.subBatch : 'Full Batch'}
-                </span>
-            </td>
-        `;
-        tableBody.appendChild(row);
+    // 4. Build Matrix Grid
+    let rowsHTML = '';
+    days.forEach(day => {
+        rowsHTML += `<tr>`;
+        // First Column: Day Name
+        rowsHTML += `<td style="font-weight:bold; background:rgba(255,255,255,0.8);">${day}</td>`;
+
+        timeSlots.forEach(slot => {
+            // Find class for this Day & Slot
+            const cls = data.find(d => d.day === day && d.timeSlot === slot);
+
+            if (cls) {
+                const subject = cls.subject ? cls.subject.name : cls.subjectName || 'Unknown Subject';
+                const room = cls.room || 'TBD';
+                // Different color for Labs vs Lectures? Or just batch info.
+                const isLab = subject.toLowerCase().includes('lab');
+                const cellStyle = isLab ? 'background: #e0f2fe;' : 'background: #f0fdf4;';
+
+                rowsHTML += `
+               <td style="${cellStyle} border-radius: 8px; padding: 10px; margin: 2px;">
+                    <div style="font-weight:bold; color:#1f2937;">${subject}</div>
+                    <div style="font-size:0.8rem; color:#4b5563;">${room}</div>
+                    ${cls.subBatch ? `<div style="font-size:0.7rem; color:#d97706; font-weight:600;">Sub-batch ${cls.subBatch}</div>` : ''}
+               </td>`;
+            } else {
+                // Empty Slot
+                rowsHTML += `<td style="background: rgba(0,0,0,0.02); color:#cbd5e1;">-</td>`;
+            }
+        });
+        rowsHTML += `</tr>`;
     });
+
+    tableBody.innerHTML = rowsHTML;
 }
 
 // Auto-detect page context

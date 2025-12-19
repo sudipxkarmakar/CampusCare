@@ -45,7 +45,8 @@
     </div>
   </header>
   <!-- Relocated Dashboard Button -->
-  <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
+  <div class="dashboard-nav-bar"
+    style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
     <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
   </div>
 
@@ -60,29 +61,18 @@
           timings</p>
       </div>
     </section>
-
     <!-- EXCEL STYLE GRID -->
-    <!-- Changed to list-card to stop whole box hovering -->
     <div class="list-card" style="padding: 1rem; overflow-x: auto; align-items: stretch; text-align: left;">
       <div id="routine-container" style="width: 100%;">
         <table class="routine-table">
           <thead>
-            <tr>
-              <th>Day</th>
-              <th>Time</th>
-              <th>Subject</th>
-              <th>Room</th>
-              <th>Batch Info</th>
-            </tr>
+            <!-- Headers injected by JS -->
           </thead>
           <tbody id="routine-table-body">
-            <tr>
-              <td colspan="5" style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i>
-                Loading...</td>
-            </tr>
           </tbody>
         </table>
       </div>
+    </div>
     </div>
 
   </main>
@@ -131,9 +121,11 @@
     }
 
     .routine-table tbody tr:hover td {
-      background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
-      color: white !important;
-      border-color: rgba(255, 255, 255, 0.1);
+      /* Removed conflicting gradient and white text */
+      transform: scale(1.01);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      z-index: 10;
+      position: relative;
     }
 
     /* Ensure top-left and top-right radius for the whole row on hover if possible, 

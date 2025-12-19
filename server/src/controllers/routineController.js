@@ -15,8 +15,9 @@ export const getStudentRoutine = async (req, res) => {
         // If 'me' (authenticated user context)
         if (req.user && req.user.role === 'student') {
             department = req.user.department;
-            year = req.user.year; // "2nd Year"
-            batch = req.user.batch; // "1"
+            year = req.user.year;
+            // Normalize batch: "Batch 1" -> "1" to match Routine data format
+            batch = req.user.batch ? req.user.batch.replace('Batch ', '') : req.user.batch;
             subBatch = req.user.subBatch; // "1-1"
         }
 
