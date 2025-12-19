@@ -137,7 +137,7 @@ const getDepartmentStudents = async (req, res) => {
             role: { $in: ['student', 'hosteler'] },
             department
         })
-            .select('rollNumber name batch subBatch year passOutYear email section _id mentor role')
+            .select('rollNumber name batch subBatch year passOutYear email section _id mentor role department bloodGroup contactNumber hostelName roomNumber cgpa attendance mar moocs')
             .populate('mentor', 'name')
             .sort({ rollNumber: 1 });
 
@@ -147,12 +147,22 @@ const getDepartmentStudents = async (req, res) => {
             name: s.name,
             batch: s.batch || 'N/A',
             subBatch: s.subBatch,
-            year: s.year,                // Required for filtering
-            passOutYear: s.passOutYear,  // Required for filtering
+            year: s.year,
+            passOutYear: s.passOutYear,
             email: s.email,
+            section: s.section,
+            department: s.department, // Now included
+            bloodGroup: s.bloodGroup, // Now included
+            contactNumber: s.contactNumber, // Now included
+            hostelName: s.hostelName, // Now included
+            roomNumber: s.roomNumber, // Now included
+            cgpa: s.cgpa,
+            attendance: s.attendance,
+            mar: s.mar,
+            moocs: s.moocs,
             mentorName: s.mentor ? s.mentor.name : null,
-            status: 'Active', // Default per req
-            role: s.role // useful for debugging
+            status: 'Active',
+            role: s.role
         }));
 
         // console.log("DEBUG STUDENT RESPONSE:", JSON.stringify(safeStudents.find(s => s.mentorName), null, 2));
