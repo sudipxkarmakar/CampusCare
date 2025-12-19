@@ -97,9 +97,6 @@ function renderComplaints(complaints) {
                     <button class="btn-action resolve" onclick="resolveComplaint('${c._id}')">
                         <i class="fa-solid fa-check"></i> Resolve
                     </button>
-                    <button class="btn-action escalate" onclick="openEscalateModal('${c._id}')">
-                        <i class="fa-solid fa-arrow-up"></i> Escalate
-                    </button>
                 ` : '<button class="btn-secondary" disabled>Action Taken</button>'}
             </div>
         `;
@@ -147,38 +144,4 @@ async function resolveComplaint(id) {
     }
 }
 
-let currentEscalateId = null;
-function openEscalateModal(id) {
-    currentEscalateId = id;
-    document.getElementById('escalateModal').style.display = 'block';
-}
 
-function closeEscalateModal() {
-    document.getElementById('escalateModal').style.display = 'none';
-    currentEscalateId = null;
-}
-
-async function confirmEscalate() {
-    const target = document.getElementById('escalateTarget').value;
-    if (!target) return alert('Select a target');
-
-    try {
-        const userStr = localStorage.getItem('user');
-        const token = userStr ? JSON.parse(userStr).token : null;
-
-        const res = await fetch(`${API_BASE_URL}/warden/complaints/${currentEscalateId}/escalate`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ target })
-        });
-
-        if (res.ok) {
-            closeEscalateModal();
-            fetchComplaints();
-        } else {
-            alert('Failed to escalate');
-        }
-    } catch (error) {
-        console.error(error);
-    }
-}
