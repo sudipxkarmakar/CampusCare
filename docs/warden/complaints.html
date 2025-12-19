@@ -151,29 +151,7 @@
         </section>
     </main>
 
-    <!-- Escalate Modal -->
-    <div id="escalateModal" class="modal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-        <div class="modal-content"
-            style="background:white; max-width:400px; margin:15% auto; padding:20px; border-radius:12px;">
-            <h3>Escalate Complaint</h3>
-            <p>Forward this issue to higher authority.</p>
-            <div class="form-group">
-                <label>Forward To:</label>
-                <select id="escalateTarget" class="input-field" style="width:100%; padding:10px; margin-top:5px;">
-                    <option value="">Select Authority</option>
-                    <option value="Principal">Principal</option>
-                    <option value="Disciplinary Committee">Disciplinary Committee</option>
-                </select>
-            </div>
-            <div style="margin-top:20px; text-align:right;">
-                <button onclick="closeEscalateModal()"
-                    style="padding:8px 16px; background:#e2e8f0; border:none; border-radius:6px; cursor:pointer;">Cancel</button>
-                <button onclick="confirmEscalate()"
-                    style="padding:8px 16px; background:#f59e0b; color:white; border:none; border-radius:6px; cursor:pointer;">Escalate</button>
-            </div>
-        </div>
-    </div>
+
 
     <script src="warden_complaints.js"></script>
 </body>
