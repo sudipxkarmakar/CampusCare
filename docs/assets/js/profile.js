@@ -185,10 +185,18 @@ function renderProfile(user) {
             addItem('Batch', user.batch, academic, 'fa-solid fa-layer-group', count++);
             addItem('Section', user.section || 'N/A', academic, 'fa-solid fa-people-group', count++); // Fallback for section
 
-            let sem = '1st';
-            if (user.batch === '2023') sem = '5th';
-            if (user.batch === '2024') sem = '3rd';
-            if (user.batch === '2025') sem = '1st';
+            // Use real semester from DB, fallback to 'N/A' or calculated if needed
+            let sem = user.semester ? (user.semester + (['1', '2', '3'].includes(String(user.semester).split('').pop()) ? ['st', 'nd', 'rd'][String(user.semester).split('').pop() - 1] : 'th')) : 'N/A';
+
+            // Or simpler: just show the number if that's what is stored, or append suffix
+            // The DB has integer 7. So "7th".
+            if (user.semester) {
+                const s = String(user.semester);
+                const last = s.slice(-1);
+                const suffix = (last === '1' && s !== '11') ? 'st' : (last === '2' && s !== '12') ? 'nd' : (last === '3' && s !== '13') ? 'rd' : 'th';
+                sem = `${s}${suffix}`;
+            }
+
             addItem('Semester', sem, academic, 'fa-solid fa-book-open', count++);
 
             addItem('Hostel', user.hostelName, academic, 'fa-solid fa-hotel', count++);

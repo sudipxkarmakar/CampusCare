@@ -46,6 +46,18 @@
       margin-bottom: 1rem;
       font-family: 'Poppins';
     }
+
+    /* FIX: Prevent text from turning white on hover */
+    .list-row-hover:hover {
+      background: #f8fafc !important;
+      transform: translateY(-2px);
+    }
+
+    .list-row-hover:hover span,
+    .list-row-hover:hover i,
+    .list-row-hover:hover a {
+      color: #1f2937 !important;
+    }
   </style>
 </head>
 
@@ -57,7 +69,7 @@
       <i class="fa-solid fa-graduation-cap"></i> CampusCare
     </a>
     <div style="display:flex; align-items:center; gap: 15px;">
-      
+
 
       <!-- USER PROFILE -->
       <div id="userProfile" style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
@@ -78,7 +90,8 @@
     </div>
   </header>
   <!-- Relocated Dashboard Button -->
-  <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
+  <div class="dashboard-nav-bar"
+    style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
     <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
   </div>
 

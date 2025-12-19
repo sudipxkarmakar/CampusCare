@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Subject from '../models/Subject.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
@@ -266,6 +267,54 @@ export const loginUser = async (req, res) => {
                 hostelName: user.hostelName, // Return hostel info if needed
                 profilePicture: user.profilePicture,
                 token: generateToken(user._id),
+                teachingSubjects: user.teachingSubjects,
+                teachingBatches: user.teachingBatches,
+                enforcedSubjects: await (async () => {
+                    if (user.role !== 'teacher') return [];
+
+                    // Fetch all subjects potentially related to this teacher
+                    const subjects = await Subject.find({
+                        $or: [
+                            { teacher: user._id },
+                            { teachers: user._id },
+                            { 'batchAssignments.teacher': user._id }
+                        ]
+                    }).lean(); // Use lean() for plain JS objects
+
+                    return subjects.map(sub => {
+                        // Determine allowed batches for this teacher for this subject
+                        let allowedBatches = [];
+                        const teacherIdStr = user._id.toString();
+
+                        // 1. Check specific batch assignments
+                        if (sub.batchAssignments && Array.isArray(sub.batchAssignments)) {
+                            // Filter assignments where the teacher matches
+                            const myBatches = sub.batchAssignments
+                                .filter(ba => ba.teacher && ba.teacher.toString() === teacherIdStr)
+                                .map(ba => ba.batch);
+
+                            if (myBatches.length > 0) {
+                                allowedBatches = myBatches;
+                            }
+                        }
+
+                        // 2. If no specific batch assignments, check if I am a generic teacher (Main Teacher or Co-Teacher)
+                        // If I am main teacher and NO batchAssignments exist, maybe I teach all?
+                        // BUT user constraint is strict. If batchAssignments exist, use them.
+                        // If they don't, what then?
+                        // Let's assume strict filtering: If allowedBatches is empty, we still return the subject 
+                        // but with empty batches (frontend will show "No Batches").
+
+                        return {
+                            _id: sub._id,
+                            name: sub.name,
+                            year: sub.year,
+                            academicYear: sub.academicYear, // Add academicYear if needed
+                            department: sub.department,
+                            allowedBatches: allowedBatches
+                        };
+                    });
+                })(),
             });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });

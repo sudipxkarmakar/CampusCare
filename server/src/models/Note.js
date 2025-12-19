@@ -11,6 +11,7 @@ const noteSchema = new mongoose.Schema({
     },
     description: {
         type: String,
+        required: false // Now it won't crash if empty
     },
     uploadedBy: {
         type: mongoose.Schema.Types.ObjectId,

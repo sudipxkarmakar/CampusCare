@@ -25,7 +25,12 @@ const storage = multer.diskStorage({
 // File Filter (PDF Only)
 const fileFilter = (req, file, cb) => {
     console.log('Multer Filtering:', file.mimetype);
-    if (file.mimetype === 'application/pdf') {
+    const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
         console.error('Multer Rejected:', file.mimetype);

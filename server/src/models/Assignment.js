@@ -7,7 +7,7 @@ const assignmentSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: false // Now it won't crash if empty
     },
     link: {
         type: String, // Optional URL for notes
