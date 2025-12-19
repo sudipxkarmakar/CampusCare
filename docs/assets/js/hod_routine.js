@@ -65,7 +65,10 @@ function loadRoutineTableStructure() {
 
 async function loadRoutine() {
     const year = document.getElementById('routineYear').value;
-    const batch = document.getElementById('routineBatch').value;
+    let batch = document.getElementById('routineBatch').value;
+    if (batch && /^\d+$/.test(batch)) {
+        batch = `Batch ${batch}`;
+    }
 
     if (!year || !batch) return;
 
@@ -229,7 +232,7 @@ async function handleSlotSave(e) {
         timeSlot: document.getElementById('editTimeSlot').value,
         year: year,
         department: user.department,
-        batch: batch,
+        batch: batch.match(/^\d+$/) ? `Batch ${batch}` : batch,
         subjectId: document.getElementById('editSubject').value,
         // teacherId: Auto-assigned by backend
         // room: Removed from UI
@@ -268,7 +271,7 @@ async function handleSlotDelete() {
         day: document.getElementById('editDay').value,
         timeSlot: document.getElementById('editTimeSlot').value,
         year: document.getElementById('routineYear').value,
-        batch: document.getElementById('routineBatch').value,
+        batch: document.getElementById('routineBatch').value.match(/^\d+$/) ? `Batch ${document.getElementById('routineBatch').value}` : document.getElementById('routineBatch').value,
         department: user.department
     };
 
