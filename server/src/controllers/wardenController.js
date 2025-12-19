@@ -33,15 +33,11 @@ const getWardenDashboardStats = async (req, res) => {
 // @access  Private/Warden
 const getPendingLeaves = async (req, res) => {
     try {
-        // Fetch leaves pending Warden approval (regardless of HOD status for new flow, or Approved by HOD for legacy)
-        const leaves = await Leave.find({
-            $or: [
-                { wardenStatus: 'Pending' },
-                { wardenStatus: { $exists: false }, status: 'Approved by HOD' }
-            ]
-        })
+        // Fetch all leaves (Pending, Approved, Rejected) to ensure HOD and Warden are in sync
+        const leaves = await Leave.find({})
             .populate('student', 'name rollNumber roomNumber hostelName batch department')
-            .populate('hodActionBy', 'name'); // Showing who forwarded it
+            .populate('hodActionBy', 'name')
+            .sort({ createdAt: -1 });
 
         res.json(leaves);
     } catch (error) {
