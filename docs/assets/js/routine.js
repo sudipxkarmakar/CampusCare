@@ -5,17 +5,38 @@ async function fetchAndRenderRoutine(role) {
     if (!tableBody) return;
 
     try {
+        console.log(`[Routine] Fetching routine for role: ${role}`);
         const endpoint = role === 'teacher' ? '/routine/teacher' : '/routine/student';
-        const response = await api.fetchWithAuth(endpoint); // Use 'api' object defined in api.js
 
-        if (!response.ok) throw new Error('Failed to fetch routine');
+        const response = await api.fetchWithAuth(endpoint);
+
+        console.log(`[Routine] Response status: ${response.status}`);
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error('[Routine] Fetch failed:', text);
+            throw new Error(`Failed to fetch routine: ${response.status}`);
+        }
+
+        // Validate Content-Type
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error('[Routine] Invalid content type:', contentType);
+            const text = await response.text();
+            console.error('[Routine] Response body:', text);
+            throw new Error("Received non-JSON response from server");
+        }
 
         const routineData = await response.json();
+        console.log('[Routine] Data received:', routineData);
         renderRoutineTable(routineData, tableBody);
 
     } catch (error) {
         console.error("Error loading routine:", error);
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-red-500">Failed to load routine</td></tr>';
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color: #ef4444;">
+            <i class="fa-solid fa-circle-exclamation"></i> Failed to load routine.<br>
+            <span style="font-size:0.8rem; color:#64748b;">${error.message}</span>
+        </td></tr>`;
     }
 }
 
@@ -25,9 +46,17 @@ function renderRoutineTable(data, tableBody) {
         return;
     }
 
-    // 1. Extract Unique Time Slots & Sort Chronologically
-    // Assumes timeSlot format "10:30 - 11:30" or compatible string sorting
-    const timeSlots = [...new Set(data.map(d => d.timeSlot))].sort();
+    // 1. Define Standard Time Slots (Fixed Order)
+    const timeSlots = [
+        '09:30 - 10:30',
+        '10:30 - 11:30',
+        '11:30 - 12:30',
+        '12:30 - 01:30',
+        '01:30 - 02:30',
+        '02:30 - 03:30',
+        '03:30 - 04:30',
+        '04:30 - 05:30'
+    ];
 
     // 2. Build Dynamic Header
     const thead = document.querySelector('.routine-table thead');
@@ -56,16 +85,14 @@ function renderRoutineTable(data, tableBody) {
 
             if (cls) {
                 const subject = cls.subject ? cls.subject.name : cls.subjectName || 'Unknown Subject';
-                const room = cls.room || 'TBD';
-                // Different color for Labs vs Lectures? Or just batch info.
+                const teacherName = cls.teacher ? cls.teacher.name : (cls.teacherName || 'Teacher TBA');
                 const isLab = subject.toLowerCase().includes('lab');
                 const cellStyle = isLab ? 'background: #e0f2fe;' : 'background: #f0fdf4;';
 
                 rowsHTML += `
                <td style="${cellStyle} border-radius: 8px; padding: 10px; margin: 2px;">
                     <div style="font-weight:bold; color:#1f2937;">${subject}</div>
-                    <div style="font-size:0.8rem; color:#4b5563;">${room}</div>
-                    ${cls.subBatch ? `<div style="font-size:0.7rem; color:#d97706; font-weight:600;">Sub-batch ${cls.subBatch}</div>` : ''}
+                    <div style="font-size:0.8rem; color:#4b5563; margin-top:4px;"><i class="fa-solid fa-chalkboard-user"></i> ${teacherName}</div>
                </td>`;
             } else {
                 // Empty Slot

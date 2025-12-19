@@ -156,7 +156,7 @@
             <i class="fa-solid fa-graduation-cap"></i> CampusCare
         </a>
         <div style="display:flex; align-items:center; gap: 15px;">
-            
+
 
             <!-- USER PROFILE -->
             <div id="userProfile"
@@ -179,10 +179,11 @@
             </div>
         </div>
     </header>
-  <!-- Relocated Dashboard Button -->
-  <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
-    <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
-  </div>
+    <!-- Relocated Dashboard Button -->
+    <div class="dashboard-nav-bar"
+        style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
+        <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
+    </div>
 
     <main class="main-container">
         <!-- HERO -->
@@ -229,11 +230,11 @@
 
         <!-- SCRIPT TO RENDER GRID -->
         <script src="../assets/js/api.js"></script>
-        <script src="../assets/js/routine.js"></script>
+        <script src="../assets/js/routine.js?v=2.2"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const container = document.getElementById('routine-container');
-                container.innerHTML = \`
+                container.innerHTML = `
                 <table class="routine-table">
                     <thead>
                         <tr>
@@ -248,10 +249,16 @@
                          <tr><td colspan="5" style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Schedule...</td></tr>
                     </tbody>
                 </table>
-            \`;
-            
-            fetchAndRenderRoutine('teacher');
-        });
+            `;
+
+                if (typeof fetchAndRenderRoutine === 'function') {
+                    fetchAndRenderRoutine('teacher');
+                } else {
+                    console.error("CRITICAL: fetchAndRenderRoutine is not defined.");
+                    const tbody = document.getElementById('routine-table-body');
+                    if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:2rem;">Script Error: Routine Module Failed to Load. Check Console.</td></tr>';
+                }
+            });
         </script>
     </main>
 
@@ -279,17 +286,16 @@
                 <a href="tel:100"
                     style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;"><i
                         class="fa-solid fa-shield-halved"></i> Call Security/Police</a>
-                <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+                <button onclick="triggerSOS('firstaid')"
                     style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;"><i
                         class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid</button>
-                <button
-                    onclick="const bg = prompt('Please enter required Blood Group:'); if(bg) alert(`Broadcasting Blood Requirement for ${bg}!`)"
+                <button onclick="triggerSOS('blood')"
                     style="background: #ef4444; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;"><i
                         class="fa-solid fa-droplet" style="font-size:1.5rem;"></i> Need Blood</button>
                 <a href="tel:101"
                     style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display:flex; justify-content:center; align-items:center; gap:5px;"><i
                         class="fa-solid fa-truck-medical"></i> Ambulance</a>
-                <button onclick="alert('Panic Signal Sent!')"
+                <button onclick="triggerSOS('panic')"
                     style="background: #4b5563; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">Panic</button>
             </div>
         </div>
@@ -311,8 +317,24 @@
                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">Ask</button>
         </div>
     </div>
-    <script>function toggleModal(id) { const m = document.getElementById(id); if (m.style.display === 'flex') { m.style.display = 'none'; } else { m.style.display = 'flex'; } }</script>
-    <script src="../assets/js/landing.js"></script>
+    <script>
+        function toggleModal(id) {
+            const m = document.getElementById(id);
+            if (m.style.display === 'flex') { m.style.display = 'none'; } else { m.style.display = 'flex'; }
+        }
+
+        function triggerSOS(type) {
+            if (type === 'firstaid') {
+                alert('Requesting First Aid Kit... Warden Notified!');
+            } else if (type === 'blood') {
+                const bg = prompt('Please enter required Blood Group:');
+                if (bg) alert(`Broadcasting Blood Requirement for ${bg}!`);
+            } else if (type === 'panic') {
+                alert('Panic Signal Sent!');
+            }
+        }
+    </script>
+    <script src="../assets/js/landing.js?v=1.7"></script>
     <script src="../assets/js/ai.js"></script>
 
 </body>
