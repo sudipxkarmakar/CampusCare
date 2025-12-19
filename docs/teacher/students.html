@@ -214,9 +214,18 @@
                 const tr = table.getElementsByTagName("tr");
 
                 for (let i = 1; i < tr.length; i++) {
-                    const tdRoll = tr[i].getElementsByTagName("td")[0];
-                    const tdName = tr[i].getElementsByTagName("td")[1];
-                    if (tdRoll || tdName) {
+                    const tds = tr[i].getElementsByTagName("td");
+                    if (tds.length < 2) continue; // Skip rows without enough data (e.g. loading/empty msg)
+
+                    const tdRoll = tds[1]; // Index 1 is Roll No (Index 0 is S.No)
+                    const tdName = tds[2]; // Index 2 is Name (Div inside?) - Wait, let's check render
+
+                    // Check renderStudents:
+                    // td 0: S.No
+                    // td 1: Roll No
+                    // td 2: Name (div) + Batch
+
+                    if (tdRoll && tdName) {
                         const txtValueRoll = tdRoll.textContent || tdRoll.innerText;
                         const txtValueName = tdName.textContent || tdName.innerText;
                         if (txtValueRoll.toUpperCase().indexOf(filter) > -1 || txtValueName.toUpperCase().indexOf(filter) > -1) {

@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema({
 
     // Updated by system / HOD (Phase 1 Requirements)
     year: { type: String }, // Derived from passOutYear e.g. "1st Year"
+    semester: { type: Number }, // Current Semester (1, 3, 5, 7)
     subBatch: { type: String }, // e.g. "1-1", "1-2"
     subjects: [{ type: String }], // Array of subject codes or names
     assignedTeachers: [{
