@@ -22,7 +22,7 @@ async function loadLeaves() {
         const leaves = await response.json();
 
         if (leaves.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:#64748b;">No pending requests.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:#64748b;">No leave history found.</td></tr>';
             return;
         }
 
@@ -33,12 +33,17 @@ async function loadLeaves() {
             let actionButtons = '';
             let statusBadge = '';
 
-            if (leave.status === 'Pending HOD Approval') {
+            let hStatus = leave.hodStatus || (leave.status === 'Pending HOD Approval' ? 'Pending' : 'Approved'); // Fallback
+            if (leave.status && leave.status.includes('Pending HOD')) hStatus = 'Pending';
+            // Actually trust hodStatus mainly if present
+            if (leave.hodStatus) hStatus = leave.hodStatus;
+
+            if (hStatus === 'Pending') {
                 actionButtons = `
                     <div style="display:flex; gap:10px;">
                         <button onclick="approveLeave('${leave._id}')" 
                             style="background:#10b981; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
-                            <i class="fa-solid fa-check"></i> Forward
+                            <i class="fa-solid fa-check"></i> Approve
                         </button>
                         <button onclick="openRejectModal('${leave._id}')" 
                             style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
@@ -46,9 +51,9 @@ async function loadLeaves() {
                         </button>
                     </div>
                 `;
-            } else if (leave.status === 'Approved by HOD') {
-                statusBadge = `<span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">Forwarded</span>`;
-            } else if (leave.status === 'Rejected by HOD') {
+            } else if (hStatus === 'Approved') {
+                statusBadge = `<span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">Approved</span>`;
+            } else if (hStatus === 'Rejected') {
                 statusBadge = `<span style="background:#fee2e2; color:#991b1b; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">Rejected</span>`;
             } else {
                 statusBadge = `<span style="background:#e2e8f0; color:#475569; padding:4px 8px; border-radius:10px; font-weight:600; font-size:0.85rem;">${leave.status}</span>`;
@@ -66,7 +71,7 @@ async function loadLeaves() {
                 <td style="padding:1rem; font-size:0.9rem;">${startDate} - ${endDate}</td>
                 <td style="padding:1rem; color:#475569;">${leave.reason}</td>
                 <td style="padding:1rem;">
-                    ${leave.status === 'Pending HOD Approval' ? actionButtons : statusBadge}
+                    ${hStatus === 'Pending' ? actionButtons : statusBadge}
                 </td>
             </tr>
             `;
@@ -79,7 +84,7 @@ async function loadLeaves() {
 }
 
 async function approveLeave(id) {
-    if (!confirm('Forward this application to Warden?')) return;
+    if (!confirm('Approve this application?')) return;
     await processAction(id, 'approve');
 }
 
@@ -119,7 +124,7 @@ async function processAction(id, action, remark = '') {
         });
 
         if (response.ok) {
-            alert(action === 'approve' ? 'Forwarded successfully' : 'Rejected successfully');
+            alert(action === 'approve' ? 'Approved successfully' : 'Rejected successfully');
             loadLeaves();
         } else {
             const data = await response.json();
