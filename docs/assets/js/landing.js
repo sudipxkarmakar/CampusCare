@@ -186,6 +186,31 @@ window.checkAuthState = function () {
         else if (role === 'hosteler') roleColor = 'f59e0b'; // Orange
         else if (role === 'teacher') roleColor = '10b981'; // Green
 
+        // --- DYNAMIC LOGO BADGE ---
+        const logo = document.querySelector('.logo');
+        if (logo) {
+            // Check if a badge span already exists
+            let badge = logo.querySelector('span');
+
+            // If no badge exists, create one
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.style.fontSize = '0.75rem'; // Slightly smaller for cleanliness
+                badge.style.color = 'white';
+                badge.style.padding = '3px 8px';
+                badge.style.borderRadius = '20px'; // Pill shape
+                badge.style.marginLeft = '8px';
+                badge.style.fontWeight = '600';
+                badge.style.textTransform = 'uppercase';
+                badge.style.letterSpacing = '0.5px';
+                logo.appendChild(badge);
+            }
+
+            // Update badge content (ensure it matches current login)
+            badge.innerText = role;
+            badge.style.background = '#' + roleColor;
+        }
+
         // Determine path depth for relative links (Profile & Image)
         const currentPath = window.location.pathname;
         const isSubDir = currentPath.includes('/student/') || currentPath.includes('/teacher/') || currentPath.includes('/hostel/') || currentPath.includes('/complaints/') || currentPath.includes('/notices/');
