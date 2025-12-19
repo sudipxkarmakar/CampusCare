@@ -39,7 +39,7 @@ const getHodDashboardStats = async (req, res) => {
             {
                 $match: {
                     'studentData.department': department,
-                    'status': 'Pending HOD Approval'
+                    'hodStatus': 'Pending'
                 }
             },
             { $count: 'count' }
@@ -71,9 +71,9 @@ const getPendingLeaves = async (req, res) => {
         // Filter by student department manually or via aggregation
         // Using populate + filter in JS for simplicity unless dataset is huge (Mock setup is small)
 
-        const leaves = await Leave.find({
-            status: { $in: ['Pending HOD Approval', 'Approved by HOD', 'Rejected by HOD'] }
-        }).populate('student', 'name rollNumber department batch');
+        const leaves = await Leave.find({})
+            .populate('student', 'name rollNumber department batch')
+            .sort({ createdAt: -1 });
 
         // Filter for HOD's department
         const deptLeaves = leaves.filter(leave => leave.student && leave.student.department === department);
@@ -100,8 +100,8 @@ const handleLeaveAction = async (req, res) => {
             return res.status(404).json({ message: 'Leave application not found' });
         }
 
-        if (leave.status !== 'Pending HOD Approval') {
-            return res.status(400).json({ message: `Leave is already ${leave.status}` });
+        if (leave.hodStatus !== 'Pending') {
+            return res.status(400).json({ message: `Leave is already ${leave.hodStatus} by HOD` });
         }
 
         leave.hodActionBy = req.user._id;
@@ -109,9 +109,19 @@ const handleLeaveAction = async (req, res) => {
         leave.hodRemark = remark || '';
 
         if (action === 'approve') {
-            leave.status = 'Approved by HOD'; // Forwarded to Warden
+            leave.hodStatus = 'Approved';
+            // If already approved by Warden (Gate Pass Issued), do not downgrade status
+            if (leave.status !== 'Approved') {
+                leave.status = 'Approved by HOD';
+            }
         } else if (action === 'reject') {
-            leave.status = 'Rejected by HOD';
+            leave.hodStatus = 'Rejected';
+            // If already approved by Warden, keep it as Approved but mark HOD as Rejected?
+            // Or allow HOD to revoke? User requirement: "Warden... issue pass... even if HOD hasn't acted".
+            // Implies Warden has overrides. So if Status is Approved, we keep it.
+            if (leave.status !== 'Approved') {
+                leave.status = 'Rejected by HOD';
+            }
         } else {
             return res.status(400).json({ message: 'Invalid action' });
         }

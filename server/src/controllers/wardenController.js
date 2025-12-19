@@ -16,7 +16,7 @@ const getWardenDashboardStats = async (req, res) => {
 
         const hostelerCount = await User.countDocuments({ role: 'hosteler' });
 
-        const pendingLeaves = await Leave.countDocuments({ status: 'Approved by HOD' });
+        const pendingLeaves = await Leave.countDocuments({ wardenStatus: 'Pending' });
 
         res.json({
             hostelerCount,
@@ -33,8 +33,13 @@ const getWardenDashboardStats = async (req, res) => {
 // @access  Private/Warden
 const getPendingLeaves = async (req, res) => {
     try {
-        // Fetch leaves forwarded by HOD
-        const leaves = await Leave.find({ status: 'Approved by HOD' })
+        // Fetch leaves pending Warden approval (regardless of HOD status for new flow, or Approved by HOD for legacy)
+        const leaves = await Leave.find({
+            $or: [
+                { wardenStatus: 'Pending' },
+                { wardenStatus: { $exists: false }, status: 'Approved by HOD' }
+            ]
+        })
             .populate('student', 'name rollNumber roomNumber hostelName batch department')
             .populate('hodActionBy', 'name'); // Showing who forwarded it
 
@@ -56,15 +61,18 @@ const handleLeaveAction = async (req, res) => {
         const leave = await Leave.findById(id);
 
         if (!leave) return res.status(404).json({ message: 'Leave not found' });
-        if (leave.status !== 'Approved by HOD') return res.status(400).json({ message: 'Leave not pending Warden approval' });
+        if (leave.wardenStatus !== 'Pending') return res.status(400).json({ message: 'Leave is not pending Warden approval' });
 
         leave.wardenActionBy = req.user._id;
         leave.wardenActionDate = Date.now();
         leave.wardenRemark = remark || '';
 
         if (action === 'approve') {
-            leave.status = 'Approved by Warden';
+            leave.wardenStatus = 'Approved';
+            // Warden has final authority to issue pass regardless of HOD status
+            leave.status = 'Approved';
         } else if (action === 'reject') {
+            leave.wardenStatus = 'Rejected';
             leave.status = 'Rejected by Warden';
         } else {
             return res.status(400).json({ message: 'Invalid action' });
