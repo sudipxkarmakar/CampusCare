@@ -79,7 +79,8 @@
         </div>
     </header>
     <!-- Dashboard Button -->
-    <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
+    <div class="dashboard-nav-bar"
+        style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
         <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
     </div>
 
@@ -165,8 +166,8 @@
 
                 renderTable(students);
             } catch (error) {
-                console.error(error);
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red; padding:2rem;">Error loading students.</td></tr>';
+                console.error("Fetch API Error:", error);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:2rem;">Error loading students: ${error.message}</td></tr>`;
             }
         }
 

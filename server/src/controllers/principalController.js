@@ -79,8 +79,9 @@ const resolveComplaintDirectly = async (req, res) => {
 // @access  Private/Principal
 const getAllStudents = async (req, res) => {
     try {
-        // Optimized: Select only fields needed for the table
-        const students = await User.find({ role: 'student' })
+        // Fetch both students and hostelers, sorted by roll number
+        const students = await User.find({ role: { $in: ['student', 'hosteler'] } })
+            .sort({ rollNumber: 1 })
             .select('name rollNumber department batch email')
             .lean(); // Faster execution
         res.json(students);
