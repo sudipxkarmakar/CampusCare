@@ -158,11 +158,9 @@ async function loadMyLeaves() {
 }
 
 function getStatusColor(status) {
-    switch (status) {
-        case 'Approved': return '#10b981';
-        case 'Rejected': return '#ef4444';
-        default: return '#f59e0b';
-    }
+    if (status === 'Approved') return '#10b981'; // Green
+    if (status.includes('Rejected')) return '#ef4444'; // Red
+    return '#f59e0b'; // Amber (Pending / Approved by HOD)
 }
 
 async function loadHostelNotices() {

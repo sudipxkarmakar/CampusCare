@@ -53,33 +53,34 @@ async function loadLeaves() {
                 hodStatusHtml += `<div style="font-size:0.75rem; color:#64748b; margin-top:2px;">"${leave.hodRemark}"</div>`;
             }
 
-            let approveBtnText = 'Issue Pass';
-            let approveBtnIcon = 'fa-stamp';
-            let approveBtnAction = 'Issue Gate Pass for this student?';
-            let btnStyle = 'background:#10b981;'; // Green
+            let actionHtml = '';
 
-            if (hStatus !== 'Approved') {
-                approveBtnText = 'Issue Pass (Direct)';
-                approveBtnIcon = 'fa-bolt'; // Bolt icon for instant action
-                approveBtnAction = 'Directly issue Gate Pass? (HOD has not approved yet)';
-                btnStyle = 'background:#f59e0b;'; // Amber/Orange to indicate override
-            }
+            // Check if Warden has already acted
+            const wardenStatus = leave.wardenStatus || 'Pending'; // Default to Pending if legacy/missing 
+            // Note: If legacy and status is 'Approved', assume Warden Approved for display if we are being generous, 
+            // but strict check is better. However, if status is 'Approved', it means Final Approval.
+            const isFinalApproved = leave.status === 'Approved' || wardenStatus === 'Approved';
+            const isFinalRejected = leave.status === 'Rejected' || leave.status === 'Rejected by Warden' || wardenStatus === 'Rejected';
 
-            return `
-            <tr style="border-bottom:1px solid #f1f5f9;">
-                <td style="padding:1rem;">
-                    <div style="font-weight:600; color:#2d3748;">${leave.student?.name || 'Unknown'}</div>
-                    <div style="font-size:0.8rem; color:#64748b;">Room: ${leave.student?.roomNumber || 'N/A'}</div>
-                    <div style="font-size:0.75rem; color:#94a3b8;">${leave.student?.hostelName || ''}</div>
-                </td>
-                <td style="padding:1rem;">
-                    <span style="background:#d1fae5; color:#047857; padding:2px 8px; border-radius:10px; font-size:0.8rem; font-weight:600;">${leave.type}</span>
-                </td>
-                <td style="padding:1rem; font-size:0.9rem;">${startDate} - ${endDate}</td>
-                 <td style="padding:1rem; font-size:0.8rem; color:#475569;">
-                    ${hodStatusHtml}
-                </td>
-                <td style="padding:1rem;">
+            if (isFinalApproved) {
+                actionHtml = `<span style="background:#d1fae5; color:#047857; padding:6px 12px; border-radius:6px; font-weight:600;"><i class="fa-solid fa-check"></i> Passed</span>`;
+            } else if (isFinalRejected) {
+                actionHtml = `<span style="background:#fee2e2; color:#b91c1c; padding:6px 12px; border-radius:6px; font-weight:600;"><i class="fa-solid fa-xmark"></i> Rejected</span>`;
+            } else {
+                // Pending Logic
+                let approveBtnText = 'Issue Pass';
+                let approveBtnIcon = 'fa-stamp';
+                let approveBtnAction = 'Issue Gate Pass for this student?';
+                let btnStyle = 'background:#10b981;'; // Green
+
+                if (hStatus !== 'Approved') {
+                    approveBtnText = 'Issue Pass (Direct)';
+                    approveBtnIcon = 'fa-bolt'; // Bolt icon for instant action
+                    approveBtnAction = 'Directly issue Gate Pass? (HOD has not approved yet)';
+                    btnStyle = 'background:#f59e0b;'; // Amber/Orange
+                }
+
+                actionHtml = `
                     <div style="display:flex; gap:10px;">
                         <button onclick="approveLeave('${leave._id}', '${approveBtnAction}')" 
                             style="${btnStyle} color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;" title="Issue Gate Pass">
@@ -90,6 +91,25 @@ async function loadLeaves() {
                             <i class="fa-solid fa-xmark"></i> Reject
                         </button>
                     </div>
+                `;
+            }
+
+            return `
+            <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:1rem;">
+                    <div style="font-weight:600; color:#2d3748;" title="Reason: ${leave.reason}">${leave.student?.name || 'Unknown'}</div>
+                    <div style="font-size:0.8rem; color:#64748b;">Room: ${leave.student?.roomNumber || 'N/A'}</div>
+                    <div style="font-size:0.75rem; color:#94a3b8;">${leave.student?.hostelName || ''}</div>
+                </td>
+                <td style="padding:1rem;">
+                    <span style="background:#d1fae5; color:#047857; padding:2px 8px; border-radius:10px; font-size:0.8rem; font-weight:600;" title="${leave.reason}">${leave.type}</span>
+                </td>
+                <td style="padding:1rem; font-size:0.9rem;">${startDate} - ${endDate}</td>
+                 <td style="padding:1rem; font-size:0.8rem; color:#475569;">
+                    ${hodStatusHtml}
+                </td>
+                <td style="padding:1rem;">
+                    ${actionHtml}
                 </td>
             </tr>
             `;
