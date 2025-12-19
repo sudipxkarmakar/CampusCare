@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // --- AUTH FUNCTIONS ---
 // --- AUTH FUNCTIONS ---
 window.checkAuthState = function () {
+    console.log('[Auth] Checking auth state...');
     const userStr = localStorage.getItem('user');
     const loginBtn = document.getElementById('loginBtn');
     const userProfile = document.getElementById('userProfile');
