@@ -14,6 +14,10 @@ const routineSchema = new mongoose.Schema({
         type: String, // e.g. "2nd Year"
         required: true,
     },
+    semester: {
+        type: Number, // e.g. 7
+        required: false, // Optional for now to avoid breaking existing
+    },
     department: {
         type: String, // e.g., 'CSE'
         required: true,
