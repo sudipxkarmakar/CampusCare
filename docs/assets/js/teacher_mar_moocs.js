@@ -89,9 +89,25 @@ async function loadSubmissions(token) {
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; width:100%; border-top:1px solid rgba(0,0,0,0.05); padding-top:8px;">
-                     <a href="${item.certificateUrl || '#'}" target="_blank" style="text-decoration:none; color:#3b82f6; font-size:0.9rem; font-weight:500;">
-                        <i class="fa-solid fa-file-invoice"></i> View Proof
-                     </a>
+                     ${(() => {
+                    let proofUrl = item.certificateUrl;
+
+                    if (!proofUrl) {
+                        return `<span style="color:#9ca3af; font-size:0.85rem; font-style:italic;">No Proof Attached</span>`;
+                    }
+
+                    // Handle relative paths from backend uploads
+                    if (proofUrl.startsWith('/')) {
+                        proofUrl = 'http://localhost:5000' + proofUrl;
+                    } else if (!proofUrl.startsWith('http')) {
+                        // Handle external links missing protocol
+                        proofUrl = 'https://' + proofUrl;
+                    }
+
+                    return `<a href="${proofUrl}" target="_blank" style="text-decoration:none; color:#3b82f6; font-size:0.9rem; font-weight:500;">
+                            <i class="fa-solid fa-file-invoice"></i> View Proof
+                         </a>`;
+                })()}
                      ${item.status === 'Proposed' ? '<span style="font-size:0.75rem; color:#f59e0b; background:#fef3c7; padding:2px 6px; border-radius:4px;">Proposed</span>' : ''}
                 </div>
 
