@@ -392,7 +392,7 @@ async function loadCreatedAssignments() {
 
                     </td>
 
-                    <td style="padding: 1rem; color: #64748b;">${assign.department} - ${assign.batch}</td>
+                    <td style="padding: 1rem; color: #64748b;">${assign.year} - ${assign.batch}</td>
 
                     <td style="padding: 1rem; color: #64748b;">${date}</td>
 
