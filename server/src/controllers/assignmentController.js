@@ -167,7 +167,7 @@ export const submitAssignment = async (req, res) => {
     }
 };
 
-// @desc    Get all assignments created by the logged-in teacher (Strict Dept)
+// @desc    Get all assignments created by the logged-in teacher (Strict Dept) with Submission Count
 // @route   GET /api/assignments/created
 // @access  Teacher
 export const getTeacherAssignments = async (req, res) => {
@@ -179,9 +179,16 @@ export const getTeacherAssignments = async (req, res) => {
             teacher: req.user._id,
             department: teacher.department
         })
-            .sort({ createdAt: -1 }); // Newest first
+            .sort({ createdAt: -1 })
+            .lean(); // Convert to POJO to attach property
 
-        res.json(assignments);
+        // Append submission counts
+        const assignmentsWithCount = await Promise.all(assignments.map(async (assign) => {
+            const count = await Submission.countDocuments({ assignment: assign._id });
+            return { ...assign, submissionCount: count };
+        }));
+
+        res.json(assignmentsWithCount);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -212,6 +219,38 @@ export const getAssignmentSubmissions = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// @desc    Update submission status (Approve/Reject)
+// @route   PATCH /api/assignments/:id/submissions/:subId/status
+// @access  Teacher
+export const updateSubmissionStatus = async (req, res) => {
+    try {
+        const { id, subId } = req.params;
+        const { status } = req.body; // 'Approved' or 'Rejected'
+
+        if (!['Approved', 'Rejected'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid status. Use Approved or Rejected.' });
+        }
+
+        const assignment = await Assignment.findById(id);
+        if (!assignment) return res.status(404).json({ message: 'Assignment not found' });
+
+        if (assignment.teacher.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to modify this assignment' });
+        }
+
+        const submission = await Submission.findById(subId);
+        if (!submission) return res.status(404).json({ message: 'Submission not found' });
+
+        submission.status = status;
+        await submission.save();
+
+        res.json({ message: `Submission ${status}`, submission });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Delete assignment/note
 // @route   DELETE /api/assignments/:id
 // @access  Teacher

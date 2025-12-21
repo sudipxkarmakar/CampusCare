@@ -395,7 +395,7 @@ async function loadCreatedAssignments() {
                     <td style="padding: 1rem; color: #64748b;">${assign.year} - ${assign.batch}</td>
 
                     <td style="padding: 1rem; color: #64748b;">${date}</td>
-
+                    <td style="padding: 1rem; color: #3b82f6; font-weight: 600;">${assign.submissionCount || 0}</td>
                     <td style="padding: 1rem;">
 
                         <button onclick="viewSubmissions('${assign._id}', '${assign.title}')"
@@ -480,13 +480,15 @@ async function viewSubmissions(assignmentId, title) {
 
         tableBody.innerHTML = submissions.map(sub => {
 
-            const date = new Date(sub.createdAt).toLocaleString('en-GB');
+            const date = new Date(sub.submittedAt).toLocaleString('en-GB');
 
             const studentName = sub.student ? sub.student.name : 'Unknown Student';
 
             const rollNo = sub.student && sub.student.rollNumber ? sub.student.rollNumber : 'N/A';
 
-
+            let statusColor = '#f59e0b'; // Pending
+            if (sub.status === 'Approved') statusColor = '#10b981';
+            if (sub.status === 'Rejected') statusColor = '#ef4444';
 
             return `
 
@@ -497,8 +499,12 @@ async function viewSubmissions(assignmentId, title) {
                 <td style="padding: 0.8rem; color: #64748b;">${rollNo}</td>
 
                 <td style="padding: 0.8rem; color: #64748b; font-size: 0.85rem;">${date}</td>
-
+                
                 <td style="padding: 0.8rem;">
+                    <span style="background:${statusColor}; color:white; padding:2px 8px; border-radius:12px; font-size:0.75rem;">${sub.status || 'Pending'}</span>
+                </td>
+
+                <td style="padding: 0.8rem; display:flex; gap:0.5rem; align-items:center;">
 
                      ${(() => {
 
@@ -512,9 +518,12 @@ async function viewSubmissions(assignmentId, title) {
 
                     }
 
-                    return `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight: 600; text-decoration: none;"><i class="fa-solid fa-file-pdf"></i> View File</a>`;
+                    return `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight: 600; text-decoration: none; margin-right:10px;"><i class="fa-solid fa-file-pdf"></i> View</a>`;
 
                 })()}
+
+                ${sub.status !== 'Approved' ? `<button onclick="updateStatus('${assignmentId}', '${sub._id}', 'Approved')" style="background:#10b981; color:white; border:none; border-radius:5px; padding:4px 8px; cursor:pointer;" title="Approve"><i class="fa-solid fa-check"></i></button>` : ''}
+                ${sub.status !== 'Rejected' ? `<button onclick="updateStatus('${assignmentId}', '${sub._id}', 'Rejected')" style="background:#ef4444; color:white; border:none; border-radius:5px; padding:4px 8px; cursor:pointer;" title="Reject"><i class="fa-solid fa-xmark"></i></button>` : ''}
 
                 </td>
 
@@ -532,4 +541,37 @@ async function viewSubmissions(assignmentId, title) {
 
     }
 
+}
+
+
+
+async function updateStatus(assignmentId, subId, status) {
+    if (!confirm(`Mark this submission as ${status}?`)) return;
+
+    const userStr = localStorage.getItem('user');
+    const user = JSON.parse(userStr);
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/assignments/${assignmentId}/submissions/${subId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${user.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+        });
+
+        if (response.ok) {
+            // Reload the modal logic to reflect changes
+            const titleElement = document.getElementById('modalAssignmentTitle');
+            const title = titleElement ? titleElement.innerText.replace('For Assignment: ', '') : '';
+            viewSubmissions(assignmentId, title);
+        } else {
+            const data = await response.json();
+            alert(data.message || 'Update failed');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Server error');
+    }
 }

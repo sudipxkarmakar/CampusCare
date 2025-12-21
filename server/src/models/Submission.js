@@ -23,7 +23,12 @@ const submissionSchema = new mongoose.Schema({
         default: Date.now,
     },
     grade: String,
-    feedback: String
+    feedback: String,
+    status: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending'
+    }
 }, { timestamps: true });
 
 // Prevent multiple submissions for same assignment by same student

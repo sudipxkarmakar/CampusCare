@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createAssignment, getAssignments, submitAssignment, getTeacherAssignments, getAssignmentSubmissions, deleteAssignment } from '../controllers/assignmentController.js';
+import { createAssignment, getAssignments, submitAssignment, getTeacherAssignments, getAssignmentSubmissions, deleteAssignment, updateSubmissionStatus } from '../controllers/assignmentController.js';
 
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -50,6 +50,7 @@ router.post('/', protect, upload.single('file'), createAssignment);
 router.get('/', protect, getAssignments);
 router.get('/created', protect, getTeacherAssignments);
 router.get('/:id/submissions', protect, getAssignmentSubmissions);
+router.patch('/:id/submissions/:subId/status', protect, updateSubmissionStatus); // New route
 router.post('/:id/submit', protect, (req, res, next) => {
     console.log(`[ROUTE] POST /:id/submit hit for ID: ${req.params.id}`);
     next();
