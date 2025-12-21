@@ -29,7 +29,7 @@ async function fetchAndRenderRoutine(role) {
 
         const routineData = await response.json();
         console.log('[Routine] Data received:', routineData);
-        renderRoutineTable(routineData, tableBody);
+        renderRoutineTable(routineData, tableBody, role);
 
     } catch (error) {
         console.error("Error loading routine:", error);
@@ -40,7 +40,7 @@ async function fetchAndRenderRoutine(role) {
     }
 }
 
-function renderRoutineTable(data, tableBody) {
+function renderRoutineTable(data, tableBody, role) {
     if (data.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500">No classes scheduled</td></tr>';
         return;
@@ -89,10 +89,23 @@ function renderRoutineTable(data, tableBody) {
                 const isLab = subject.toLowerCase().includes('lab');
                 const cellStyle = isLab ? 'background: #e0f2fe;' : 'background: #f0fdf4;';
 
+                // Contextual Info: For Students -> Show Teacher; For Teachers -> Show Batch/Year
+                let subDetail = '';
+                if (role === 'teacher') {
+                    // For teachers, showing their own name is useless. Show Target Audience (Year/Batch).
+                    // Ensure data has these fields. If not, fallback.
+                    const targetBatch = cls.batch ? `Batch ${cls.batch}` : 'All Batches';
+                    // Parse year if needed or use directly
+                    subDetail = `<i class="fa-solid fa-users"></i> ${cls.year ? 'Year ' + cls.year : ''} (${targetBatch})`;
+                } else {
+                    // For students, show the Teacher
+                    subDetail = `<i class="fa-solid fa-chalkboard-user"></i> ${teacherName}`;
+                }
+
                 rowsHTML += `
                <td style="${cellStyle} border-radius: 8px; padding: 10px; margin: 2px;">
                     <div style="font-weight:bold; color:#1f2937;">${subject}</div>
-                    <div style="font-size:0.8rem; color:#4b5563; margin-top:4px;"><i class="fa-solid fa-chalkboard-user"></i> ${teacherName}</div>
+                    <div style="font-size:0.8rem; color:#4b5563; margin-top:4px;">${subDetail}</div>
                </td>`;
             } else {
                 // Empty Slot
