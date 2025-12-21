@@ -164,23 +164,58 @@ function getStatusColor(status) {
 }
 
 async function loadHostelNotices() {
-    // Reusing existing valid notices logic or new hostel specific?
-    // Let's assume notices API has a filter or we fetch all and filter client side for 'hosteler' audience
-    // Or utilize the recently created filtered API.
-    // For simplicity, I'll fetch generic notices for now or update Notice Controller to return 'hosteler' notices publicly or protected.
-    // Let's mock or use the standard notice loader if available.
-    // I'll leave this placeholder logic.
     const list = document.getElementById('hostel-notices-list');
     if (!list) return;
 
-    list.innerHTML = `
-        <div class="notice-card-item">
-            <div class="notice-icon-box"><i class="fa-solid fa-bullhorn"></i></div>
-            <div class="notice-content">
-                <h4>Mess Timing Change</h4>
-                <p>Dinner will be served at 7:30 PM from tomorrow.</p>
-                <div class="notice-date-badge">Today</div>
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        list.innerHTML = '<p style="text-align:center; color:#64748b; padding:1rem;">Please login to view notices.</p>';
+        return;
+    }
+    const user = JSON.parse(userStr);
+
+    try {
+        // Fetch notices with role=hosteler and user department
+        const res = await fetch(`${API_BASE}/notices?role=hosteler&department=${user.department || ''}`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+
+        if (!res.ok) throw new Error('Failed to load notices');
+
+        const notices = await res.json();
+
+        if (notices.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#64748b; padding:1rem;">No new notices.</p>';
+            return;
+        }
+
+        list.innerHTML = notices.map(n => `
+            <div class="notice-card-item" onclick="openNoticeModal('${n._id}')">
+                <div class="notice-content">
+                    <h4>${n.title}</h4>
+                    <p>${n.content.substring(0, 60)}${n.content.length > 60 ? '...' : ''}</p>
+                    <div class="notice-date-badge">
+                        ${new Date(n.date).toLocaleDateString()}
+                    </div>
+                </div>
             </div>
-        </div>
-    `;
+        `).join('');
+
+    } catch (error) {
+        console.error(error);
+        list.innerHTML = '<p style="text-align:center; color:#ef4444; padding:1rem;">Error loading notices.</p>';
+    }
+}
+
+function getNoticeIcon(audience) {
+    if (audience === 'student') return 'fa-graduation-cap';
+    if (audience === 'teacher') return 'fa-chalkboard-user';
+    if (audience === 'hosteler') return 'fa-bed';
+    return 'fa-bullhorn';
+}
+
+function openNoticeModal(id) {
+    // Optional: Implement a modal to show full notice details if needed
+    // For now, simple alert or handled by a global modal if one exists
+    // alert('Detailed view coming soon for notice: ' + id);
 }

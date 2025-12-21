@@ -27,7 +27,7 @@ export const getNotices = async (req, res) => {
         } else if (role === 'teacher') {
             audienceList = ['teacher', 'general', 'student', 'hosteler'];
         } else if (role === 'hosteler') {
-            audienceList = ['student', 'hosteler', 'general'];
+            audienceList = ['hosteler']; // STRICT: Only show notices meant for hostelers (e.g. mess, cleaning)
         } else if (role === 'hod') {
             audienceList = ['teacher', 'general', 'student', 'hosteler'];
         } else if (role === 'warden') {
