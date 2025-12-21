@@ -1,7 +1,7 @@
 import Assignment from '../models/Assignment.js';
 import User from '../models/User.js';
 import Submission from '../models/Submission.js';
-import fs from 'fs';
+
 
 // @desc    Create a new assignment
 // @route   POST /api/assignments
@@ -112,22 +112,7 @@ export const getAssignments = async (req, res) => {
 };
 
 export const submitAssignment = async (req, res) => {
-    const logParams = (msg) => {
-        const logMsg = `[${new Date().toISOString()}] ${msg}\n`;
-        try {
-            // Using absolute path relative to CWD or __dirname might be safer
-            // assuming process CWD is server root or project root?
-            // Let's try appending to 'debug_submission.log' in CWD
-            fs.appendFileSync('debug_submission.log', logMsg);
-        } catch (e) { console.error('Log file error', e); }
-    };
-
     try {
-        logParams('Started submitAssignment');
-        logParams(`Params ID: ${req.params.id}`);
-        logParams(`User ID: ${req.user._id}`);
-        logParams(`File: ${req.file ? req.file.filename : 'No File'}`);
-
         const assignmentId = req.params.id;
         const studentId = req.user._id;
 
@@ -138,7 +123,6 @@ export const submitAssignment = async (req, res) => {
         });
 
         if (existingSubmission) {
-            logParams('Already submitted');
             return res.status(400).json({ message: 'Assignment already submitted' });
         }
 
@@ -148,7 +132,6 @@ export const submitAssignment = async (req, res) => {
         } else if (req.body.link) {
             submissionLink = req.body.link;
         } else {
-            logParams('No file/link');
             return res.status(400).json({ message: 'Please upload a PDF file.' });
         }
 
@@ -158,11 +141,9 @@ export const submitAssignment = async (req, res) => {
             link: submissionLink
         });
 
-        logParams(`Submission Created: ${submission._id}`);
         res.status(201).json(submission);
 
     } catch (error) {
-        if (typeof logParams === 'function') logParams(`Error: ${error.message}`);
         res.status(500).json({ message: error.message });
     }
 };
