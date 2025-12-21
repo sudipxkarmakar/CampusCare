@@ -31,7 +31,7 @@ const marMoocSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Proposed', 'Ongoing', 'Completed', 'Verified'],
+        enum: ['Proposed', 'Ongoing', 'Completed', 'Verified', 'Rejected'],
         default: 'Proposed',
     }
 }, { timestamps: true });
