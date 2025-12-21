@@ -220,22 +220,21 @@ window.checkAuthState = function () {
         let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
 
         // Custom Avatar (if exists)
+        // Custom Avatar (if exists)
         if (user.profilePicture) {
             let cleanPath = user.profilePicture;
-            // Ensure we have a clean relative string "uploads/profiles/..."
-            if (cleanPath.startsWith('/')) cleanPath = cleanPath.substring(1);
 
-            const isFileProtocol = window.location.protocol === 'file:';
-
-            if (isFileProtocol) {
-                // FILE PROTOCOL: Must use relative paths
-                // If in subdir (student/), use '../uploads...'
-                // If in root (index.html), use 'uploads...'
-                const prefix = isSubDir ? '../' : '';
-                avatarSrc = prefix + cleanPath;
+            if (cleanPath.startsWith('http')) {
+                avatarSrc = cleanPath;
             } else {
-                // SERVER PROTOCOL: Best to use absolute path from root
-                avatarSrc = '/' + cleanPath;
+                // Determine if we need to prepend localhost:5000
+                // If it starts with /uploads, it's a backend static file
+                // We must use the absolute backend URL
+                if (cleanPath.startsWith('/')) {
+                    avatarSrc = `http://localhost:5000${cleanPath}`;
+                } else {
+                    avatarSrc = `http://localhost:5000/${cleanPath}`;
+                }
             }
 
             // Add timestamp to prevent caching

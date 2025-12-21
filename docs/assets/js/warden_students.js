@@ -54,6 +54,13 @@ function renderTable(students) {
         return;
     }
 
+    // URL Helper
+    const getAvatarUrl = (path, name) => {
+        if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+        if (path.startsWith('http')) return path;
+        return `http://localhost:5000${path.startsWith('/') ? '' : '/'}${path}`;
+    };
+
     noResults.style.display = 'none';
     tableBody.innerHTML = students.map((student, index) => `
         <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
@@ -61,7 +68,7 @@ function renderTable(students) {
                 ${index + 1 < 10 ? '0' + (index + 1) : index + 1}
             </td>
             <td style="padding:1rem; display:flex; align-items:center; gap:10px;">
-                <img src="${student.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`}" 
+                <img src="${getAvatarUrl(student.profilePicture, student.name)}" 
                     style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #e2e8f0;">
                 <div>
                     <div style="font-weight:600; color:#1e293b;">${student.name}</div>
@@ -110,7 +117,13 @@ function viewStudentDetails(id) {
     if (!student) return;
 
     // Populate Modal
-    const profilePic = student.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`;
+    // Populate Modal
+    let profilePic = student.profilePicture;
+    if (profilePic && !profilePic.startsWith('http')) {
+        profilePic = `http://localhost:5000${profilePic.startsWith('/') ? '' : '/'}${profilePic}`;
+    }
+    if (!profilePic) profilePic = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`;
+
     document.getElementById('modalImg').src = profilePic;
     document.getElementById('modalName').innerText = student.name;
     document.getElementById('modalRoll').innerText = `Roll No: ${student.rollNumber || 'Not Assigned'}`;

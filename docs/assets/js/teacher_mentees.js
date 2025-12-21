@@ -83,46 +83,59 @@ function viewFullProfile(studentId) {
     }
 
     // Populate Modal
-    document.getElementById('modalStudentImage').src = student.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`;
-    document.getElementById('modalStudentName').textContent = student.name;
-    document.getElementById('modalStudentId').textContent = `Roll No: ${student.rollNumber || 'N/A'}`;
+    // Header
+    let profilePic = student.profilePicture;
+    if (profilePic) {
+        if (profilePic.startsWith('/')) {
+            profilePic = `http://localhost:5000${profilePic}`;
+        } else if (!profilePic.startsWith('http')) {
+            profilePic = `http://localhost:5000/${profilePic}`;
+        }
+    } else {
+        profilePic = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`;
+    }
 
-    document.getElementById('modalStudentDept').textContent = student.department || '-';
-    document.getElementById('modalStudentYear').textContent = student.year || student.passOutYear || '-';
-    document.getElementById('modalStudentBatch').textContent = student.batch || '-';
-    document.getElementById('modalStudentSection').textContent = student.section || 'N/A';
+    document.getElementById('modalImg').src = profilePic;
+    document.getElementById('modalName').innerText = student.name;
+    document.getElementById('modalRoll').innerText = `Roll No: ${student.rollNumber || 'Not Assigned'}`;
 
-    document.getElementById('modalStudentEmail').textContent = student.email || 'N/A';
-    document.getElementById('modalStudentPhone').textContent = student.contactNumber || student.mobile || 'N/A';
+    // Personal
+    document.getElementById('modalEmail').innerText = student.email || '-';
+    document.getElementById('modalContact').innerText = student.mobile || student.contactNumber || 'Not Provided';
+    document.getElementById('modalBlood').innerText = student.bloodGroup || 'Unknown';
 
-    document.getElementById('modalStudentAtt').textContent = `${student.attendance || 0}%`;
-    document.getElementById('modalStudentCgpa').textContent = student.cgpa || 'N/A';
-    document.getElementById('modalStudentMar').textContent = student.mar || 0;
+    // Academic
+    document.getElementById('modalDept').innerText = student.department || 'N/A';
+    document.getElementById('modalYear').innerText = `${student.year || ''} (${student.passOutYear || 'N/A'})`;
+    document.getElementById('modalBatch').innerText = `${student.batch || 'N/A'} / ${student.subBatch || '-'}`;
+
+    // Campus Life / Stats
+    const hostelGroup = document.getElementById('hostelInfoGroup');
+    if (student.hostelName) {
+        hostelGroup.style.display = 'block';
+        document.getElementById('modalHostel').innerText = `${student.hostelName} - ${student.roomNumber}`;
+    } else {
+        hostelGroup.style.display = 'none';
+    }
+
+    document.getElementById('modalCGPA').innerText = student.cgpa || '0.0';
+    document.getElementById('modalAttendance').innerText = `${student.attendance || 0}%`;
+    document.getElementById('modalMAR').innerText = student.mar || 0;
+    document.getElementById('modalMOOCs').innerText = student.moocs || 0;
 
     // Show Modal
-    const modal = document.getElementById('viewStudentModal');
+    const modal = document.getElementById('studentModal');
     modal.style.display = 'flex';
-    // Small delay to allow display:flex to apply before changing opacity for transition
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        modal.querySelector('.modal-content').style.transform = 'scale(1)';
-    }, 10);
 }
 
-function closeStudentModal() {
-    const modal = document.getElementById('viewStudentModal');
-    modal.style.opacity = '0';
-    modal.querySelector('.modal-content').style.transform = 'scale(0.9)';
-
-    setTimeout(() => {
-        modal.style.display = 'none';
-    }, 300);
+function closeModal() {
+    document.getElementById('studentModal').style.display = 'none';
 }
 
 // Close on outside click
 window.onclick = function (event) {
-    const modal = document.getElementById('viewStudentModal');
+    const modal = document.getElementById('studentModal');
     if (event.target == modal) {
-        closeStudentModal();
+        closeModal();
     }
 }
