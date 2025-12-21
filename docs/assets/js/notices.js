@@ -49,6 +49,12 @@ async function loadNotices() {
         }
 
         allFetchedNotices = await response.json();
+
+        // Custom Requirement: Remove 'general' notices for students
+        if (role === 'student') {
+            allFetchedNotices = allFetchedNotices.filter(n => n.audience !== 'general');
+        }
+
         renderNotices(allFetchedNotices);
 
     } catch (error) {

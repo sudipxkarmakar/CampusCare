@@ -81,7 +81,7 @@ const startServer = async () => {
   app.use(express.static(docsPath));
 
   // Serve uploads directory
-  const uploadsPath = path.join(__dirname, '../../uploads');
+  const uploadsPath = path.join(__dirname, '../uploads');
   app.use('/uploads', express.static(uploadsPath));
 
   // Fallback to index.html for any other route (SPA behavior)
