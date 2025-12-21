@@ -1,4 +1,5 @@
 const CONTENT_API_URL = 'http://localhost:5000/api/content/my-content';
+const ASSIGN_API_URL = 'http://localhost:5000/api/assignments';
 let fetchedAssignments = [];
 let fetchedNotes = [];
 let currentAssignmentId = null;
