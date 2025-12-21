@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configure Multer for Profile Pictures
-const uploadDir = path.join(__dirname, '../../../docs/uploads/profiles');
+const uploadDir = path.join(__dirname, '../../../uploads/profiles');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
