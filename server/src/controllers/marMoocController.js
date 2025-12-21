@@ -68,6 +68,7 @@ export const submitMarMooc = async (req, res) => {
             platform: platform || 'Self',
             points,
             certificateUrl,
+            externalLink: link || '', // Store the original link if provided
             status: 'Proposed' // Default status
         });
 

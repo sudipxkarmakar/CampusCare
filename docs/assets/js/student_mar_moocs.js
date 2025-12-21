@@ -90,9 +90,25 @@ async function loadData(token) {
                     <span>${r.platform} • ${date}</span>
                     <div style="display:flex; align-items:center;">
                         ${badge}
-                        <button onclick="alert('Viewing Proof: ${r.title}')" style="background:none; border:none; color:#3b82f6; cursor:pointer; font-size:0.9rem;" title="View Proof">
-                           <i class="fa-solid fa-file-pdf"></i>
-                        </button>
+                        ${(() => {
+                    let proofUrl = r.certificateUrl;
+
+                    if (!proofUrl) {
+                        return `<span style="color:#cbd5e1; font-size:0.9rem; margin-left:5px; cursor:not-allowed;" title="No Document">
+                                   <i class="fa-solid fa-file-circle-xmark"></i>
+                                </span>`;
+                    }
+
+                    if (proofUrl.startsWith('/')) {
+                        proofUrl = 'http://localhost:5000' + proofUrl;
+                    } else if (!proofUrl.startsWith('http')) {
+                        proofUrl = 'https://' + proofUrl;
+                    }
+
+                    return `<a href="${proofUrl}" target="_blank" style="background:none; border:none; color:#3b82f6; cursor:pointer; font-size:0.9rem; margin-left:5px;" title="View Document">
+                               <i class="fa-solid fa-file-pdf"></i>
+                            </a>`;
+                })()}
                     </div>
                 </div>
             `;

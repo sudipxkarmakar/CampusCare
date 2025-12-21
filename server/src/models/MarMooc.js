@@ -25,6 +25,9 @@ const marMoocSchema = new mongoose.Schema({
     certificateUrl: {
         type: String,
     },
+    externalLink: {
+        type: String,
+    },
     points: {
         type: Number,
         default: 0,

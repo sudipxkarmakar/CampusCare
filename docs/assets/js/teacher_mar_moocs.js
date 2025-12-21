@@ -99,14 +99,30 @@ async function loadSubmissions(token) {
                     // Handle relative paths from backend uploads
                     if (proofUrl.startsWith('/')) {
                         proofUrl = 'http://localhost:5000' + proofUrl;
-                    } else if (!proofUrl.startsWith('http')) {
-                        // Handle external links missing protocol
-                        proofUrl = 'https://' + proofUrl;
+                    } else if (proofUrl.startsWith('http')) {
+                        // Already absolute
+                    } else {
+                        // Assume filename
+                        proofUrl = 'http://localhost:5000/uploads/' + proofUrl;
                     }
 
-                    return `<a href="${proofUrl}" target="_blank" style="text-decoration:none; color:#3b82f6; font-size:0.9rem; font-weight:500;">
-                            <i class="fa-solid fa-file-invoice"></i> View Proof
+                    let linksHtml = `<a href="${proofUrl}" target="_blank" style="text-decoration:none; color:#3b82f6; font-size:0.9rem; font-weight:500;">
+                            <i class="fa-solid fa-file-invoice"></i> View Document
                          </a>`;
+
+                    if (item.category === 'mooc') {
+                        // Use externalLink if available, otherwise fallback to the proofUrl (file or link)
+                        let urlLink = item.externalLink || proofUrl;
+
+                        if (urlLink) {
+                            if (!urlLink.startsWith('http')) urlLink = 'https://' + urlLink;
+                            linksHtml += `<a href="${urlLink}" target="_blank" style="margin-left:15px; text-decoration:none; color:#3b82f6; font-size:0.9rem; font-weight:500;">
+                                <i class="fa-solid fa-link"></i> URL
+                             </a>`;
+                        }
+                    }
+
+                    return linksHtml;
                 })()}
                      ${item.status === 'Proposed' ? '<span style="font-size:0.75rem; color:#f59e0b; background:#fef3c7; padding:2px 6px; border-radius:4px;">Proposed</span>' : ''}
                 </div>
