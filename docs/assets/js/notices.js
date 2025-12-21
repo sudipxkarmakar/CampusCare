@@ -20,12 +20,14 @@ async function loadNotices() {
     let role = 'public';
     let token = '';
     let userId = '';
+    let department = '';
 
     if (userStr) {
         const user = JSON.parse(userStr);
         role = user.role || 'public';
         token = user.token;
         userId = user._id || '';
+        department = user.department || '';
 
         // Normalize
         if (role === 'Hosteler') role = 'hosteler';
@@ -34,11 +36,13 @@ async function loadNotices() {
     }
 
     try {
-        const response = await fetch(`${API_URL}?role=${role}&userId=${userId}`, {
+        const response = await fetch(`${API_URL}?role=${role}&userId=${userId}&department=${department}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
+
+        // ... (rest of error handling and json parsing) 
 
         if (!response.ok) {
             throw new Error(`Server returned ${response.status}: ${response.statusText}`);
@@ -80,12 +84,12 @@ function renderNotices(notices) {
                 <div style="font-size:1.5rem; color:${badgeColor};">${day}</div>
                 <div>${month}</div>
             </div>
-            <div class="notice-content">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="font-size:1.1rem; color:#2d3748;">${notice.title}</strong>
-                    <span style="font-size:0.7rem; background:${badgeColor}; color:white; padding:2px 6px; border-radius:4px; text-transform:uppercase;">${notice.audience}</span>
+            <div class="notice-content" style="width: 100%;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%; margin-bottom: 5px;">
+                    <strong style="font-size:1.1rem; color:#2d3748; padding-right: 10px;">${notice.title}</strong>
+                    <span style="font-size:0.7rem; background:${badgeColor}; color:white; padding:2px 6px; border-radius:4px; text-transform:uppercase; white-space:nowrap; margin-left:auto;">${notice.audience}</span>
                 </div>
-                <span>${notice.content}</span>
+                <span style="display:block; color:#4a5568; line-height:1.5;">${notice.content}</span>
             </div>
         </div>
         `;

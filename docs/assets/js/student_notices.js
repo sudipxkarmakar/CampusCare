@@ -17,9 +17,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         token = user.token;
     }
 
+    const API_BASE_URL = 'http://localhost:5000/api';
+
     try {
+        // Construct URL with query params
+        const params = new URLSearchParams();
+        if (user) {
+            params.append('role', user.role || 'student');
+            params.append('department', user.department || '');
+            params.append('userId', user.identifier || '');
+        }
+
         // Fetch all notices (authenticated)
-        const response = await fetch(`${API_BASE_URL}/notices`, {
+        const response = await fetch(`${API_BASE_URL}/notices?${params.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -32,14 +42,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (filter === 'personal') {
             // Filter: Audience 'student', or Specific Dept/Year match
-            // Assuming the API returns all applicable, but we double-check here for strict tab view
             displayNotices = allNotices.filter(n =>
                 n.audience === 'student' ||
                 (user && n.targetDept === user.department)
             );
         } else {
             // General Notices (General + Student) - Standard View
-            displayNotices = allNotices.filter(n => n.audience === 'general' || !n.audience);
+            // Fix: Include 'student' audience in default view
+            displayNotices = allNotices.filter(n =>
+                n.audience === 'general' ||
+                n.audience === 'student' ||
+                !n.audience ||
+                (user && n.targetDept === user.department)
+            );
         }
 
         container.innerHTML = '';
