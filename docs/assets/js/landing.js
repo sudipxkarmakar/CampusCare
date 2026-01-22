@@ -117,10 +117,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
                         const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
 
+                        // Priority Badge Logic
+                        let badgeColor = 'bg-blue-100 text-blue-800'; // Default Low/Medium
+                        if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
+                        if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
+
                         html += `
                           <div class="blog-card glass">
-                            <div class="status-badge ${statusClass}">${c.status.toUpperCase()}</div>
-                            <h3 class="blog-title">${c.title}</h3>
+                            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                                <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
+                                <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${c.priority || 'Medium'}</span>
+                            </div>
+                            
+                            <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
                             <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
                             <p class="blog-excerpt">${excerpt}</p>
                             <div class="blog-footer">
