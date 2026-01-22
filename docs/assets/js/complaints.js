@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadComplaints() {
-    const list = document.getElementById('complaint-list');
+    const list = document.getElementById('complaint-list-full');
     if (!list) return;
 
     try {

@@ -14,24 +14,8 @@ export const fileComplaint = async (req, res) => {
         const analysis = await analyzeComplaint(title + " " + description);
 
         // --- MOCK MODE ---
-        if (global.MOCK_MODE) {
-            return res.status(201).json({
-                message: 'Complaint filed successfully (MOCK MODE)',
-                complaint: {
-                    _id: 'mock_id_' + Date.now(),
-                    title,
-                    description,
-                    category: analysis.category,
-                    priority: analysis.priority,
-                    status: 'Submitted',
-                    upvotes: 0,
-                    createdAt: new Date(),
-                    student: studentId || 'mock_student',
-                    againstUser: againstUser || null
-                },
-                aiNote: `Auto-classified as ${analysis.category} with ${analysis.priority} priority.`
-            });
-        }
+        // --- MOCK MODE REMOVED: ALWAYS SAVE TO DB ---
+
 
         const complaint = await Complaint.create({
             title,
@@ -56,32 +40,8 @@ export const fileComplaint = async (req, res) => {
 // @route   GET /api/complaints
 export const getComplaints = async (req, res) => {
     // --- MOCK MODE ---
-    if (global.MOCK_MODE) {
-        return res.json([
-            {
-                _id: 'c1',
-                title: 'Mock: Fire in Wire',
-                description: 'Sparks observed in Hallway 3',
-                category: 'Electrical',
-                priority: 'Urgent',
-                status: 'In Progress',
-                upvotes: 15,
-                createdAt: new Date(),
-                student: { name: 'Mock Student' }
-            },
-            {
-                _id: 'c2',
-                title: 'Mock: Water Leak',
-                description: 'Tap broken in washroom',
-                category: 'Sanitation',
-                priority: 'Medium',
-                status: 'Submitted',
-                upvotes: 3,
-                createdAt: new Date(Date.now() - 86400000),
-                student: { name: 'Rahul Kumar' }
-            }
-        ]);
-    }
+    // --- MOCK MODE REMOVED: ALWAYS FETCH FROM DB ---
+
 
     try {
         const complaints = await Complaint.find()
@@ -99,14 +59,8 @@ export const getComplaints = async (req, res) => {
 export const upvoteComplaint = async (req, res) => {
     try {
         // --- MOCK MODE ---
-        if (global.MOCK_MODE) {
-            return res.json({
-                _id: req.params.id,
-                title: 'Mock Complaint',
-                upvotes: 11, // Simulated increment
-                status: 'In Progress'
-            });
-        }
+        // --- MOCK MODE REMOVED: ALWAYS UPDATE DB ---
+
 
         const complaint = await Complaint.findById(req.params.id);
         if (!complaint) return res.status(404).json({ message: 'Not found' });
