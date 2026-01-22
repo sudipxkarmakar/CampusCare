@@ -11,7 +11,7 @@ export const fileComplaint = async (req, res) => {
 
     try {
         // AI Processing
-        const analysis = analyzeComplaint(title + " " + description);
+        const analysis = await analyzeComplaint(title + " " + description);
 
         // --- MOCK MODE ---
         if (global.MOCK_MODE) {
