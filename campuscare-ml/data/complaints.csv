@@ -1,0 +1,601 @@
+text,category,priority
+No internet access at Computer Centre.,IT,Low
+Found stone in the food.,Mess,Medium
+Need carpentry repair for bed in Classroom 5.,Civil,Low
+General inquiry about holidays.,Other,Low
+Flush not working in Washroom A flush.,Sanitation,Medium
+Power cut in Room 203 for the last 1 hour.,Electrical,Urgent
+Power cut in Room 101 for the last 2 days.,Electrical,Medium
+Internet speed is very slow in Room 304.,IT,Medium
+There is a spark coming from the socket in Lab 1.,Electrical,Urgent
+Router in Library seems to be off.,IT,Medium
+tap handle is broken in Canteen Washroom.,Sanitation,Urgent
+General inquiry about holidays.,Other,Low
+Need carpentry repair for chair in Room 302.,Civil,High
+Found insect in the food.,Mess,High
+Need permission for an event in Ground.,Other,Low
+Found insect in the food.,Mess,High
+Witnessed a fight in Hostel Block B.,Disciplinary,Urgent
+Bad smell coming from Washroom A near pipe.,Sanitation,Urgent
+Loose wiring near the switch at Common Room.,Electrical,Medium
+The dal was uncooked.,Mess,High
+The flush in Canteen Washroom is clogged.,Sanitation,Urgent
+The socket button is broken in Room 101.,Electrical,High
+Loose wiring near the regulator at Room 101.,Electrical,Medium
+My phone was stolen from Hostel Block B.,Disciplinary,High
+Food hygiene is very poor in the mess.,Mess,High
+Lost my ID card in Main Gate.,Other,Low
+The basin is broken and unusable in Canteen Washroom.,Sanitation,High
+Window glass is shattered in Room 302.,Civil,Medium
+Parking space issue.,Other,Low
+Someone was smoking in Canteen.,Disciplinary,Urgent
+Switch for tube light is physically broken in Common Room.,Electrical,High
+Door lock is jammed in Room 105.,Civil,Low
+bed leg is wobbly in Room 105.,Civil,Low
+Switch for plug is physically broken in Corridor.,Electrical,High
+Bus timing issue.,Other,Low
+Window glass is shattered in Lobby.,Civil,Low
+Notice board is cluttered.,Other,Low
+Not enough quantity of roti for everyone.,Mess,Medium
+basin is overflowing in Canteen Washroom.,Sanitation,High
+Window glass is shattered in Lobby.,Civil,Low
+The rice served today was stale.,Mess,High
+Harassment reported near Hostel Block B.,Disciplinary,Urgent
+Cannot login to the network in Library.,IT,Medium
+Lost my ID card in Main Gate.,Other,Medium
+Someone was smoking in Playground.,Disciplinary,High
+No water supply in Hostel Toilet since 2 days.,Sanitation,High
+Paint is peeling off in Lobby.,Civil,Medium
+Power cut in Corridor for the last morning.,Electrical,High
+Lost my ID card in Ground.,Other,Low
+Service is too slow during lunch.,Mess,Medium
+Gym equipment broken.,Other,High
+AC in Common Room is flickering.,Electrical,Medium
+No water supply in Canteen Washroom since 1 hour.,Sanitation,High
+Ceiling dampness observed in Room 105.,Civil,Low
+AC stopped working suddenly in Room 101.,Electrical,High
+Switch for fan is physically broken in Room 101.,Electrical,High
+Suggestion for new club.,Other,Low
+The basin is broken and unusable in Washroom B.,Sanitation,High
+Internet speed is very slow in Room 304.,IT,Medium
+The vegetable served today was stale.,Mess,High
+Wi-Fi signal is weak in Hostel Block A.,IT,High
+The roti was uncooked.,Mess,Medium
+Cannot login to the network in Computer Centre.,IT,High
+shower handle is broken in Hostel Toilet.,Sanitation,High
+Wi-Fi signal is weak in Lab 2.,IT,Low
+Loose wiring near the regulator at Library.,Electrical,Medium
+The AC in Library is not working.,Electrical,High
+Parking space issue.,Other,Low
+Found insect in the food.,Mess,Urgent
+Need to replace the switch in Room 101.,Electrical,Urgent
+No internet access at Library.,IT,Low
+Harassment reported near Playground.,Disciplinary,High
+Gym equipment broken.,Other,High
+Door lock is jammed in Room 302.,Civil,Low
+The rice was uncooked.,Mess,High
+Ceiling dampness observed in Room 302.,Civil,High
+Lost my ID card in Ground.,Other,High
+The window is broken in Lobby.,Civil,High
+Water is leaking from the basin in Canteen Washroom.,Sanitation,High
+Need to replace the fan in Corridor.,Electrical,High
+Water is leaking from the flush in Washroom A.,Sanitation,High
+Loud noise and music from Hostel Block B late at night.,Disciplinary,Urgent
+LAN port is damaged in Library.,IT,Medium
+Bad smell coming from Canteen Washroom near shower.,Sanitation,Low
+Paint is peeling off in Lobby.,Civil,Medium
+"Please clean the Canteen Washroom, it's very dirty.",Sanitation,Urgent
+The vegetable was uncooked.,Mess,Low
+My wallet was stolen from Canteen.,Disciplinary,Urgent
+The flush is broken and unusable in Washroom B.,Sanitation,High
+Water is leaking from the flush in Hostel Toilet.,Sanitation,High
+Paint is peeling off in Classroom 5.,Civil,Medium
+The fan is making a weird noise in Lab 1.,Electrical,Low
+Power cut in Room 203 for the last evening.,Electrical,High
+Tiles are broken in Classroom 5 floor.,Civil,High
+My wallet was stolen from Canteen.,Disciplinary,Urgent
+curry had too much salt.,Mess,Medium
+Loose wiring near the plug at Common Room.,Electrical,Low
+basin is overflowing in Washroom B.,Sanitation,High
+Connection drops frequently in Lab 2.,IT,High
+shower handle is broken in Washroom B.,Sanitation,High
+The tap is broken and unusable in Canteen Washroom.,Sanitation,High
+No internet access at Computer Centre.,IT,Medium
+Unauthorized outsiders in Canteen.,Disciplinary,Urgent
+Library books are torn.,Other,Medium
+Harassment reported near Playground.,Disciplinary,Urgent
+Threatening behavior by a student in Playground.,Disciplinary,Urgent
+Need permission for an event in Ground.,Other,Low
+Food hygiene is very poor in the mess.,Mess,Urgent
+vegetable had too much salt.,Mess,High
+Door lock is jammed in Lobby.,Civil,Medium
+The table handle came off in Lobby.,Civil,Medium
+Vandalism of property in Back Gate.,Disciplinary,Urgent
+Need carpentry repair for window in Classroom 5.,Civil,Medium
+No internet access at Room 304.,IT,Medium
+Dirty water coming from sink in Canteen Washroom.,Sanitation,Urgent
+Found stone in the food.,Mess,High
+Threatening behavior by a student in Hostel Block B.,Disciplinary,Urgent
+window leg is wobbly in Classroom 5.,Civil,Medium
+Water is leaking from the sink in Washroom A.,Sanitation,High
+socket in Room 101 is flickering.,Electrical,High
+Library books are torn.,Other,Low
+shower is overflowing in Washroom B.,Sanitation,Medium
+Flush not working in Hostel Toilet sink.,Sanitation,High
+Paint is peeling off in Classroom 5.,Civil,Low
+wardrobe leg is wobbly in Lobby.,Civil,Low
+Wi-Fi is not connecting in Library.,IT,Urgent
+Service is too slow during lunch.,Mess,Medium
+Window glass is shattered in Room 105.,Civil,Medium
+Service is too slow during lunch.,Mess,Medium
+The switch button is broken in Library.,Electrical,High
+The bed handle came off in Room 302.,Civil,Medium
+roti had too much salt.,Mess,Medium
+The table handle came off in Classroom 5.,Civil,Medium
+Connection drops frequently in Computer Centre.,IT,Medium
+pipe handle is broken in Washroom B.,Sanitation,Urgent
+Lost my ID card in Main Gate.,Other,Low
+Switch for fan is physically broken in Library.,Electrical,High
+Water is leaking from the flush in Washroom A.,Sanitation,High
+Water is leaking from the tap in Canteen Washroom.,Sanitation,High
+Paint is peeling off in Classroom 5.,Civil,High
+No water supply in Washroom B since 1 hour.,Sanitation,High
+Notice board is cluttered.,Other,Low
+Suggestion for new club.,Other,Low
+"Please clean the Canteen Washroom, it's very dirty.",Sanitation,High
+tube light stopped working suddenly in Room 101.,Electrical,Medium
+Plates are not washed properly.,Mess,Medium
+Harassment reported near Playground.,Disciplinary,High
+Need permission for an event in Main Gate.,Other,Medium
+Parking space issue.,Other,Low
+Power cut in Common Room for the last 1 hour.,Electrical,High
+socket in Room 101 is flickering.,Electrical,High
+Bus timing issue.,Other,Low
+No internet access at Room 304.,IT,Low
+The tube light in Corridor is not working.,Electrical,Medium
+Window glass is shattered in Lobby.,Civil,Medium
+LAN port is damaged in Lab 2.,IT,Medium
+Cannot login to the network in Library.,IT,Urgent
+Door lock is jammed in Classroom 5.,Civil,Low
+There is a spark coming from the tube light in Lab 1.,Electrical,Urgent
+Witnessed a fight in Back Gate.,Disciplinary,Urgent
+The window is broken in Classroom 5.,Civil,High
+Bad smell coming from Hostel Toilet near sink.,Sanitation,High
+Loose wiring near the plug at Corridor.,Electrical,Medium
+The bed is broken in Room 302.,Civil,High
+tap is overflowing in Washroom A.,Sanitation,High
+Flush not working in Washroom A basin.,Sanitation,Medium
+Dirty water coming from shower in Washroom B.,Sanitation,Urgent
+light stopped working suddenly in Room 203.,Electrical,High
+There is a spark coming from the switch in Corridor.,Electrical,Urgent
+Unauthorized outsiders in Hostel Block B.,Disciplinary,Urgent
+My wallet was stolen from Playground.,Disciplinary,Urgent
+The regulator is making a weird noise in Library.,Electrical,Medium
+Plates are not washed properly.,Mess,Medium
+The flush is broken and unusable in Hostel Toilet.,Sanitation,High
+Food hygiene is very poor in the mess.,Mess,High
+pipe is overflowing in Washroom B.,Sanitation,Medium
+There is a spark coming from the regulator in Room 101.,Electrical,Urgent
+Need carpentry repair for table in Room 302.,Civil,Medium
+Window glass is shattered in Room 105.,Civil,High
+No internet access at Library.,IT,Medium
+Loose wiring near the socket at Common Room.,Electrical,Medium
+Drinking water in mess tastes weird.,Mess,Medium
+Someone was smoking in Back Gate.,Disciplinary,High
+Unauthorized outsiders in Canteen.,Disciplinary,High
+Window glass is shattered in Room 302.,Civil,Low
+Need carpentry repair for window in Room 302.,Civil,Medium
+Someone was smoking in Playground.,Disciplinary,High
+The regulator in Library is not working.,Electrical,Urgent
+chair leg is wobbly in Room 302.,Civil,Low
+Tiles are broken in Lobby floor.,Civil,High
+Router in Computer Centre seems to be off.,IT,Low
+Connection drops frequently in Hostel Block A.,IT,Medium
+Tiles are broken in Lobby floor.,Civil,High
+Internet speed is very slow in Room 304.,IT,High
+Bad smell coming from Washroom A near tap.,Sanitation,Urgent
+Harassment reported near Canteen.,Disciplinary,Urgent
+Bad smell coming from Canteen Washroom near tap.,Sanitation,Medium
+Witnessed a fight in Back Gate.,Disciplinary,Urgent
+There is a spark coming from the fan in Common Room.,Electrical,Urgent
+Plates are not washed properly.,Mess,High
+tap is overflowing in Washroom A.,Sanitation,High
+Loose wiring near the plug at Room 203.,Electrical,High
+Vandalism of property in Back Gate.,Disciplinary,Urgent
+LAN port is damaged in Hostel Block A.,IT,High
+Need permission for an event in Main Gate.,Other,High
+Power cut in Common Room for the last 1 hour.,Electrical,Medium
+There is a spark coming from the tube light in Lab 1.,Electrical,Urgent
+Router in Room 304 seems to be off.,IT,Medium
+Need carpentry repair for table in Lobby.,Civil,Medium
+The vegetable served today was stale.,Mess,Urgent
+Need carpentry repair for wardrobe in Classroom 5.,Civil,Low
+Breakfast was cold today.,Mess,Medium
+Someone was smoking in Canteen.,Disciplinary,Urgent
+Internet speed is very slow in Computer Centre.,IT,Urgent
+Alcohol consumption suspected in Hostel Block B.,Disciplinary,Urgent
+Notice board is cluttered.,Other,Medium
+Router in Library seems to be off.,IT,Medium
+No water supply in Canteen Washroom since morning.,Sanitation,High
+Bad smell coming from Washroom A near basin.,Sanitation,High
+dal had too much salt.,Mess,High
+Window glass is shattered in Room 105.,Civil,High
+Bad smell coming from Washroom B near tap.,Sanitation,Medium
+Connection drops frequently in Room 304.,IT,Medium
+Cannot login to the network in Library.,IT,Medium
+roti had too much salt.,Mess,Low
+Drinking water in mess tastes weird.,Mess,High
+Drinking water in mess tastes weird.,Mess,High
+Connection drops frequently in Lab 2.,IT,High
+There is a spark coming from the AC in Corridor.,Electrical,Urgent
+The chair handle came off in Classroom 5.,Civil,Medium
+Flush not working in Washroom B shower.,Sanitation,High
+Gym equipment broken.,Other,High
+General inquiry about holidays.,Other,Low
+bed leg is wobbly in Classroom 5.,Civil,Low
+Not enough quantity of curry for everyone.,Mess,High
+chair leg is wobbly in Lobby.,Civil,Medium
+Stray dogs causing trouble near Ground.,Other,Medium
+Gym equipment broken.,Other,High
+Network credentials not working in Library.,IT,Low
+Cannot login to the network in Library.,IT,Medium
+Loose wiring near the fan at Library.,Electrical,High
+Dirty water coming from basin in Hostel Toilet.,Sanitation,High
+No water supply in Hostel Toilet since morning.,Sanitation,High
+Gym equipment broken.,Other,High
+Need to replace the light in Common Room.,Electrical,Urgent
+Need permission for an event in Office.,Other,Medium
+No internet access at Room 304.,IT,High
+Dirty water coming from pipe in Washroom B.,Sanitation,Medium
+Need to replace the socket in Room 203.,Electrical,High
+Witnessed a fight in Playground.,Disciplinary,Urgent
+Loud noise and music from Hostel Block B late at night.,Disciplinary,Urgent
+Bus timing issue.,Other,Low
+Need carpentry repair for table in Lobby.,Civil,Low
+The plug button is broken in Lab 1.,Electrical,High
+Found insect in the food.,Mess,High
+Bus timing issue.,Other,High
+Tiles are broken in Room 302 floor.,Civil,High
+Router in Hostel Block A seems to be off.,IT,Urgent
+Loose wiring near the fan at Room 101.,Electrical,Medium
+Loose wiring near the regulator at Common Room.,Electrical,Medium
+Bus timing issue.,Other,Medium
+Access point in Room 304 is blinking red.,IT,Medium
+Wi-Fi is not connecting in Room 304.,IT,Medium
+Ceiling dampness observed in Lobby.,Civil,Medium
+General inquiry about holidays.,Other,Low
+My watch was stolen from Hostel Block B.,Disciplinary,Urgent
+Suggestion for new club.,Other,Low
+tube light stopped working suddenly in Common Room.,Electrical,High
+Loose wiring near the switch at Common Room.,Electrical,Urgent
+Loose wiring near the tube light at Lab 1.,Electrical,Medium
+Vandalism of property in Hostel Block B.,Disciplinary,Urgent
+Parking space issue.,Other,Low
+sink is overflowing in Washroom B.,Sanitation,High
+Loud noise and music from Back Gate late at night.,Disciplinary,Urgent
+The flush in Washroom B is clogged.,Sanitation,High
+Door lock is jammed in Room 105.,Civil,Medium
+Wi-Fi is not connecting in Lab 2.,IT,Medium
+The chair handle came off in Room 302.,Civil,Medium
+Window glass is shattered in Classroom 5.,Civil,Medium
+Loose wiring near the tube light at Room 203.,Electrical,Medium
+LAN port is damaged in Lab 2.,IT,High
+basin handle is broken in Washroom A.,Sanitation,High
+Connection drops frequently in Computer Centre.,IT,High
+Tiles are broken in Classroom 5 floor.,Civil,High
+Unauthorized outsiders in Playground.,Disciplinary,Urgent
+Lost my ID card in Main Gate.,Other,Low
+Internet speed is very slow in Computer Centre.,IT,High
+There is a spark coming from the light in Room 101.,Electrical,Urgent
+The table handle came off in Lobby.,Civil,Low
+Window glass is shattered in Classroom 5.,Civil,Low
+Service is too slow during lunch.,Mess,High
+Bad smell coming from Hostel Toilet near shower.,Sanitation,Low
+Stray dogs causing trouble near Office.,Other,Low
+Wi-Fi signal is weak in Library.,IT,Low
+No internet access at Library.,IT,Low
+The window in Classroom 5 has a crack.,Civil,Medium
+Threatening behavior by a student in Canteen.,Disciplinary,High
+rice had too much salt.,Mess,Medium
+fan in Common Room is flickering.,Electrical,Medium
+The door in Room 105 has a crack.,Civil,Low
+Parking space issue.,Other,Low
+Loud noise and music from Back Gate late at night.,Disciplinary,Urgent
+Gym equipment broken.,Other,High
+Flush not working in Washroom A shower.,Sanitation,Medium
+Dirty water coming from pipe in Washroom A.,Sanitation,High
+Lost my ID card in Office.,Other,Low
+Found hair in the food.,Mess,High
+Breakfast was cold today.,Mess,Medium
+Cannot login to the network in Computer Centre.,IT,Low
+Bus timing issue.,Other,Low
+The tap is broken and unusable in Canteen Washroom.,Sanitation,High
+The sink in Washroom A is clogged.,Sanitation,Medium
+Alcohol consumption suspected in Canteen.,Disciplinary,Urgent
+Harassment reported near Back Gate.,Disciplinary,High
+There is a spark coming from the socket in Room 203.,Electrical,Urgent
+Unauthorized outsiders in Hostel Block B.,Disciplinary,Urgent
+LAN port is damaged in Computer Centre.,IT,Low
+Notice board is cluttered.,Other,Medium
+Need to replace the socket in Library.,Electrical,Urgent
+LAN port is damaged in Library.,IT,High
+wardrobe leg is wobbly in Classroom 5.,Civil,Low
+Stray dogs causing trouble near Main Gate.,Other,Medium
+Notice board is cluttered.,Other,Medium
+The plug in Lab 1 is not working.,Electrical,Urgent
+Paint is peeling off in Classroom 5.,Civil,Medium
+Vandalism of property in Back Gate.,Disciplinary,High
+The vegetable served today was stale.,Mess,High
+Need permission for an event in Office.,Other,Medium
+Window glass is shattered in Room 105.,Civil,Low
+Lost my ID card in Ground.,Other,Low
+Bus timing issue.,Other,Low
+Harassment reported near Canteen.,Disciplinary,High
+Gym equipment broken.,Other,High
+Harassment reported near Canteen.,Disciplinary,High
+sink handle is broken in Hostel Toilet.,Sanitation,High
+"Please clean the Washroom A, it's very dirty.",Sanitation,High
+Dirty water coming from tap in Washroom A.,Sanitation,Medium
+Witnessed a fight in Back Gate.,Disciplinary,Urgent
+Need carpentry repair for bed in Classroom 5.,Civil,High
+socket stopped working suddenly in Room 101.,Electrical,Low
+Ceiling dampness observed in Room 302.,Civil,Medium
+Threatening behavior by a student in Back Gate.,Disciplinary,Urgent
+Stray dogs causing trouble near Ground.,Other,Low
+Breakfast was cold today.,Mess,Medium
+Wi-Fi signal is weak in Library.,IT,Urgent
+Tiles are broken in Room 105 floor.,Civil,High
+Witnessed a fight in Hostel Block B.,Disciplinary,Urgent
+The pipe in Hostel Toilet is clogged.,Sanitation,High
+Stray dogs causing trouble near Main Gate.,Other,Low
+Alcohol consumption suspected in Hostel Block B.,Disciplinary,Urgent
+Someone was smoking in Playground.,Disciplinary,Urgent
+wardrobe leg is wobbly in Lobby.,Civil,Medium
+Bad smell coming from Washroom A near pipe.,Sanitation,High
+Alcohol consumption suspected in Hostel Block B.,Disciplinary,Urgent
+Ceiling dampness observed in Room 302.,Civil,High
+The socket in Corridor is not working.,Electrical,Low
+Found stone in the food.,Mess,Low
+bed leg is wobbly in Classroom 5.,Civil,Low
+Lost my ID card in Ground.,Other,Medium
+The regulator is making a weird noise in Room 101.,Electrical,High
+Witnessed a fight in Canteen.,Disciplinary,Urgent
+Alcohol consumption suspected in Playground.,Disciplinary,High
+Loud noise and music from Back Gate late at night.,Disciplinary,High
+No internet access at Hostel Block A.,IT,Low
+Connection drops frequently in Hostel Block A.,IT,Low
+Unauthorized outsiders in Playground.,Disciplinary,Urgent
+The chair is broken in Room 105.,Civil,High
+Switch for light is physically broken in Room 203.,Electrical,High
+Food hygiene is very poor in the mess.,Mess,Medium
+Breakfast was cold today.,Mess,Medium
+The plug in Room 101 is not working.,Electrical,Medium
+General inquiry about holidays.,Other,Low
+Unauthorized outsiders in Canteen.,Disciplinary,Urgent
+The table in Room 105 has a crack.,Civil,High
+The rice was uncooked.,Mess,Low
+Cannot login to the network in Room 304.,IT,Medium
+The switch is making a weird noise in Room 101.,Electrical,Medium
+Gym equipment broken.,Other,High
+Gym equipment broken.,Other,High
+Harassment reported near Back Gate.,Disciplinary,Urgent
+Cannot login to the network in Room 304.,IT,Medium
+Someone was smoking in Hostel Block B.,Disciplinary,Urgent
+regulator in Lab 1 is flickering.,Electrical,High
+Dirty water coming from tap in Hostel Toilet.,Sanitation,Urgent
+Connection drops frequently in Library.,IT,Medium
+The tap is broken and unusable in Hostel Toilet.,Sanitation,Urgent
+Suggestion for new club.,Other,Low
+Loose wiring near the fan at Library.,Electrical,High
+Threatening behavior by a student in Hostel Block B.,Disciplinary,Urgent
+Library books are torn.,Other,Medium
+AC stopped working suddenly in Room 101.,Electrical,Medium
+Switch for socket is physically broken in Common Room.,Electrical,High
+Lost my ID card in Main Gate.,Other,Low
+Stray dogs causing trouble near Main Gate.,Other,Low
+Bus timing issue.,Other,High
+Connection drops frequently in Hostel Block A.,IT,High
+Not enough quantity of curry for everyone.,Mess,Medium
+Router in Room 304 seems to be off.,IT,Urgent
+The curry served today was stale.,Mess,Urgent
+Wi-Fi is not connecting in Lab 2.,IT,High
+The vegetable served today was stale.,Mess,High
+LAN port is damaged in Hostel Block A.,IT,Low
+Cannot login to the network in Library.,IT,High
+Notice board is cluttered.,Other,Low
+Tiles are broken in Room 105 floor.,Civil,High
+Lost my ID card in Ground.,Other,Medium
+Stray dogs causing trouble near Ground.,Other,Low
+The roti was uncooked.,Mess,High
+Need carpentry repair for table in Classroom 5.,Civil,Medium
+Water is leaking from the tap in Washroom B.,Sanitation,High
+Found stone in the food.,Mess,Medium
+Parking space issue.,Other,Low
+Plates are not washed properly.,Mess,Low
+The dal served today was stale.,Mess,High
+There is a spark coming from the regulator in Library.,Electrical,Urgent
+Cannot login to the network in Hostel Block A.,IT,Medium
+There is a spark coming from the socket in Corridor.,Electrical,Urgent
+Bad smell coming from Canteen Washroom near flush.,Sanitation,High
+Harassment reported near Playground.,Disciplinary,Urgent
+Paint is peeling off in Classroom 5.,Civil,Medium
+The tap in Washroom B is clogged.,Sanitation,High
+Not enough quantity of rice for everyone.,Mess,High
+Lost my ID card in Office.,Other,Medium
+Lost my ID card in Office.,Other,Low
+Gym equipment broken.,Other,High
+The flush is broken and unusable in Washroom B.,Sanitation,High
+Power cut in Common Room for the last 2 days.,Electrical,High
+Stray dogs causing trouble near Ground.,Other,Low
+Food hygiene is very poor in the mess.,Mess,Medium
+Power cut in Library for the last 2 days.,Electrical,Medium
+The table is broken in Room 302.,Civil,High
+Food hygiene is very poor in the mess.,Mess,High
+Wi-Fi signal is weak in Computer Centre.,IT,Medium
+Need permission for an event in Office.,Other,Low
+Alcohol consumption suspected in Canteen.,Disciplinary,Urgent
+LAN port is damaged in Library.,IT,Urgent
+Loose wiring near the AC at Room 203.,Electrical,Medium
+Wi-Fi is not connecting in Computer Centre.,IT,High
+Dirty water coming from basin in Washroom A.,Sanitation,Urgent
+Dirty water coming from flush in Hostel Toilet.,Sanitation,High
+Food hygiene is very poor in the mess.,Mess,High
+Bus timing issue.,Other,High
+Unauthorized outsiders in Playground.,Disciplinary,Urgent
+Water is leaking from the pipe in Canteen Washroom.,Sanitation,High
+Paint is peeling off in Classroom 5.,Civil,Low
+Bad smell coming from Canteen Washroom near sink.,Sanitation,High
+shower is overflowing in Hostel Toilet.,Sanitation,High
+Switch for switch is physically broken in Common Room.,Electrical,High
+Loose wiring near the AC at Lab 1.,Electrical,High
+Network credentials not working in Lab 2.,IT,High
+Ceiling dampness observed in Room 302.,Civil,Low
+window leg is wobbly in Room 105.,Civil,High
+"Please clean the Washroom B, it's very dirty.",Sanitation,High
+chair leg is wobbly in Room 302.,Civil,Medium
+Power cut in Corridor for the last evening.,Electrical,Medium
+There is a spark coming from the fan in Common Room.,Electrical,Urgent
+Need carpentry repair for door in Room 302.,Civil,Low
+Access point in Lab 2 is blinking red.,IT,Medium
+Window glass is shattered in Room 302.,Civil,Low
+No internet access at Lab 2.,IT,Medium
+Tiles are broken in Classroom 5 floor.,Civil,High
+Notice board is cluttered.,Other,Medium
+fan in Room 101 is flickering.,Electrical,Medium
+Paint is peeling off in Room 105.,Civil,High
+Paint is peeling off in Room 302.,Civil,Low
+tap handle is broken in Hostel Toilet.,Sanitation,High
+Window glass is shattered in Room 302.,Civil,Low
+The roti served today was stale.,Mess,High
+No internet access at Lab 2.,IT,Urgent
+Unauthorized outsiders in Hostel Block B.,Disciplinary,Urgent
+The regulator button is broken in Library.,Electrical,High
+Library books are torn.,Other,Low
+Not enough quantity of dal for everyone.,Mess,High
+Vandalism of property in Hostel Block B.,Disciplinary,Urgent
+The flush in Canteen Washroom is clogged.,Sanitation,High
+Food hygiene is very poor in the mess.,Mess,Medium
+door leg is wobbly in Room 105.,Civil,High
+Bus timing issue.,Other,Low
+Dirty water coming from sink in Hostel Toilet.,Sanitation,Medium
+"Please clean the Washroom A, it's very dirty.",Sanitation,Medium
+Access point in Computer Centre is blinking red.,IT,High
+Someone was smoking in Back Gate.,Disciplinary,Urgent
+No internet access at Room 304.,IT,Low
+The regulator is making a weird noise in Room 101.,Electrical,Medium
+The regulator is making a weird noise in Common Room.,Electrical,High
+The bed is broken in Lobby.,Civil,High
+Window glass is shattered in Room 302.,Civil,Medium
+Gym equipment broken.,Other,High
+Bus timing issue.,Other,High
+Witnessed a fight in Canteen.,Disciplinary,Urgent
+Breakfast was cold today.,Mess,High
+Bad smell coming from Hostel Toilet near tap.,Sanitation,Urgent
+No water supply in Hostel Toilet since evening.,Sanitation,High
+Library books are torn.,Other,Low
+Harassment reported near Playground.,Disciplinary,Urgent
+Found stone in the food.,Mess,High
+Cannot login to the network in Library.,IT,Low
+Someone was smoking in Back Gate.,Disciplinary,Urgent
+Window glass is shattered in Room 105.,Civil,Medium
+Gym equipment broken.,Other,High
+Gym equipment broken.,Other,High
+window leg is wobbly in Room 302.,Civil,Medium
+Need permission for an event in Ground.,Other,Low
+Seniors are ragging juniors in Canteen.,Disciplinary,Urgent
+Stray dogs causing trouble near Main Gate.,Other,Low
+The socket in Common Room is not working.,Electrical,Medium
+Suggestion for new club.,Other,Medium
+Seniors are ragging juniors in Canteen.,Disciplinary,Urgent
+Library books are torn.,Other,Low
+Suggestion for new club.,Other,Low
+"Please clean the Washroom A, it's very dirty.",Sanitation,Low
+socket in Library is flickering.,Electrical,Medium
+Loud noise and music from Playground late at night.,Disciplinary,Urgent
+vegetable had too much salt.,Mess,Medium
+bed leg is wobbly in Classroom 5.,Civil,Medium
+Internet speed is very slow in Hostel Block A.,IT,High
+Cannot login to the network in Computer Centre.,IT,Medium
+The window in Room 302 has a crack.,Civil,Low
+Stray dogs causing trouble near Office.,Other,Low
+vegetable had too much salt.,Mess,High
+Breakfast was cold today.,Mess,High
+Ceiling dampness observed in Room 302.,Civil,Low
+Someone was smoking in Hostel Block B.,Disciplinary,High
+Loud noise and music from Canteen late at night.,Disciplinary,Urgent
+tube light in Room 101 is flickering.,Electrical,Medium
+curry had too much salt.,Mess,Urgent
+Witnessed a fight in Hostel Block B.,Disciplinary,Urgent
+Witnessed a fight in Canteen.,Disciplinary,Urgent
+Not enough quantity of curry for everyone.,Mess,High
+Power cut in Room 203 for the last 2 days.,Electrical,Low
+My phone was stolen from Back Gate.,Disciplinary,Urgent
+The vegetable was uncooked.,Mess,Urgent
+Wi-Fi signal is weak in Computer Centre.,IT,Urgent
+chair leg is wobbly in Lobby.,Civil,Medium
+Paint is peeling off in Room 105.,Civil,Medium
+The tube light is making a weird noise in Room 203.,Electrical,Medium
+regulator in Room 203 is flickering.,Electrical,Low
+The chair in Room 302 has a crack.,Civil,Medium
+Internet speed is very slow in Hostel Block A.,IT,Medium
+Parking space issue.,Other,Medium
+Need to replace the fan in Library.,Electrical,Medium
+Flush not working in Washroom B basin.,Sanitation,High
+Food hygiene is very poor in the mess.,Mess,Medium
+Threatening behavior by a student in Canteen.,Disciplinary,Urgent
+"Please clean the Canteen Washroom, it's very dirty.",Sanitation,High
+Door lock is jammed in Lobby.,Civil,Medium
+Parking space issue.,Other,Low
+No water supply in Canteen Washroom since evening.,Sanitation,High
+Power cut in Common Room for the last 1 hour.,Electrical,High
+The tube light is making a weird noise in Library.,Electrical,High
+No water supply in Canteen Washroom since evening.,Sanitation,High
+"Please clean the Washroom A, it's very dirty.",Sanitation,High
+Alcohol consumption suspected in Back Gate.,Disciplinary,Urgent
+pipe is overflowing in Hostel Toilet.,Sanitation,Medium
+Harassment reported near Back Gate.,Disciplinary,High
+Vandalism of property in Back Gate.,Disciplinary,Urgent
+"Please clean the Hostel Toilet, it's very dirty.",Sanitation,High
+Dirty water coming from pipe in Canteen Washroom.,Sanitation,High
+light in Room 203 is flickering.,Electrical,Low
+Wi-Fi is not connecting in Computer Centre.,IT,High
+Flush not working in Washroom A pipe.,Sanitation,Medium
+The basin is broken and unusable in Canteen Washroom.,Sanitation,Urgent
+Door lock is jammed in Room 105.,Civil,Medium
+Library books are torn.,Other,Low
+Network credentials not working in Hostel Block A.,IT,High
+Suggestion for new club.,Other,Low
+Breakfast was cold today.,Mess,Urgent
+Connection drops frequently in Room 304.,IT,Medium
+Network credentials not working in Computer Centre.,IT,Medium
+My wallet was stolen from Back Gate.,Disciplinary,Urgent
+Unauthorized outsiders in Playground.,Disciplinary,Urgent
+Loose wiring near the plug at Common Room.,Electrical,Medium
+Drinking water in mess tastes weird.,Mess,High
+The tube light is making a weird noise in Corridor.,Electrical,Medium
+Witnessed a fight in Back Gate.,Disciplinary,Urgent
+dal had too much salt.,Mess,Urgent
+Found insect in the food.,Mess,Medium
+Cannot login to the network in Lab 2.,IT,Low
+Breakfast was cold today.,Mess,Medium
+There is a spark coming from the fan in Room 203.,Electrical,Urgent
+My wallet was stolen from Playground.,Disciplinary,High
+Need carpentry repair for wardrobe in Room 302.,Civil,Medium
+Access point in Room 304 is blinking red.,IT,Medium
+Suggestion for new club.,Other,Low
+My phone was stolen from Back Gate.,Disciplinary,Urgent
+Cannot login to the network in Hostel Block A.,IT,High
+Connection drops frequently in Hostel Block A.,IT,Medium
+Access point in Lab 2 is blinking red.,IT,High
+My wallet was stolen from Back Gate.,Disciplinary,Urgent
+Harassment reported near Back Gate.,Disciplinary,Urgent
+The window handle came off in Lobby.,Civil,Medium
+sink is overflowing in Washroom B.,Sanitation,Medium
+Suggestion for new club.,Other,Low
+Door lock is jammed in Room 302.,Civil,Medium
+Wi-Fi signal is weak in Library.,IT,Medium
+The vegetable was uncooked.,Mess,High
+Library books are torn.,Other,Low
+Wi-Fi is not connecting in Room 304.,IT,Low
+Ceiling dampness observed in Room 302.,Civil,Medium
+Found hair in the food.,Mess,Medium
