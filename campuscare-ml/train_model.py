@@ -15,11 +15,11 @@ CATEGORY_MODEL_PATH = os.path.join(MODELS_DIR, "category_model.pkl")
 PRIORITY_MODEL_PATH = os.path.join(MODELS_DIR, "priority_model.pkl")
 
 def check_single_csv_policy():
-    # csv_files = [f for f in os.listdir(DATA_DIR) if f.endswith('.csv')]
-    # if len(csv_files) > 1:
-        # print(f"CRITICAL ERROR: Multiple CSV files detected in {DATA_DIR}: {csv_files}")
-        # print("Violation of SINGLE SOURCE OF TRUTH policy. Aborting.")
-        # exit(1)
+    csv_files = [f for f in os.listdir(DATA_DIR) if f.endswith('.csv')]
+    if len(csv_files) > 1:
+        print(f"CRITICAL ERROR: Multiple CSV files detected in {DATA_DIR}: {csv_files}")
+        print("Violation of SINGLE SOURCE OF TRUTH policy. Aborting.")
+        exit(1)
     if not os.path.exists(DATA_PATH):
         print(f"Error: {DATA_PATH} missing.")
         exit(1)
@@ -41,7 +41,7 @@ def train():
     # Preprocessing
     # We will use one vectorizer for both models for simplicity and consistency
     print("Vectorizing text...")
-    vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+    vectorizer = TfidfVectorizer(stop_words='english', max_features=5000, ngram_range=(1, 2))
     X = vectorizer.fit_transform(df['text'])
     
     # Train Category Model

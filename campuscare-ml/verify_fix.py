@@ -25,13 +25,11 @@ def get_prediction(text):
         return "Error", str(e)
 
 tests = [
-    ("The hostel room door lock is broken and feels unsafe at night.", "Urgent"),
-    ("Internet speed is slow in Room 304.", "Medium"),
-    ("My room caught fire help", "Urgent"),
-    ("Light bulb burn", "Urgent"),
-    ("Bulb on fire", "Urgent"),
-    ("cat found in mess kitchen", "Urgent"),
-    ("Water leakage from the ceiling", "High")
+    ("The light switch is burning and smells weird.", "Urgent"),
+    ("Cats are roaming inside the mess kitchen.", "Urgent"),
+    ("Tube light is flickering in corridor.", "Medium"),
+    ("The hostel room door lock is broken.", "Urgent"),
+    ("Internet is slow.", "Medium")
 ]
 
 print("Running Verification Tests...")

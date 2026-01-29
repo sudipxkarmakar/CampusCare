@@ -55,24 +55,31 @@ def augment():
         data = reader[1:]
 
     new_examples = [
-        # URGENT
-        ["There is a spark in the switchboard", "Electrical", "Urgent"],
-        ["My room caught fire help", "Electrical", "Urgent"],
-        ["I feel unsafe in the hostel at night", "Disciplinary", "Urgent"],
-        ["The hostel room door lock is broken and feels unsafe at night.", "Civil", "Urgent"],
-        ["Broken lock on main door anyone can enter", "Civil", "Urgent"],
-        ["Theft in room", "Disciplinary", "Urgent"],
+        # URGENT - Security / Fire
+        ["The light switch is burning and smells weird.", "Electrical", "Urgent"],
         ["Light bulb burn", "Electrical", "Urgent"],
         ["Bulb on fire", "Electrical", "Urgent"],
-        ["cat found in mess kitchen", "Mess", "Urgent"],
-        ["cats inside kitchen", "Mess", "Urgent"],
+        ["Spark from switchboard", "Electrical", "Urgent"],
         
-        # HIGH
+        # URGENT - Animals / Hygiene Risk
+        ["Cats are roaming inside the mess kitchen.", "Mess", "Urgent"],
+        ["cat found in mess kitchen", "Mess", "Urgent"],
+        ["Dead animal in water tank", "Sanitation", "Urgent"],
+        
+        # URGENT - Security / Access
+        ["The hostel room door lock is broken and feels unsafe.", "Civil", "Urgent"],
+        ["Broken lock on main door", "Civil", "Urgent"],
+        ["Theft in room", "Disciplinary", "Urgent"],
+        ["Harassment in corridor", "Disciplinary", "Urgent"],
+
+        # HIGH - Service Unavailable
         ["Water leakage from the ceiling", "Civil", "High"],
         ["No water supply", "Sanitation", "High"],
-        
-        # MEDIUM
-        ["Internet speed is slow in Room 304", "IT", "Medium"],
+        ["Geyser not working", "Electrical", "High"],
+
+        # MEDIUM - Inconvenience
+        ["Tube light is flickering in corridor.", "Electrical", "Medium"],
+        ["Internet speed is slow", "IT", "Medium"],
         ["Wifi is weak", "IT", "Medium"]
     ]
     
