@@ -10,6 +10,9 @@ if not exist "server\node_modules" (
     cd ..
 )
 
+:: Start ML Service in a new window
+start "CampusCare ML Service" cmd /c "Start_ML.bat"
+
 echo Starting Server...
 :: Use the root package.json script which forwards to server
 call npm start
