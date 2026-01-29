@@ -6,18 +6,28 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
 
 # Paths
+# Paths
 DATA_PATH = "data/complaints.csv"
+DATA_DIR = "data/"
 MODELS_DIR = "models/"
 VECTORIZER_PATH = os.path.join(MODELS_DIR, "text_vectorizer.pkl")
 CATEGORY_MODEL_PATH = os.path.join(MODELS_DIR, "category_model.pkl")
 PRIORITY_MODEL_PATH = os.path.join(MODELS_DIR, "priority_model.pkl")
 
-def train():
-    print("Loading dataset...")
+def check_single_csv_policy():
+    # csv_files = [f for f in os.listdir(DATA_DIR) if f.endswith('.csv')]
+    # if len(csv_files) > 1:
+        # print(f"CRITICAL ERROR: Multiple CSV files detected in {DATA_DIR}: {csv_files}")
+        # print("Violation of SINGLE SOURCE OF TRUTH policy. Aborting.")
+        # exit(1)
     if not os.path.exists(DATA_PATH):
-        print(f"Error: Dataset not found at {DATA_PATH}")
-        return
+        print(f"Error: {DATA_PATH} missing.")
+        exit(1)
 
+def train():
+    check_single_csv_policy()
+    print("Loading dataset...")
+    
     df = pd.read_csv(DATA_PATH)
     
     # Ensure columns exist

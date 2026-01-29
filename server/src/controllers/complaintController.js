@@ -1,6 +1,6 @@
 import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
-import { analyzeComplaint } from '../utils/aiService.js';
+import { analyzeComplaint, sendFeedback } from '../utils/aiService.js';
 
 // @desc    File a new complaint
 // @route   POST /api/complaints
@@ -125,6 +125,38 @@ export const updateComplaintStatus = async (req, res) => {
         await complaint.save();
 
         res.json(complaint);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Correct complaint category/priority and Feedback Loop
+// @route   PUT /api/complaints/:id/correct
+export const correctComplaint = async (req, res) => {
+    const { category, priority } = req.body;
+
+    try {
+        const complaint = await Complaint.findById(req.params.id);
+
+        if (!complaint) {
+            return res.status(404).json({ message: 'Complaint not found' });
+        }
+
+        // 1. Update Database
+        complaint.category = category;
+        complaint.priority = priority;
+        await complaint.save();
+
+        // 2. Send Feedback to AI for retraining
+        // Combine title and description for better context
+        const fullText = complaint.title + " " + complaint.description;
+        await sendFeedback(fullText, category, priority);
+
+        res.json({
+            message: 'Complaint corrected and AI retraining triggered.',
+            complaint
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });

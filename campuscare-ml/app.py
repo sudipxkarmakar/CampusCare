@@ -1,7 +1,10 @@
 import pickle
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
+import subprocess
+import threading
+import csv
 
 app = FastAPI()
 
@@ -49,3 +52,58 @@ async def analyze_complaint(input_data: ComplaintInput):
         }
     except Exception as e:
          raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+
+class FeedbackInput(BaseModel):
+    text: str
+    category: str
+    priority: str
+
+def retrain_model_task():
+    print('Starting background retraining...')
+    try:
+        # Run train_model.py as a subprocess
+        result = subprocess.run(['python', 'train_model.py'], capture_output=True, text=True)
+        print(result.stdout)
+        if result.returncode == 0:
+            print('Retraining successful. Reloading models...')
+            # Reload models into memory
+            global vectorizer, category_model, priority_model
+            with open(VECTORIZER_PATH, 'rb') as f:
+                vectorizer = pickle.load(f)
+            with open(CATEGORY_MODEL_PATH, 'rb') as f:
+                category_model = pickle.load(f)
+            with open(PRIORITY_MODEL_PATH, 'rb') as f:
+                priority_model = pickle.load(f)
+            print('Models reloaded.')
+        else:
+            print(f'Retraining failed: {result.stderr}')
+    except Exception as e:
+        print(f'Error during retraining: {e}')
+
+@app.post('/feedback')
+async def feedback(input_data: FeedbackInput, background_tasks: BackgroundTasks):
+    # 1. Append to dataset
+    try:
+        data_path = "data/complaints.csv"
+        # Check if file ends with newline
+        with open(data_path, 'r') as f:
+            content = f.read()
+            if not content.endswith('\n'):
+                prefix = '\n'
+            else:
+                prefix = ''
+        
+        with open(data_path, 'a', newline='') as f:
+            if prefix:
+                f.write(prefix)
+            writer = csv.writer(f)
+            writer.writerow([input_data.text, input_data.category, input_data.priority])
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Failed to save feedback: {str(e)}')
+
+    # 2. Trigger Retraining in Background
+    background_tasks.add_task(retrain_model_task)
+
+    return {'message': 'Feedback received and retraining triggered.'}
+
