@@ -1,1001 +1,1456 @@
 text,category,priority
-MCB trips frequently in Room 331.,Electrical,High
-"Switch board hanging loose in Room 258, exposed wires.",Electrical,Urgent
-"Boundary wall near Boys Hostel has a hole, outsiders entering.",Civil,Urgent
-MCB trips frequently in Room 420.,Electrical,High
-Hot water geyser not giving water in Ground Floor Washroom.,Sanitation,High
-"Bulb fused in First Floor Toilet, pitch dark at night.",Electrical,Urgent
-"Window pane missing in Room 150, mosquitoes entering.",Civil,Medium
-Corridor lights invalid/off in New Wing at night.,Electrical,Urgent
-Huge crack appeared on the wall of Room 316.,Civil,High
-Drunk students creating nuisance in Girls Hostel.,Disciplinary,Urgent
-Fungus growing on bathroom walls in Room 190.,Sanitation,High
-Corridors in Block A are full of mud and trash.,Sanitation,Medium
-Drain blockage causing backflow in Restroom near Canteen.,Sanitation,Urgent
-There is a dead insect in the rice bowl in Old Block.,Mess,Urgent
-Fan in Room 422 making loud noise and wobbling.,Electrical,High
-Wallet stolen from my bag in Office.,Disciplinary,Urgent
-The mattress in Room 354 is torn and old.,Civil,Low
-Cats seen roaming inside the Block A mess kitchen.,Mess,Urgent
-Power cut in New Wing for over 4 hours.,Electrical,High
-Window glass shattered in Room 476 due to wind.,Civil,High
-Tube light improperly flickering in Room 211.,Electrical,Medium
-Lost my ID card near Lab 1.,Other,Low
-Not enough nutritious options for vegetarian students in Boys Hostel mess.,Mess,Low
-Bus to Block B stop was late by 20 minutes today.,Other,Low
-"Switch board hanging loose in Room 382, exposed wires.",Electrical,Urgent
-No electricity in Lab 2 lab section.,Electrical,High
-Server down error when accessing exam results.,IT,High
-Female students catcalled near Block B gate.,Disciplinary,Urgent
-Curd served in Old Block was sour and old.,Mess,High
-Wifi signal is extremely weak in Room 416.,IT,Medium
-Fungus growing on bathroom walls in Room 386.,Sanitation,High
-Projector in Computer Centre has display issues.,IT,Medium
-Cleaning staff has not visited 183 for 3 days.,Sanitation,Medium
-Air conditioner in Lab 2 is dripping water.,Electrical,Medium
-Loud music playing in Room 447 late at night disturbing others.,Disciplinary,High
-Wifi range does not reach the corner rooms like 457.,IT,Medium
-Female students catcalled near New Wing gate.,Disciplinary,Urgent
-LAN port in Room 328 is broken.,IT,Medium
-Frequent voltage fluctuation in 386 damaging laptop.,Electrical,High
-Drinking water cooler in Block A is empty.,Sanitation,High
-Wifi range does not reach the corner rooms like 484.,IT,Medium
-Milk served at breakfast in Block A was sour.,Mess,High
-Geyser in Hostel Mesh not heating water.,Electrical,Medium
-Drunk students creating nuisance in Boys Hostel.,Disciplinary,Urgent
-Wifi range does not reach the corner rooms like 259.,IT,Medium
-"Window pane missing in Room 434, mosquitoes entering.",Civil,Medium
-Chapatis in New Wing mess are too hard to eat.,Mess,Medium
-Cupboard door hinge broken in Room 437.,Civil,Medium
-"Main door handle of Room 431 came off, unable to secure room.",Civil,High
-Window glass shattered in Room 466 due to wind.,Civil,High
-Foul smell coming from the drains near Block A.,Sanitation,High
-Regulator for fan in Room 431 is not working.,Electrical,Medium
-Frequent voltage fluctuation in 490 damaging laptop.,Electrical,High
-Why is the stationary shop near Library closed during college hours?,Other,Low
-Corridors in Old Block are full of mud and trash.,Sanitation,Medium
-Found a worm in the cauliflower curry today in Old Block mess.,Mess,Urgent
-"Night latch broken in Room 173, feeling unsafe.",Civil,Urgent
-Washroom in Old Block is extremely dirty and unhygienic.,Sanitation,High
-Lost property: Blue bag left in Office.,Other,Low
-Drain blockage causing backflow in Hostel Mesh.,Sanitation,Urgent
-"Cannot close the window in Room 367, latch broken.",Civil,High
-Geyser in Restroom near Canteen not heating water.,Electrical,Medium
-Washroom in Girls Hostel is extremely dirty and unhygienic.,Sanitation,High
-"Chair backrest broken in 305, need replacement.",Civil,Medium
-"Main door handle of Room 355 came off, unable to secure room.",Civil,High
-Taps run dry every evening in Block B.,Sanitation,High
-Corridor lights invalid/off in Girls Hostel at night.,Electrical,Urgent
-Student smoking in the non-smoking Main Gate area.,Disciplinary,High
-Chapatis in Old Block mess are too hard to eat.,Mess,Medium
-Long queues due to slow service at New Wing counters.,Mess,Low
-Cupboard door hinge broken in Room 435.,Civil,Medium
-LAN port in Room 306 is broken.,IT,Medium
-Power cut in Boys Hostel for over 4 hours.,Electrical,High
-"My room door (302) doesn't close fully, lock is misaligned.",Civil,High
-Tube light improperly flickering in Room 400.,Electrical,Medium
-Cannot login to the student ERP portal from Boys Hostel.,IT,High
-Someone busted the fire extinguisher in Lobby.,Disciplinary,High
-Sparking observed from the socket in Room 133.,Electrical,Urgent
-Water dispenser in Old Block mess is dirty.,Mess,High
-LAN port in Room 414 is broken.,IT,Medium
-Long queues due to slow service at Block B counters.,Mess,Low
-Foul smell coming from the drains near Block B.,Sanitation,High
-Physical fight broke out in the Block B mess hall.,Disciplinary,Urgent
-Fungus growing on bathroom walls in Room 348.,Sanitation,High
-PC in Classroom 5 not booting up.,IT,High
-Physical fight broke out in the Boys Hostel mess hall.,Disciplinary,Urgent
-Water coming from tap in 292 is muddy.,Sanitation,Urgent
-Menu is not being followed in Block B mess.,Mess,Low
-LAN port in Room 424 is broken.,IT,Medium
-Drawer lock in my study table (Room 119) is stuck.,Civil,Medium
-Biometric device at Old Block gate not accepting fingerprint.,IT,High
-The latch on the bathroom door in 329 is broken.,Civil,High
-Cleaning staff has not visited 224 for 3 days.,Sanitation,Medium
-My bed leg is wobbling dangerously in Room 168.,Civil,High
-LAN port in Room 432 is broken.,IT,Medium
-Theft: My laptop was stolen from Room 479.,Disciplinary,Urgent
-"Chair backrest broken in 194, need replacement.",Civil,Medium
-My bed leg is wobbling dangerously in Room 474.,Civil,High
-Street light near Block A entrance is broken.,Electrical,High
-Wifi speed is too slow to open basic websites in 265.,IT,Medium
-Frequent voltage fluctuation in 389 damaging laptop.,Electrical,High
-Door closer in Classroom 5 is leaking oil.,Civil,Low
-Too many mosquitoes in Stairs due to stagnant water.,Sanitation,High
-Too many mosquitoes in Corridor due to stagnant water.,Sanitation,High
-Water coming from tap in 344 is muddy.,Sanitation,Urgent
-Bed plank broke while sleeping in Room 176.,Civil,High
-Mess plates in Block B are greasy and not washed properly.,Mess,High
-Cannot connect to 'CampusWifi' in New Wing.,IT,Medium
-Cannot login to the student ERP portal from New Wing.,IT,High
-Wifi signal is extremely weak in Room 233.,IT,Medium
-Cleaning staff has not visited 143 for 3 days.,Sanitation,Medium
-Window grill is rusted and loose in Room 315.,Civil,High
-Bread served in Block A mess was expired and had fungus.,Mess,Urgent
-Gym equipment in the sports complex near Girls Hostel is rusted.,Other,Medium
-Dead pigeon in the Stairs balcony causing smell.,Sanitation,High
-Charging point in 421 is dead.,Electrical,medium
-Water coming from tap in 405 is muddy.,Sanitation,Urgent
-"Found a set of keys in Parking, submitted to office.",Other,Low
-Wallet stolen from my bag in Library.,Disciplinary,Urgent
-"Food was extremely spicy and oily, caused stomach ache.",Mess,High
-Request to add more books on AI in Office.,Other,Low
-Request to add more books on AI in Lab 1.,Other,Low
-MCB trips frequently in Room 431.,Electrical,High
-Toilet seat broken in Common Washroom.,Sanitation,High
-Corridor floor in Old Block is uneven and tripping hazard.,Civil,Medium
-Wifi range does not reach the corner rooms like 285.,IT,Medium
-Study table in Room 394 has a large crack.,Civil,Medium
-Theft: My laptop was stolen from Room 152.,Disciplinary,Urgent
-Window grill is rusted and loose in Room 462.,Civil,High
-Threatening behavior by a student in Room 235.,Disciplinary,Urgent
-Corridors in Girls Hostel are full of mud and trash.,Sanitation,Medium
-Student smoking in the non-smoking Lobby area.,Disciplinary,High
-Ceiling fan in Room 454 is not working.,Electrical,High
-Rainwater entering Room 402 through the balcony door.,Civil,High
-Rainwater entering Room 164 through the balcony door.,Civil,High
-Roof leaking heavily in Back Gate during rain.,Civil,High
-Can we have a vending machine in Girls Hostel?,Other,Low
-Tables in the Old Block mess hall are sticky and dirty.,Mess,Medium
-Water seepage from the ceiling in Girls Hostel corridor.,Civil,High
-Threatening behavior by a student in Room 155.,Disciplinary,Urgent
-Request to add more books on AI in Library.,Other,Low
-Roof leaking heavily in Corridor during rain.,Civil,High
-Wifi signal is extremely weak in Room 353.,IT,Medium
-Wifi speed is too slow to open basic websites in 150.,IT,Medium
-Rainwater entering Room 362 through the balcony door.,Civil,High
-"Cannot close the window in Room 139, latch broken.",Civil,High
-Jet spray not working in Girls Hostel toilet.,Sanitation,Medium
-Gym equipment in the sports complex near Boys Hostel is rusted.,Other,Medium
-Ethernet cable socket damaged in Lab 2.,IT,Medium
-Threatening behavior by a student in Room 140.,Disciplinary,Urgent
-Cats seen roaming inside the Block B mess kitchen.,Mess,Urgent
-Toilet seat broken in Hostel Mesh.,Sanitation,High
-Cleaning staff has not visited 153 for 3 days.,Sanitation,Medium
-"Tap is leaking continuously in Room 415, wasting water.",Sanitation,Medium
-Lost my ID card near Library.,Other,Low
-Sink is clogged and overflowing in Restroom near Canteen.,Sanitation,High
-Regulator for fan in Room 478 is not working.,Electrical,Medium
-Extension board in Lab 2 caught fire briefly.,Electrical,Urgent
-Printer in Library assumes offline status.,IT,Medium
-"Night latch broken in Room 191, feeling unsafe.",Civil,Urgent
-Cupboard door hinge broken in Room 464.,Civil,Medium
-Physical fight broke out in the New Wing mess hall.,Disciplinary,Urgent
-LAN port in Room 231 is broken.,IT,Medium
-Menu is not being followed in Block A mess.,Mess,Low
-Student smoking in the non-smoking Common Room area.,Disciplinary,High
-Request to add more books on AI in Computer Centre.,Other,Low
-Theft: My laptop was stolen from Room 154.,Disciplinary,Urgent
-"Tap is leaking continuously in Room 360, wasting water.",Sanitation,Medium
-Chapatis in Block B mess are too hard to eat.,Mess,Medium
-Student smoking in the non-smoking Stairs area.,Disciplinary,High
-"Plaster falling from ceiling in 339, dangerous.",Civil,Urgent
-Regulator for fan in Room 337 is not working.,Electrical,Medium
-Printer in Lab 2 assumes offline status.,IT,Medium
-Taps run dry every evening in Girls Hostel.,Sanitation,High
-Drawer lock in my study table (Room 259) is stuck.,Civil,Medium
-Frequent voltage fluctuation in 433 damaging laptop.,Electrical,High
-"Access point in Lobby seems dead, no signal.",IT,Medium
-Hair found in the chapati at Old Block mess.,Mess,High
-"Cannot close the window in Room 144, latch broken.",Civil,High
-Curd served in Boys Hostel was sour and old.,Mess,High
-Biometric device at Block B gate not accepting fingerprint.,IT,High
-Water coming from tap in 279 is muddy.,Sanitation,Urgent
-Lunch served very late today in Boys Hostel.,Mess,Medium
-Notice board in Corridor fell down.,Civil,Low
-MCB trips frequently in Room 158.,Electrical,High
-The latch on the bathroom door in 279 is broken.,Civil,High
-There are too many stray dogs near Block A chasing students.,Other,Medium
-Wifi range does not reach the corner rooms like 182.,IT,Medium
-Student smoking in the non-smoking Back Gate area.,Disciplinary,High
-Water coming from tap in 478 is muddy.,Sanitation,Urgent
-Stale smell coming from the food served tonight in Block A mess.,Mess,Urgent
-"Tap is leaking continuously in Room 299, wasting water.",Sanitation,Medium
-Cockroach infestation in Girls Hostel washrooms.,Sanitation,High
-Frequent voltage fluctuation in 318 damaging laptop.,Electrical,High
-Theft: My laptop was stolen from Room 274.,Disciplinary,Urgent
-Shower head broken in Hostel Mesh.,Sanitation,Medium
-Cleaning staff has not visited 365 for 3 days.,Sanitation,Medium
-"Plaster falling from ceiling in 438, dangerous.",Civil,Urgent
-Charging point in 131 is dead.,Electrical,medium
-Mess contractor in Block A is using cheap oil.,Mess,High
-Mess plates in Block A are greasy and not washed properly.,Mess,High
-Parking space is always full behind New Wing.,Other,Low
-Fan in Room 428 making loud noise and wobbling.,Electrical,High
-Tables in the Girls Hostel mess hall are sticky and dirty.,Mess,Medium
-Extension board in Lab 1 caught fire briefly.,Electrical,Urgent
-No water in the Girls Hostel mess wash basin.,Mess,High
-"Access point in Terrace seems dead, no signal.",IT,Medium
-Lost property: Blue bag left in Computer Centre.,Other,Low
-Garbage piled up near New Wing entrance.,Sanitation,Medium
-"Bulb fused in Hostel Mesh, pitch dark at night.",Electrical,Urgent
-Tiles broken in the bathroom of Room 124.,Civil,Medium
-Drain blockage causing backflow in Ground Floor Washroom.,Sanitation,Urgent
-Power cut in Block B for over 4 hours.,Electrical,High
-Stale smell coming from the food served tonight in Boys Hostel mess.,Mess,Urgent
-Not enough seating space in the New Wing mess.,Mess,Low
-Fungus growing on bathroom walls in Room 154.,Sanitation,High
-Window glass shattered in Room 119 due to wind.,Civil,High
-Door closer in Lab 2 is leaking oil.,Civil,Low
-Security guard was sleeping during night shift at Boys Hostel.,Disciplinary,Urgent
-Dal was completely watery and tasteless in Boys Hostel mess.,Mess,Medium
-Drawer lock in my study table (Room 112) is stuck.,Civil,Medium
-"Switch board hanging loose in Room 460, exposed wires.",Electrical,Urgent
-My bed leg is wobbling dangerously in Room 242.,Civil,High
-Request to extend curfew timings for Old Block.,Other,Low
-Wifi speed is too slow to open basic websites in 155.,IT,Medium
-Loud music playing in Room 441 late at night disturbing others.,Disciplinary,High
-Bed plank broke while sleeping in Room 289.,Civil,High
-PC in Computer Centre not booting up.,IT,High
-Power cut in Girls Hostel for over 4 hours.,Electrical,High
-Wifi range does not reach the corner rooms like 153.,IT,Medium
-Ragging incident reported near Old Block block.,Disciplinary,Urgent
-Too many mosquitoes in Main Gate due to stagnant water.,Sanitation,High
-Loud music playing in Room 296 late at night disturbing others.,Disciplinary,High
-Door lock key is stuck inside the keyhole in Room 167.,Civil,High
-Dinner was served cold again in Girls Hostel.,Mess,Medium
-"Tap is leaking continuously in Room 430, wasting water.",Sanitation,Medium
-Fan in Room 111 making loud noise and wobbling.,Electrical,High
-Extension board in Office caught fire briefly.,Electrical,Urgent
-Physical fight broke out in the Block A mess hall.,Disciplinary,Urgent
-Door lock key is stuck inside the keyhole in Room 119.,Civil,High
-Gym equipment in the sports complex near Block B is rusted.,Other,Medium
-Projector in Lab 1 has display issues.,IT,Medium
-Corridor floor in Block B is uneven and tripping hazard.,Civil,Medium
-"Pipe burst in Ground Floor Washroom, water flooding the floor.",Sanitation,Urgent
-No internet connectivity in Classroom 5 for lecture.,IT,High
-Water cooler in Girls Hostel gave me an electric shock.,Electrical,Urgent
-Washroom in Block B is extremely dirty and unhygienic.,Sanitation,High
-Cannot connect to 'CampusWifi' in Block A.,IT,Medium
-No internet connectivity in Computer Centre for lecture.,IT,High
-Wifi range does not reach the corner rooms like 385.,IT,Medium
-Drunk students creating nuisance in New Wing.,Disciplinary,Urgent
-Cannot connect to 'CampusWifi' in Girls Hostel.,IT,Medium
-Door lock key is stuck inside the keyhole in Room 116.,Civil,High
-Tables in the Block A mess hall are sticky and dirty.,Mess,Medium
-Curtain rod fell down in Room 109.,Civil,Low
-Hair found in the chapati at Girls Hostel mess.,Mess,High
-Wifi speed is too slow to open basic websites in 117.,IT,Medium
-Wifi range does not reach the corner rooms like 127.,IT,Medium
-Cats seen roaming inside the Boys Hostel mess kitchen.,Mess,Urgent
-Extension board in Classroom 5 caught fire briefly.,Electrical,Urgent
-Fan in Room 188 making loud noise and wobbling.,Electrical,High
-Wifi range does not reach the corner rooms like 216.,IT,Medium
-Request to extend curfew timings for Girls Hostel.,Other,Low
-Main gate of Old Block was left open all night.,Disciplinary,Urgent
-Wifi range does not reach the corner rooms like 325.,IT,Medium
-Flush not working in First Floor Toilet toilet.,Sanitation,Urgent
-Ceiling fan in Room 258 is not working.,Electrical,High
-Bread served in Block B mess was expired and had fungus.,Mess,Urgent
-Water coming from tap in 239 is muddy.,Sanitation,Urgent
-Wifi speed is too slow to open basic websites in 168.,IT,Medium
-Safety concern: Door latch in Room 130 not working properly.,Civil,Urgent
-Chapatis in Girls Hostel mess are too hard to eat.,Mess,Medium
-Not enough nutritious options for vegetarian students in Block A mess.,Mess,Low
-Someone busted the fire extinguisher in Stairs.,Disciplinary,High
-"Switch board hanging loose in Room 422, exposed wires.",Electrical,Urgent
-Cannot connect to 'CampusWifi' in Block B.,IT,Medium
-Roof leaking heavily in Main Gate during rain.,Civil,High
-Door closer in Lab 1 is leaking oil.,Civil,Low
-"Night latch broken in Room 262, feeling unsafe.",Civil,Urgent
-"Switch board hanging loose in Room 183, exposed wires.",Electrical,Urgent
-Fan in Room 361 making loud noise and wobbling.,Electrical,High
-Wifi signal is extremely weak in Room 291.,IT,Medium
-Suspicious person seen roaming in Old Block at night.,Disciplinary,Urgent
-Found a worm in the cauliflower curry today in Boys Hostel mess.,Mess,Urgent
-No electricity in Classroom 5 lab section.,Electrical,High
-Cannot login to the student ERP portal from Block B.,IT,High
-"Switch board hanging loose in Room 110, exposed wires.",Electrical,Urgent
-Water cooler in Stairs is leaking.,Sanitation,Medium
-There are too many stray dogs near New Wing chasing students.,Other,Medium
-Need permission to organize a coding event in Computer Centre.,Other,Low
-Cleaning staff has not visited 195 for 3 days.,Sanitation,Medium
-Forgot password reset link not working.,IT,Medium
-Student smoking in the non-smoking Parking area.,Disciplinary,High
-MCB trips frequently in Room 484.,Electrical,High
-Bed plank broke while sleeping in Room 194.,Civil,High
-Study table in Room 111 has a large crack.,Civil,Medium
-Rice served for lunch in Girls Hostel mess was undercooked and hard.,Mess,High
-"Chair backrest broken in 346, need replacement.",Civil,Medium
-"The lock on my door in Room 455 is completely broken, cannot lock it.",Civil,Urgent
-Not enough seating space in the Old Block mess.,Mess,Low
-Water cooler in Parking is leaking.,Sanitation,Medium
-"Pipe burst in Common Washroom, water flooding the floor.",Sanitation,Urgent
-"Tap is leaking continuously in Room 297, wasting water.",Sanitation,Medium
-Wifi speed is too slow to open basic websites in 129.,IT,Medium
-Not enough seating space in the Block B mess.,Mess,Low
-Mess contractor in Boys Hostel is using cheap oil.,Mess,High
-"Lock jammed in Room 425, I was stuck inside for 10 mins.",Civil,Urgent
-Bed plank broke while sleeping in Room 111.,Civil,High
-MCB trips frequently in Room 334.,Electrical,High
-Ceiling fan in Room 481 is not working.,Electrical,High
-Water seepage from the ceiling in Block B corridor.,Civil,High
-Ceiling dampness and peeling paint in Room 178.,Civil,Medium
-Request to extend curfew timings for Block A.,Other,Low
-Main gate of New Wing was left open all night.,Disciplinary,Urgent
-Sink is clogged and overflowing in Common Washroom.,Sanitation,High
-Water cooler in Common Room is leaking.,Sanitation,Medium
-Dal was completely watery and tasteless in Block A mess.,Mess,Medium
-Unable to submit assignment on the internal server.,IT,High
-Found a stone in the dal in Block B mess.,Mess,High
-Vegetable curry in Girls Hostel mess is smelling rotten.,Mess,Urgent
-Wifi range does not reach the corner rooms like 200.,IT,Medium
-Why is the stationary shop near Office closed during college hours?,Other,Low
-Regulator for fan in Room 302 is not working.,Electrical,Medium
-Flush not working in Hostel Mesh toilet.,Sanitation,Urgent
-Sparking observed from the socket in Room 273.,Electrical,Urgent
-Wifi speed is too slow to open basic websites in 441.,IT,Medium
-Benches in Main Gate are broken.,Civil,Medium
-Cannot login to the student ERP portal from Old Block.,IT,High
-Tube light improperly flickering in Room 413.,Electrical,Medium
-Curtain rod fell down in Room 426.,Civil,Low
-MCB trips frequently in Room 137.,Electrical,High
-Theft: My laptop was stolen from Room 465.,Disciplinary,Urgent
-Bus to New Wing stop was late by 20 minutes today.,Other,Low
-LAN port in Room 237 is broken.,IT,Medium
-Food finished before mess timing ended in Block B.,Mess,Medium
-Ceiling fan in Room 128 is not working.,Electrical,High
-Gambling activity seen in Room 410.,Disciplinary,High
-Seniors harassing juniors in Block A corridor.,Disciplinary,Urgent
-Physical fight broke out in the Old Block mess hall.,Disciplinary,Urgent
-Frequent voltage fluctuation in 212 damaging laptop.,Electrical,High
-Female students catcalled near Block A gate.,Disciplinary,Urgent
-Ethernet cable socket damaged in Lab 1.,IT,Medium
-Charging point in 159 is dead.,Electrical,medium
-Geyser in First Floor Toilet not heating water.,Electrical,Medium
-Milk served at breakfast in Block B was sour.,Mess,High
-Rice served for lunch in New Wing mess was undercooked and hard.,Mess,High
-"Access point in Back Gate seems dead, no signal.",IT,Medium
-Stale smell coming from the food served tonight in Old Block mess.,Mess,Urgent
-Parking space is always full behind Boys Hostel.,Other,Low
-"Tap is leaking continuously in Room 240, wasting water.",Sanitation,Medium
-Water seepage from the ceiling in Block A corridor.,Civil,High
-"The lock on my door in Room 231 is completely broken, cannot lock it.",Civil,Urgent
-Water cooler in Main Gate is leaking.,Sanitation,Medium
-Water seepage from the ceiling in Boys Hostel corridor.,Civil,High
-Corridor floor in Block A is uneven and tripping hazard.,Civil,Medium
-Lost property: Blue bag left in Library.,Other,Low
-Regulator for fan in Room 131 is not working.,Electrical,Medium
-LAN port in Room 336 is broken.,IT,Medium
-MCB trips frequently in Room 416.,Electrical,High
-"Tap is leaking continuously in Room 267, wasting water.",Sanitation,Medium
-"Switch board hanging loose in Room 484, exposed wires.",Electrical,Urgent
-Regulator for fan in Room 183 is not working.,Electrical,Medium
-"Chair backrest broken in 458, need replacement.",Civil,Medium
-Loud music playing in Room 129 late at night disturbing others.,Disciplinary,High
-Mirror fell off the wall in Ground Floor Washroom.,Civil,Medium
-Basketball court net near New Wing is torn.,Other,Low
-Wifi range does not reach the corner rooms like 470.,IT,Medium
-Wifi range does not reach the corner rooms like 332.,IT,Medium
-Menu is not being followed in Boys Hostel mess.,Mess,Low
-Security guard was sleeping during night shift at Girls Hostel.,Disciplinary,Urgent
-"Bulb fused in Common Washroom, pitch dark at night.",Electrical,Urgent
-Frequent voltage fluctuation in 432 damaging laptop.,Electrical,High
-Cupboard door hinge broken in Room 411.,Civil,Medium
-Foul smell coming from the drains near Girls Hostel.,Sanitation,High
-No water in the Block B mess wash basin.,Mess,High
-Door closer in Library is leaking oil.,Civil,Low
-Sparking observed from the socket in Room 485.,Electrical,Urgent
-"The lock on my door in Room 221 is completely broken, cannot lock it.",Civil,Urgent
-Dead pigeon in the Parking balcony causing smell.,Sanitation,High
-Water coming from tap in 259 is muddy.,Sanitation,Urgent
-Security guard was sleeping during night shift at Old Block.,Disciplinary,Urgent
-Verbal abuse and bullying by a group in Back Gate.,Disciplinary,Urgent
-"My room door (265) doesn't close fully, lock is misaligned.",Civil,High
-"Switch board hanging loose in Room 184, exposed wires.",Electrical,Urgent
-Cleaning staff has not visited 477 for 3 days.,Sanitation,Medium
-Too many mosquitoes in Back Gate due to stagnant water.,Sanitation,High
-Too many mosquitoes in Terrace due to stagnant water.,Sanitation,High
-Need permission to organize a coding event in Lab 2.,Other,Low
-Garbage piled up near Block B entrance.,Sanitation,Medium
-Frequent voltage fluctuation in 332 damaging laptop.,Electrical,High
-Hot water geyser not giving water in Common Washroom.,Sanitation,High
-Bus to Boys Hostel stop was late by 20 minutes today.,Other,Low
-No water in the New Wing mess wash basin.,Mess,High
-Loud music playing in Room 451 late at night disturbing others.,Disciplinary,High
-Projector in Library has display issues.,IT,Medium
-Frequent voltage fluctuation in 426 damaging laptop.,Electrical,High
-Cockroach infestation in Old Block washrooms.,Sanitation,High
-"My room door (465) doesn't close fully, lock is misaligned.",Civil,High
-Projector in Lab 2 has display issues.,IT,Medium
-Lunch served very late today in Old Block.,Mess,Medium
-Fungus growing on bathroom walls in Room 131.,Sanitation,High
-Cleaning staff has not visited 476 for 3 days.,Sanitation,Medium
-Inverter backup not working in Block A during outage.,Electrical,High
-Unauthorized outsiders drinking alcohol near Block B.,Disciplinary,Urgent
-Corridor floor in Boys Hostel is uneven and tripping hazard.,Civil,Medium
-Breakfast timing in New Wing is too short.,Mess,Medium
-Ragging incident reported near New Wing block.,Disciplinary,Urgent
-Fungus growing on bathroom walls in Room 324.,Sanitation,High
-Food finished before mess timing ended in Old Block.,Mess,Medium
-Safety concern: Door latch in Room 218 not working properly.,Civil,Urgent
-Student smoking in the non-smoking Corridor area.,Disciplinary,High
-"Plaster falling from ceiling in 365, dangerous.",Civil,Urgent
-Regulator for fan in Room 454 is not working.,Electrical,Medium
-PC in Library not booting up.,IT,High
-Cupboard door hinge broken in Room 138.,Civil,Medium
-Vandalism: Someone smashed the mirror in Hostel Mesh.,Disciplinary,High
-Wifi signal is extremely weak in Room 488.,IT,Medium
-No electricity in Computer Centre lab section.,Electrical,High
-Water coming from tap in 442 is muddy.,Sanitation,Urgent
-Found a stone in the dal in New Wing mess.,Mess,High
-Fungus growing on bathroom walls in Room 302.,Sanitation,High
-The mattress in Room 321 is torn and old.,Civil,Low
-Verbal abuse and bullying by a group in Lobby.,Disciplinary,Urgent
-Tables in the Boys Hostel mess hall are sticky and dirty.,Mess,Medium
-Wifi signal is extremely weak in Room 134.,IT,Medium
-Someone busted the fire extinguisher in Parking.,Disciplinary,High
-Gambling activity seen in Room 319.,Disciplinary,High
-Parking space is always full behind Girls Hostel.,Other,Low
-Cockroach infestation in Boys Hostel washrooms.,Sanitation,High
-Taps run dry every evening in Boys Hostel.,Sanitation,High
-The latch on the bathroom door in 389 is broken.,Civil,High
-Printer in Lab 1 assumes offline status.,IT,Medium
-Fungus growing on bathroom walls in Room 318.,Sanitation,High
-Request to extend curfew timings for Block B.,Other,Low
-Street light near New Wing entrance is broken.,Electrical,High
-No internet connectivity in Lab 1 for lecture.,IT,High
-Street light near Old Block entrance is broken.,Electrical,High
-Notice board in Main Gate fell down.,Civil,Low
-Sparking observed from the socket in Room 361.,Electrical,Urgent
-Window glass shattered in Room 393 due to wind.,Civil,High
-"Switch board hanging loose in Room 480, exposed wires.",Electrical,Urgent
-Wallet stolen from my bag in Computer Centre.,Disciplinary,Urgent
-"Tap is leaking continuously in Room 340, wasting water.",Sanitation,Medium
-Someone busted the fire extinguisher in Back Gate.,Disciplinary,High
-"Switch board hanging loose in Room 328, exposed wires.",Electrical,Urgent
-Power cut in Old Block for over 4 hours.,Electrical,High
-Water coming from tap in 195 is muddy.,Sanitation,Urgent
-Corridor floor in Girls Hostel is uneven and tripping hazard.,Civil,Medium
-Drunk students creating nuisance in Block A.,Disciplinary,Urgent
-Unauthorized outsiders drinking alcohol near New Wing.,Disciplinary,Urgent
-"Night latch broken in Room 247, feeling unsafe.",Civil,Urgent
-"Tap is leaking continuously in Room 109, wasting water.",Sanitation,Medium
-"Lock jammed in Room 284, I was stuck inside for 10 mins.",Civil,Urgent
-Low water pressure in Restroom near Canteen showers.,Sanitation,Medium
-Foul smell coming from the drains near Boys Hostel.,Sanitation,High
-Parking space is always full behind Block A.,Other,Low
-Corridor lights invalid/off in Block A at night.,Electrical,Urgent
-Wifi speed is too slow to open basic websites in 403.,IT,Medium
-Wifi signal is extremely weak in Room 269.,IT,Medium
-Dinner was served cold again in New Wing.,Mess,Medium
-Tube light improperly flickering in Room 393.,Electrical,Medium
-Too many mosquitoes in Common Room due to stagnant water.,Sanitation,High
-Dustbins overflowing in Terrace area.,Sanitation,Medium
-LAN port in Room 128 is broken.,IT,Medium
-Found a worm in the cauliflower curry today in Block A mess.,Mess,Urgent
-Suspicious person seen roaming in Boys Hostel at night.,Disciplinary,Urgent
-Threatening behavior by a student in Room 274.,Disciplinary,Urgent
-No water supply in Old Block since this morning.,Sanitation,Urgent
-Ceiling fan in Room 390 is not working.,Electrical,High
-"Lock jammed in Room 369, I was stuck inside for 10 mins.",Civil,Urgent
-Fungus growing on bathroom walls in Room 308.,Sanitation,High
-Cleaning staff has not visited 185 for 3 days.,Sanitation,Medium
-Food finished before mess timing ended in Girls Hostel.,Mess,Medium
-Sparking observed from the socket in Room 129.,Electrical,Urgent
-Security guard was sleeping during night shift at Block A.,Disciplinary,Urgent
-Someone busted the fire extinguisher in Main Gate.,Disciplinary,High
-Mess contractor in Old Block is using cheap oil.,Mess,High
-Drunk students creating nuisance in Old Block.,Disciplinary,Urgent
-Sparking observed from the socket in Room 465.,Electrical,Urgent
-Tube light improperly flickering in Room 178.,Electrical,Medium
-Fungus growing on bathroom walls in Room 296.,Sanitation,High
-Wifi range does not reach the corner rooms like 499.,IT,Medium
-Fly infestation near the food serving counter in Girls Hostel.,Mess,High
-Frequent voltage fluctuation in 479 damaging laptop.,Electrical,High
-Wifi speed is too slow to open basic websites in 212.,IT,Medium
-Fly infestation near the food serving counter in Old Block.,Mess,High
-Bed plank broke while sleeping in Room 381.,Civil,High
-Dinner was served cold again in Block A.,Mess,Medium
-Vegetable curry in Block A mess is smelling rotten.,Mess,Urgent
-Gambling activity seen in Room 490.,Disciplinary,High
-Ceiling fan in Room 274 is not working.,Electrical,High
-Fungus growing on bathroom walls in Room 442.,Sanitation,High
-Fan in Room 186 making loud noise and wobbling.,Electrical,High
-Tiles broken in the bathroom of Room 152.,Civil,Medium
-Floor tiles cracked and sharp in Lobby.,Civil,High
-Fan in Room 409 making loud noise and wobbling.,Electrical,High
-Tiles broken in the bathroom of Room 356.,Civil,Medium
-Biometric device at Boys Hostel gate not accepting fingerprint.,IT,High
-Floor tiles cracked and sharp in Main Gate.,Civil,High
-Ragging incident reported near Block A block.,Disciplinary,Urgent
-Wifi speed is too slow to open basic websites in 205.,IT,Medium
-Wifi signal is extremely weak in Room 121.,IT,Medium
-Ethernet cable socket damaged in Office.,IT,Medium
-Ragging incident reported near Block B block.,Disciplinary,Urgent
-Fan in Room 189 making loud noise and wobbling.,Electrical,High
-Internet disconnects every 5 minutes in Block A.,IT,Medium
-Taps run dry every evening in New Wing.,Sanitation,High
-Mess plates in Boys Hostel are greasy and not washed properly.,Mess,High
-Wifi signal is extremely weak in Room 466.,IT,Medium
-Stalking incident reported by a student in library.,Disciplinary,Urgent
-Inverter backup not working in Old Block during outage.,Electrical,High
-"Found a set of keys in Back Gate, submitted to office.",Other,Low
-"Boundary wall near Girls Hostel has a hole, outsiders entering.",Civil,Urgent
-Roof leaking heavily in Parking during rain.,Civil,High
-Shower head broken in Common Washroom.,Sanitation,Medium
-Drinking water cooler in New Wing is empty.,Sanitation,High
-LAN port in Room 353 is broken.,IT,Medium
-Sparking observed from the socket in Room 311.,Electrical,Urgent
-Water coming from tap in 161 is muddy.,Sanitation,Urgent
-Water cooler in Old Block gave me an electric shock.,Electrical,Urgent
-Wifi signal is extremely weak in Room 304.,IT,Medium
-Internet disconnects every 5 minutes in Girls Hostel.,IT,Medium
-Regulator for fan in Room 188 is not working.,Electrical,Medium
-Wifi range does not reach the corner rooms like 282.,IT,Medium
-Theft: My laptop was stolen from Room 231.,Disciplinary,Urgent
-Milk served at breakfast in New Wing was sour.,Mess,High
-Menu is not being followed in New Wing mess.,Mess,Low
-Washroom in Block A is extremely dirty and unhygienic.,Sanitation,High
-"Main door handle of Room 295 came off, unable to secure room.",Civil,High
-The mattress in Room 310 is torn and old.,Civil,Low
-Cleaning staff has not visited 288 for 3 days.,Sanitation,Medium
-Dal was completely watery and tasteless in Girls Hostel mess.,Mess,Medium
-Floor tiles cracked and sharp in Stairs.,Civil,High
-Window grill is rusted and loose in Room 427.,Civil,High
-Cleaning staff has not visited 312 for 3 days.,Sanitation,Medium
-Cats seen roaming inside the Girls Hostel mess kitchen.,Mess,Urgent
-Mess plates in Girls Hostel are greasy and not washed properly.,Mess,High
-Unauthorized outsiders drinking alcohol near Boys Hostel.,Disciplinary,Urgent
-Shower head broken in Restroom near Canteen.,Sanitation,Medium
-Wallet stolen from my bag in Classroom 5.,Disciplinary,Urgent
-Cleaning staff has not visited 369 for 3 days.,Sanitation,Medium
-Wifi signal is extremely weak in Room 374.,IT,Medium
-Projector in Classroom 5 has display issues.,IT,Medium
-Flush not working in Restroom near Canteen toilet.,Sanitation,Urgent
-Fan in Room 263 making loud noise and wobbling.,Electrical,High
-Charging point in 136 is dead.,Electrical,medium
-Tiles broken in the bathroom of Room 421.,Civil,Medium
-Charging point in 170 is dead.,Electrical,medium
-"Bulb fused in Ground Floor Washroom, pitch dark at night.",Electrical,Urgent
-PC in Lab 1 not booting up.,IT,High
-Wifi signal is extremely weak in Room 188.,IT,Medium
-"Access point in Stairs seems dead, no signal.",IT,Medium
-"Boundary wall near Old Block has a hole, outsiders entering.",Civil,Urgent
-Corridors in New Wing are full of mud and trash.,Sanitation,Medium
-Air conditioner in Library is dripping water.,Electrical,Medium
-Wifi speed is too slow to open basic websites in 216.,IT,Medium
-Corridor lights invalid/off in Block B at night.,Electrical,Urgent
-Door lock key is stuck inside the keyhole in Room 478.,Civil,High
-Verbal abuse and bullying by a group in Terrace.,Disciplinary,Urgent
-Wifi speed is too slow to open basic websites in 399.,IT,Medium
-MCB trips frequently in Room 212.,Electrical,High
-Wifi signal is extremely weak in Room 275.,IT,Medium
-Dustbins overflowing in Common Room area.,Sanitation,Medium
-Regulator for fan in Room 416 is not working.,Electrical,Medium
-Ceiling fan in Room 132 is not working.,Electrical,High
-Mess plates in Old Block are greasy and not washed properly.,Mess,High
-Lunch served very late today in Block B.,Mess,Medium
-Charging point in 397 is dead.,Electrical,medium
-"Tap is leaking continuously in Room 432, wasting water.",Sanitation,Medium
-"Pipe burst in First Floor Toilet, water flooding the floor.",Sanitation,Urgent
-There is a dead insect in the rice bowl in Block A.,Mess,Urgent
-Wifi range does not reach the corner rooms like 199.,IT,Medium
-Curtain rod fell down in Room 445.,Civil,Low
-There is a dead insect in the rice bowl in Boys Hostel.,Mess,Urgent
-Mirror fell off the wall in Restroom near Canteen.,Civil,Medium
-Low water pressure in Hostel Mesh showers.,Sanitation,Medium
-Cleaning staff has not visited 309 for 3 days.,Sanitation,Medium
-Curtain rod fell down in Room 163.,Civil,Low
-Fungus growing on bathroom walls in Room 242.,Sanitation,High
-Charging point in 171 is dead.,Electrical,medium
-Internet disconnects every 5 minutes in Block B.,IT,Medium
-Drawer lock in my study table (Room 265) is stuck.,Civil,Medium
-"Plaster falling from ceiling in 496, dangerous.",Civil,Urgent
-Physical fight broke out in the Girls Hostel mess hall.,Disciplinary,Urgent
-No internet connectivity in Library for lecture.,IT,High
-LAN port in Room 417 is broken.,IT,Medium
-Vandalism: Someone smashed the mirror in Restroom near Canteen.,Disciplinary,High
-"Lock jammed in Room 476, I was stuck inside for 10 mins.",Civil,Urgent
-Wifi range does not reach the corner rooms like 261.,IT,Medium
-Water coming from tap in 343 is muddy.,Sanitation,Urgent
-Window glass shattered in Room 171 due to wind.,Civil,High
-"Pipe burst in Hostel Mesh, water flooding the floor.",Sanitation,Urgent
-Seniors harassing juniors in Boys Hostel corridor.,Disciplinary,Urgent
-Suspicious person seen roaming in Block B at night.,Disciplinary,Urgent
-No water supply in New Wing since this morning.,Sanitation,Urgent
-Need permission to organize a coding event in Lab 1.,Other,Low
-Low water pressure in Ground Floor Washroom showers.,Sanitation,Medium
-Floor tiles cracked and sharp in Back Gate.,Civil,High
-Too many mosquitoes in Parking due to stagnant water.,Sanitation,High
-Not enough seating space in the Boys Hostel mess.,Mess,Low
-Drain blockage causing backflow in First Floor Toilet.,Sanitation,Urgent
-Dirty smell in the New Wing dining hall.,Mess,High
-Breakfast timing in Girls Hostel is too short.,Mess,Medium
-Cleaning staff has not visited 382 for 3 days.,Sanitation,Medium
-Someone busted the fire extinguisher in Corridor.,Disciplinary,High
-Taps run dry every evening in Block A.,Sanitation,High
-Wifi signal is extremely weak in Room 444.,IT,Medium
-"Lock jammed in Room 364, I was stuck inside for 10 mins.",Civil,Urgent
-Dead pigeon in the Common Room balcony causing smell.,Sanitation,High
-There are too many stray dogs near Block B chasing students.,Other,Medium
-Sparking observed from the socket in Room 309.,Electrical,Urgent
-Wifi speed is too slow to open basic websites in 370.,IT,Medium
-"Plaster falling from ceiling in 425, dangerous.",Civil,Urgent
-Notice board in Parking fell down.,Civil,Low
-Water dispenser in Girls Hostel mess is dirty.,Mess,High
-"Cannot close the window in Room 113, latch broken.",Civil,High
-Verbal abuse and bullying by a group in Common Room.,Disciplinary,Urgent
-Cannot connect to 'CampusWifi' in Old Block.,IT,Medium
-Huge crack appeared on the wall of Room 470.,Civil,High
-Ceiling fan in Room 129 is not working.,Electrical,High
-Fan in Room 113 making loud noise and wobbling.,Electrical,High
-Fan in Room 228 making loud noise and wobbling.,Electrical,High
-Vandalism: Someone smashed the mirror in First Floor Toilet.,Disciplinary,High
-Charging point in 366 is dead.,Electrical,medium
-Water cooler in Terrace is leaking.,Sanitation,Medium
-Mess staff behavior in Block B is very rude.,Mess,Medium
-Ceiling dampness and peeling paint in Room 433.,Civil,Medium
-Air conditioner in Computer Centre is dripping water.,Electrical,Medium
-Window glass shattered in Room 233 due to wind.,Civil,High
-Wifi signal is extremely weak in Room 302.,IT,Medium
-Benches in Back Gate are broken.,Civil,Medium
-Safety concern: Door latch in Room 146 not working properly.,Civil,Urgent
-Foul smell coming from the drains near New Wing.,Sanitation,High
-Loud music playing in Room 481 late at night disturbing others.,Disciplinary,High
-The latch on the bathroom door in 448 is broken.,Civil,High
-Gambling activity seen in Room 417.,Disciplinary,High
-Flush not working in Common Washroom toilet.,Sanitation,Urgent
-Threatening behavior by a student in Room 469.,Disciplinary,Urgent
-"Access point in Parking seems dead, no signal.",IT,Medium
-Security guard was sleeping during night shift at Block B.,Disciplinary,Urgent
-"Cannot close the window in Room 364, latch broken.",Civil,High
-Attendance not reflecting in the app.,IT,Medium
-Water coming from tap in 391 is muddy.,Sanitation,Urgent
-Wifi speed is too slow to open basic websites in 238.,IT,Medium
-Breakfast timing in Block A is too short.,Mess,Medium
-LAN port in Room 323 is broken.,IT,Medium
-Dead pigeon in the Lobby balcony causing smell.,Sanitation,High
-Cleaning staff has not visited 398 for 3 days.,Sanitation,Medium
-Tiles broken in the bathroom of Room 320.,Civil,Medium
-Wifi range does not reach the corner rooms like 188.,IT,Medium
-Water cooler in Back Gate is leaking.,Sanitation,Medium
-Fly infestation near the food serving counter in Block B.,Mess,High
-"My room door (460) doesn't close fully, lock is misaligned.",Civil,High
-"My room door (235) doesn't close fully, lock is misaligned.",Civil,High
-Garbage piled up near Boys Hostel entrance.,Sanitation,Medium
-Water coming from tap in 250 is muddy.,Sanitation,Urgent
-Water coming from tap in 234 is muddy.,Sanitation,Urgent
-Dal was completely watery and tasteless in Block B mess.,Mess,Medium
-"Boundary wall near Block B has a hole, outsiders entering.",Civil,Urgent
-Lost my ID card near Classroom 5.,Other,Low
-Study table in Room 228 has a large crack.,Civil,Medium
-Curd served in New Wing was sour and old.,Mess,High
-"Window pane missing in Room 283, mosquitoes entering.",Civil,Medium
-Fungus growing on bathroom walls in Room 303.,Sanitation,High
-Basketball court net near Girls Hostel is torn.,Other,Low
-Curtain rod fell down in Room 152.,Civil,Low
-Mess staff behavior in Girls Hostel is very rude.,Mess,Medium
-"Access point in Main Gate seems dead, no signal.",IT,Medium
-Wifi speed is too slow to open basic websites in 170.,IT,Medium
-"Found a set of keys in Common Room, submitted to office.",Other,Low
-The latch on the bathroom door in 345 is broken.,Civil,High
-Cleaning staff has not visited 345 for 3 days.,Sanitation,Medium
-Found a worm in the cauliflower curry today in Block B mess.,Mess,Urgent
-Window grill is rusted and loose in Room 302.,Civil,High
-Milk served at breakfast in Boys Hostel was sour.,Mess,High
-MCB trips frequently in Room 156.,Electrical,High
-Tube light improperly flickering in Room 278.,Electrical,Medium
-Cleaning staff has not visited 212 for 3 days.,Sanitation,Medium
-Benches in Common Room are broken.,Civil,Medium
-Inverter backup not working in New Wing during outage.,Electrical,High
-Cleaning staff has not visited 388 for 3 days.,Sanitation,Medium
-Vandalism: Someone smashed the mirror in Ground Floor Washroom.,Disciplinary,High
-Ethernet cable socket damaged in Library.,IT,Medium
-Drunk students creating nuisance in Block B.,Disciplinary,Urgent
-Drinking water cooler in Girls Hostel is empty.,Sanitation,High
-Wifi range does not reach the corner rooms like 342.,IT,Medium
-Tube light improperly flickering in Room 488.,Electrical,Medium
-Rice served for lunch in Block B mess was undercooked and hard.,Mess,High
-No water supply in Girls Hostel since this morning.,Sanitation,Urgent
-Huge crack appeared on the wall of Room 288.,Civil,High
-"Tap is leaking continuously in Room 428, wasting water.",Sanitation,Medium
-Water dispenser in Boys Hostel mess is dirty.,Mess,High
-Seniors harassing juniors in Old Block corridor.,Disciplinary,Urgent
-LAN port in Room 445 is broken.,IT,Medium
-Can we have a vending machine in New Wing?,Other,Low
-Low water pressure in Common Washroom showers.,Sanitation,Medium
-Theft: My laptop was stolen from Room 148.,Disciplinary,Urgent
-Cleaning staff has not visited 335 for 3 days.,Sanitation,Medium
-Sparking observed from the socket in Room 318.,Electrical,Urgent
-Loud music playing in Room 290 late at night disturbing others.,Disciplinary,High
-Water cooler in Boys Hostel gave me an electric shock.,Electrical,Urgent
-Mess workers in Girls Hostel not wearing gloves or hairnets.,Mess,Medium
-Street light near Block B entrance is broken.,Electrical,High
-Charging point in 274 is dead.,Electrical,medium
-Stale smell coming from the food served tonight in New Wing mess.,Mess,Urgent
-Dustbins overflowing in Back Gate area.,Sanitation,Medium
-Wifi signal is extremely weak in Room 484.,IT,Medium
-Library search kiosk is frozen.,IT,Low
-Long queues due to slow service at Old Block counters.,Mess,Low
-Why is the stationary shop near Lab 1 closed during college hours?,Other,Low
-Cannot connect to 'CampusWifi' in Boys Hostel.,IT,Medium
-LAN port in Room 176 is broken.,IT,Medium
-Charging point in 412 is dead.,Electrical,medium
-Fungus growing on bathroom walls in Room 440.,Sanitation,High
-Vegetable curry in Block B mess is smelling rotten.,Mess,Urgent
-"Main door handle of Room 473 came off, unable to secure room.",Civil,High
-Water cooler in Block A gave me an electric shock.,Electrical,Urgent
-Frequent voltage fluctuation in 228 damaging laptop.,Electrical,High
-Gambling activity seen in Room 230.,Disciplinary,High
-Mess workers in Block B not wearing gloves or hairnets.,Mess,Medium
-Biometric device at Girls Hostel gate not accepting fingerprint.,IT,High
-Fan in Room 446 making loud noise and wobbling.,Electrical,High
-Threatening behavior by a student in Room 103.,Disciplinary,Urgent
-Wifi signal is extremely weak in Room 413.,IT,Medium
-"Boundary wall near Block A has a hole, outsiders entering.",Civil,Urgent
-Lunch served very late today in Girls Hostel.,Mess,Medium
-Charging point in 330 is dead.,Electrical,medium
-Found a stone in the dal in Boys Hostel mess.,Mess,High
-Geyser in Ground Floor Washroom not heating water.,Electrical,Medium
-Dinner was served cold again in Boys Hostel.,Mess,Medium
-LAN port in Room 475 is broken.,IT,Medium
-"Tap is leaking continuously in Room 151, wasting water.",Sanitation,Medium
-Water coming from tap in 107 is muddy.,Sanitation,Urgent
-Water seepage from the ceiling in Old Block corridor.,Civil,High
-"Night latch broken in Room 347, feeling unsafe.",Civil,Urgent
-"Tap is leaking continuously in Room 490, wasting water.",Sanitation,Medium
-Door closer in Computer Centre is leaking oil.,Civil,Low
-Suspicious person seen roaming in Girls Hostel at night.,Disciplinary,Urgent
-Extension board in Computer Centre caught fire briefly.,Electrical,Urgent
-Toilet seat broken in First Floor Toilet.,Sanitation,High
-Unauthorized outsiders drinking alcohol near Old Block.,Disciplinary,Urgent
-Too many mosquitoes in Lobby due to stagnant water.,Sanitation,High
-Breakfast timing in Boys Hostel is too short.,Mess,Medium
-Ceiling dampness and peeling paint in Room 152.,Civil,Medium
-MCB trips frequently in Room 318.,Electrical,High
-Gambling activity seen in Room 447.,Disciplinary,High
-Loud music playing in Room 416 late at night disturbing others.,Disciplinary,High
-Wifi range does not reach the corner rooms like 416.,IT,Medium
-"Access point in Common Room seems dead, no signal.",IT,Medium
-Dead pigeon in the Main Gate balcony causing smell.,Sanitation,High
-"Lock jammed in Room 421, I was stuck inside for 10 mins.",Civil,Urgent
-Loud music playing in Room 406 late at night disturbing others.,Disciplinary,High
-Drawer lock in my study table (Room 183) is stuck.,Civil,Medium
-Water cooler in Lobby is leaking.,Sanitation,Medium
-Wallet stolen from my bag in Lab 1.,Disciplinary,Urgent
-"Main door handle of Room 356 came off, unable to secure room.",Civil,High
-Charging point in 211 is dead.,Electrical,medium
-Basketball court net near Old Block is torn.,Other,Low
-Ethernet cable socket damaged in Computer Centre.,IT,Medium
-Washroom in Boys Hostel is extremely dirty and unhygienic.,Sanitation,High
-Dustbins overflowing in Corridor area.,Sanitation,Medium
-"Tap is leaking continuously in Room 365, wasting water.",Sanitation,Medium
-Found a worm in the cauliflower curry today in New Wing mess.,Mess,Urgent
-Wallet stolen from my bag in Lab 2.,Disciplinary,Urgent
-Regulator for fan in Room 428 is not working.,Electrical,Medium
-Cleaning staff has not visited 268 for 3 days.,Sanitation,Medium
-Door lock key is stuck inside the keyhole in Room 496.,Civil,High
-Water coming from tap in 357 is muddy.,Sanitation,Urgent
-Gym equipment in the sports complex near Old Block is rusted.,Other,Medium
-No water supply in Block A since this morning.,Sanitation,Urgent
-Loud music playing in Room 460 late at night disturbing others.,Disciplinary,High
-Wifi signal is extremely weak in Room 498.,IT,Medium
-Fungus growing on bathroom walls in Room 301.,Sanitation,High
-Dead pigeon in the Corridor balcony causing smell.,Sanitation,High
-Tables in the New Wing mess hall are sticky and dirty.,Mess,Medium
-No water supply in Block B since this morning.,Sanitation,Urgent
-Verbal abuse and bullying by a group in Stairs.,Disciplinary,Urgent
-Gambling activity seen in Room 499.,Disciplinary,High
-No water in the Old Block mess wash basin.,Mess,High
-Fly infestation near the food serving counter in Block A.,Mess,High
-Ceiling fan in Room 359 is not working.,Electrical,High
-Air conditioner in Lab 1 is dripping water.,Electrical,Medium
-PC in Office not booting up.,IT,High
-Wifi signal is extremely weak in Room 349.,IT,Medium
-Internet disconnects every 5 minutes in Boys Hostel.,IT,Medium
-Not enough nutritious options for vegetarian students in Old Block mess.,Mess,Low
-Can we have a vending machine in Boys Hostel?,Other,Low
-Cleaning staff has not visited 316 for 3 days.,Sanitation,Medium
-No internet connectivity in Office for lecture.,IT,High
-Threatening behavior by a student in Room 417.,Disciplinary,Urgent
-Sparking observed from the socket in Room 106.,Electrical,Urgent
-Wifi range does not reach the corner rooms like 266.,IT,Medium
-Dirty smell in the Boys Hostel dining hall.,Mess,High
-Water coming from tap in 172 is muddy.,Sanitation,Urgent
-Mess workers in New Wing not wearing gloves or hairnets.,Mess,Medium
-"Window pane missing in Room 300, mosquitoes entering.",Civil,Medium
-Cockroach infestation in Block A washrooms.,Sanitation,High
-Frequent voltage fluctuation in 257 damaging laptop.,Electrical,High
-Study table in Room 155 has a large crack.,Civil,Medium
-The mattress in Room 460 is torn and old.,Civil,Low
-Tube light improperly flickering in Room 466.,Electrical,Medium
-Fungus growing on bathroom walls in Room 310.,Sanitation,High
-The mattress in Room 212 is torn and old.,Civil,Low
-Fungus growing on bathroom walls in Room 151.,Sanitation,High
-Ceiling fan in Room 136 is not working.,Electrical,High
-Wifi speed is too slow to open basic websites in 360.,IT,Medium
-Corridor floor in New Wing is uneven and tripping hazard.,Civil,Medium
-Wifi speed is too slow to open basic websites in 187.,IT,Medium
-"My room door (357) doesn't close fully, lock is misaligned.",Civil,High
-Study table in Room 306 has a large crack.,Civil,Medium
-Corridors in Block B are full of mud and trash.,Sanitation,Medium
-Hot water geyser not giving water in Hostel Mesh.,Sanitation,High
-Bread served in Boys Hostel mess was expired and had fungus.,Mess,Urgent
-Ceiling fan in Room 208 is not working.,Electrical,High
-"Chair backrest broken in 161, need replacement.",Civil,Medium
-Mess contractor in Girls Hostel is using cheap oil.,Mess,High
-Wifi speed is too slow to open basic websites in 163.,IT,Medium
-Shower head broken in Ground Floor Washroom.,Sanitation,Medium
-Tube light improperly flickering in Room 377.,Electrical,Medium
-My bed leg is wobbling dangerously in Room 266.,Civil,High
-"Tap is leaking continuously in Room 311, wasting water.",Sanitation,Medium
-Study table in Room 239 has a large crack.,Civil,Medium
-Female students catcalled near Old Block gate.,Disciplinary,Urgent
-LAN port in Room 290 is broken.,IT,Medium
-LAN port in Room 308 is broken.,IT,Medium
-Extension board in Library caught fire briefly.,Electrical,Urgent
-Seniors harassing juniors in Girls Hostel corridor.,Disciplinary,Urgent
-Jet spray not working in Block B toilet.,Sanitation,Medium
-"Window pane missing in Room 184, mosquitoes entering.",Civil,Medium
-Low water pressure in First Floor Toilet showers.,Sanitation,Medium
-Bread served in Old Block mess was expired and had fungus.,Mess,Urgent
-Notice board in Common Room fell down.,Civil,Low
-"Pipe burst in Restroom near Canteen, water flooding the floor.",Sanitation,Urgent
-Wifi signal is extremely weak in Room 398.,IT,Medium
-Drawer lock in my study table (Room 168) is stuck.,Civil,Medium
-LAN port in Room 489 is broken.,IT,Medium
-"Tap is leaking continuously in Room 277, wasting water.",Sanitation,Medium
-Wifi range does not reach the corner rooms like 312.,IT,Medium
-Suggestion to increase library hours during exams.,Other,Low
-LAN port in Room 234 is broken.,IT,Medium
-Seniors harassing juniors in New Wing corridor.,Disciplinary,Urgent
-Tiles broken in the bathroom of Room 134.,Civil,Medium
-Can we have a vending machine in Old Block?,Other,Low
-Wifi speed is too slow to open basic websites in 131.,IT,Medium
-Verbal abuse and bullying by a group in Corridor.,Disciplinary,Urgent
-Benches in Corridor are broken.,Civil,Medium
-Mirror fell off the wall in Common Washroom.,Civil,Medium
-Unauthorized outsiders drinking alcohol near Block A.,Disciplinary,Urgent
-Ragging incident reported near Boys Hostel block.,Disciplinary,Urgent
-Mess workers in Boys Hostel not wearing gloves or hairnets.,Mess,Medium
-Drinking water cooler in Block B is empty.,Sanitation,High
-Printer in Office assumes offline status.,IT,Medium
-Window grill is rusted and loose in Room 264.,Civil,High
-Huge crack appeared on the wall of Room 269.,Civil,High
-Tube light improperly flickering in Room 343.,Electrical,Medium
-Cleaning staff has not visited 450 for 3 days.,Sanitation,Medium
-Main gate of Block B was left open all night.,Disciplinary,Urgent
-Fungus growing on bathroom walls in Room 307.,Sanitation,High
-Sink is clogged and overflowing in First Floor Toilet.,Sanitation,High
-Gambling activity seen in Room 455.,Disciplinary,High
-Wifi signal is extremely weak in Room 109.,IT,Medium
-Threatening behavior by a student in Room 166.,Disciplinary,Urgent
-Wifi signal is extremely weak in Room 256.,IT,Medium
-Vegetable curry in New Wing mess is smelling rotten.,Mess,Urgent
-No electricity in Library lab section.,Electrical,High
-Wifi range does not reach the corner rooms like 493.,IT,Medium
-Gym equipment in the sports complex near New Wing is rusted.,Other,Medium
-"Access point in Corridor seems dead, no signal.",IT,Medium
-Hot water geyser not giving water in First Floor Toilet.,Sanitation,High
-Seniors harassing juniors in Block B corridor.,Disciplinary,Urgent
-Benches in Parking are broken.,Civil,Medium
-Corridor lights invalid/off in Boys Hostel at night.,Electrical,Urgent
-Gambling activity seen in Room 362.,Disciplinary,High
-Bed plank broke while sleeping in Room 473.,Civil,High
-Water dispenser in Block B mess is dirty.,Mess,High
-Cockroach infestation in New Wing washrooms.,Sanitation,High
-Fungus growing on bathroom walls in Room 226.,Sanitation,High
-Long queues due to slow service at Block A counters.,Mess,Low
-Street light near Girls Hostel entrance is broken.,Electrical,High
-Roof leaking heavily in Lobby during rain.,Civil,High
-Cats seen roaming inside the New Wing mess kitchen.,Mess,Urgent
-Toilet seat broken in Ground Floor Washroom.,Sanitation,High
-Cleaning staff has not visited 489 for 3 days.,Sanitation,Medium
-Hot water geyser not giving water in Restroom near Canteen.,Sanitation,High
-Water coming from tap in 126 is muddy.,Sanitation,Urgent
-MCB trips frequently in Room 128.,Electrical,High
-Corridors in Boys Hostel are full of mud and trash.,Sanitation,Medium
-There are too many stray dogs near Boys Hostel chasing students.,Other,Medium
-Drinking water cooler in Old Block is empty.,Sanitation,High
-Floor tiles cracked and sharp in Corridor.,Civil,High
-Lost property: Blue bag left in Lab 1.,Other,Low
-"Chair backrest broken in 163, need replacement.",Civil,Medium
-Food finished before mess timing ended in Block A.,Mess,Medium
-There is a dead insect in the rice bowl in Block B.,Mess,Urgent
-LAN port in Room 372 is broken.,IT,Medium
-Basketball court net near Boys Hostel is torn.,Other,Low
-Door lock key is stuck inside the keyhole in Room 242.,Civil,High
-Drain blockage causing backflow in Common Washroom.,Sanitation,Urgent
-Geyser in Common Washroom not heating water.,Electrical,Medium
-"The lock on my door in Room 218 is completely broken, cannot lock it.",Civil,Urgent
-Lost my ID card near Lab 2.,Other,Low
-Fungus growing on bathroom walls in Room 219.,Sanitation,High
-Window grill is rusted and loose in Room 340.,Civil,High
-"Tap is leaking continuously in Room 279, wasting water.",Sanitation,Medium
-"The lock on my door in Room 413 is completely broken, cannot lock it.",Civil,Urgent
-LAN port in Room 203 is broken.,IT,Medium
-Regulator for fan in Room 463 is not working.,Electrical,Medium
-Someone busted the fire extinguisher in Common Room.,Disciplinary,High
-Request for a new club for photography.,Other,Low
-Cannot login to the student ERP portal from Girls Hostel.,IT,High
-Drinking water cooler in Boys Hostel is empty.,Sanitation,High
-Study table in Room 330 has a large crack.,Civil,Medium
-Not enough nutritious options for vegetarian students in New Wing mess.,Mess,Low
-Jet spray not working in Boys Hostel toilet.,Sanitation,Medium
-Sparking observed from the socket in Room 354.,Electrical,Urgent
-My bed leg is wobbling dangerously in Room 423.,Civil,High
-Fungus growing on bathroom walls in Room 132.,Sanitation,High
-Ceiling dampness and peeling paint in Room 229.,Civil,Medium
-Shower head broken in First Floor Toilet.,Sanitation,Medium
-The latch on the bathroom door in 452 is broken.,Civil,High
-Street light near Boys Hostel entrance is broken.,Electrical,High
-Threatening behavior by a student in Room 468.,Disciplinary,Urgent
-Stale smell coming from the food served tonight in Block B mess.,Mess,Urgent
-Dead pigeon in the Terrace balcony causing smell.,Sanitation,High
-Rainwater entering Room 385 through the balcony door.,Civil,High
-Air conditioner in Office is dripping water.,Electrical,Medium
-"Tap is leaking continuously in Room 234, wasting water.",Sanitation,Medium
-"Tap is leaking continuously in Room 263, wasting water.",Sanitation,Medium
-Dirty smell in the Old Block dining hall.,Mess,High
-Main gate of Boys Hostel was left open all night.,Disciplinary,Urgent
-Female students catcalled near Girls Hostel gate.,Disciplinary,Urgent
-Ceiling fan in Room 352 is not working.,Electrical,High
-Hair found in the chapati at Block A mess.,Mess,High
-Notice board in Stairs fell down.,Civil,Low
-No water supply in Boys Hostel since this morning.,Sanitation,Urgent
-Garbage piled up near Old Block entrance.,Sanitation,Medium
-Fungus growing on bathroom walls in Room 169.,Sanitation,High
-Internet disconnects every 5 minutes in Old Block.,IT,Medium
-"Cannot close the window in Room 328, latch broken.",Civil,High
-Female students catcalled near Boys Hostel gate.,Disciplinary,Urgent
-Water cooler in New Wing gave me an electric shock.,Electrical,Urgent
-Vandalism: Someone smashed the mirror in Common Washroom.,Disciplinary,High
-Curtain rod fell down in Room 136.,Civil,Low
-Notice board in Back Gate fell down.,Civil,Low
-LAN port in Room 391 is broken.,IT,Medium
-Someone busted the fire extinguisher in Terrace.,Disciplinary,High
-Notice board in Terrace fell down.,Civil,Low
-"Window pane missing in Room 206, mosquitoes entering.",Civil,Medium
-Safety concern: Door latch in Room 228 not working properly.,Civil,Urgent
-"Found a set of keys in Corridor, submitted to office.",Other,Low
-Flush not working in Ground Floor Washroom toilet.,Sanitation,Urgent
-Security guard was sleeping during night shift at New Wing.,Disciplinary,Urgent
-Regulator for fan in Room 224 is not working.,Electrical,Medium
-Theft: My laptop was stolen from Room 235.,Disciplinary,Urgent
-The latch on the bathroom door in 172 is broken.,Civil,High
-Lost my ID card near Office.,Other,Low
-Charging point in 452 is dead.,Electrical,medium
-Sparking observed from the socket in Room 296.,Electrical,Urgent
-Need permission to organize a coding event in Library.,Other,Low
-Wifi speed is too slow to open basic websites in 108.,IT,Medium
-My bed leg is wobbling dangerously in Room 427.,Civil,High
-Printer in Classroom 5 assumes offline status.,IT,Medium
-"The lock on my door in Room 187 is completely broken, cannot lock it.",Civil,Urgent
-"Tap is leaking continuously in Room 171, wasting water.",Sanitation,Medium
-Garbage piled up near Block A entrance.,Sanitation,Medium
-Air conditioner in Classroom 5 is dripping water.,Electrical,Medium
-Biometric device at New Wing gate not accepting fingerprint.,IT,High
-Dirty smell in the Block A dining hall.,Mess,High
-Water coming from tap in 194 is muddy.,Sanitation,Urgent
-There is a dead insect in the rice bowl in Girls Hostel.,Mess,Urgent
-Drawer lock in my study table (Room 341) is stuck.,Civil,Medium
-Mirror fell off the wall in First Floor Toilet.,Civil,Medium
-Curtain rod fell down in Room 236.,Civil,Low
-Corridor lights invalid/off in Old Block at night.,Electrical,Urgent
-Mess staff behavior in New Wing is very rude.,Mess,Medium
-Door closer in Office is leaking oil.,Civil,Low
-Water coming from tap in 190 is muddy.,Sanitation,Urgent
-Taps run dry every evening in Old Block.,Sanitation,High
-Washroom in New Wing is extremely dirty and unhygienic.,Sanitation,High
-Frequent voltage fluctuation in 258 damaging laptop.,Electrical,High
-"Found a set of keys in Lobby, submitted to office.",Other,Low
-Door lock key is stuck inside the keyhole in Room 360.,Civil,High
-Inverter backup not working in Boys Hostel during outage.,Electrical,High
-Tube light improperly flickering in Room 159.,Electrical,Medium
-Cannot login to the student ERP portal from Block A.,IT,High
-Bed plank broke while sleeping in Room 344.,Civil,High
-There are too many stray dogs near Old Block chasing students.,Other,Medium
-Dustbins overflowing in Parking area.,Sanitation,Medium
-Window grill is rusted and loose in Room 391.,Civil,High
-The mattress in Room 219 is torn and old.,Civil,Low
-"Switch board hanging loose in Room 429, exposed wires.",Electrical,Urgent
-"Night latch broken in Room 238, feeling unsafe.",Civil,Urgent
-Inverter backup not working in Block B during outage.,Electrical,High
-"Switch board hanging loose in Room 390, exposed wires.",Electrical,Urgent
-PC in Lab 2 not booting up.,IT,High
-Power cut in Block A for over 4 hours.,Electrical,High
-No internet connectivity in Lab 2 for lecture.,IT,High
-Cupboard door hinge broken in Room 378.,Civil,Medium
-Suspicious person seen roaming in New Wing at night.,Disciplinary,Urgent
-MCB trips frequently in Room 489.,Electrical,High
+Internet slow in Room 400,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 330,Civil,Medium
+Fan not working in Room 298,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 494,Electrical,High
+Internet slow in Room 316,IT,Medium
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 315,IT,Medium
+Internet slow in Room 337,IT,Medium
+Lost ID card,Other,Low
+Window broken in Room 249,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 485,IT,Medium
+Lost ID card,Other,Low
+Fan not working in Room 403,Electrical,High
+Internet slow in Room 291,IT,Medium
+Window broken in Room 303,Civil,Medium
+Window broken in Room 242,Civil,Medium
+Fan not working in Room 484,Electrical,High
+Internet slow in Room 416,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 461,Civil,Medium
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 355,Electrical,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Window broken in Room 449,Civil,Medium
+Lost ID card,Other,Low
+Window broken in Room 102,Civil,Medium
+Window broken in Room 346,Civil,Medium
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 467,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 268,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 323,Electrical,High
+Window broken in Room 242,Civil,Medium
+Window broken in Room 242,Civil,Medium
+Internet slow in Room 168,IT,Medium
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 250,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 473,Electrical,High
+Internet slow in Room 255,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 372,IT,Medium
+Fan not working in Room 119,Electrical,High
+Lost ID card,Other,Low
+Window broken in Room 326,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 144,Civil,Medium
+Lost ID card,Other,Low
+Internet slow in Room 113,IT,Medium
+Window broken in Room 338,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Fan not working in Room 389,Electrical,High
+Fan not working in Room 246,Electrical,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 146,Civil,Medium
+Lost ID card,Other,Low
+Internet slow in Room 400,IT,Medium
+Internet slow in Room 345,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 451,Civil,Medium
+Window broken in Room 136,Civil,Medium
+Window broken in Room 113,Civil,Medium
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Internet slow in Room 128,IT,Medium
+Mess food in Block A is stale,Mess,High
+Fan not working in Room 270,Electrical,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 379,Civil,Medium
+Internet slow in Room 410,IT,Medium
+Window broken in Room 167,Civil,Medium
+Window broken in Room 319,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 323,Civil,Medium
+Internet slow in Room 245,IT,Medium
+Internet slow in Room 439,IT,Medium
+Fan not working in Room 350,Electrical,High
+Lost ID card,Other,Low
+Internet slow in Room 221,IT,Medium
+Fan not working in Room 380,Electrical,High
+Fan not working in Room 225,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 229,IT,Medium
+Fan not working in Room 242,Electrical,High
+Mess food in Block B is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 403,Civil,Medium
+Window broken in Room 251,Civil,Medium
+Window broken in Room 260,Civil,Medium
+Window broken in Room 147,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 261,IT,Medium
+Window broken in Room 261,Civil,Medium
+Window broken in Room 476,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 163,Electrical,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Window broken in Room 442,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 256,Electrical,High
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Fan not working in Room 198,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 300,IT,Medium
+Mess food in Block A is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Internet slow in Room 494,IT,Medium
+Window broken in Room 322,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 226,Civil,Medium
+Lost ID card,Other,Low
+Fan not working in Room 278,Electrical,High
+Internet slow in Room 151,IT,Medium
+Internet slow in Room 366,IT,Medium
+Mess food in Block A is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 375,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 217,IT,Medium
+Internet slow in Room 460,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Fan not working in Room 167,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 142,Electrical,High
+Window broken in Room 304,Civil,Medium
+Window broken in Room 239,Civil,Medium
+Window broken in Room 232,Civil,Medium
+Lost ID card,Other,Low
+Fan not working in Room 494,Electrical,High
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 351,Civil,Medium
+Window broken in Room 131,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 242,IT,Medium
+Fan not working in Room 495,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 376,IT,Medium
+Internet slow in Room 142,IT,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Fan not working in Room 147,Electrical,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 334,IT,Medium
+Fan not working in Room 192,Electrical,High
+Window broken in Room 436,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 371,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Window broken in Room 446,Civil,Medium
+Internet slow in Room 162,IT,Medium
+Fan not working in Room 422,Electrical,High
+Fan not working in Room 346,Electrical,High
+Internet slow in Room 238,IT,Medium
+Internet slow in Room 210,IT,Medium
+Window broken in Room 200,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 211,Electrical,High
+Window broken in Room 177,Civil,Medium
+Fan not working in Room 148,Electrical,High
+Window broken in Room 199,Civil,Medium
+Window broken in Room 352,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Fan not working in Room 360,Electrical,High
+Fan not working in Room 432,Electrical,High
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 420,IT,Medium
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 319,Electrical,High
+Mess food in Block A is stale,Mess,High
+Window broken in Room 289,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 472,IT,Medium
+Internet slow in Room 132,IT,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 332,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 398,Civil,Medium
+Window broken in Room 157,Civil,Medium
+Fan not working in Room 148,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 198,IT,Medium
+Window broken in Room 216,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 242,Electrical,High
+Fan not working in Room 164,Electrical,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 176,Civil,Medium
+Fan not working in Room 230,Electrical,High
+Fan not working in Room 162,Electrical,High
+Fan not working in Room 349,Electrical,High
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 153,Civil,Medium
+Window broken in Room 323,Civil,Medium
+Fan not working in Room 231,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 178,Civil,Medium
+Fan not working in Room 290,Electrical,High
+Fan not working in Room 455,Electrical,High
+Lost ID card,Other,Low
+Internet slow in Room 348,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Fan not working in Room 456,Electrical,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 466,Electrical,High
+Fan not working in Room 269,Electrical,High
+Internet slow in Room 401,IT,Medium
+Mess food in Block A is stale,Mess,High
+Mess food in Block A is stale,Mess,High
+Fan not working in Room 171,Electrical,High
+Window broken in Room 128,Civil,Medium
+Window broken in Room 468,Civil,Medium
+Internet slow in Room 173,IT,Medium
+Internet slow in Room 183,IT,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 457,IT,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 200,Civil,Medium
+Internet slow in Room 192,IT,Medium
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Internet slow in Room 392,IT,Medium
+Lost ID card,Other,Low
+Internet slow in Room 432,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 196,IT,Medium
+Internet slow in Room 411,IT,Medium
+Lost ID card,Other,Low
+Fan not working in Room 209,Electrical,High
+Fan not working in Room 496,Electrical,High
+Internet slow in Room 412,IT,Medium
+Internet slow in Room 499,IT,Medium
+Internet slow in Room 203,IT,Medium
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Internet slow in Room 418,IT,Medium
+Lost ID card,Other,Low
+Window broken in Room 181,Civil,Medium
+Fan not working in Room 311,Electrical,High
+Fan not working in Room 193,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 110,Electrical,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 210,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 396,Civil,Medium
+Fan not working in Room 230,Electrical,High
+Mess food in Block B is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 388,Electrical,High
+Internet slow in Room 263,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Window broken in Room 382,Civil,Medium
+Internet slow in Room 264,IT,Medium
+Window broken in Room 459,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 420,Civil,Medium
+Window broken in Room 292,Civil,Medium
+Window broken in Room 242,Civil,Medium
+Internet slow in Room 102,IT,Medium
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 327,IT,Medium
+Water not coming in Block B washroom,Sanitation,High
+Window broken in Room 489,Civil,Medium
+Fan not working in Room 454,Electrical,High
+Window broken in Room 438,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 168,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 473,IT,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 255,Civil,Medium
+Internet slow in Room 173,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Internet slow in Room 229,IT,Medium
+Window broken in Room 443,Civil,Medium
+Fan not working in Room 145,Electrical,High
+Fan not working in Room 186,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 451,Civil,Medium
+Fan not working in Room 283,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 322,Electrical,High
+Lost ID card,Other,Low
+Fan not working in Room 211,Electrical,High
+Window broken in Room 459,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 126,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 387,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 263,Electrical,High
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Window broken in Room 110,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 383,IT,Medium
+Mess food in Block B is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Internet slow in Room 234,IT,Medium
+Fan not working in Room 252,Electrical,High
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Window broken in Room 290,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 488,IT,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 293,Electrical,High
+Internet slow in Room 120,IT,Medium
+Lost ID card,Other,Low
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Fan not working in Room 214,Electrical,High
+Internet slow in Room 117,IT,Medium
+Mess food in Block A is stale,Mess,High
+Window broken in Room 285,Civil,Medium
+Lost ID card,Other,Low
+Internet slow in Room 136,IT,Medium
+Window broken in Room 402,Civil,Medium
+Internet slow in Room 265,IT,Medium
+Internet slow in Room 101,IT,Medium
+Internet slow in Room 268,IT,Medium
+Lost ID card,Other,Low
+Window broken in Room 189,Civil,Medium
+Internet slow in Room 442,IT,Medium
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 114,Electrical,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Window broken in Room 133,Civil,Medium
+Window broken in Room 173,Civil,Medium
+Internet slow in Room 138,IT,Medium
+Window broken in Room 117,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 152,Civil,Medium
+Window broken in Room 438,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 488,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 428,Civil,Medium
+Internet slow in Room 144,IT,Medium
+Internet slow in Room 152,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Block A is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 371,Electrical,High
+Fan not working in Room 465,Electrical,High
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 262,Electrical,High
+Fan not working in Room 385,Electrical,High
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 194,IT,Medium
+Internet slow in Room 223,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 167,Civil,Medium
+Fan not working in Room 159,Electrical,High
+Window broken in Room 227,Civil,Medium
+Fan not working in Room 351,Electrical,High
+Internet slow in Room 461,IT,Medium
+Internet slow in Room 373,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 450,Civil,Medium
+Internet slow in Room 446,IT,Medium
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 436,Civil,Medium
+Lost ID card,Other,Low
+Internet slow in Room 417,IT,Medium
+Internet slow in Room 461,IT,Medium
+Fan not working in Room 445,Electrical,High
+Lost ID card,Other,Low
+Window broken in Room 215,Civil,Medium
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 168,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 477,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 480,IT,Medium
+Internet slow in Room 328,IT,Medium
+Window broken in Room 387,Civil,Medium
+Window broken in Room 287,Civil,Medium
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 113,Electrical,High
+Window broken in Room 164,Civil,Medium
+Internet slow in Room 316,IT,Medium
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 201,IT,Medium
+Window broken in Room 186,Civil,Medium
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 214,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 476,IT,Medium
+Lost ID card,Other,Low
+Water not coming in Block B washroom,Sanitation,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 356,Electrical,High
+Window broken in Room 283,Civil,Medium
+Internet slow in Room 236,IT,Medium
+Internet slow in Room 461,IT,Medium
+Fan not working in Room 443,Electrical,High
+Internet slow in Room 178,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Internet slow in Room 103,IT,Medium
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 195,IT,Medium
+Window broken in Room 112,Civil,Medium
+Window broken in Room 475,Civil,Medium
+Window broken in Room 288,Civil,Medium
+Window broken in Room 429,Civil,Medium
+Fan not working in Room 211,Electrical,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Fan not working in Room 336,Electrical,High
+Window broken in Room 147,Civil,Medium
+Lost ID card,Other,Low
+Window broken in Room 124,Civil,Medium
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 433,IT,Medium
+Fan not working in Room 117,Electrical,High
+Fan not working in Room 444,Electrical,High
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 277,Civil,Medium
+Window broken in Room 426,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 135,Electrical,High
+Fan not working in Room 221,Electrical,High
+Mess food in Block A is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Window broken in Room 163,Civil,Medium
+Window broken in Room 454,Civil,Medium
+Internet slow in Room 137,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 367,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 444,IT,Medium
+Fan not working in Room 264,Electrical,High
+Lost ID card,Other,Low
+Fan not working in Room 259,Electrical,High
+Lost ID card,Other,Low
+Fan not working in Room 491,Electrical,High
+Internet slow in Room 158,IT,Medium
+Window broken in Room 300,Civil,Medium
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 259,Electrical,High
+Lost ID card,Other,Low
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 205,Civil,Medium
+Window broken in Room 169,Civil,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 172,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 436,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Block A is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 405,Electrical,High
+Lost ID card,Other,Low
+Window broken in Room 421,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Internet slow in Room 474,IT,Medium
+Fan not working in Room 493,Electrical,High
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 375,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 149,Civil,Medium
+Internet slow in Room 329,IT,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 274,Electrical,High
+Fan not working in Room 269,Electrical,High
+Window broken in Room 493,Civil,Medium
+Internet slow in Room 444,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 173,IT,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 480,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 404,IT,Medium
+Fan not working in Room 329,Electrical,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 494,Civil,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Fan not working in Room 158,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Window broken in Room 493,Civil,Medium
+Internet slow in Room 320,IT,Medium
+Internet slow in Room 312,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 402,Electrical,High
+Lost ID card,Other,Low
+Fan not working in Room 201,Electrical,High
+Window broken in Room 240,Civil,Medium
+Window broken in Room 120,Civil,Medium
+Internet slow in Room 433,IT,Medium
+Internet slow in Room 218,IT,Medium
+Window broken in Room 335,Civil,Medium
+Window broken in Room 154,Civil,Medium
+Internet slow in Room 123,IT,Medium
+Window broken in Room 424,Civil,Medium
+Internet slow in Room 366,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 366,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 438,Civil,Medium
+Lost ID card,Other,Low
+Internet slow in Room 136,IT,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Mess food in Block A is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 470,IT,Medium
+Internet slow in Room 132,IT,Medium
+Internet slow in Room 360,IT,Medium
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 483,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 166,IT,Medium
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 407,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Window broken in Room 363,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Internet slow in Room 157,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Mess food in Block A is stale,Mess,High
+Window broken in Room 441,Civil,Medium
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 268,Civil,Medium
+Fan not working in Room 401,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 138,IT,Medium
+Window broken in Room 200,Civil,Medium
+Fan not working in Room 278,Electrical,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 426,IT,Medium
+Mess food in Block A is stale,Mess,High
+Fan not working in Room 350,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Fan not working in Room 137,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 222,Electrical,High
+Fan not working in Room 321,Electrical,High
+Fan not working in Room 302,Electrical,High
+Window broken in Room 103,Civil,Medium
+Window broken in Room 151,Civil,Medium
+Lost ID card,Other,Low
+Window broken in Room 487,Civil,Medium
+Fan not working in Room 369,Electrical,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 145,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Lost ID card,Other,Low
+Window broken in Room 236,Civil,Medium
+Window broken in Room 132,Civil,Medium
+Fan not working in Room 310,Electrical,High
+Internet slow in Room 467,IT,Medium
+Window broken in Room 364,Civil,Medium
+Water not coming in Block B washroom,Sanitation,High
+Window broken in Room 361,Civil,Medium
+Lost ID card,Other,Low
+Fan not working in Room 129,Electrical,High
+Window broken in Room 110,Civil,Medium
+Lost ID card,Other,Low
+Window broken in Room 249,Civil,Medium
+Lost ID card,Other,Low
+Fan not working in Room 347,Electrical,High
+Mess food in Block B is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 156,IT,Medium
+Mess food in Block B is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 290,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 472,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 474,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Internet slow in Room 453,IT,Medium
+Window broken in Room 484,Civil,Medium
+Window broken in Room 304,Civil,Medium
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 127,IT,Medium
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 448,Electrical,High
+Lost ID card,Other,Low
+Internet slow in Room 215,IT,Medium
+Internet slow in Room 386,IT,Medium
+Internet slow in Room 417,IT,Medium
+Water not coming in Block B washroom,Sanitation,High
+Window broken in Room 343,Civil,Medium
+Internet slow in Room 359,IT,Medium
+Water not coming in Block B washroom,Sanitation,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 260,Electrical,High
+Fan not working in Room 198,Electrical,High
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 182,IT,Medium
+Mess food in Block A is stale,Mess,High
+Window broken in Room 248,Civil,Medium
+Fan not working in Room 240,Electrical,High
+Internet slow in Room 482,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Fan not working in Room 191,Electrical,High
+Internet slow in Room 365,IT,Medium
+Internet slow in Room 283,IT,Medium
+Window broken in Room 275,Civil,Medium
+Window broken in Room 107,Civil,Medium
+Fan not working in Room 453,Electrical,High
+Internet slow in Room 178,IT,Medium
+Lost ID card,Other,Low
+Window broken in Room 160,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Fan not working in Room 113,Electrical,High
+Internet slow in Room 393,IT,Medium
+Fan not working in Room 403,Electrical,High
+Window broken in Room 207,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 148,IT,Medium
+Lost ID card,Other,Low
+Fan not working in Room 223,Electrical,High
+Window broken in Room 122,Civil,Medium
+Window broken in Room 185,Civil,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 310,Civil,Medium
+Fan not working in Room 211,Electrical,High
+Fan not working in Room 493,Electrical,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 172,Civil,Medium
+Mess food in Block A is stale,Mess,High
+Internet slow in Room 101,IT,Medium
+Window broken in Room 378,Civil,Medium
+Fan not working in Room 147,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 405,Civil,Medium
+Fan not working in Room 463,Electrical,High
+Fan not working in Room 437,Electrical,High
+Fan not working in Room 395,Electrical,High
+Window broken in Room 388,Civil,Medium
+Window broken in Room 279,Civil,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 372,Electrical,High
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 249,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Block B washroom,Sanitation,High
+Window broken in Room 138,Civil,Medium
+Fan not working in Room 473,Electrical,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Internet slow in Room 217,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Internet slow in Room 341,IT,Medium
+Mess food in Block B is stale,Mess,High
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 253,Civil,Medium
+Water not coming in Girls Hostel washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Fan not working in Room 454,Electrical,High
+Fan not working in Room 147,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Block B is stale,Mess,High
+Window broken in Room 415,Civil,Medium
+Mess food in Block A is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 113,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 274,Civil,Medium
+Lost ID card,Other,Low
+Internet slow in Room 327,IT,Medium
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Fan not working in Room 154,Electrical,High
+Internet slow in Room 459,IT,Medium
+Window broken in Room 249,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Fan not working in Room 299,Electrical,High
+Mess food in Block A is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Internet slow in Room 175,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Internet slow in Room 223,IT,Medium
+Internet slow in Room 195,IT,Medium
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 492,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Window broken in Room 452,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Window broken in Room 180,Civil,Medium
+Window broken in Room 483,Civil,Medium
+Water not coming in Block B washroom,Sanitation,High
+Water not coming in Block B washroom,Sanitation,High
+Internet slow in Room 124,IT,Medium
+Water not coming in Block B washroom,Sanitation,High
+Water not coming in Block B washroom,Sanitation,High
+Fan not working in Room 402,Electrical,High
+Mess food in Block B is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Fan not working in Room 215,Electrical,High
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Internet slow in Room 383,IT,Medium
+Lost ID card,Other,Low
+Window broken in Room 465,Civil,Medium
+Lost ID card,Other,Low
+Fan not working in Room 163,Electrical,High
+Lost ID card,Other,Low
+Mess food in Block A is stale,Mess,High
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 201,Electrical,High
+Internet slow in Room 244,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Mess food in Block A is stale,Mess,High
+Lost ID card,Other,Low
+Window broken in Room 241,Civil,Medium
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 232,Electrical,High
+Window broken in Room 248,Civil,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Water not coming in Block B washroom,Sanitation,High
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Lost ID card,Other,Low
+Water not coming in Girls Hostel washroom,Sanitation,High
+Window broken in Room 363,Civil,Medium
+Lost ID card,Other,Low
+Mess food in Block B is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Block A is stale,Mess,High
+Water not coming in Girls Hostel washroom,Sanitation,High
+Lost ID card,Other,Low
+Mess food in Girls Hostel is stale,Mess,High
+Mess food in Girls Hostel is stale,Mess,High
+Window broken in Room 104,Civil,Medium
+Mess food in Block B is stale,Mess,High
+Lost ID card,Other,Low
+Fan not working in Room 184,Electrical,High
+Fan not working in Room 429,Electrical,High
+Internet slow in Room 444,IT,Medium
+Window broken in Room 318,Civil,Medium
+Internet slow in Room 343,IT,Medium
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Water not coming in Block A washroom,Sanitation,High
+Fan not working in Room 447,Electrical,High
+Lost ID card,Other,Low
+Internet slow in Room 359,IT,Medium
+Mess food in Girls Hostel is stale,Mess,High
+Lost ID card,Other,Low
+Fan not working in Room 263,Electrical,High
+Window broken in Room 156,Civil,Medium
+Window broken in Room 435,Civil,Medium
+Internet slow in Room 376,IT,Medium
+Fan not working in Room 207,Electrical,High
+Internet slow in Room 488,IT,Medium
+Mess food in Block B is stale,Mess,High
+Internet slow in Room 153,IT,Medium
+Mess food in Block A is stale,Mess,High
+Window broken in Room 273,Civil,Medium
+Window broken in Room 320,Civil,Medium
+Fan not working in Room 127,Electrical,High
+Internet slow in Room 355,IT,Medium
+Fan not working in Room 418,Electrical,High
+Poisonous snake found in water tank. Clean the tank immediately.,Sanitation,Urgent
+Cobra spotted near the hostel entrance.,Other,Urgent
+Scorpion found in the bathroom.,Other,Urgent
+Wild dogs chasing students near the mess.,Other,Urgent
+Monkey trying to attack students.,Other,Urgent
+Bee hive in the balcony.,Other,Urgent
+Wasp nest inside the room.,Other,Urgent
+Snake inside the room.,Other,Urgent
+Big spider in the bed.,Other,Urgent
+Bat flying inside the room.,Other,Urgent
+Stray dog bit a student.,Other,Urgent
+Cat found inside the mess kitchen.,Mess,Urgent
+Rat in the drinking water tank.,Sanitation,Urgent
+Dead animal in water tank.,Sanitation,Urgent
+Lizard found in the dal.,Mess,Urgent
+Insects found in the mess food.,Mess,Urgent
+Fire in the corridor light switch.,Electrical,Urgent
+Sparks coming from the fan regulator.,Electrical,Urgent
+Burning smell from the main switchboard.,Electrical,Urgent
+Short circuit in the socket.,Electrical,Urgent
+Smoke coming out of the AC unit.,Electrical,Urgent
+Electric shock from the water cooler.,Electrical,Urgent
+Live wire hanging in the hallway.,Electrical,Urgent
+Switchboard is overheating and melting.,Electrical,Urgent
+Loud explosion sound from the transformer.,Electrical,Urgent
+Fan is wobbling dangerously and might fall.,Electrical,Urgent
+Ceiling fan fell down.,Electrical,Urgent
+Open wiring in the bathroom.,Electrical,Urgent
+Geyser overheating and making noise.,Electrical,Urgent
+Water heater gave shock.,Electrical,Urgent
+Iron box caught fire.,Electrical,Urgent
+Laptop charger exploded.,Electrical,Urgent
+Mobile battery blasted.,Electrical,Urgent
+Power bank caught fire.,Electrical,Urgent
+Induction stove short circuit.,Electrical,Urgent
+Kettle burning smell.,Electrical,Urgent
+Microwave sparking.,Electrical,Urgent
+Fire alarm ringing continuously.,Other,Urgent
+The light switch is burning and smells weird.,Electrical,Urgent
+Water smells like sewage.,Sanitation,Urgent
+Contaminated water coming from the tap.,Sanitation,Urgent
+Black water coming from the shower.,Sanitation,Urgent
+Worms in the drinking water.,Sanitation,Urgent
+Sewage backflow in the toilet.,Sanitation,Urgent
+Toilet clogged and overflowing.,Sanitation,Urgent
+Dirty water in the water cooler.,Sanitation,Urgent
+Water filter broken and leaking.,Sanitation,Urgent
+No water in the hostel for 2 days.,Sanitation,Urgent
+Toilet flush not working and smelling bad.,Sanitation,Urgent
+Ceiling plaster falling down.,Civil,Urgent
+Floor tiles popped up and dangerous.,Civil,Urgent
+Heavy water leakage flooding the room.,Civil,Urgent
+Pipe burst and flooding the corridor.,Civil,Urgent
+Manhole cover missing.,Civil,Urgent
+Open drain near the entrance.,Civil,Urgent
+Slippery floor causing accidents.,Civil,Urgent
+Elevator stuck with people inside.,Civil,Urgent
+Lift door opening while moving.,Civil,Urgent
+Washbasin broke and fell.,Civil,Urgent
+"Door lock broken, cannot lock room.",Civil,Urgent
+Main door latch broken.,Civil,Urgent
+"Window grill broken, security risk.",Civil,Urgent
+Balcony door not closing.,Civil,Urgent
+Storm water entering the room.,Civil,Urgent
+Roof leaking heavily during rain.,Civil,Urgent
+Tree branch fell on the building.,Civil,Urgent
+Glass window shattered and falling.,Civil,Urgent
+Railling broken on the 3rd floor balcony.,Civil,Urgent
+Sharp iron rod protruding from wall.,Civil,Urgent
+Termites destroying the door frame.,Civil,Urgent
+Gas leak smell in the kitchen.,Mess,Urgent
+Cylinder caught fire.,Mess,Urgent
+Gas pipe leaking.,Mess,Urgent
+Oil spill in the kitchen causing fire.,Mess,Urgent
+Food smells rotten and poisonous.,Mess,Urgent
+Uncooked chicken serving.,Mess,Urgent
+Fungus in the bread.,Mess,Urgent
+Expired milk served.,Mess,Urgent
+Glass pieces found in rice.,Mess,Urgent
+Intruder trying to enter the hostel.,Other,Urgent
+Stranger lurking in the corridor at night.,Other,Urgent
+Thief spotted in the cycle stand.,Other,Urgent
+Harassment by outsiders near the gate.,Other,Urgent
+Physical fight in the common room.,Other,Urgent
+Student fainted in the hallway.,Other,Urgent
+Medical emergency in Room 302.,Other,Urgent
+Severe food poisoning in the mess.,Mess,Urgent
+Sanitary pad disposal machine burning.,Other,Urgent
+Dustbin catching fire.,Other,Urgent
+Trash burning near the window.,Other,Urgent
+Chemical smell from the lab.,Other,Urgent
+Gas leak in the chemistry lab.,Other,Urgent
+Acid spill in the corridor.,Other,Urgent
+Mercury spill in the room.,Other,Urgent
+Broken glass bottle on the floor.,Other,Urgent
+Water leakage from the ceiling,Civil,High
+No water supply,Sanitation,High
+Geyser not working,Electrical,High
+Tube light is flickering in corridor.,Electrical,Medium
+Internet speed is slow,IT,Medium
+Wifi is weak,IT,Medium
+Poisonous snake found in water tank. Clean the tank immediately.,Sanitation,Urgent
+Cobra spotted near the hostel entrance.,Other,Urgent
+Scorpion found in the bathroom.,Other,Urgent
+Wild dogs chasing students near the mess.,Other,Urgent
+Monkey trying to attack students.,Other,Urgent
+Bee hive in the balcony.,Other,Urgent
+Wasp nest inside the room.,Other,Urgent
+Snake inside the room.,Other,Urgent
+Big spider in the bed.,Other,Urgent
+Bat flying inside the room.,Other,Urgent
+Stray dog bit a student.,Other,Urgent
+Cat found inside the mess kitchen.,Mess,Urgent
+Rat in the drinking water tank.,Sanitation,Urgent
+Dead animal in water tank.,Sanitation,Urgent
+Lizard found in the dal.,Mess,Urgent
+Insects found in the mess food.,Mess,Urgent
+Fire in the corridor light switch.,Electrical,Urgent
+Sparks coming from the fan regulator.,Electrical,Urgent
+Burning smell from the main switchboard.,Electrical,Urgent
+Short circuit in the socket.,Electrical,Urgent
+Smoke coming out of the AC unit.,Electrical,Urgent
+Electric shock from the water cooler.,Electrical,Urgent
+Live wire hanging in the hallway.,Electrical,Urgent
+Switchboard is overheating and melting.,Electrical,Urgent
+Loud explosion sound from the transformer.,Electrical,Urgent
+Fan is wobbling dangerously and might fall.,Electrical,Urgent
+Ceiling fan fell down.,Electrical,Urgent
+Open wiring in the bathroom.,Electrical,Urgent
+Geyser overheating and making noise.,Electrical,Urgent
+Water heater gave shock.,Electrical,Urgent
+Iron box caught fire.,Electrical,Urgent
+Laptop charger exploded.,Electrical,Urgent
+Mobile battery blasted.,Electrical,Urgent
+Power bank caught fire.,Electrical,Urgent
+Induction stove short circuit.,Electrical,Urgent
+Kettle burning smell.,Electrical,Urgent
+Microwave sparking.,Electrical,Urgent
+Fire alarm ringing continuously.,Other,Urgent
+The light switch is burning and smells weird.,Electrical,Urgent
+Water smells like sewage.,Sanitation,Urgent
+Contaminated water coming from the tap.,Sanitation,Urgent
+Black water coming from the shower.,Sanitation,Urgent
+Worms in the drinking water.,Sanitation,Urgent
+Sewage backflow in the toilet.,Sanitation,Urgent
+Toilet clogged and overflowing.,Sanitation,Urgent
+Dirty water in the water cooler.,Sanitation,Urgent
+Water filter broken and leaking.,Sanitation,Urgent
+No water in the hostel for 2 days.,Sanitation,Urgent
+Toilet flush not working and smelling bad.,Sanitation,Urgent
+Ceiling plaster falling down.,Civil,Urgent
+Floor tiles popped up and dangerous.,Civil,Urgent
+Heavy water leakage flooding the room.,Civil,Urgent
+Pipe burst and flooding the corridor.,Civil,Urgent
+Manhole cover missing.,Civil,Urgent
+Open drain near the entrance.,Civil,Urgent
+Slippery floor causing accidents.,Civil,Urgent
+Elevator stuck with people inside.,Civil,Urgent
+Lift door opening while moving.,Civil,Urgent
+Washbasin broke and fell.,Civil,Urgent
+"Door lock broken, cannot lock room.",Civil,Urgent
+Main door latch broken.,Civil,Urgent
+"Window grill broken, security risk.",Civil,Urgent
+Balcony door not closing.,Civil,Urgent
+Storm water entering the room.,Civil,Urgent
+Roof leaking heavily during rain.,Civil,Urgent
+Tree branch fell on the building.,Civil,Urgent
+Glass window shattered and falling.,Civil,Urgent
+Railling broken on the 3rd floor balcony.,Civil,Urgent
+Sharp iron rod protruding from wall.,Civil,Urgent
+Termites destroying the door frame.,Civil,Urgent
+Gas leak smell in the kitchen.,Mess,Urgent
+Cylinder caught fire.,Mess,Urgent
+Gas pipe leaking.,Mess,Urgent
+Oil spill in the kitchen causing fire.,Mess,Urgent
+Food smells rotten and poisonous.,Mess,Urgent
+Uncooked chicken serving.,Mess,Urgent
+Fungus in the bread.,Mess,Urgent
+Expired milk served.,Mess,Urgent
+Glass pieces found in rice.,Mess,Urgent
+Intruder trying to enter the hostel.,Other,Urgent
+Stranger lurking in the corridor at night.,Other,Urgent
+Thief spotted in the cycle stand.,Other,Urgent
+Harassment by outsiders near the gate.,Other,Urgent
+Physical fight in the common room.,Other,Urgent
+Student fainted in the hallway.,Other,Urgent
+Medical emergency in Room 302.,Other,Urgent
+Severe food poisoning in the mess.,Mess,Urgent
+Sanitary pad disposal machine burning.,Other,Urgent
+Dustbin catching fire.,Other,Urgent
+Trash burning near the window.,Other,Urgent
+Chemical smell from the lab.,Other,Urgent
+Gas leak in the chemistry lab.,Other,Urgent
+Acid spill in the corridor.,Other,Urgent
+Mercury spill in the room.,Other,Urgent
+Broken glass bottle on the floor.,Other,Urgent
+Water leakage from the ceiling,Civil,High
+No water supply,Sanitation,High
+Geyser not working,Electrical,High
+Tube light is flickering in corridor.,Electrical,Medium
+Internet speed is slow,IT,Medium
+Wifi is weak,IT,Medium
+Poisonous snake found in water tank. Clean the tank immediately.,Sanitation,Urgent
+Cobra spotted near the hostel entrance.,Other,Urgent
+Scorpion found in the bathroom.,Other,Urgent
+Wild dogs chasing students near the mess.,Other,Urgent
+Monkey trying to attack students.,Other,Urgent
+Bee hive in the balcony.,Other,Urgent
+Wasp nest inside the room.,Other,Urgent
+Snake inside the room.,Other,Urgent
+Big spider in the bed.,Other,Urgent
+Bat flying inside the room.,Other,Urgent
+Stray dog bit a student.,Other,Urgent
+Cat found inside the mess kitchen.,Mess,Urgent
+Rat in the drinking water tank.,Sanitation,Urgent
+Dead animal in water tank.,Sanitation,Urgent
+Lizard found in the dal.,Mess,Urgent
+Insects found in the mess food.,Mess,Urgent
+Fire in the corridor light switch.,Electrical,Urgent
+Sparks coming from the fan regulator.,Electrical,Urgent
+Burning smell from the main switchboard.,Electrical,Urgent
+Short circuit in the socket.,Electrical,Urgent
+Smoke coming out of the AC unit.,Electrical,Urgent
+Electric shock from the water cooler.,Electrical,Urgent
+Live wire hanging in the hallway.,Electrical,Urgent
+Switchboard is overheating and melting.,Electrical,Urgent
+Loud explosion sound from the transformer.,Electrical,Urgent
+Fan is wobbling dangerously and might fall.,Electrical,Urgent
+Ceiling fan fell down.,Electrical,Urgent
+Open wiring in the bathroom.,Electrical,Urgent
+Geyser overheating and making noise.,Electrical,Urgent
+Water heater gave shock.,Electrical,Urgent
+Iron box caught fire.,Electrical,Urgent
+Laptop charger exploded.,Electrical,Urgent
+Mobile battery blasted.,Electrical,Urgent
+Power bank caught fire.,Electrical,Urgent
+Induction stove short circuit.,Electrical,Urgent
+Kettle burning smell.,Electrical,Urgent
+Microwave sparking.,Electrical,Urgent
+Fire alarm ringing continuously.,Other,Urgent
+The light switch is burning and smells weird.,Electrical,Urgent
+Water smells like sewage.,Sanitation,Urgent
+Contaminated water coming from the tap.,Sanitation,Urgent
+Black water coming from the shower.,Sanitation,Urgent
+Worms in the drinking water.,Sanitation,Urgent
+Sewage backflow in the toilet.,Sanitation,Urgent
+Toilet clogged and overflowing.,Sanitation,Urgent
+Dirty water in the water cooler.,Sanitation,Urgent
+Water filter broken and leaking.,Sanitation,Urgent
+No water in the hostel for 2 days.,Sanitation,Urgent
+Toilet flush not working and smelling bad.,Sanitation,Urgent
+Ceiling plaster falling down.,Civil,Urgent
+Floor tiles popped up and dangerous.,Civil,Urgent
+Heavy water leakage flooding the room.,Civil,Urgent
+Pipe burst and flooding the corridor.,Civil,Urgent
+Manhole cover missing.,Civil,Urgent
+Open drain near the entrance.,Civil,Urgent
+Slippery floor causing accidents.,Civil,Urgent
+Elevator stuck with people inside.,Civil,Urgent
+Lift door opening while moving.,Civil,Urgent
+Washbasin broke and fell.,Civil,Urgent
+"Door lock broken, cannot lock room.",Civil,Urgent
+Main door latch broken.,Civil,Urgent
+"Window grill broken, security risk.",Civil,Urgent
+Balcony door not closing.,Civil,Urgent
+Storm water entering the room.,Civil,Urgent
+Roof leaking heavily during rain.,Civil,Urgent
+Tree branch fell on the building.,Civil,Urgent
+Glass window shattered and falling.,Civil,Urgent
+Railling broken on the 3rd floor balcony.,Civil,Urgent
+Sharp iron rod protruding from wall.,Civil,Urgent
+Termites destroying the door frame.,Civil,Urgent
+Gas leak smell in the kitchen.,Mess,Urgent
+Cylinder caught fire.,Mess,Urgent
+Gas pipe leaking.,Mess,Urgent
+Oil spill in the kitchen causing fire.,Mess,Urgent
+Food smells rotten and poisonous.,Mess,Urgent
+Uncooked chicken serving.,Mess,Urgent
+Fungus in the bread.,Mess,Urgent
+Expired milk served.,Mess,Urgent
+Glass pieces found in rice.,Mess,Urgent
+Intruder trying to enter the hostel.,Other,Urgent
+Stranger lurking in the corridor at night.,Other,Urgent
+Thief spotted in the cycle stand.,Other,Urgent
+Harassment by outsiders near the gate.,Other,Urgent
+Physical fight in the common room.,Other,Urgent
+Student fainted in the hallway.,Other,Urgent
+Medical emergency in Room 302.,Other,Urgent
+Severe food poisoning in the mess.,Mess,Urgent
+Sanitary pad disposal machine burning.,Other,Urgent
+Dustbin catching fire.,Other,Urgent
+Trash burning near the window.,Other,Urgent
+Chemical smell from the lab.,Other,Urgent
+Gas leak in the chemistry lab.,Other,Urgent
+Acid spill in the corridor.,Other,Urgent
+Mercury spill in the room.,Other,Urgent
+Broken glass bottle on the floor.,Other,Urgent
+Water leakage from the ceiling,Civil,High
+No water supply,Sanitation,High
+Geyser not working,Electrical,High
+Tube light is flickering in corridor.,Electrical,Medium
+Internet speed is slow,IT,Medium
+Wifi is weak,IT,Medium
+Poisonous snake found in water tank. Clean the tank immediately.,Sanitation,Urgent
+Cobra spotted near the hostel entrance.,Other,Urgent
+Scorpion found in the bathroom.,Other,Urgent
+Wild dogs chasing students near the mess.,Other,Urgent
+Monkey trying to attack students.,Other,Urgent
+Bee hive in the balcony.,Other,Urgent
+Wasp nest inside the room.,Other,Urgent
+Snake inside the room.,Other,Urgent
+Big spider in the bed.,Other,Urgent
+Bat flying inside the room.,Other,Urgent
+Stray dog bit a student.,Other,Urgent
+Cat found inside the mess kitchen.,Mess,Urgent
+Rat in the drinking water tank.,Sanitation,Urgent
+Dead animal in water tank.,Sanitation,Urgent
+Lizard found in the dal.,Mess,Urgent
+Insects found in the mess food.,Mess,Urgent
+Fire in the corridor light switch.,Electrical,Urgent
+Sparks coming from the fan regulator.,Electrical,Urgent
+Burning smell from the main switchboard.,Electrical,Urgent
+Short circuit in the socket.,Electrical,Urgent
+Smoke coming out of the AC unit.,Electrical,Urgent
+Electric shock from the water cooler.,Electrical,Urgent
+Live wire hanging in the hallway.,Electrical,Urgent
+Switchboard is overheating and melting.,Electrical,Urgent
+Loud explosion sound from the transformer.,Electrical,Urgent
+Fan is wobbling dangerously and might fall.,Electrical,Urgent
+Ceiling fan fell down.,Electrical,Urgent
+Open wiring in the bathroom.,Electrical,Urgent
+Geyser overheating and making noise.,Electrical,Urgent
+Water heater gave shock.,Electrical,Urgent
+Iron box caught fire.,Electrical,Urgent
+Laptop charger exploded.,Electrical,Urgent
+Mobile battery blasted.,Electrical,Urgent
+Power bank caught fire.,Electrical,Urgent
+Induction stove short circuit.,Electrical,Urgent
+Kettle burning smell.,Electrical,Urgent
+Microwave sparking.,Electrical,Urgent
+Fire alarm ringing continuously.,Other,Urgent
+The light switch is burning and smells weird.,Electrical,Urgent
+Water smells like sewage.,Sanitation,Urgent
+Contaminated water coming from the tap.,Sanitation,Urgent
+Black water coming from the shower.,Sanitation,Urgent
+Worms in the drinking water.,Sanitation,Urgent
+Sewage backflow in the toilet.,Sanitation,Urgent
+Toilet clogged and overflowing.,Sanitation,Urgent
+Dirty water in the water cooler.,Sanitation,Urgent
+Water filter broken and leaking.,Sanitation,Urgent
+No water in the hostel for 2 days.,Sanitation,Urgent
+Toilet flush not working and smelling bad.,Sanitation,Urgent
+Ceiling plaster falling down.,Civil,Urgent
+Floor tiles popped up and dangerous.,Civil,Urgent
+Heavy water leakage flooding the room.,Civil,Urgent
+Pipe burst and flooding the corridor.,Civil,Urgent
+Manhole cover missing.,Civil,Urgent
+Open drain near the entrance.,Civil,Urgent
+Slippery floor causing accidents.,Civil,Urgent
+Elevator stuck with people inside.,Civil,Urgent
+Lift door opening while moving.,Civil,Urgent
+Washbasin broke and fell.,Civil,Urgent
+"Door lock broken, cannot lock room.",Civil,Urgent
+Main door latch broken.,Civil,Urgent
+"Window grill broken, security risk.",Civil,Urgent
+Balcony door not closing.,Civil,Urgent
+Storm water entering the room.,Civil,Urgent
+Roof leaking heavily during rain.,Civil,Urgent
+Tree branch fell on the building.,Civil,Urgent
+Glass window shattered and falling.,Civil,Urgent
+Railling broken on the 3rd floor balcony.,Civil,Urgent
+Sharp iron rod protruding from wall.,Civil,Urgent
+Termites destroying the door frame.,Civil,Urgent
+Gas leak smell in the kitchen.,Mess,Urgent
+Cylinder caught fire.,Mess,Urgent
+Gas pipe leaking.,Mess,Urgent
+Oil spill in the kitchen causing fire.,Mess,Urgent
+Food smells rotten and poisonous.,Mess,Urgent
+Uncooked chicken serving.,Mess,Urgent
+Fungus in the bread.,Mess,Urgent
+Expired milk served.,Mess,Urgent
+Glass pieces found in rice.,Mess,Urgent
+Intruder trying to enter the hostel.,Other,Urgent
+Stranger lurking in the corridor at night.,Other,Urgent
+Thief spotted in the cycle stand.,Other,Urgent
+Harassment by outsiders near the gate.,Other,Urgent
+Physical fight in the common room.,Other,Urgent
+Student fainted in the hallway.,Other,Urgent
+Medical emergency in Room 302.,Other,Urgent
+Severe food poisoning in the mess.,Mess,Urgent
+Sanitary pad disposal machine burning.,Other,Urgent
+Dustbin catching fire.,Other,Urgent
+Trash burning near the window.,Other,Urgent
+Chemical smell from the lab.,Other,Urgent
+Gas leak in the chemistry lab.,Other,Urgent
+Acid spill in the corridor.,Other,Urgent
+Mercury spill in the room.,Other,Urgent
+Broken glass bottle on the floor.,Other,Urgent
+Water leakage from the ceiling,Civil,High
+No water supply,Sanitation,High
+Geyser not working,Electrical,High
+Tube light is flickering in corridor.,Electrical,Medium
+Internet speed is slow,IT,Medium
+Wifi is weak,IT,Medium
+Poisonous snake found in water tank. Clean the tank immediately.,Sanitation,Urgent
+Cobra spotted near the hostel entrance.,Other,Urgent
+Scorpion found in the bathroom.,Other,Urgent
+Wild dogs chasing students near the mess.,Other,Urgent
+Monkey trying to attack students.,Other,Urgent
+Bee hive in the balcony.,Other,Urgent
+Wasp nest inside the room.,Other,Urgent
+Snake inside the room.,Other,Urgent
+Big spider in the bed.,Other,Urgent
+Bat flying inside the room.,Other,Urgent
+Stray dog bit a student.,Other,Urgent
+Cat found inside the mess kitchen.,Mess,Urgent
+Rat in the drinking water tank.,Sanitation,Urgent
+Dead animal in water tank.,Sanitation,Urgent
+Lizard found in the dal.,Mess,Urgent
+Insects found in the mess food.,Mess,Urgent
+Fire in the corridor light switch.,Electrical,Urgent
+Sparks coming from the fan regulator.,Electrical,Urgent
+Burning smell from the main switchboard.,Electrical,Urgent
+Short circuit in the socket.,Electrical,Urgent
+Smoke coming out of the AC unit.,Electrical,Urgent
+Electric shock from the water cooler.,Electrical,Urgent
+Live wire hanging in the hallway.,Electrical,Urgent
+Switchboard is overheating and melting.,Electrical,Urgent
+Loud explosion sound from the transformer.,Electrical,Urgent
+Fan is wobbling dangerously and might fall.,Electrical,Urgent
+Ceiling fan fell down.,Electrical,Urgent
+Open wiring in the bathroom.,Electrical,Urgent
+Geyser overheating and making noise.,Electrical,Urgent
+Water heater gave shock.,Electrical,Urgent
+Iron box caught fire.,Electrical,Urgent
+Laptop charger exploded.,Electrical,Urgent
+Mobile battery blasted.,Electrical,Urgent
+Power bank caught fire.,Electrical,Urgent
+Induction stove short circuit.,Electrical,Urgent
+Kettle burning smell.,Electrical,Urgent
+Microwave sparking.,Electrical,Urgent
+Fire alarm ringing continuously.,Other,Urgent
+The light switch is burning and smells weird.,Electrical,Urgent
+Water smells like sewage.,Sanitation,Urgent
+Contaminated water coming from the tap.,Sanitation,Urgent
+Black water coming from the shower.,Sanitation,Urgent
+Worms in the drinking water.,Sanitation,Urgent
+Sewage backflow in the toilet.,Sanitation,Urgent
+Toilet clogged and overflowing.,Sanitation,Urgent
+Dirty water in the water cooler.,Sanitation,Urgent
+Water filter broken and leaking.,Sanitation,Urgent
+No water in the hostel for 2 days.,Sanitation,Urgent
+Toilet flush not working and smelling bad.,Sanitation,Urgent
+Ceiling plaster falling down.,Civil,Urgent
+Floor tiles popped up and dangerous.,Civil,Urgent
+Heavy water leakage flooding the room.,Civil,Urgent
+Pipe burst and flooding the corridor.,Civil,Urgent
+Manhole cover missing.,Civil,Urgent
+Open drain near the entrance.,Civil,Urgent
+Slippery floor causing accidents.,Civil,Urgent
+Elevator stuck with people inside.,Civil,Urgent
+Lift door opening while moving.,Civil,Urgent
+Washbasin broke and fell.,Civil,Urgent
+"Door lock broken, cannot lock room.",Civil,Urgent
+Main door latch broken.,Civil,Urgent
+"Window grill broken, security risk.",Civil,Urgent
+Balcony door not closing.,Civil,Urgent
+Storm water entering the room.,Civil,Urgent
+Roof leaking heavily during rain.,Civil,Urgent
+Tree branch fell on the building.,Civil,Urgent
+Glass window shattered and falling.,Civil,Urgent
+Railling broken on the 3rd floor balcony.,Civil,Urgent
+Sharp iron rod protruding from wall.,Civil,Urgent
+Termites destroying the door frame.,Civil,Urgent
+Gas leak smell in the kitchen.,Mess,Urgent
+Cylinder caught fire.,Mess,Urgent
+Gas pipe leaking.,Mess,Urgent
+Oil spill in the kitchen causing fire.,Mess,Urgent
+Food smells rotten and poisonous.,Mess,Urgent
+Uncooked chicken serving.,Mess,Urgent
+Fungus in the bread.,Mess,Urgent
+Expired milk served.,Mess,Urgent
+Glass pieces found in rice.,Mess,Urgent
+Intruder trying to enter the hostel.,Other,Urgent
+Stranger lurking in the corridor at night.,Other,Urgent
+Thief spotted in the cycle stand.,Other,Urgent
+Harassment by outsiders near the gate.,Other,Urgent
+Physical fight in the common room.,Other,Urgent
+Student fainted in the hallway.,Other,Urgent
+Medical emergency in Room 302.,Other,Urgent
+Severe food poisoning in the mess.,Mess,Urgent
+Sanitary pad disposal machine burning.,Other,Urgent
+Dustbin catching fire.,Other,Urgent
+Trash burning near the window.,Other,Urgent
+Chemical smell from the lab.,Other,Urgent
+Gas leak in the chemistry lab.,Other,Urgent
+Acid spill in the corridor.,Other,Urgent
+Mercury spill in the room.,Other,Urgent
+Broken glass bottle on the floor.,Other,Urgent
+Water leakage from the ceiling,Civil,High
+No water supply,Sanitation,High
+Geyser not working,Electrical,High
+Tube light is flickering in corridor.,Electrical,Medium
+Internet speed is slow,IT,Medium
+Wifi is weak,IT,Medium
