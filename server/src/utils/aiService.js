@@ -5,12 +5,30 @@ export const analyzeComplaint = async (text) => {
         const response = await axios.post('http://127.0.0.1:8000/analyze', {
             text: text
         });
-        return response.data;
+        console.log('AI Service Response:', response.data); // Added log
+
+        let { category, priority } = response.data;
+
+        // Validation & Normalization
+        const validPriorities = ['Low', 'Medium', 'High', 'Urgent'];
+
+        if (priority) {
+            // Ensure Title Case (e.g. "urgent" -> "Urgent")
+            priority = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
+        }
+
+        if (!validPriorities.includes(priority)) {
+            console.warn(`Invalid priority '${priority}' received from ML. Defaulting to Medium.`);
+            priority = 'Medium';
+        }
+
+        return { category, priority };
     } catch (error) {
         console.error('AI SERVICE ERROR:', error.message);
         if (error.code === 'ECONNREFUSED') {
             console.error('Make sure the Python ML Service is running on port 8000!');
         }
+        console.log('Falling back to default priority: Medium'); // Added log
         // Fallback
         return { category: 'Other', priority: 'Medium' };
     }

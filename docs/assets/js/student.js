@@ -150,10 +150,13 @@ async function fetchStats() {
 
 async function fetchNotices() {
     try {
-        const res = await fetch(`http://localhost:5000/api/notices?role=${user.role}&userId=${user._id}`);
+        const res = await fetch(`http://localhost:5000/api/notices?role=${user.role}&userId=${user._id}&department=${user.department || ''}`);
         if (!res.ok) throw new Error('Failed to fetch notices');
         const notices = await res.json();
-        const count = notices.length;
+
+        // Filter out general notices to match "Personal Notices" intent
+        const personalNotices = notices.filter(n => n.audience !== 'general');
+        const count = personalNotices.length;
 
         const noticeCountEl = document.getElementById('notice-count');
         if (noticeCountEl) {
