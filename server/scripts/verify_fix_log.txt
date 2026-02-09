@@ -1,0 +1,13 @@
+Starting verification...
+Connecting to DB...
+Connected.
+Testing controller with HOD: Dr. HOD CSE
+Calling getHodDashboardStats...
+Response JSON:
+{
+  "department": "CSE",
+  "studentCount": 0,
+  "teacherCount": 0,
+  "pendingLeaves": 0
+}
+Controller call finished successfully.

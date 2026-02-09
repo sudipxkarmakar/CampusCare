@@ -17,7 +17,16 @@ async function loadLeaves() {
             headers: { 'Authorization': `Bearer ${user.token}` }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch');
+        if (response.status === 401) {
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+            return;
+        }
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Status: ${response.status} ${response.statusText} - ${errText}`);
+        }
 
         const leaves = await response.json();
 
@@ -79,7 +88,7 @@ async function loadLeaves() {
 
     } catch (error) {
         console.error(error);
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error loading leaves.</td></tr>';
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error loading leaves. <br><small>${error.message}</small></td></tr>`;
     }
 }
 

@@ -1,0 +1,12 @@
+Starting debug...
+Connecting to DB...
+Connected.
+Testing with HOD: Dr. HOD CSE, Dept: CSE
+--- Testing getPendingLeaves ---
+Response JSON (Summary):
+Array length: 0
+getPendingLeaves finished.
+--- Testing getDepartmentComplaints ---
+Response JSON (Summary):
+Array length: 0
+getDepartmentComplaints finished.

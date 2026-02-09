@@ -16,12 +16,7 @@ const getHodDashboardStats = async (req, res) => {
 
         const studentCount = await User.countDocuments({ role: 'student', department });
         const teacherCount = await User.countDocuments({ role: 'teacher', department });
-        const pendingLeaves = await Leave.countDocuments({
-            status: 'Pending HOD Approval'
-        }).populate({
-            path: 'student',
-            match: { department }
-        });
+
         // Note: populate doesn't filter the count directly in countDocuments with match this way effectively for basic filtering.
         // Better to find and filter or use aggregate.
         // Let's use aggregate for precise filtering by student department.

@@ -27,6 +27,13 @@ async function loadDashboardStats() {
             }
         });
 
+        if (response.status === 401) {
+            alert('Session expired. Please login again.');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+            return;
+        }
+
         if (!response.ok) throw new Error('Failed to load stats');
 
         const data = await response.json();

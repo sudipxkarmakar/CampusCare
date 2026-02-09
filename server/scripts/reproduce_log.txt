@@ -1,0 +1,37 @@
+Starting reproduction...
+Connecting to DB...
+Connected.
+--- HOD USER DUMP ---
+{
+  "_id": "69445b4581d7ad4cb464cb42",
+  "name": "Dr. HOD CSE",
+  "email": "hod.cse@campuscare.com",
+  "profilePicture": "",
+  "password": "password123",
+  "role": "hod",
+  "designation": "Head of Department",
+  "expertise": [],
+  "teachingSubjects": [],
+  "menteesSubBatches": [],
+  "availabilitySlots": [],
+  "employeeId": "EMP-HOD-01",
+  "subjects": [],
+  "assignedTeachers": [],
+  "mar": 0,
+  "moocs": 0,
+  "attendance": 0,
+  "cgpa": 0,
+  "department": "CSE",
+  "teachingBatches": [],
+  "createdAt": "2025-12-18T19:51:33.363Z",
+  "updatedAt": "2025-12-18T19:51:33.363Z",
+  "__v": 0
+}
+---------------------
+Testing with HOD: Dr. HOD CSE, Department: CSE
+--- Testing Dashboard Stats Queries ---
+Student Count: 0
+Teacher Count: 0
+Running Pending Leaves Aggregation...
+Pending Leaves Count: 0
+--- Testing Complaints Query ---

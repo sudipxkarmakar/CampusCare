@@ -26,7 +26,16 @@ async function loadComplaints() {
             headers: { 'Authorization': `Bearer ${user.token}` }
         });
 
-        if (!response.ok) throw new Error('Failed to fetch');
+        if (response.status === 401) {
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+            return;
+        }
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Status: ${response.status} ${response.statusText} - ${errText}`);
+        }
 
         const complaints = await response.json();
 
@@ -64,7 +73,7 @@ async function loadComplaints() {
 
     } catch (error) {
         console.error(error);
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error loading complaints.</td></tr>';
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error loading complaints. <br><small>${error.message}</small></td></tr>`;
     }
 }
 
