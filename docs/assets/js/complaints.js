@@ -132,7 +132,7 @@ async function loadComplaints() {
                         <span><i class="fa-solid fa-user"></i> ${c.student?.name || 'Anonymous'}</span>
                         <div style="display:flex; align-items:center; gap:15px;">
                             <span>${new Date(c.createdAt).toLocaleDateString()}</span>
-                            <button ${clickAction} style="background:none; border:none; color:${likeColor}; cursor:${cursorStyle};">
+                            <button ${clickAction ? `onclick="upvote('${c._id}', this)"` : ''} style="background:none; border:none; color:${likeColor}; cursor:${cursorStyle};">
                                 <i class="fa-solid fa-thumbs-up"></i> ${c.upvotes}
                             </button>
                         </div>
@@ -154,7 +154,7 @@ async function loadComplaints() {
     }
 }
 
-async function upvote(id) {
+async function upvote(id, btnElement) {
     const userStr = localStorage.getItem('user');
     if (!userStr) return;
     const user = JSON.parse(userStr);
@@ -169,7 +169,30 @@ async function upvote(id) {
         });
 
         if (res.ok) {
-            loadComplaints();
+            const data = await res.json();
+
+            // Update the button that was clicked
+            // If btnElement is passed, use it. Otherwise find it.
+            let btn = btnElement;
+            if (!btn) {
+                // Fallback selector
+                // Since we don't have unique IDs on buttons in the loop in complaints.js aside from the generic structure
+                // We might need to select via onclick attribute if possible, or rely on passing 'this'
+                btn = document.querySelector(`button[onclick="upvote('${id}')"]`);
+            }
+
+            if (btn) {
+                if (data.action === 'added') {
+                    btn.style.color = '#3b82f6';
+                    btn.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${data.upvotes}`;
+                } else {
+                    btn.style.color = '#64748b'; // Gray
+                    btn.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${data.upvotes}`;
+                }
+                // Ensure click is NOT disabled
+                btn.onclick = function () { upvote(id, this); };
+                btn.style.cursor = 'pointer';
+            }
         } else {
             const err = await res.json();
             alert(err.message || "Failed to upvote");

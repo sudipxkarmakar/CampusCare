@@ -183,17 +183,26 @@ async function upvote(id) {
         });
 
         if (res.ok) {
-            const updated = await res.json();
-            // Update UI
-            const countSpan = document.getElementById(`count-${id}`);
-            if (countSpan) countSpan.innerText = updated.upvotes;
+            const data = await res.json();
+            // Data structure: { action: 'added'|'removed', upvotes: number, complaint: object }
 
-            // Disable button visually (optional, or just reload)
+            // Update Count
+            const countSpan = document.getElementById(`count-${id}`);
+            if (countSpan) countSpan.innerText = data.upvotes;
+
+            // Find the button to update style
             const btn = document.querySelector(`span[onclick="upvote('${id}')"]`);
             if (btn) {
-                btn.style.color = '#3b82f6';
-                btn.onclick = null; // Disable click
-                btn.style.cursor = 'default';
+                if (data.action === 'added') {
+                    // Liked State
+                    btn.style.color = '#3b82f6'; // Blue
+                    // We do NOT disable it anymore, so they can unlike
+                    btn.style.cursor = 'pointer';
+                } else {
+                    // Unliked State
+                    btn.style.color = 'inherit'; // Default gray/black
+                    btn.style.cursor = 'pointer';
+                }
             }
         } else {
             const err = await res.json();
