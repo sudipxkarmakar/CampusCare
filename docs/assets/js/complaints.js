@@ -95,19 +95,23 @@ async function loadComplaints() {
             if (c.priority === 'Urgent') badgeClass = 'bg-red-100 text-red-800';
 
             // Status Color Logic
-            // Default: Gray
             let statusColor = 'text-gray-500';
             let statusText = c.status ? c.status.toUpperCase() : 'UNKNOWN';
 
-            // Map statuses to requested colors
             if (c.status === 'Resolved') {
                 statusColor = 'text-green-600 font-bold';
             } else if (c.status === 'In Progress') {
                 statusColor = 'text-yellow-600 font-bold';
             } else if (c.status === 'Submitted' || c.status === 'Pending') {
-                // Treated as "Pending" (Red)
                 statusColor = 'text-red-600 font-bold';
             }
+
+            // Upvote Logic Check
+            const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+            const isLiked = user && user._id && upvotedBy.includes(user._id);
+            const likeColor = isLiked ? '#3b82f6' : '#64748b'; // Blue if liked, Gray if not
+            const cursorStyle = isLiked ? 'default' : 'pointer';
+            const clickAction = isLiked ? '' : `onclick="upvote('${c._id}')"`;
 
             html += `
                 <div class="glass" style="padding:1.5rem; border-radius:15px; margin-bottom:1.5rem;">
@@ -128,7 +132,7 @@ async function loadComplaints() {
                         <span><i class="fa-solid fa-user"></i> ${c.student?.name || 'Anonymous'}</span>
                         <div style="display:flex; align-items:center; gap:15px;">
                             <span>${new Date(c.createdAt).toLocaleDateString()}</span>
-                            <button onclick="upvote('${c._id}')" style="background:none; border:none; color:#64748b; cursor:pointer;">
+                            <button ${clickAction} style="background:none; border:none; color:${likeColor}; cursor:${cursorStyle};">
                                 <i class="fa-solid fa-thumbs-up"></i> ${c.upvotes}
                             </button>
                         </div>
@@ -151,9 +155,25 @@ async function loadComplaints() {
 }
 
 async function upvote(id) {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    const user = JSON.parse(userStr);
+
     try {
-        await fetch(`http://localhost:5000/api/complaints/${id}/upvote`, { method: 'PUT' });
-        loadComplaints();
+        const res = await fetch(`http://localhost:5000/api/complaints/${id}/upvote`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            }
+        });
+
+        if (res.ok) {
+            loadComplaints();
+        } else {
+            const err = await res.json();
+            alert(err.message || "Failed to upvote");
+        }
     } catch (e) { console.error(e); }
 }
 

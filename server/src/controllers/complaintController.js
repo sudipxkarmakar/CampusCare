@@ -46,7 +46,8 @@ export const getComplaints = async (req, res) => {
     try {
         const complaints = await Complaint.find()
             .populate('student', 'name department')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
 
         res.json(complaints);
     } catch (error) {
@@ -54,22 +55,43 @@ export const getComplaints = async (req, res) => {
     }
 };
 
-// @desc    Upvote a complaint
+// @desc    Upvote a complaint (Toggle Like)
 // @route   POST /api/complaints/:id/upvote
 export const upvoteComplaint = async (req, res) => {
     try {
-        // --- MOCK MODE ---
-        // --- MOCK MODE REMOVED: ALWAYS UPDATE DB ---
+        if (!req.user) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+        const userId = req.user._id;
+        const complaintId = req.params.id;
 
+        // Atomic Update: Only update if user is NOT in upvotedBy array
+        const complaint = await Complaint.findOneAndUpdate(
+            { _id: complaintId, upvotedBy: { $ne: userId } },
+            {
+                $inc: { upvotes: 1 },
+                $push: { upvotedBy: userId }
+            },
+            { new: true }
+        );
 
-        const complaint = await Complaint.findById(req.params.id);
-        if (!complaint) return res.status(404).json({ message: 'Not found' });
+        if (complaint) {
+            // Success: User was added and count incremented
+            return res.json(complaint);
+        } else {
+            // Failure: Either complaint doesn't exist OR user already upvoted
+            // Check if complaint exists to give correct error
+            const existing = await Complaint.findById(complaintId);
 
-        complaint.upvotes += 1;
-        await complaint.save();
-
-        res.json(complaint);
+            if (!existing) {
+                return res.status(404).json({ message: 'Complaint not found' });
+            } else {
+                // Complaint exists, so the query failed because user was in upvotedBy
+                return res.status(400).json({ message: 'You have already upvoted this complaint.' });
+            }
+        }
     } catch (error) {
+        console.error('Upvote Error:', error); // Log for debugging
         res.status(500).json({ message: error.message });
     }
 };

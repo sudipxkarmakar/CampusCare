@@ -109,6 +109,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const displayComplaints = complaints.slice(0, 3); // Top 3 recent
 
                 if (displayComplaints.length > 0) {
+                    const userStr = localStorage.getItem('user');
+                    const user = userStr ? JSON.parse(userStr) : null;
+
                     let html = '';
                     displayComplaints.forEach(c => {
                         let statusClass = 'status-progress';
@@ -122,6 +125,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
                         if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
 
+                        // Safety Check for upvotedBy
+                        const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+                        const isLiked = user && user._id && upvotedBy.includes(user._id);
+
                         html += `
                           <div class="blog-card glass">
                             <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
@@ -133,7 +140,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
                             <p class="blog-excerpt">${excerpt}</p>
                             <div class="blog-footer">
-                              <span><i class="fa-solid fa-thumbs-up"></i> ${c.upvotes} Upvotes</span>
+                              <span onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
+                                <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
+                              </span>
                               ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
                             </div>
                           </div>
@@ -152,6 +161,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- AUTH STATE CHECK ---
     if (window.checkAuthState) window.checkAuthState();
 });
+
+// --- UPVOTE FUNCTION ---
+async function upvote(id) {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        alert("Please login to upvote!");
+        window.location.href = 'login.html';
+        return;
+    }
+    const user = JSON.parse(userStr);
+    const token = localStorage.getItem('token'); // Assuming token is stored here, or checking user object
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/complaints/${id}/upvote`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token || token}`
+            }
+        });
+
+        if (res.ok) {
+            const updated = await res.json();
+            // Update UI
+            const countSpan = document.getElementById(`count-${id}`);
+            if (countSpan) countSpan.innerText = updated.upvotes;
+
+            // Disable button visually (optional, or just reload)
+            const btn = document.querySelector(`span[onclick="upvote('${id}')"]`);
+            if (btn) {
+                btn.style.color = '#3b82f6';
+                btn.onclick = null; // Disable click
+                btn.style.cursor = 'default';
+            }
+        } else {
+            const err = await res.json();
+            alert(err.message || "Failed to upvote");
+        }
+    } catch (error) {
+        console.error("Upvote Error:", error);
+    }
+}
 
 // --- AUTH FUNCTIONS ---
 // --- AUTH FUNCTIONS ---
