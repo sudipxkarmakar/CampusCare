@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
                             <p class="blog-excerpt">${excerpt}</p>
                             <div class="blog-footer">
-                              <span onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
+                              <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
                                 <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
                               </span>
                               ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
@@ -191,16 +191,15 @@ async function upvote(id) {
             if (countSpan) countSpan.innerText = data.upvotes;
 
             // Find the button to update style
-            const btn = document.querySelector(`span[onclick="upvote('${id}')"]`);
+            const btn = document.getElementById(`like-btn-${id}`);
             if (btn) {
                 if (data.action === 'added') {
                     // Liked State
                     btn.style.color = '#3b82f6'; // Blue
-                    // We do NOT disable it anymore, so they can unlike
                     btn.style.cursor = 'pointer';
                 } else {
                     // Unliked State
-                    btn.style.color = 'inherit'; // Default gray/black
+                    btn.style.color = '#64748b'; // Default gray explicitly
                     btn.style.cursor = 'pointer';
                 }
             }

@@ -110,8 +110,7 @@ async function loadComplaints() {
             const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
             const isLiked = user && user._id && upvotedBy.includes(user._id);
             const likeColor = isLiked ? '#3b82f6' : '#64748b'; // Blue if liked, Gray if not
-            const cursorStyle = isLiked ? 'default' : 'pointer';
-            const clickAction = isLiked ? '' : `onclick="upvote('${c._id}')"`;
+            const cursorStyle = 'pointer'; // Always clickable for toggle
 
             html += `
                 <div class="glass" style="padding:1.5rem; border-radius:15px; margin-bottom:1.5rem;">
@@ -132,8 +131,8 @@ async function loadComplaints() {
                         <span><i class="fa-solid fa-user"></i> ${c.student?.name || 'Anonymous'}</span>
                         <div style="display:flex; align-items:center; gap:15px;">
                             <span>${new Date(c.createdAt).toLocaleDateString()}</span>
-                            <button ${clickAction ? `onclick="upvote('${c._id}', this)"` : ''} style="background:none; border:none; color:${likeColor}; cursor:${cursorStyle};">
-                                <i class="fa-solid fa-thumbs-up"></i> ${c.upvotes}
+                            <button id="like-btn-${c._id}" onclick="upvote('${c._id}', this)" style="background:none; border:none; color:${likeColor}; cursor:${cursorStyle};">
+                                <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span>
                             </button>
                         </div>
                     </div>
@@ -171,26 +170,19 @@ async function upvote(id, btnElement) {
         if (res.ok) {
             const data = await res.json();
 
-            // Update the button that was clicked
-            // If btnElement is passed, use it. Otherwise find it.
-            let btn = btnElement;
-            if (!btn) {
-                // Fallback selector
-                // Since we don't have unique IDs on buttons in the loop in complaints.js aside from the generic structure
-                // We might need to select via onclick attribute if possible, or rely on passing 'this'
-                btn = document.querySelector(`button[onclick="upvote('${id}')"]`);
-            }
+            // Update Count
+            const countSpan = document.getElementById(`count-${id}`);
+            if (countSpan) countSpan.innerText = data.upvotes;
+
+            // Update Button Style
+            const btn = document.getElementById(`like-btn-${id}`) || btnElement;
 
             if (btn) {
                 if (data.action === 'added') {
                     btn.style.color = '#3b82f6';
-                    btn.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${data.upvotes}`;
                 } else {
-                    btn.style.color = '#64748b'; // Gray
-                    btn.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${data.upvotes}`;
+                    btn.style.color = '#64748b';
                 }
-                // Ensure click is NOT disabled
-                btn.onclick = function () { upvote(id, this); };
                 btn.style.cursor = 'pointer';
             }
         } else {
