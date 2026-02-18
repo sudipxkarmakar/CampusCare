@@ -44,7 +44,13 @@ export const getComplaints = async (req, res) => {
 
 
     try {
-        const complaints = await Complaint.find()
+
+        const filter = {};
+        if (req.query.public === 'true') {
+            filter.category = { $in: ['Electrical', 'Sanitation', 'Mess'] };
+        }
+
+        const complaints = await Complaint.find(filter)
             .populate('student', 'name department')
             .sort({ createdAt: -1 })
             .lean();

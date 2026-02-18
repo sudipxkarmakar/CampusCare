@@ -103,10 +103,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const complaintContainer = document.getElementById('complaint-list');
     if (complaintContainer) {
         try {
-            const res = await fetch('http://localhost:5000/api/complaints');
+            const res = await fetch('http://localhost:5000/api/complaints?public=true');
             if (res.ok) {
                 const complaints = await res.json();
-                const displayComplaints = complaints.slice(0, 3); // Top 3 recent
+
+                // Frontend Filter Enforcement (Additional Layer)
+                const allowedCategories = ["Electrical", "Sanitation", "Mess"];
+                const filteredComplaints = complaints.filter(c => allowedCategories.includes(c.category));
+
+                const displayComplaints = filteredComplaints.slice(0, 3); // Top 3 recent
 
                 if (displayComplaints.length > 0) {
                     const userStr = localStorage.getItem('user');

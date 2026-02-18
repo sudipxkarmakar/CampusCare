@@ -142,10 +142,29 @@
 
             <!-- PUBLIC WALL SECTION -->
             <div style="flex: 1.5; min-width: 300px;">
-                <h2 style="margin-bottom: 1rem;">Transparency Wall</h2>
-                <div id="complaint-list-full">
-                    <!-- Complaints injected here -->
-                    <div style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...
+                <!-- TABS -->
+                <div style="display:flex; justify-content:center; gap:20px; margin-bottom:20px;">
+                    <button id="tab-public" class="tab-active" onclick="switchTab('public')"
+                        style="padding:10px 20px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; transition:all 0.3s;">
+                        Public Transparency Wall
+                    </button>
+                    <button id="tab-my" onclick="switchTab('my')"
+                        style="padding:10px 20px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; background:rgba(255,255,255,0.5); color:#64748b; transition:all 0.3s;">
+                        My Complaints
+                    </button>
+                </div>
+
+                <!-- PUBLIC WALL -->
+                <div id="view-public" style="display:block;">
+                    <div id="complaint-list-full" style="margin-top: 20px;">
+                        <p style="text-align:center;">Loading public complaints...</p>
+                    </div>
+                </div>
+
+                <!-- MY COMPLAINTS -->
+                <div id="view-my" style="display:none;">
+                    <div id="complaint-list-my" style="margin-top: 20px;">
+                        <p style="text-align:center;">Loading your complaints...</p>
                     </div>
                 </div>
             </div>

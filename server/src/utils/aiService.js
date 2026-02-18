@@ -1,11 +1,31 @@
 import axios from 'axios';
 
 export const analyzeComplaint = async (text) => {
+    // 1. Keyword Heuristic (Runs FIRST to override ML and handle Personal/Health issues)
+    const lowerText = text.toLowerCase();
+    const personalKeywords = [
+        'stomach', 'pain', 'sick', 'fever', 'doctor', 'medicine', 'headache', 'hurt', 'lonely', 'depressed',
+        'vomit', 'nausea', 'bleeding', 'injury', 'broken', 'fracture', 'fainted', 'unconscious', 'dizzy',
+        'hand', 'leg', 'arm', 'foot', 'head', 'chest', 'back', 'body', 'skin', 'eye', 'ear', 'nose', 'throat',
+        'tuut', 'tuta', 'dard', 'bimar', 'chot' // Hinglish support
+    ];
+
+    if (personalKeywords.some(keyword => lowerText.includes(keyword))) {
+        console.log('Keyword Heuristic: Detected Personal/Health issue. Returning Personal.');
+
+        let priority = 'Mid'; // Default for health
+        const urgentKeywords = ['bleeding', 'unconscious', 'fainted', 'broken', 'fracture', 'accident', 'emergency'];
+        if (urgentKeywords.some(k => lowerText.includes(k))) priority = 'Urgent';
+        else if (['pain', 'fever', 'vomit'].some(k => lowerText.includes(k))) priority = 'High';
+
+        return { category: 'Personal', priority };
+    }
+
     try {
         const response = await axios.post('http://127.0.0.1:8000/analyze', {
             text: text
         });
-        console.log('AI Service Response:', response.data); // Added log
+        console.log('AI Service Response:', response.data);
 
         let { category, priority } = response.data;
 
@@ -28,7 +48,7 @@ export const analyzeComplaint = async (text) => {
         if (error.code === 'ECONNREFUSED') {
             console.error('Make sure the Python ML Service is running on port 8000!');
         }
-        console.log('Falling back to default priority: Medium'); // Added log
+        console.log('Falling back to default priority: Medium');
         // Fallback
         return { category: 'Other', priority: 'Medium' };
     }

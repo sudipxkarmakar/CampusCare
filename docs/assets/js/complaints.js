@@ -55,8 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Load Public Wall
+    // 2. Load Public Wall (Default)
     loadComplaints();
+
+    // Init Tab Styles
+    const tabPublic = document.getElementById('tab-public');
+    if (tabPublic) {
+        tabPublic.style.background = '#2d3748';
+        tabPublic.style.color = '#fff';
+    }
 
     // 3. Logout Logic
     const logoutBtn = document.getElementById('logoutBtn');
@@ -205,4 +212,122 @@ function goToDashboard() {
     else if (role === 'teacher') window.location.href = '../teacher/index.html';
     else if (role === 'hosteler') window.location.href = '../hostel/index.html';
     else window.location.href = '../index.html';
+}
+
+// --- TAB SWITCHING LOGIC ---
+window.switchTab = function (tab) {
+    const tabPublic = document.getElementById('tab-public');
+    const tabMy = document.getElementById('tab-my');
+    const viewPublic = document.getElementById('view-public');
+    const viewMy = document.getElementById('view-my');
+
+    if (tab === 'public') {
+        tabPublic.style.background = '#2d3748'; // Active Dark
+        tabPublic.style.color = '#fff';
+        tabMy.style.background = 'rgba(255,255,255,0.5)';
+        tabMy.style.color = '#64748b';
+
+        viewPublic.style.display = 'block';
+        viewMy.style.display = 'none';
+    } else {
+        tabMy.style.background = '#2d3748'; // Active Dark
+        tabMy.style.color = '#fff';
+        tabPublic.style.background = 'rgba(255,255,255,0.5)';
+        tabPublic.style.color = '#64748b';
+
+        viewPublic.style.display = 'none';
+        viewMy.style.display = 'block';
+
+        // Load My Complaints on first switch (or every time)
+        loadMyComplaints();
+    }
+};
+
+async function loadMyComplaints() {
+    const list = document.getElementById('complaint-list-my');
+    if (!list) return;
+
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    const user = JSON.parse(userStr);
+    const token = localStorage.getItem('token') || user.token;
+
+    try {
+        const response = await fetch('http://localhost:5000/api/complaints/my', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch personal complaints');
+        const complaints = await response.json();
+
+        if (complaints.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:2rem;">You haven\'t filed any complaints yet.</p>';
+            return;
+        }
+
+        let html = '';
+        complaints.forEach(c => {
+            // Priority Badge Color
+            let badgeClass = 'bg-blue-100 text-blue-800';
+            if (c.priority === 'High') badgeClass = 'bg-orange-100 text-orange-800';
+            if (c.priority === 'Urgent') badgeClass = 'bg-red-100 text-red-800';
+
+            // Status Color Logic
+            let statusColor = 'text-gray-500';
+            let statusText = c.status ? c.status.toUpperCase() : 'UNKNOWN';
+
+            if (c.status === 'Resolved') {
+                statusColor = 'text-green-600 font-bold';
+            } else if (c.status === 'In Progress') {
+                statusColor = 'text-yellow-600 font-bold';
+            } else if (c.status === 'Submitted' || c.status === 'Pending') {
+                statusColor = 'text-red-600 font-bold';
+            }
+
+            // Privacy Badge
+            let privacyBadge = '';
+            if (c.category === 'Personal') {
+                privacyBadge = '<span style="background:#f3e8ff; color:#6b21a8; padding:4px 8px; border-radius:8px; font-size:0.75rem; font-weight:bold; margin-left:8px;"><i class="fa-solid fa-lock"></i> PRIVATE</span>';
+            }
+
+            // Upvote Logic Check
+            const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+            const isLiked = user && user._id && upvotedBy.includes(user._id);
+            const likeColor = isLiked ? '#3b82f6' : '#64748b';
+            const cursorStyle = 'pointer';
+
+            html += `
+                 <div class="glass" style="padding:1.5rem; border-radius:15px; margin-bottom:1.5rem; border-left: 5px solid ${c.category === 'Personal' ? '#9333ea' : 'transparent'};">
+                     <div style="display:flex; justify-content:space-between; align-items:start;">
+                         <div>
+                             <span class="badge ${badgeClass}" style="padding:4px 8px; border-radius:8px; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">${c.priority} Priority</span>
+                             <span style="font-size:0.8rem; color:#64748b; margin-left:8px;">${c.category}</span>
+                             ${privacyBadge}
+                             <h3 style="margin:0.8rem 0 0.5rem; font-size:1.2rem;">${c.title}</h3>
+                         </div>
+                         <div class="${statusColor}" style="font-size:0.85rem;">
+                             <i class="fa-solid fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i> ${statusText}
+                         </div>
+                     </div>
+                     
+                     <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
+                     
+                     <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
+                         <span><i class="fa-solid fa-calendar"></i> ${new Date(c.createdAt).toLocaleDateString()}</span>
+                         <button id="like-btn-${c._id}" onclick="upvote('${c._id}', this)" style="background:none; border:none; color:${likeColor}; cursor:${cursorStyle};">
+                             <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes || 0}</span> Upvotes
+                         </button>
+                     </div>
+                     ${c.aiFeedback ? `<div style="margin-top:10px; background:#f0f9ff; padding:10px; border-radius:8px; font-size:0.85rem; color:#0369a1;"><i class="fa-solid fa-robot"></i> <strong>AI Note:</strong> ${c.aiFeedback}</div>` : ''}
+                 </div>
+             `;
+        });
+        list.innerHTML = html;
+
+    } catch (error) {
+        console.error(error);
+        list.innerHTML = '<p style="text-align:center; color:red;">Failed to load your complaints.</p>';
+    }
 }
