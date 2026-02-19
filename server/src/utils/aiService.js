@@ -10,6 +10,13 @@ export const analyzeComplaint = async (text) => {
         'tuut', 'tuta', 'dard', 'bimar', 'chot' // Hinglish support
     ];
 
+    // 0. Lost/Stolen Heuristic (Critical for lost items)
+    const lostKeywords = ['lost', 'stolen', 'missing', 'theft', "can't find", 'cant find', 'misplaced'];
+    if (lostKeywords.some(keyword => lowerText.includes(keyword))) {
+        console.log('Keyword Heuristic: Detected Lost/Stolen item. Returning Personal/Urgent.');
+        return { category: 'Personal', priority: 'Urgent' };
+    }
+
     if (personalKeywords.some(keyword => lowerText.includes(keyword))) {
         console.log('Keyword Heuristic: Detected Personal/Health issue. Returning Personal.');
 
