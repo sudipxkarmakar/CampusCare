@@ -44,9 +44,16 @@ export const getComplaints = async (req, res) => {
 
 
     try {
-        const complaints = await Complaint.find()
+
+        const filter = {};
+        if (req.query.public === 'true') {
+            filter.category = { $in: ['Electrical', 'Sanitation', 'Mess'] };
+        }
+
+        const complaints = await Complaint.find(filter)
             .populate('student', 'name department')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
 
         res.json(complaints);
     } catch (error) {
@@ -54,22 +61,62 @@ export const getComplaints = async (req, res) => {
     }
 };
 
-// @desc    Upvote a complaint
+// @desc    Upvote a complaint (Toggle Like)
 // @route   POST /api/complaints/:id/upvote
+// @desc    Upvote a complaint (Toggle Like)
+// @route   PUT /api/complaints/:id/upvote
 export const upvoteComplaint = async (req, res) => {
     try {
-        // --- MOCK MODE ---
-        // --- MOCK MODE REMOVED: ALWAYS UPDATE DB ---
+        if (!req.user) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+        const userId = req.user._id;
+        const complaintId = req.params.id;
 
+        // 1. Try to REMOVE upvote (Unlike)
+        // Atomic Pull: Only updates if user IS in the array
+        const complaintInfo = await Complaint.findOneAndUpdate(
+            { _id: complaintId, upvotedBy: userId },
+            {
+                $inc: { upvotes: -1 },
+                $pull: { upvotedBy: userId }
+            },
+            { new: true }
+        );
 
-        const complaint = await Complaint.findById(req.params.id);
-        if (!complaint) return res.status(404).json({ message: 'Not found' });
+        if (complaintInfo) {
+            // User was found and removed -> Action: REMOVED
+            return res.json({
+                action: 'removed',
+                upvotes: Math.max(0, complaintInfo.upvotes), // Ensure never negative
+                complaint: complaintInfo
+            });
+        }
 
-        complaint.upvotes += 1;
-        await complaint.save();
+        // 2. If not removed, try to ADD upvote (Like)
+        // Atomic Add: Only updates if user IS NOT in the array (handled naturally by flow, but $addToSet is safe)
+        const complaint = await Complaint.findOneAndUpdate(
+            { _id: complaintId },
+            {
+                $inc: { upvotes: 1 },
+                $addToSet: { upvotedBy: userId }
+            },
+            { new: true }
+        );
 
-        res.json(complaint);
+        if (!complaint) {
+            return res.status(404).json({ message: 'Complaint not found' });
+        }
+
+        // Action: ADDED
+        res.json({
+            action: 'added',
+            upvotes: complaint.upvotes,
+            complaint
+        });
+
     } catch (error) {
+        console.error('Upvote Error:', error);
         res.status(500).json({ message: error.message });
     }
 };

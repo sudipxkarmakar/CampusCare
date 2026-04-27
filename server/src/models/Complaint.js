@@ -11,7 +11,7 @@ const complaintSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['Electrical', 'Sanitation', 'Civil', 'IT', 'Mess', 'Other', 'Disciplinary'],
+        enum: ['Electrical', 'Sanitation', 'Civil', 'IT', 'Mess', 'Other', 'Disciplinary', 'Personal'],
         required: true
     },
     priority: {
@@ -33,6 +33,10 @@ const complaintSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    upvotedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     image: {
         type: String, // URL if we implement upload
     },

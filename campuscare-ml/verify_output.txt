@@ -1,0 +1,19 @@
+Loading models...
+Models loaded.
+
+Running test cases:
+Input: 'The wifi is not working in the hostel.'
+  Predicted Category: Electrical (Expected: IT)
+  Predicted Priority: High (Expected: High)
+Input: 'There is a water leakage in the bathroom.'
+  Predicted Category: Civil (Expected: Sanitation)
+  Predicted Priority: Urgent (Expected: High)
+Input: 'The food in the mess is cold and stale.'
+  Predicted Category: Mess (Expected: Mess)
+  Predicted Priority: High (Expected: Medium)
+Input: 'I am feeling very lonely and depressed.'
+  Predicted Category: Personal (Expected: Personal)
+  Predicted Priority: High (Expected: High)
+Input: 'The fan in my room is broken.'
+  Predicted Category: Electrical (Expected: Electrical)
+  Predicted Priority: High (Expected: Medium)

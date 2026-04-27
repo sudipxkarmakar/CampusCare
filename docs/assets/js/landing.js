@@ -103,12 +103,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const complaintContainer = document.getElementById('complaint-list');
     if (complaintContainer) {
         try {
-            const res = await fetch('http://localhost:5000/api/complaints');
+            const res = await fetch('http://localhost:5000/api/complaints?public=true');
             if (res.ok) {
                 const complaints = await res.json();
-                const displayComplaints = complaints.slice(0, 3); // Top 3 recent
+
+                // Frontend Filter Enforcement (Additional Layer)
+                const allowedCategories = ["Electrical", "Sanitation", "Mess"];
+                const filteredComplaints = complaints.filter(c => allowedCategories.includes(c.category));
+
+                const displayComplaints = filteredComplaints.slice(0, 3); // Top 3 recent
 
                 if (displayComplaints.length > 0) {
+                    const userStr = localStorage.getItem('user');
+                    const user = userStr ? JSON.parse(userStr) : null;
+
                     let html = '';
                     displayComplaints.forEach(c => {
                         let statusClass = 'status-progress';
@@ -122,6 +130,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
                         if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
 
+                        // Safety Check for upvotedBy
+                        const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+                        const isLiked = user && user._id && upvotedBy.includes(user._id);
+
                         html += `
                           <div class="blog-card glass">
                             <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
@@ -133,7 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
                             <p class="blog-excerpt">${excerpt}</p>
                             <div class="blog-footer">
-                              <span><i class="fa-solid fa-thumbs-up"></i> ${c.upvotes} Upvotes</span>
+                              <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
+                                <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
+                              </span>
                               ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
                             </div>
                           </div>
@@ -149,6 +163,56 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Animate Blobs or Interactivity if needed
 });
+
+// --- UPVOTE FUNCTION ---
+async function upvote(id) {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        alert("Please login to upvote!");
+        window.location.href = 'login.html';
+        return;
+    }
+    const user = JSON.parse(userStr);
+    const token = localStorage.getItem('token'); // Assuming token is stored here, or checking user object
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/complaints/${id}/upvote`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token || token}`
+            }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            // Data structure: { action: 'added'|'removed', upvotes: number, complaint: object }
+
+            // Update Count
+            const countSpan = document.getElementById(`count-${id}`);
+            if (countSpan) countSpan.innerText = data.upvotes;
+
+            // Find the button to update style
+            const btn = document.getElementById(`like-btn-${id}`);
+            if (btn) {
+                if (data.action === 'added') {
+                    // Liked State
+                    btn.style.color = '#3b82f6'; // Blue
+                    btn.style.cursor = 'pointer';
+                } else {
+                    // Unliked State
+                    btn.style.color = '#64748b'; // Default gray explicitly
+                    btn.style.cursor = 'pointer';
+                }
+            }
+        } else {
+            const err = await res.json();
+            alert(err.message || "Failed to upvote");
+        }
+    } catch (error) {
+        console.error("Upvote Error:", error);
+    }
+}
 
 // --- AUTH FUNCTIONS ---
 // --- AUTH FUNCTIONS ---
