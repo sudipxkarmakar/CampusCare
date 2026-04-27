@@ -17,7 +17,16 @@ const storage = multer.diskStorage({
         // For now Assuming docs/uploads/notes exists or will be created.
         // If shared with assignments, adjust path.
         // Let's use a distinct folder 'notes'
-        cb(null, path.join(__dirname, '../../../docs/uploads/notes'));
+        const dir = path.join(__dirname, '../../../docs/uploads/notes');
+        import('fs').then(fs => {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+            cb(null, dir);
+        }).catch(err => {
+            console.error("Failed to load fs for mkdirSync", err);
+            cb(null, dir); // Fallback to just passing the dir and hope it exists
+        });
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

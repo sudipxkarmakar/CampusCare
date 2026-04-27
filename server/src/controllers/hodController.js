@@ -1,6 +1,8 @@
 import Leave from '../models/Leave.js';
 import User from '../models/User.js';
 import Complaint from '../models/Complaint.js';
+import Subject from '../models/Subject.js';
+import Routine from '../models/Routine.js';
 import mongoose from 'mongoose';
 
 // @desc    Get HOD Dashboard Stats
@@ -220,8 +222,8 @@ const getDepartmentComplaints = async (req, res) => {
         // Find complaints where the student belongs to the department OR the complaint is against a user in the department
         // For simplicity, let's start with complaints FROM students of this department.
 
-        // 1. Find all students of this department
-        const students = await User.find({ role: 'student', department }).select('_id');
+        // 1. Find all students and hostelers of this department
+        const students = await User.find({ role: { $in: ['student', 'hosteler'] }, department }).select('_id');
         const studentIds = students.map(s => s._id);
 
         const complaints = await Complaint.find({
@@ -247,8 +249,6 @@ const getRoutine = async (req, res) => {
         if (!year || !batch) {
             return res.status(400).json({ message: 'Year and Batch are required' });
         }
-
-        const Routine = (await import('../models/Routine.js')).default;
 
         const routine = await Routine.find({ department, year, batch })
             .populate('teacher', 'name')
@@ -294,9 +294,6 @@ const assignSubjectTeacher = async (req, res) => {
     try {
         const { id } = req.params;
         const { teacherId, batch } = req.body;
-
-        const Subject = (await import('../models/Subject.js')).default;
-        const User = (await import('../models/User.js')).default; // Use singleton import if possible, but this works
 
         const subject = await Subject.findById(id);
         const teacher = await User.findById(teacherId);
@@ -407,8 +404,6 @@ const unassignSubjectTeacher = async (req, res) => {
     try {
         const { id } = req.params;
         const { batch } = req.body; // batch to unassign
-
-        const Subject = (await import('../models/Subject.js')).default;
 
         const subject = await Subject.findById(id);
         if (!subject) {

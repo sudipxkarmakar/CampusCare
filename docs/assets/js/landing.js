@@ -148,9 +148,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Animate Blobs or Interactivity if needed
-
-    // --- AUTH STATE CHECK ---
-    if (window.checkAuthState) window.checkAuthState();
 });
 
 // --- AUTH FUNCTIONS ---
@@ -172,13 +169,6 @@ window.checkAuthState = function () {
 
         // Explicitly set flex to override CSS 'display: none' from class
         if (userProfile) userProfile.style.display = 'flex';
-
-        // --- NAME FIX OVERRIDE ---
-        if (user.identifier === '10800222026' || user.identifier === '10800222062' || user.rollNumber === '10800222026' || user.rollNumber === '10800222062') {
-            user.name = 'Sumit Modi';
-            user.role = 'Student'; // Ensure role is correct too
-        }
-        // -------------------------
 
         if (userName) {
             let displayName = 'User';
