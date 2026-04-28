@@ -16,9 +16,21 @@ async function askAI() {
     historyEl.scrollTop = historyEl.scrollHeight;
 
     try {
-        const response = await fetch('/api/ai/chat', {
+        const userStr = localStorage.getItem('user');
+        let token = '';
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            token = user.token || localStorage.getItem('token');
+        }
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch('http://localhost:5000/api/ai/chat', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify({ text })
         });
 
@@ -26,8 +38,39 @@ async function askAI() {
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) loadingEl.remove();
 
+        let responseMessage = data.response.message || data.response;
+        
+        // Simple Markdown parsing for Gemini's output
+        if (typeof responseMessage === 'string') {
+            responseMessage = responseMessage
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // Handle specific Agentic Actions
+        if (data.response.action === "REDIRECT_TO_COMPLAINT" && data.response.data) {
+            sessionStorage.setItem('aiDraftTitle', data.response.data.title);
+            sessionStorage.setItem('aiDraftDesc', data.response.data.description);
+            responseMessage += "<br><br><i>Redirecting you to the complaint form...</i>";
+            setTimeout(() => {
+                // Determine path relative to root or subfolder
+                if (window.location.pathname.includes('/complaints/')) {
+                    window.location.reload();
+                } else {
+                    window.location.href = (window.location.pathname.includes('/student/') || window.location.pathname.includes('/teacher/') || window.location.pathname.includes('/hostel/')) ? '../complaints/index.html' : 'complaints/index.html';
+                }
+            }, 2000);
+        } else if (data.response.action === "TRIGGER_SOS") {
+            responseMessage = `<strong style="color:#ef4444;">EMERGENCY DETECTED:</strong> ${responseMessage}`;
+            setTimeout(() => {
+                toggleModal('ai-modal');
+                toggleModal('sos-modal');
+            }, 1000);
+        }
+
         // Show AI Response
-        let aiHtml = `<div style="margin: 5px 0; text-align: left;"><span style="background: #667eea; color: white; padding: 5px 10px; border-radius: 10px; display: inline-block;">${data.response.message || data.response}</span>`;
+        let aiHtml = `<div style="margin: 5px 0; text-align: left;"><span style="background: #667eea; color: white; padding: 10px; border-radius: 10px; display: inline-block; max-width: 80%; line-height: 1.4;">${responseMessage}</span>`;
 
         if (data.response.draft) {
             aiHtml += `<pre style="background: #f1f5f9; color: #333; padding: 10px; border-radius: 5px; margin-top: 5px; font-size: 0.85rem; white-space: pre-wrap;">${data.response.draft}</pre>`;

@@ -6,7 +6,18 @@ const user = JSON.parse(userStr);
 document.addEventListener('DOMContentLoaded', () => {
     // 1. File Complaint Listener
     const complaintForm = document.getElementById('complaintForm');
+    
     if (complaintForm) {
+        // Auto-fill from Chatbot Redirect
+        const draftTitle = sessionStorage.getItem('aiDraftTitle');
+        const draftDesc = sessionStorage.getItem('aiDraftDesc');
+        if (draftTitle && draftDesc) {
+            document.getElementById('title').value = draftTitle;
+            document.getElementById('description').value = draftDesc;
+            sessionStorage.removeItem('aiDraftTitle');
+            sessionStorage.removeItem('aiDraftDesc');
+        }
+
         complaintForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = complaintForm.querySelector('button');
@@ -75,6 +86,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+async function aiAutoFillComplaint() {
+    const promptText = prompt("What is your complaint about? (e.g. 'Ragging by 3rd years in hostel')");
+    if (!promptText) return;
+
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    const userObj = JSON.parse(userStr);
+    const token = userObj.token || localStorage.getItem('token');
+
+    // Show loading text in inputs
+    const titleEl = document.getElementById('title');
+    const descEl = document.getElementById('description');
+    
+    titleEl.value = "AI is drafting...";
+    descEl.value = "Please wait...";
+
+    try {
+        const response = await fetch('http://localhost:5000/api/ai/generate-complaint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ prompt: promptText })
+        });
+
+        if (!response.ok) throw new Error("Failed to generate draft");
+        
+        const data = await response.json();
+        titleEl.value = data.title || "";
+        descEl.value = data.description || "";
+    } catch (err) {
+        console.error(err);
+        alert("AI could not generate draft.");
+        titleEl.value = "";
+        descEl.value = "";
+    }
+}
 
 async function loadComplaints() {
     const list = document.getElementById('complaint-list-full');
