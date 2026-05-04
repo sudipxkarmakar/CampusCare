@@ -108,8 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const complaints = await res.json();
 
                 // Frontend Filter Enforcement (Additional Layer)
-                const allowedCategories = ["Electrical", "Sanitation", "Mess"];
-                const filteredComplaints = complaints.filter(c => allowedCategories.includes(c.category));
+                const filteredComplaints = complaints.filter(c => c.category !== 'Personal');
 
                 const displayComplaints = filteredComplaints.slice(0, 3); // Top 3 recent
 

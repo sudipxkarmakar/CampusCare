@@ -47,7 +47,7 @@ export const getComplaints = async (req, res) => {
 
         const filter = {};
         if (req.query.public === 'true') {
-            filter.category = { $in: ['Electrical', 'Sanitation', 'Mess'] };
+            filter.category = { $ne: 'Personal' };
         }
 
         const complaints = await Complaint.find(filter)
