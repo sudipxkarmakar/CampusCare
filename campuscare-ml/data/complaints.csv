@@ -18,8 +18,8 @@ Water cooler is giving dirty brown water,Sanitation,High
 Students are fighting violently in the ground,Disciplinary,Urgent
 My laptop was stolen from the library,Disciplinary,Urgent
 Someone stole my mobile phone,Disciplinary,Urgent
-I lost my power bank in the lab,Personal,High
-I can't find my wallet it is missing,Personal,High
+I lost my power bank in the lab,Disciplinary,High
+I can't find my wallet it is missing,Disciplinary,High
 The corridor light is flickering,Electrical,Medium
 My room door lock is jammed,Civil,Medium
 The Wi-Fi speed is very slow in room 302,IT,Medium
@@ -50,8 +50,8 @@ The gym equipment is rusted,Civil,Medium
 Air conditioner is making a loud noise,Electrical,Medium
 Water logging in the parking area after rain,Sanitation,High
 My assignment grades are not updating on the portal,IT,Medium
-Forgot my ID card in the mess,Personal,Low
-Lost my umbrella yesterday,Personal,Low
+Forgot my ID card in the mess,Disciplinary,Low
+Lost my umbrella yesterday,Disciplinary,Low
 The washroom is completely flooded and unusable,Sanitation,Urgent
 A short circuit happened in the main switchboard,Electrical,Urgent
 Food in the mess is completely raw and uncooked,Mess,High
@@ -59,3 +59,25 @@ Our lab computers are infected with ransomware,IT,Urgent
 Someone is destroying college property in the park,Disciplinary,Urgent
 I need urgent medical attention my chest hurts,Personal,Urgent
 The roof is leaking heavily in the library,Civil,High
+My phone was stolen from hostel room,Disciplinary,High
+Lost my wallet in college campus,Disciplinary,Medium
+Gold chain missing from locker,Disciplinary,High
+Laptop stolen from lab,Disciplinary,High
+I am feeling anxious and stressed,Personal,Low
+I have severe headache today,Personal,Low
+I fainted in hostel room,Personal,High
+My phone got stolen from classroom,Disciplinary,High
+Someone took my wallet from my bag,Disciplinary,High
+My laptop is missing from hostel room,Disciplinary,High
+I lost my watch in the library,Disciplinary,Medium
+My gold ring is missing from my drawer,Disciplinary,High
+Bag containing valuables was stolen,Disciplinary,High
+My headphones were stolen from lab,Disciplinary,Medium
+Lost my purse near canteen,Disciplinary,Medium
+My jewellery box is missing,Disciplinary,High
+Someone stole my charger and power bank,Disciplinary,Medium
+Someone stole my cycle from the parking lot,Disciplinary,High
+I left my bag in the mess and it is missing,Disciplinary,High
+Lost my spectacles in the ground,Disciplinary,Medium
+My scientific calculator was stolen,Disciplinary,Medium
+Missing laptop charger from my desk,Disciplinary,Medium

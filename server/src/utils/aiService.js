@@ -17,6 +17,18 @@ export const analyzeComplaint = async (text) => {
             priority = priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase();
         }
 
+        // SAFETY CONDITION: Prevent theft/loss from being hidden as 'Personal'
+        const lowerText = text.toLowerCase();
+        
+        const hasTheft = ['stolen', 'theft', 'robbery'].some(k => lowerText.includes(k));
+        const hasLostOrMissing = ['lost', 'missing'].some(k => lowerText.includes(k));
+        const hasValuables = ['phone', 'wallet', 'laptop', 'bag', 'chain', 'watch', 'jewellery', 'purse', 'gold', 'bracelet', 'ring', 'cash', 'money', 'cycle', 'scooter', 'charger', 'spectacles', 'specs', 'id card', 'keys'].some(k => lowerText.includes(k));
+        
+        if (hasTheft || (hasLostOrMissing && hasValuables)) {
+            console.log('SAFETY CONDITION: Overriding category to Disciplinary due to theft/loss keywords.');
+            category = 'Disciplinary';
+        }
+
         return { category, priority };
     } catch (error) {
         console.error('AI SERVICE ERROR:', error.message);
