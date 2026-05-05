@@ -117,55 +117,121 @@
   </section>
 
   <!-- NOTICE BOARD SECTION -->
-  <section class="notice-section" id="notices" style="padding: 2rem 5%; background: rgba(255,255,255,0.4);">
-    <h2 class="section-title">Campus Notice Board</h2>
-    <div class="notice-wrapper" id="public-notice-list">
-      <!-- JS Injected Notices -->
-      <p style="text-align:center;">Loading notices...</p>
+  <section class="notice-section" id="notices" style="padding: 2rem 5%;">
+    <h1 class="section-title">Campus Notice Board</h1>
+    <div style="background: rgba(255,255,255,0.4); border-radius: 20px; width: 100%; padding: 2rem;">
+      <div class="notice-wrapper" id="public-notice-list" style="max-width: 100%; margin: 0; padding: 0;">
+        <!-- JS Injected Notices -->
+        <p style="text-align:center;">Loading notices...</p>
+      </div>
     </div>
   </section>
 
-  <section class="blog-section" id="complaint-wall">
-    <h2 class="section-title">Transparency Wall (Public Complaints)</h2>
-    <p style="text-align:center; margin-bottom:2rem; color:#4a5568;">See how AI is resolving campus issues in real-time.
-    </p>
+  <section class="blog-section" id="complaint-wall" style="margin-top: 1rem;">
+    <div style="position: relative; padding: 0 5%; margin-bottom: 2rem;">
+      <h2 class="section-title" style="margin-top: 0; margin-bottom: 0.5rem;">Transparency Wall (Public Complaints)</h2>
+      <p style="text-align:center; color:#4a5568; margin-bottom: 0;">See how AI is resolving campus issues in real-time.</p>
 
-    <div class="blog-container" id="complaint-list">
-      <div class="blog-card glass">
-        <div class="status-badge status-resolved">RESOLVED</div>
-        <h3 class="blog-title">Hostel 3 Water Cooler Repair</h3>
-        <p class="blog-meta">Reported by: Student • 2 Days ago</p>
-        <p class="blog-excerpt">The issue regarding the RO filter in the 2nd-floor wing has been fixed. Maintenance team
-          replaced the filter cartridge.</p>
-        <div class="blog-footer">
-          <span><i class="fa-solid fa-thumbs-up"></i> 45 Upvotes</span>
-          <span><i class="fa-solid fa-check-circle"></i> Verified</span>
+      <div class="search-view-all-container" style="position: absolute; right: 5%; top: 50%; transform: translateY(-50%); margin-top: 35px; display: flex; gap: 10px; align-items: center; z-index: 5;">
+        <div style="position: relative;">
+          <input type="text" id="wall-search" placeholder="Search complaints..." class="glass" style="padding: 10px 15px 10px 35px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.45); color: #1f2937; outline: none; width: 190px; font-family: 'Poppins', sans-serif; transition: all 0.3s ease;">
+          <i class="fa-solid fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #4a5568;"></i>
+        </div>
+        <a href="view-all-complaints.html" class="btn-login" style="padding: 10px 20px; text-decoration: none; font-family: 'Poppins', sans-serif; font-size: 0.9rem;">View All</a>
+      </div>
+    </div>
+    
+    <style>
+      @media (max-width: 980px) {
+        .search-view-all-container {
+          position: static !important;
+          transform: none !important;
+          margin-top: 1.5rem;
+          justify-content: center;
+        }
+      }
+    </style>
+
+    <style>
+      #complaint-list::-webkit-scrollbar { display: none; }
+      #complaint-list { 
+        -ms-overflow-style: none; 
+        scrollbar-width: none; 
+        flex-wrap: nowrap !important; 
+        overflow-x: auto; 
+        scroll-behavior: smooth; 
+        scroll-snap-type: x mandatory;
+        justify-content: flex-start; 
+      }
+      #complaint-list .blog-card { 
+        min-width: 320px; 
+        width: 320px;
+        flex: 0 0 auto; 
+        margin-bottom: 10px; 
+        scroll-snap-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      }
+      #complaint-list .blog-card:hover {
+        transform: scale(1.03);
+      }
+      .wall-nav-btn { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+      .wall-nav-btn:hover { background: rgba(255,255,255,0.9) !important; transform: scale(1.1); color: #1f2937 !important; }
+    </style>
+
+    <script>
+      function scrollComplaintWall(direction) {
+        const list = document.getElementById('complaint-list');
+        const card = list.querySelector('.blog-card');
+        if (card) {
+          // Calculate exact width to scroll: card width + 2rem gap (32px)
+          const scrollAmount = card.offsetWidth + 32;
+          list.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+      }
+    </script>
+
+    <div style="position: relative; display: flex; align-items: center; padding: 0 2%;">
+      <button onclick="scrollComplaintWall(-1)" class="wall-nav-btn" style="position: absolute; left: 1%; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a5568; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fa-solid fa-chevron-left"></i></button>
+      
+      <div class="blog-container" id="complaint-list" style="display: flex; gap: 2rem; width: 100%; padding: 1rem 3%;">
+        <div class="blog-card glass">
+          <div class="status-badge status-resolved">RESOLVED</div>
+          <h3 class="blog-title">Hostel 3 Water Cooler Repair</h3>
+          <p class="blog-meta">Reported by: Student • 2 Days ago</p>
+          <p class="blog-excerpt">The issue regarding the RO filter in the 2nd-floor wing has been fixed. Maintenance team
+            replaced the filter cartridge.</p>
+          <div class="blog-footer">
+            <span><i class="fa-solid fa-thumbs-up"></i> 45 Upvotes</span>
+            <span><i class="fa-solid fa-check-circle"></i> Verified</span>
+          </div>
+        </div>
+
+        <div class="blog-card glass">
+          <div class="status-badge status-progress">IN PROGRESS</div>
+          <h3 class="blog-title">Projector Malfunction in Lab 4</h3>
+          <p class="blog-meta">Reported by: Faculty • Yesterday</p>
+          <p class="blog-excerpt">Complaint auto-routed to IT Department. A technician has been assigned and is currently
+            inspecting the wiring.</p>
+          <div class="blog-footer">
+            <span><i class="fa-solid fa-thumbs-up"></i> 12 Upvotes</span>
+            <span><i class="fa-solid fa-clock"></i> ETA: 4 Hours</span>
+          </div>
+        </div>
+
+        <div class="blog-card glass">
+          <div class="status-badge status-resolved">RESOLVED</div>
+          <h3 class="blog-title">Library Wi-Fi Connectivity</h3>
+          <p class="blog-meta">Reported by: Student • 4 Days ago</p>
+          <p class="blog-excerpt">Network congestion identified by AI analysis. Bandwidth has been increased for the
+            reading room area.</p>
+          <div class="blog-footer">
+            <span><i class="fa-solid fa-thumbs-up"></i> 89 Upvotes</span>
+            <span><i class="fa-solid fa-check-circle"></i> Verified</span>
+          </div>
         </div>
       </div>
 
-      <div class="blog-card glass">
-        <div class="status-badge status-progress">IN PROGRESS</div>
-        <h3 class="blog-title">Projector Malfunction in Lab 4</h3>
-        <p class="blog-meta">Reported by: Faculty • Yesterday</p>
-        <p class="blog-excerpt">Complaint auto-routed to IT Department. A technician has been assigned and is currently
-          inspecting the wiring.</p>
-        <div class="blog-footer">
-          <span><i class="fa-solid fa-thumbs-up"></i> 12 Upvotes</span>
-          <span><i class="fa-solid fa-clock"></i> ETA: 4 Hours</span>
-        </div>
-      </div>
-
-      <div class="blog-card glass">
-        <div class="status-badge status-resolved">RESOLVED</div>
-        <h3 class="blog-title">Library Wi-Fi Connectivity</h3>
-        <p class="blog-meta">Reported by: Student • 4 Days ago</p>
-        <p class="blog-excerpt">Network congestion identified by AI analysis. Bandwidth has been increased for the
-          reading room area.</p>
-        <div class="blog-footer">
-          <span><i class="fa-solid fa-thumbs-up"></i> 89 Upvotes</span>
-          <span><i class="fa-solid fa-check-circle"></i> Verified</span>
-        </div>
-      </div>
+      <button onclick="scrollComplaintWall(1)" class="wall-nav-btn" style="position: absolute; right: 1%; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a5568; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
   </section>
 

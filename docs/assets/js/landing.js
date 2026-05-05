@@ -101,63 +101,91 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load Transparency Wall (Complaints)
     const complaintContainer = document.getElementById('complaint-list');
+    const wallSearch = document.getElementById('wall-search');
+    let allPublicComplaints = [];
+
     if (complaintContainer) {
         try {
-            const res = await fetch('http://localhost:5000/api/complaints?public=true');
+            const res = await fetch('http://localhost:5000/api/complaints');
             if (res.ok) {
-                const complaints = await res.json();
-
-                // Frontend Filter Enforcement (Additional Layer)
-                const filteredComplaints = complaints.filter(c => c.category !== 'Personal');
-
-                const displayComplaints = filteredComplaints.slice(0, 3); // Top 3 recent
-
-                if (displayComplaints.length > 0) {
-                    const userStr = localStorage.getItem('user');
-                    const user = userStr ? JSON.parse(userStr) : null;
-
-                    let html = '';
-                    displayComplaints.forEach(c => {
-                        let statusClass = 'status-progress';
-                        if (c.status === 'Resolved') statusClass = 'status-resolved';
-
-                        const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-                        const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
-
-                        // Priority Badge Logic
-                        let badgeColor = 'bg-blue-100 text-blue-800'; // Default Low/Medium
-                        if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
-                        if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
-
-                        // Safety Check for upvotedBy
-                        const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
-                        const isLiked = user && user._id && upvotedBy.includes(user._id);
-
-                        html += `
-                          <div class="blog-card glass">
-                            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
-                                <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
-                                <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${c.priority || 'Medium'}</span>
-                            </div>
-                            
-                            <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
-                            <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
-                            <p class="blog-excerpt">${excerpt}</p>
-                            <div class="blog-footer">
-                              <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
-                                <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
-                              </span>
-                              ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
-                            </div>
-                          </div>
-                        `;
-                    });
-                    complaintContainer.innerHTML = html;
-                }
+                let complaints = await res.json();
+                
+                // PRIVACY FILTER: Show all non-personal, BUT only show 'Personal' if it belongs to the logged-in user
+                const userStrFilter = localStorage.getItem('user');
+                const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
+                
+                allPublicComplaints = complaints.filter(c => {
+                    if (c.category !== 'Personal') return true;
+                    const studentId = c.student && c.student._id ? c.student._id : c.student;
+                    if (userFilterObj && studentId === userFilterObj._id) return true;
+                    return false;
+                });
+                renderWallComplaints(allPublicComplaints);
             }
         } catch (error) {
             console.error('Transparency Wall Error:', error);
         }
+
+        if (wallSearch) {
+            wallSearch.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allPublicComplaints.filter(c => 
+                    c.title.toLowerCase().includes(term) || 
+                    c.description.toLowerCase().includes(term)
+                );
+                renderWallComplaints(filtered);
+            });
+        }
+    }
+
+    function renderWallComplaints(complaintsToRender) {
+        if (!complaintContainer) return;
+        
+        if (complaintsToRender.length === 0) {
+            complaintContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">No complaints found.</p>';
+            return;
+        }
+
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : null;
+
+        let html = '';
+        complaintsToRender.forEach(c => {
+            let statusClass = 'status-progress';
+            if (c.status === 'Resolved') statusClass = 'status-resolved';
+
+            const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+            const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
+
+            // Priority Badge Logic
+            let badgeColor = 'bg-blue-100 text-blue-800'; // Default Low/Medium
+            if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
+            if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
+
+            // Safety Check for upvotedBy
+            const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+            const isLiked = user && user._id && upvotedBy.includes(user._id);
+
+            html += `
+              <div class="blog-card glass">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                    <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
+                    <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${c.priority || 'Medium'}</span>
+                </div>
+                
+                <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
+                <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
+                <p class="blog-excerpt">${excerpt}</p>
+                <div class="blog-footer">
+                  <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
+                    <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
+                  </span>
+                  ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
+                </div>
+              </div>
+            `;
+        });
+        complaintContainer.innerHTML = html;
     }
 
     // Animate Blobs or Interactivity if needed
@@ -206,6 +234,12 @@ async function upvote(id) {
             }
         } else {
             const err = await res.json();
+            if (res.status === 401) {
+                alert("Session expired or invalid. Please login again to upvote.");
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return;
+            }
             alert(err.message || "Failed to upvote");
         }
     } catch (error) {
