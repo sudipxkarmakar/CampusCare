@@ -188,10 +188,32 @@
           list.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
         }
       }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const list = document.getElementById('complaint-list');
+        const leftBtn = document.getElementById('wall-nav-left');
+        
+        if (leftBtn) {
+           leftBtn.style.opacity = '0';
+           leftBtn.style.pointerEvents = 'none';
+        }
+
+        if (list && leftBtn) {
+          list.addEventListener('scroll', () => {
+            if (list.scrollLeft > 10) {
+              leftBtn.style.opacity = '1';
+              leftBtn.style.pointerEvents = 'auto';
+            } else {
+              leftBtn.style.opacity = '0';
+              leftBtn.style.pointerEvents = 'none';
+            }
+          });
+        }
+      });
     </script>
 
     <div style="position: relative; display: flex; align-items: center; padding: 0 2%;">
-      <button onclick="scrollComplaintWall(-1)" class="wall-nav-btn" style="position: absolute; left: 1%; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a5568; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fa-solid fa-chevron-left"></i></button>
+      <button id="wall-nav-left" onclick="scrollComplaintWall(-1)" class="wall-nav-btn" style="position: absolute; left: 1%; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a5568; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1); opacity: 0; pointer-events: none;"><i class="fa-solid fa-chevron-left"></i></button>
       
       <div class="blog-container" id="complaint-list" style="display: flex; gap: 2rem; width: 100%; padding: 1rem 3%;">
         <div class="blog-card glass">
