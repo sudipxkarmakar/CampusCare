@@ -146,6 +146,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        // Deduplication: Ensure no duplicate complaints (by title) appear.
+        // We sort by upvotes first so the deduplication keeps the highest upvoted version.
+        complaintsToRender.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+
+        const uniqueComplaints = [];
+        const seenTitles = new Set();
+        for (const c of complaintsToRender) {
+            const titleKey = c.title.trim().toLowerCase();
+            if (!seenTitles.has(titleKey)) {
+                seenTitles.add(titleKey);
+                uniqueComplaints.push(c);
+            }
+        }
+        
+        if (uniqueComplaints.length > 0) {
+            // The first element is the absolute highest upvoted complaint (due to the sort above)
+            const maxUpvoteComplaint = uniqueComplaints[0];
+            
+            // The remaining complaints
+            const remainingComplaints = uniqueComplaints.slice(1);
+            
+            // Sort remaining strictly by date (newest first)
+            remainingComplaints.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            
+            // Recombine: Only ONE top upvoted at the front, the rest sorted by date
+            complaintsToRender = [maxUpvoteComplaint, ...remainingComplaints];
+        } else {
+            complaintsToRender = uniqueComplaints;
+        }
+
         const userStr = localStorage.getItem('user');
         const user = userStr ? JSON.parse(userStr) : null;
 
@@ -162,6 +192,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
             if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
 
+            let priorityText = c.priority || 'Medium';
+
             // Safety Check for upvotedBy
             const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
             const isLiked = user && user._id && upvotedBy.includes(user._id);
@@ -170,7 +202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="blog-card glass">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
                     <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
-                    <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${c.priority || 'Medium'}</span>
+                    <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${priorityText}</span>
                 </div>
                 
                 <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
