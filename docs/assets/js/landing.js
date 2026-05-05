@@ -185,6 +185,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (c.status === 'Resolved') statusClass = 'status-resolved';
 
             const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+            const d = new Date(c.createdAt);
+            const dateStr = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
             const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
 
             // Priority Badge Logic
@@ -212,7 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
                     <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
                   </span>
-                  ${c.status === 'Resolved' ? '<span><i class="fa-solid fa-check-circle"></i> Verified</span>' : '<span><i class="fa-solid fa-clock"></i> Active</span>'}
+                  <span><i class="${c.status === 'Resolved' ? 'fa-solid fa-check-circle' : 'fa-solid fa-clock'}"></i> ${dateStr}</span>
                 </div>
               </div>
             `;
