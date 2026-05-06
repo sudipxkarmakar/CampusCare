@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
                 
                 <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
-                <p class="blog-meta">Reported by: ${c.student?.name || 'Student'} • ${date}</p>
+                <p class="blog-meta">Reported by: ${c.student?.name || 'Student'}</p>
                 <p class="blog-excerpt">${excerpt}</p>
                 <div class="blog-footer">
                   <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
