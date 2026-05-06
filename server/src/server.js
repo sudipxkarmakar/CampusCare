@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
@@ -46,11 +46,11 @@ const startServer = async () => {
   }));
   app.use(express.json());
 
-  // Request logger (Disabled to reduce noise)
-  // app.use((req, res, next) => {
-  //   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  //   next();
-  // });
+  // Request logger
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+  });
 
   app.use('/api/auth', authRoutes);
   app.use('/api/admin', adminRoutes);
