@@ -6,7 +6,10 @@ import { analyzeComplaint, sendFeedback } from '../utils/aiService.js';
 // @route   POST /api/complaints
 // @desc    File a new complaint
 // @route   POST /api/complaints
+import fs from 'fs';
+
 export const fileComplaint = async (req, res) => {
+    fs.appendFileSync('debug_output.txt', `\nHEADERS: ${req.headers['content-type']}\nBODY: ${JSON.stringify(req.body)}\nFILE: ${req.file ? req.file.originalname : 'none'}\n`);
     const { title, description, studentId, againstUser } = req.body;
 
     try {
@@ -17,14 +20,22 @@ export const fileComplaint = async (req, res) => {
         // --- MOCK MODE REMOVED: ALWAYS SAVE TO DB ---
 
 
-        const complaint = await Complaint.create({
+        const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+        const complaintData = {
             title,
             description,
             student: studentId,
             category: analysis.category,
             priority: analysis.priority,
             againstUser: againstUser || null
-        });
+        };
+        
+        if (imageUrl) {
+            complaintData.image = imageUrl;
+        }
+
+        const complaint = await Complaint.create(complaintData);
 
         res.status(201).json({
             message: 'Complaint filed successfully',
@@ -47,7 +58,7 @@ export const getComplaints = async (req, res) => {
 
         const filter = {};
         if (req.query.public === 'true') {
-            filter.category = { $in: ['Electrical', 'Sanitation', 'Mess'] };
+            filter.category = { $ne: 'Personal' };
         }
 
         const complaints = await Complaint.find(filter)

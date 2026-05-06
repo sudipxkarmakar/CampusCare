@@ -26,35 +26,36 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
 
             const fileInput = document.getElementById('attachment');
-            let attachmentData = null;
 
-            // Simple File Read if present
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('studentId', user._id);
+
+            // Append File if present
             if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                // For MVP: We won't actually upload to S3, just mock it or send filename
-                attachmentData = {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type
-                };
+                formData.append('image', fileInput.files[0]);
             }
 
-            const data = {
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
-                studentId: user._id,
-                attachment: attachmentData
-            };
-
             try {
-                const res = await api.post('/complaints', data);
+                // We use fetchWithAuth but handle the options properly for FormData.
+                // FormData automatically sets the correct Content-Type with boundary.
+                const res = await fetch('http://localhost:5000/api/complaints', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${user.token || localStorage.getItem('token')}`
+                    },
+                    body: formData
+                }).then(r => r.json());
                 if (res.complaint) {
                     // Show AI Result
                     alert(` Filed! \n${res.aiNote}`);
                     complaintForm.reset();
+                    clearImagePreview();
                     loadComplaints(); // Refresh wall
                 } else {
-                    alert('Error filing complaint');
+                    alert('Error filing complaint: ' + (res.message || JSON.stringify(res)));
+                    console.error('Backend Response:', res);
                 }
             } catch (err) {
                 console.error(err);
@@ -62,6 +63,71 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
+            }
+        });
+
+        // Image Preview and Paste Logic
+        const fileInput = document.getElementById('attachment');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const previewImg = document.getElementById('imagePreview');
+        const removeBtn = document.getElementById('removeAttachmentBtn');
+
+        function clearImagePreview() {
+            fileInput.value = ''; // Clear the input
+            previewImg.src = '';
+            if (previewContainer) previewContainer.style.display = 'none';
+        }
+
+        function handleImageSelection(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                if (previewContainer) previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    handleImageSelection(this.files[0]);
+                } else {
+                    clearImagePreview();
+                }
+            });
+        }
+
+        if (removeBtn) {
+            removeBtn.addEventListener('click', clearImagePreview);
+        }
+
+        // Handle Paste Events globally within the form area
+        document.addEventListener('paste', function(e) {
+            // Only handle paste if the complaint form is visible (this script is used on the complaints page)
+            if (!complaintForm) return;
+
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            let imageFile = null;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') === 0) {
+                    imageFile = items[i].getAsFile();
+                    break;
+                }
+            }
+
+            if (imageFile && fileInput) {
+                // Create a new FileList containing the pasted file
+                const dataTransfer = new DataTransfer();
+                // Add a default name for pasted images if it doesn't have a good one
+                const file = new File([imageFile], `pasted_image_${Date.now()}.png`, { type: imageFile.type });
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                
+                // Manually trigger the preview
+                handleImageSelection(file);
             }
         });
     }
@@ -137,7 +203,19 @@ async function loadComplaints() {
             throw new Error(`Server Error: ${response.status}`);
         }
 
-        const complaints = await response.json();
+        let complaints = await response.json();
+
+        // PRIVACY FILTER: Show all non-personal, BUT only show 'Personal' if it belongs to the logged-in user
+        const userStrFilter = localStorage.getItem('user');
+        const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
+        
+        complaints = complaints.filter(c => {
+            if (c.category !== 'Personal') return true;
+            // For populated student object or raw string ID
+            const studentId = c.student && c.student._id ? c.student._id : c.student;
+            if (userFilterObj && studentId === userFilterObj._id) return true;
+            return false;
+        });
 
         if (complaints.length === 0) {
             list.innerHTML = '<p style="text-align:center; padding:2rem;">No complaints found.</p>';
@@ -183,6 +261,7 @@ async function loadComplaints() {
                     </div>
                     
                     <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
+                    ${c.image ? `<img src="http://localhost:5000${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
                     
                     <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
                         <span><i class="fa-solid fa-user"></i> ${c.student?.name || 'Anonymous'}</span>
@@ -363,6 +442,7 @@ async function loadMyComplaints() {
                      </div>
                      
                      <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
+                     ${c.image ? `<img src="http://localhost:5000${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
                      
                      <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
                          <span><i class="fa-solid fa-calendar"></i> ${new Date(c.createdAt).toLocaleDateString()}</span>

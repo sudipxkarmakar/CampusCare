@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Public Complaints | CampusCare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .blog-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .blog-card:hover {
+        transform: scale(1.03);
+    }
+    /* Grid layout for 4 items per row */
+    .blog-container#full-complaint-list {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        padding: 0 2%;
+    }
+    @media (max-width: 1200px) {
+        .blog-container#full-complaint-list {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    @media (max-width: 900px) {
+        .blog-container#full-complaint-list {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 600px) {
+        .blog-container#full-complaint-list {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="glass">
+    <a href="index.html" class="logo" style="text-decoration: none;">
+      <i class="fa-solid fa-arrow-left" style="margin-right: 5px; font-size: 1.2rem;"></i> Back
+    </a>
+    
+    <div id="userProfile" class="user-profile" style="display: none;">
+      <span id="userName" class="user-name">Hello, User</span>
+      <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" onclick="toggleProfileMenu()">
+      <div id="profileMenu" class="glass" style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000;">
+        <button onclick="logout()" style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="blog-section" style="padding: 4rem 5%; min-height: 80vh;">
+    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 3rem;">
+        <h2 class="section-title" style="margin-top: 0; margin-bottom: 0.5rem;">All Public Complaints</h2>
+        <p style="text-align:center; color:#4a5568;">Transparency Wall archive of all AI-resolved campus issues.</p>
+        
+        <div style="position: relative; margin-top: 2rem;">
+            <input type="text" id="full-wall-search" placeholder="Search complaints..." class="glass" style="padding: 10px 15px 10px 35px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.45); color: #1f2937; outline: none; width: 300px; font-family: 'Poppins', sans-serif;">
+            <i class="fa-solid fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #4a5568;"></i>
+        </div>
+    </div>
+
+    <!-- The original CSS grid from styles.css is used here (auto-fit minmax(300px, 1fr)) -->
+    <div class="blog-container" id="full-complaint-list">
+      <p style="text-align: center; width: 100%; color: #64748b;">Loading all complaints...</p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 CampusCare. Built for the Future.
+  </footer>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/landing.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const container = document.getElementById('full-complaint-list');
+        const searchInput = document.getElementById('full-wall-search');
+        let allComplaints = [];
+
+        try {
+            const res = await fetch('http://localhost:5000/api/complaints');
+            if (res.ok) {
+                let complaints = await res.json();
+                
+                // PRIVACY FILTER
+                const userStrFilter = localStorage.getItem('user');
+                const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
+                
+                allComplaints = complaints.filter(c => {
+                    if (c.category !== 'Personal') return true;
+                    const studentId = c.student && c.student._id ? c.student._id : c.student;
+                    if (userFilterObj && studentId === userFilterObj._id) return true;
+                    return false;
+                });
+                renderComplaints(allComplaints);
+            } else {
+                container.innerHTML = '<p style="text-align: center; color: red;">Failed to load complaints.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching complaints:', error);
+            container.innerHTML = '<p style="text-align: center; color: red;">Network error. Cannot load complaints.</p>';
+        }
+
+        function renderComplaints(complaintsToRender) {
+            if (complaintsToRender.length === 0) {
+                container.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">No complaints found.</p>';
+                return;
+            }
+
+            // Deduplication and Sorting (Matches index.html exactly)
+            complaintsToRender.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+
+            const uniqueComplaints = [];
+            const seenTitles = new Set();
+            for (const c of complaintsToRender) {
+                const titleKey = c.title.trim().toLowerCase();
+                if (!seenTitles.has(titleKey)) {
+                    seenTitles.add(titleKey);
+                    uniqueComplaints.push(c);
+                }
+            }
+            
+            if (uniqueComplaints.length > 0) {
+                const maxUpvoteComplaint = uniqueComplaints[0];
+                const remainingComplaints = uniqueComplaints.slice(1);
+                remainingComplaints.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                complaintsToRender = [maxUpvoteComplaint, ...remainingComplaints];
+            } else {
+                complaintsToRender = uniqueComplaints;
+            }
+
+            const userStr = localStorage.getItem('user');
+            const user = userStr ? JSON.parse(userStr) : null;
+
+            let html = '';
+            complaintsToRender.forEach(c => {
+                let statusClass = 'status-progress';
+                if (c.status === 'Resolved') statusClass = 'status-resolved';
+
+                const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+                const d = new Date(c.createdAt);
+                const dateStr = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+                const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
+
+                let badgeColor = 'bg-blue-100 text-blue-800'; 
+                if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
+                if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
+
+                let priorityText = c.priority || 'Medium';
+
+                const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+                const isLiked = user && user._id && upvotedBy.includes(user._id);
+
+                html += `
+                  <div class="blog-card glass">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                        <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
+                        <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${priorityText}</span>
+                    </div>
+                    
+                    <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
+                    <p class="blog-meta">Reported by: ${c.student?.name || 'Student'}</p>
+                    <p class="blog-excerpt">${excerpt}</p>
+                    ${c.image ? `<img src="http://localhost:5000${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
+                    <div class="blog-footer" style="${c.image ? 'margin-top: 10px;' : ''}">
+                      <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
+                        <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
+                      </span>
+                      <span><i class="${c.status === 'Resolved' ? 'fa-solid fa-check-circle' : 'fa-solid fa-clock'}"></i> ${dateStr}</span>
+                    </div>
+                  </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Search Filter Logic
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allComplaints.filter(c => 
+                    c.title.toLowerCase().includes(term) || 
+                    c.description.toLowerCase().includes(term)
+                );
+                renderComplaints(filtered);
+            });
+        }
+    });
+
+    function toggleProfileMenu() {
+      const menu = document.getElementById('profileMenu');
+      if (menu.style.display === 'flex') {
+        menu.style.display = 'none';
+      } else {
+        menu.style.display = 'flex';
+      }
+    }
+    
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

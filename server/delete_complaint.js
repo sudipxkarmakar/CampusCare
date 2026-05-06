@@ -11,7 +11,7 @@ const deleteComplaint = async () => {
         await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/campuscare');
         console.log('MongoDB Connected');
 
-        const title = "mobile phone is missing";
+        const title = "i slip today somehow having intense pain";
 
         const complaint = await Complaint.findOne({ title: title });
 
