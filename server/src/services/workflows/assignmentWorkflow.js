@@ -1,0 +1,26 @@
+import { validate } from '../../validators/assignmentValidator.js';
+
+export const execute = async (args, user, conversationId, traceId) => {
+    // 1. Authorization
+    if (!user || user.role !== 'teacher') {
+        throw new Error("UNAUTHORIZED: Only teachers can create assignments.");
+    }
+
+    // 2. Validation
+    const validation = validate(args, user);
+    if (!validation.success) {
+        throw new Error(`VALIDATION_ERROR: ${validation.message}`);
+    }
+
+    // Example of a backend-enforced validation policy
+    // In a full implementation, you would use validators/assignmentValidator.js here
+    // to ensure user is assigned to args.subject.
+
+    return {
+        success: true,
+        type: "REDIRECT",
+        action: "REDIRECT_ASSIGNMENT",
+        message: "I have successfully prepared the assignment details. Redirecting you to the Assignment form...",
+        payload: args
+    };
+};

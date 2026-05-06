@@ -3,16 +3,21 @@ import aiService from '../services/aiService.js';
 export const handleChat = async (req, res) => {
     try {
         console.log("AI Chat Request Body:", req.body);
-        const { text, history } = req.body;
+        const { text, history, conversationId } = req.body;
         const user = req.user;
 
         if (!text) {
             console.warn("AI Chat: No text provided");
             return res.status(400).json({ error: "Text input is required" });
         }
+        
+        if (text.length > 5000) {
+            console.warn("AI Chat: Input exceeds 5000 characters.");
+            return res.status(400).json({ error: "Input text exceeds maximum length of 5000 characters." });
+        }
 
         // Now processInput is an async function that communicates with Gemini
-        const result = await aiService.processInput(text, user, history);
+        const result = await aiService.processInput(text, user, history, conversationId);
         console.log("AI Chat Result:", JSON.stringify(result, null, 2));
         
         // Return exactly what the frontend expects
