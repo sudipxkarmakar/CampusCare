@@ -1,12 +1,14 @@
+import './config/env.js';
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
@@ -37,8 +39,6 @@ import compression from 'compression';
 import mongoose from 'mongoose';
 import RedisManager from './services/ai/state/RedisManager.js';
 import { watchdog } from './services/ai/state/WorkflowWatchdog.js';
-
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const startServer = async () => {
   await connectDB();

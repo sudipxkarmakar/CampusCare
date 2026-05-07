@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import RedisManager from './RedisManager.js';
-import AIActionLog from '../../models/AIActionLog.js';
+import AIActionLog from '../../../models/AIActionLog.js';
 import { EXECUTION_STATUS } from '../../../constants/aiConstants.js';
 
 const WATCHDOG_STARTUP_DELAY_MS = 30000;
