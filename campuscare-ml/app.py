@@ -107,3 +107,5 @@ async def feedback(input_data: FeedbackInput, background_tasks: BackgroundTasks)
 
     return {'message': 'Feedback received and retraining triggered.'}
 
+
+# Trigger reload

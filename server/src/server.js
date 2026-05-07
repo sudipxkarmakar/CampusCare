@@ -1,3 +1,4 @@
+import './env.js';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -32,7 +33,6 @@ import noteRoutes from './routes/noteRoutes.js';
 
 // ... imports
 
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const startServer = async () => {
   await connectDB();
