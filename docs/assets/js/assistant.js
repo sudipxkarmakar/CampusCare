@@ -214,7 +214,7 @@ async function sendChat(textOverride = null, isConfirmation = false) {
         const history = historyStr ? JSON.parse(historyStr) : [];
 
         const headers = getAuthHeaders();
-        const response = await fetch('http://localhost:5000/api/ai/chat', {
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/ai/chat', {
             method: 'POST',
             headers,
             body: JSON.stringify({ text, conversationId, history })

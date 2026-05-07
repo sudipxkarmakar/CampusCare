@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load Profile
     try {
-        const res = await fetch('http://localhost:5000/api/auth/profile', {
+        const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/auth/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         console.log('Profile fetch status:', res.status);
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         formData.append('profileImage', file);
 
         try {
-            const res = await fetch('http://localhost:5000/api/auth/profile-picture', {
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/auth/profile-picture', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }, // No Content-Type for FormData
                 body: formData
@@ -231,7 +231,7 @@ function renderProfile(user) {
 async function fetchMarMoocs(token, grid, count) {
     try {
         console.log('Fetching MAR/MOOCs...');
-        const res = await fetch('http://localhost:5000/api/mar-moocs', {
+        const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/mar-moocs', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         console.log('MAR/MOOC fetch status:', res.status);
@@ -403,7 +403,7 @@ if (editForm) {
         submitBtn.disabled = true;
 
         try {
-            const res = await fetch('http://localhost:5000/api/auth/profile', {
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/auth/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

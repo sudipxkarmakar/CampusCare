@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadData(token) {
     try {
-        const response = await fetch('http://localhost:5000/api/mar-moocs', {
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/mar-moocs', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -100,7 +100,7 @@ async function loadData(token) {
                     }
 
                     if (proofUrl.startsWith('/')) {
-                        proofUrl = 'http://localhost:5000' + proofUrl;
+                        proofUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + proofUrl;
                     } else if (!proofUrl.startsWith('http')) {
                         proofUrl = 'https://' + proofUrl;
                     }
@@ -149,7 +149,7 @@ async function handleMarSubmit(e, token) {
         formData.append('points', points);
         formData.append('file', file.files[0]);
 
-        const res = await fetch('http://localhost:5000/api/mar-moocs', {
+        const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/mar-moocs', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -200,7 +200,7 @@ async function handleMoocsSubmit(e, token) {
         formData.append('link', link);
         formData.append('file', file.files[0]);
 
-        const res = await fetch('http://localhost:5000/api/mar-moocs', {
+        const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/mar-moocs', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`

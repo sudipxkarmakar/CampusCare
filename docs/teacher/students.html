@@ -256,7 +256,7 @@
                 const token = user.token;
 
                 try {
-                    const res = await fetch('http://localhost:5000/api/teacher/all-students', {
+                    const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/teacher/all-students', {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (noticeContainer) {
         try {
             // Landing Page should ONLY show Public/General notices, regardless of login state.
-            const res = await fetch('http://localhost:5000/api/notices?role=public');
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/notices?role=public');
             if (!res.ok) throw new Error('API Error');
             const notices = await res.json();
 
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const alumniContainer = document.getElementById('alumni-list');
     if (alumniContainer) {
         try {
-            const res = await fetch('http://localhost:5000/api/alumni');
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/alumni');
             if (!res.ok) throw new Error('API Error');
             const alumni = await res.json();
 
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (complaintContainer) {
         try {
-            const res = await fetch('http://localhost:5000/api/complaints');
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/complaints');
             if (res.ok) {
                 let complaints = await res.json();
                 
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
                 <p class="blog-meta">Reported by: ${c.student?.name || 'Student'}</p>
                 <p class="blog-excerpt">${excerpt}</p>
-                ${c.image ? `<img src="http://localhost:5000${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
+                ${c.image ? `<img src=(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:5000" : "https://campuscare-backend-96cn.onrender.com") + "${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
                 <div class="blog-footer" style="${c.image ? 'margin-top: 10px;' : ''}">
                   <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
                     <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes

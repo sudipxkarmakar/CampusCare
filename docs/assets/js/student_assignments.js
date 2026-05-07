@@ -1,5 +1,5 @@
-const CONTENT_API_URL = 'http://localhost:5000/api/content/my-content';
-const ASSIGN_API_URL = 'http://localhost:5000/api/assignments';
+const CONTENT_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/my-content';
+const ASSIGN_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments';
 let fetchedAssignments = [];
 let fetchedNotes = [];
 let currentAssignmentId = null;
@@ -143,7 +143,7 @@ function viewAssignment(index) {
     if (assignment.link && assignment.link.trim() !== "") {
         let href = assignment.link;
         if (href.startsWith('/')) {
-            href = 'http://localhost:5000' + href; // Prepend Backend URL
+            href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + href; // Prepend Backend URL
         }
 
         linkContainer.style.display = 'block';
@@ -192,7 +192,7 @@ function viewNote(index) {
     if (noteLink && noteLink.trim() !== "") {
         let href = noteLink;
         if (href.startsWith('/')) {
-            href = 'http://localhost:5000' + href;
+            href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + href;
         }
 
         linkContainer.style.display = 'block';
