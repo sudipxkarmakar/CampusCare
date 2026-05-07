@@ -358,13 +358,11 @@ window.checkAuthState = function () {
             if (cleanPath.startsWith('http')) {
                 avatarSrc = cleanPath;
             } else {
-                // Determine if we need to prepend localhost:5000
-                // If it starts with /uploads, it's a backend static file
-                // We must use the absolute backend URL
+                const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
                 if (cleanPath.startsWith('/')) {
-                    avatarSrc = `http://localhost:5000${cleanPath}`;
+                    avatarSrc = `${BACKEND_URL}${cleanPath}`;
                 } else {
-                    avatarSrc = `http://localhost:5000/${cleanPath}`;
+                    avatarSrc = `${BACKEND_URL}/${cleanPath}`;
                 }
             }
 

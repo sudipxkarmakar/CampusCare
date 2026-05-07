@@ -100,6 +100,20 @@ export const ToolRegistry = {
         retryable: true,
         rollbackable: true,
         critical: false
+    },
+    get_my_content: {
+        schema: z.object({}), // No parameters needed, it uses the auth token
+        declaration: {
+            name: "get_my_content",
+            description: "Fetch all my pending assignments, study materials, and personal notices. Use this when the user asks 'what are my assignments' or 'show my tasks'.",
+            parameters: {
+                type: "object",
+                properties: {}
+            }
+        },
+        retryable: true,
+        rollbackable: false,
+        critical: true
     }
 };
 

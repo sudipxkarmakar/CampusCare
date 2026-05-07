@@ -2,6 +2,7 @@ import * as complaintWorkflow from './workflows/complaintWorkflow.js';
 import * as leaveWorkflow from './workflows/leaveWorkflow.js';
 import * as assignmentWorkflow from './workflows/assignmentWorkflow.js';
 import * as sosWorkflow from './workflows/sosWorkflow.js';
+import * as contentWorkflow from './workflows/contentWorkflow.js';
 import AIActionLog from '../models/AIActionLog.js';
 import { EXECUTION_STATUS, CONFIRMATION_STATUS } from '../constants/aiConstants.js';
 import { sanitizeArgs } from '../validators/argSanitizer.js';
@@ -12,6 +13,7 @@ const workflowHandlers = {
     'submit_leave': leaveWorkflow.execute,
     'create_assignment': assignmentWorkflow.execute,
     'submit_assignment': assignmentWorkflow.executeSubmit,
+    'get_my_content': contentWorkflow.execute,
 };
 
 export class WorkflowService {
@@ -42,7 +44,8 @@ export class WorkflowService {
             'draft_complaint': ['student', 'teacher', 'hod', 'warden', 'principal'],
             'submit_leave': ['student', 'teacher'],
             'create_assignment': ['teacher', 'hod'],
-            'submit_assignment': ['student']
+            'submit_assignment': ['student'],
+            'get_my_content': ['student', 'teacher']
         };
         
         if (roleRules[actionName] && !roleRules[actionName].includes(userRole)) {
