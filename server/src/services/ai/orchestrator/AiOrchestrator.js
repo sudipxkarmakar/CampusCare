@@ -296,6 +296,27 @@ export class AiOrchestrator {
                         const metadata = { llmLatency: providerResponse.latency, modelName: providerResponse.provider, promptVersion: 'v1.0' };
                         const workflowResult = await workflowService.executeWorkflow(vt.name, vt.args, user, conversationId, newTraceId, metadata);
                         if (i === validatedTools.length - 1) {
+                            // Persist tool call and result to history before returning
+                            history.push({ role: "user", content: text });
+                            history.push({ 
+                                role: "assistant", 
+                                content: providerResponse.content || "", 
+                                tool_calls: providerResponse.toolCalls.map(tc => ({
+                                    id: tc.id,
+                                    type: 'function',
+                                    function: { name: tc.name, arguments: typeof tc.args === 'string' ? tc.args : JSON.stringify(vt.args) }
+                                }))
+                            });
+                            history.push({ 
+                                role: "tool", 
+                                tool_call_id: providerResponse.toolCalls[i].id, 
+                                name: vt.name, 
+                                content: typeof workflowResult.message === 'string' ? workflowResult.message : JSON.stringify(workflowResult) 
+                            });
+                            
+                            const sanitizedForSave = MemoryManager.sanitizeRedisHistory(history);
+                            await RedisManager.saveHistory(conversationId, sanitizedForSave);
+
                             return { ...workflowResult, version: "v1", timestamp: Date.now(), traceId: newTraceId };
                         }
                     } else {
@@ -355,9 +376,19 @@ export class AiOrchestrator {
 
         } catch (error) {
             console.error("AI Orchestrator Error:", error);
+            
             if (error instanceof AIProviderError) {
                 return intentFallbackService.process(text, user, traceContext.id, error);
             }
+            
+            if (error instanceof ValidationError) {
+                return {
+                    version: "v1", success: false, type: "ERROR", action: "AI_RESPONSE",
+                    message: `I encountered a problem with the action details: ${error.message}`,
+                    timestamp: Date.now(), traceId: traceContext.id
+                };
+            }
+
             return {
                 version: "v1", success: false, type: "ERROR", action: "AI_RESPONSE",
                 message: "An internal orchestration error occurred while processing your request.",

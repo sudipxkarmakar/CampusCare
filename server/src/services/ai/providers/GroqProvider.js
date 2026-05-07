@@ -55,9 +55,6 @@ export class GroqProvider extends BaseProvider {
         const rawToolCalls = responseMessage.tool_calls;
         
         if (Array.isArray(rawToolCalls)) {
-            if (rawToolCalls.length > 1) {
-                throw new ValidationError("Multiple tool calls are not allowed in MVP mode", rawToolCalls);
-            }
             if (!rawToolCalls.every(tc => tc && tc.function)) {
                 throw new ValidationError("Malformed tool calls array detected from provider", rawToolCalls);
             }
