@@ -13,6 +13,8 @@ class WorkflowWatchdog {
     constructor() {
         this.active = false;
         this.timer = null;
+        this.consecutiveFailures = 0;
+        this.pausedUntil = 0;
     }
 
     start() {
@@ -34,8 +36,12 @@ class WorkflowWatchdog {
     }
 
     async _runSweepCycle() {
+        if (Date.now() < this.pausedUntil) {
+            return; // Circuit breaker active
+        }
+
         const leaseToken = crypto.randomUUID();
-        const leaseAcquired = await RedisManager.client.set('ai:watchdog:primary', leaseToken, 'NX', 'EX', 60);
+        const leaseAcquired = await RedisManager.client.set('v1:ai:watchdog:primary', leaseToken, 'NX', 'EX', 60);
         
         if (leaseAcquired !== 'OK') {
             return; // Another replica holds the lease
@@ -53,7 +59,7 @@ class WorkflowWatchdog {
                         return 0
                     end
                 `;
-                await RedisManager.client.eval(script, 1, 'ai:watchdog:primary', leaseToken, 60);
+                await RedisManager.client.eval(script, 1, 'v1:ai:watchdog:primary', leaseToken, 60);
             }
         }, 30000);
         heartbeatInterval.unref();
@@ -61,8 +67,15 @@ class WorkflowWatchdog {
         try {
             await this._sweepExecutingLogs();
             await this._sweepPendingLogs();
+            this.consecutiveFailures = 0; // Reset on success
         } catch (err) {
             console.error('[Watchdog] Sweep cycle encountered an error:', err);
+            this.consecutiveFailures++;
+            if (this.consecutiveFailures >= 5) {
+                console.error('[Watchdog] Circuit Breaker Tripped! Pausing watchdog for 60s.');
+                this.pausedUntil = Date.now() + 60000;
+                this.consecutiveFailures = 0;
+            }
         } finally {
             isSweeping = false;
             clearInterval(heartbeatInterval);
@@ -75,7 +88,7 @@ class WorkflowWatchdog {
                     return 0
                 end
             `;
-            await RedisManager.client.eval(script, 1, 'ai:watchdog:primary', leaseToken);
+            await RedisManager.client.eval(script, 1, 'v1:ai:watchdog:primary', leaseToken);
         }
     }
 

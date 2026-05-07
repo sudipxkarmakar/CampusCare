@@ -54,22 +54,22 @@ class RedisManager {
     }
 
     async getPendingAction(conversationId) {
-        const data = await this.client.get(`ai:pending:${conversationId}`);
+        const data = await this.client.get(`v1:ai:pending:${conversationId}`);
         return this.safeParseRedisJSON(data, "pending_action");
     }
 
     async setPendingAction(conversationId, actionData) {
         const encapsulated = { version: REDIS_SCHEMA.CURRENT_VERSION, payload: actionData };
-        await this.client.setex(`ai:pending:${conversationId}`, 300, JSON.stringify(encapsulated));
+        await this.client.setex(`v1:ai:pending:${conversationId}`, 300, JSON.stringify(encapsulated));
     }
 
     async deletePendingAction(conversationId) {
-        await this.client.del(`ai:pending:${conversationId}`);
+        await this.client.del(`v1:ai:pending:${conversationId}`);
     }
 
     async acquireLock(conversationId) {
         const token = crypto.randomUUID();
-        const result = await this.client.set(`ai:lock:${conversationId}`, token, "NX", "EX", DURATIONS.LOCK_TTL_SECONDS);
+        const result = await this.client.set(`v1:ai:lock:${conversationId}`, token, "NX", "EX", DURATIONS.LOCK_TTL_SECONDS);
         return result === "OK" ? token : null;
     }
 
@@ -82,7 +82,7 @@ class RedisManager {
                 return 0
             end
         `;
-        const result = await this.client.eval(script, 1, `ai:lock:${conversationId}`, token, DURATIONS.LOCK_TTL_SECONDS);
+        const result = await this.client.eval(script, 1, `v1:ai:lock:${conversationId}`, token, DURATIONS.LOCK_TTL_SECONDS);
         return result === 1;
     }
 
@@ -95,11 +95,11 @@ class RedisManager {
                 return 0
             end
         `;
-        await this.client.eval(script, 1, `ai:lock:${conversationId}`, token);
+        await this.client.eval(script, 1, `v1:ai:lock:${conversationId}`, token);
     }
 
     async getHistory(conversationId) {
-        const data = await this.client.get(`ai:history:${conversationId}`);
+        const data = await this.client.get(`v1:ai:history:${conversationId}`);
         return this.safeParseRedisJSON(data, "history") || [];
     }
 
@@ -112,11 +112,11 @@ class RedisManager {
             console.warn("[CRITICAL] Redis History exceeded 50KB limit despite sanitization. Force truncating.");
             const ultraTrimmed = historyArray.slice(-5);
             const ultraEncapsulated = { version: REDIS_SCHEMA.CURRENT_VERSION, payload: ultraTrimmed };
-            await this.client.setex(`ai:history:${conversationId}`, 86400, JSON.stringify(ultraEncapsulated));
+            await this.client.setex(`v1:ai:history:${conversationId}`, 86400, JSON.stringify(ultraEncapsulated));
             return;
         }
 
-        await this.client.setex(`ai:history:${conversationId}`, 86400, serialized);
+        await this.client.setex(`v1:ai:history:${conversationId}`, 86400, serialized);
     }
 }
 

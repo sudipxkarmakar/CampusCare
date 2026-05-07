@@ -40,7 +40,11 @@ const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}
 export class AiOrchestrator {
     constructor() {
         this.provider = new GroqProvider();
-        watchdog.start(); // Start the lease-protected, OCC-guarded watchdog
+        if (process.env.WORKFLOW_WATCHDOG_ENABLED === 'true') {
+            watchdog.start(); // Start the lease-protected, OCC-guarded watchdog
+        } else {
+            console.log('[Orchestrator] Watchdog disabled on this instance.');
+        }
     }
 
     isConfirmation(text) { return /^(yes|confirm|proceed|okay|sure|submit)$/i.test(text.toLowerCase().trim()); }

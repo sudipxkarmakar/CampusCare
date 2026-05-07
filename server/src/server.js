@@ -29,8 +29,14 @@ import hodRoutes from './routes/hodRoutes.js';
 import wardenRoutes from './routes/wardenRoutes.js';
 import principalRoutes from './routes/principalRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
-
-// ... imports
+import healthRoutes from './routes/healthRoutes.js';
+import { requestCorrelation } from './middleware/requestCorrelation.js';
+import { globalErrorBoundary } from './middleware/errorBoundary.js';
+import helmet from 'helmet';
+import compression from 'compression';
+import mongoose from 'mongoose';
+import RedisManager from './services/ai/state/RedisManager.js';
+import { watchdog } from './services/ai/state/WorkflowWatchdog.js';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -39,18 +45,63 @@ const startServer = async () => {
 
   const app = express();
 
-  app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+  // 1. Trust Proxy (Environment-Aware)
+  if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
+
+  // 2. Helmet Integration (Report-Only / Relaxed for Static Frontend)
+  app.use(helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "script-src": ["'self'", "'unsafe-inline'"], // Relaxed temporarily for Netlify
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
+        "img-src": ["'self'", "data:", "https:"]
+      }
+    }
   }));
-  app.use(express.json());
+
+  // 3. Compression
+  app.use(compression());
+
+  // 4. Strict CORS
+  const allowedOrigins = process.env.NODE_ENV === 'production' 
+      ? ['https://your-netlify-site.netlify.app'] // Replace with actual Netlify URL
+      : ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5000'];
+
+  app.use(cors({
+    origin: function(origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-client-request-id']
+  }));
+
+  // 5. Body Size Limits
+  app.use(express.json({ limit: '100kb' }));
+  
+  // Inject Correlation ID
+  app.use(requestCorrelation);
 
   // Request logger
   app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    // Skip logging health checks to prevent log spam
+    if (req.url === '/health' || req.url === '/ready') {
+      return next();
+    }
+    console.log(`[${new Date().toISOString()}] [${req.requestId}] ${req.method} ${req.url}`);
     next();
   });
+
+  // Mount Deployment Gates at root
+  app.use('/', healthRoutes);
 
   app.use('/api/auth', authRoutes);
   app.use('/api/admin', adminRoutes);
@@ -92,9 +143,70 @@ const startServer = async () => {
   const PORT = process.env.PORT || 5000;
   const ENV = process.env.NODE_ENV || 'development';
 
-  app.listen(PORT, () => {
-    console.log(`Server running in ${ENV} mode on port ${PORT}`);
+  // 6. Global Production Error Boundary
+  app.use(globalErrorBoundary);
+
+  const server = app.listen(PORT, () => {
+    // 15. Structured Deployment Metadata Logging
+    console.log(JSON.stringify({
+      version: "1.0.3",
+      gitCommit: process.env.RENDER_GIT_COMMIT || "local",
+      nodeEnv: ENV,
+      watchdog: process.env.WORKFLOW_WATCHDOG_ENABLED === 'true',
+      port: PORT,
+      message: "Orchestration engine started"
+    }, null, 2));
   });
+
+  // 11. Connection Tracking & Socket Draining
+  const connections = new Set();
+  server.on("connection", socket => {
+    connections.add(socket);
+    socket.on("close", () => {
+      connections.delete(socket);
+    });
+  });
+
+  // 7. Graceful Shutdown Hooks
+  const gracefulShutdown = async (signal) => {
+    console.log(`\n[Shutdown] Received ${signal}. Draining requests...`);
+    
+    // Destroy keep-alive sockets
+    for (const socket of connections) {
+        socket.destroy();
+    }
+    console.log(`[Shutdown] Destroyed ${connections.size} keep-alive sockets.`);
+    
+    server.close(async () => {
+        console.log('[Shutdown] HTTP server closed.');
+        
+        try {
+            console.log('[Shutdown] Stopping Watchdog...');
+            watchdog.stop();
+            
+            console.log('[Shutdown] Closing Redis...');
+            await RedisManager.client.quit();
+            
+            console.log('[Shutdown] Closing MongoDB...');
+            await mongoose.connection.close();
+            
+            console.log('[Shutdown] Graceful exit complete.');
+            process.exit(0);
+        } catch (err) {
+            console.error('[Shutdown] Error during cleanup:', err);
+            process.exit(1);
+        }
+    });
+    
+    // Force exit if drain takes too long
+    setTimeout(() => {
+        console.error('[Shutdown] Forcefully exiting after 10s timeout.');
+        process.exit(1);
+    }, 10000).unref();
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 };
 
 startServer();
