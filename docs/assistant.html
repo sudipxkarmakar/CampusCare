@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCare AI Assistant</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .assistant-container { width: 100%; max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; height: 80vh; }
+        .header { background: #1e293b; color: white; padding: 20px; text-align: center; }
+        .header h2 { margin: 0; font-size: 1.5rem; }
+        .status-banner { padding: 10px 20px; text-align: center; font-size: 0.9rem; font-weight: 500; transition: background 0.3s, color 0.3s; }
+        .status-banner.info { background: #e0f2fe; color: #0284c7; }
+        .status-banner.error { background: #fee2e2; color: #dc2626; }
+        .status-banner.loading { background: #fef3c7; color: #d97706; }
+        .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .input-area { padding: 20px; border-top: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+        .input-row { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: border 0.3s; }
+        input[type="text"]:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        input[type="text"]:disabled { background: #f1f5f9; cursor: not-allowed; }
+        button { background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.3s; }
+        button:hover { background: #2563eb; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        .action-area { display: flex; justify-content: flex-end; gap: 10px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="assistant-container">
+        <div class="header">
+            <h2>CampusCare Assistant</h2>
+        </div>
+        <div id="ai-status" class="status-banner info">Initializing...</div>
+        
+        <div class="chat-area" id="ai-chat-history">
+            <!-- Chat history will be dynamically loaded here by assistant.js, though currently assistant.js relies on ai.js for raw chat display. We will just use it as a scrolling container for now -->
+        </div>
+
+        <div class="input-area">
+            <div id="ai-action-area" class="action-area"></div>
+            <div class="input-row">
+                <input type="text" id="ai-input" placeholder="Type your request here..." autocomplete="off">
+                <button id="ai-send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/assistant.js"></script>
+</body>
+</html>
