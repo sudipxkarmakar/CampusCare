@@ -296,28 +296,61 @@ export class AiOrchestrator {
                         const metadata = { llmLatency: providerResponse.latency, modelName: providerResponse.provider, promptVersion: 'v1.0' };
                         const workflowResult = await workflowService.executeWorkflow(vt.name, vt.args, user, conversationId, newTraceId, metadata);
                         if (i === validatedTools.length - 1) {
-                            // Persist tool call and result to history before returning
+                            // If the result is a REDIRECT, return immediately to handle UI transition
+                            if (workflowResult.type === 'REDIRECT' || workflowResult.type === 'CONFIRMATION') {
+                                return { ...workflowResult, version: "v1", timestamp: Date.now(), traceId: newTraceId };
+                            }
+
+                            // Otherwise, feed the result back to the AI for a conversational summary
+                            const toolResult = typeof workflowResult.payload === 'object' ? JSON.stringify(workflowResult.payload) : workflowResult.message;
+                            
+                            const secondTurnMessages = [
+                                { role: "system", content: PromptBuilder.getSystemInstruction(user) },
+                                ...history,
+                                { role: "user", content: text },
+                                { 
+                                    role: "assistant", 
+                                    content: providerResponse.content || "", 
+                                    tool_calls: providerResponse.toolCalls.map(tc => ({
+                                        id: tc.id,
+                                        type: 'function',
+                                        function: { name: tc.name, arguments: typeof tc.arguments === 'string' ? tc.arguments : JSON.stringify(vt.args) }
+                                    }))
+                                },
+                                { 
+                                    role: "tool", 
+                                    tool_call_id: providerResponse.toolCalls[i].id, 
+                                    name: vt.name, 
+                                    content: toolResult 
+                                }
+                            ];
+
+                            const finalResponse = await this.provider.generateResponse(secondTurnMessages, null);
+                            
+                            // Save complete history including tool turn
                             history.push({ role: "user", content: text });
                             history.push({ 
                                 role: "assistant", 
                                 content: providerResponse.content || "", 
-                                tool_calls: providerResponse.toolCalls.map(tc => ({
-                                    id: tc.id,
-                                    type: 'function',
-                                    function: { name: tc.name, arguments: typeof tc.args === 'string' ? tc.args : JSON.stringify(vt.args) }
-                                }))
+                                tool_calls: secondTurnMessages[secondTurnMessages.length - 2].tool_calls 
                             });
                             history.push({ 
                                 role: "tool", 
                                 tool_call_id: providerResponse.toolCalls[i].id, 
                                 name: vt.name, 
-                                content: typeof workflowResult.message === 'string' ? workflowResult.message : JSON.stringify(workflowResult) 
+                                content: toolResult 
                             });
-                            
+                            history.push({ role: "assistant", content: finalResponse.content });
+
                             const sanitizedForSave = MemoryManager.sanitizeRedisHistory(history);
                             await RedisManager.saveHistory(conversationId, sanitizedForSave);
 
-                            return { ...workflowResult, version: "v1", timestamp: Date.now(), traceId: newTraceId };
+                            return { 
+                                version: "v1", success: true, type: "SUCCESS", action: "AI_RESPONSE",
+                                message: finalResponse.content,
+                                payload: workflowResult.payload,
+                                timestamp: Date.now(), traceId: newTraceId 
+                            };
                         }
                     } else {
                         // MUST AWAIT TRACE CREATION FIRST (Authoritative State)
