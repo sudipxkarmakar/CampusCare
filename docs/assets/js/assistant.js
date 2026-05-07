@@ -68,7 +68,7 @@ async function pollStatus(retryCount = 0) {
         // 45s timeout for initial Render wake
         const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com');
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
         const res = await fetch(`${API_BASE}/api/ai/status/${conversationId}`, {
             headers,
             signal
@@ -218,7 +218,7 @@ async function sendChat(textOverride = null, isConfirmation = false) {
         const history = historyStr ? JSON.parse(historyStr) : [];
 
         const headers = getAuthHeaders();
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com');
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
         const response = await fetch(`${API_BASE}/api/ai/chat`, {
             method: 'POST',
             headers,

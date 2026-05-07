@@ -98,12 +98,12 @@ async function loadSubmissions(token) {
 
                     // Handle relative paths from backend uploads
                     if (proofUrl.startsWith('/')) {
-                        proofUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '' + proofUrl;
+                        proofUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + proofUrl;
                     } else if (proofUrl.startsWith('http')) {
                         // Already absolute
                     } else {
                         // Assume filename
-                        proofUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/uploads/' + proofUrl;
+                        proofUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/uploads/' + proofUrl;
                     }
 
                     let linksHtml = `<a href="${proofUrl}" target="_blank" style="text-decoration:none; color:#3b82f6; font-size:0.9rem; font-weight:500;">

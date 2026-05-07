@@ -88,7 +88,7 @@
         let allComplaints = [];
 
         try {
-            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/complaints');
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/complaints');
             if (res.ok) {
                 let complaints = await res.json();
                 

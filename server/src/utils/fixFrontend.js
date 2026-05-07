@@ -23,25 +23,20 @@ walkDir(docsDir, (filePath) => {
     let content = fs.readFileSync(filePath, 'utf8');
     let original = content;
 
-    // 1. Replace hardcoded localhost URLs that are NOT already dynamic
-    // This regex looks for 'http://localhost:5000' and replaces it with the dynamic logic
-    // But we must avoid double-replacing or breaking existing dynamic ones.
-    
-    // Simplest approach: Replace any standalone 'http://localhost:5000' string literal
-    content = content.replace(/'http:\/\/localhost:5000'/g, DYNAMIC_URL_PATTERN);
-    content = content.replace(/"http:\/\/localhost:5000"/g, `"${DYNAMIC_URL_PATTERN}"`);
-    content = content.replace(/`http:\/\/localhost:5000`/g, `\`${DYNAMIC_URL_PATTERN}\``);
+    // 1. Clean up broken ternaries from previous run
+    const brokenTernary = /\) : 'https:\/\/campuscare-backend-96cn\.onrender\.com'\)/g;
+    content = content.replace(brokenTernary, ')');
 
-    // 2. Fix broken ternary logic (sometimes people forget the quotes or have double ternary)
-    // Cleanup double logic: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') ...
-    const doubleTernary = /\(window\.location\.hostname === 'localhost' \|\| window\.location\.hostname === '127\.0\.0\.1' \? \(window\.location\.hostname === 'localhost' \|\| window\.location\.hostname === '127\.0\.0\.1' \? 'http:\/\/localhost:5000' : 'https:\/\/campuscare-backend-96cn\.onrender\.com'\)/g;
-    content = content.replace(doubleTernary, DYNAMIC_URL_PATTERN);
-
-    // 3. Inject finally blocks to stop loading text/spinners in fetch calls
-    // This is harder to automate perfectly, but we can target common patterns.
+    // 2. Standardize DYNAMIC_URL_PATTERN
+    // This is the clean version we want
+    const cleanDynamic = `(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : '${BACKEND_PROD}')`;
     
+    // Find variations of the dynamic logic and consolidate them
+    // This handles cases where my script or previous manual edits created fragments
+    content = content.replace(/\(window\.location\.hostname === 'localhost' \|\| window\.location\.hostname === '127\.0\.0\.1' \? 'http:\/\/localhost:5000' : 'https:\/\/campuscare-backend-96cn\.onrender\.com'\)/g, cleanDynamic);
+
     if (content !== original) {
         fs.writeFileSync(filePath, content);
-        console.log(`[FIXED] ${path.relative(docsDir, filePath)}`);
+        console.log(`[CLEANED] ${path.relative(docsDir, filePath)}`);
     }
 });

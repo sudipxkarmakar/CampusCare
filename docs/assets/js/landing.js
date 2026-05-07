@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (noticeContainer) {
         try {
-            const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com');
+            const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout for Render wake
 
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const alumniContainer = document.getElementById('alumni-list');
     if (alumniContainer) {
         try {
-            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/alumni');
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/alumni');
             if (!res.ok) throw new Error('API Error');
             const alumni = await res.json();
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (complaintContainer) {
         try {
-            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/complaints');
+            const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/complaints');
             if (res.ok) {
                 let complaints = await res.json();
                 
@@ -362,7 +362,7 @@ window.checkAuthState = function () {
             if (cleanPath.startsWith('http')) {
                 avatarSrc = cleanPath;
             } else {
-                const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com');
+                const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
                 if (cleanPath.startsWith('/')) {
                     avatarSrc = `${BACKEND_URL}${cleanPath}`;
                 } else {
