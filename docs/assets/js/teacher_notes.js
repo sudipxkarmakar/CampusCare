@@ -1,4 +1,4 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/notes'; // Now uses Note Controller
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/notes'; // Now uses Note Controller
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createNoteForm');
@@ -183,7 +183,7 @@ async function loadCreatedNotes() {
                 let fileName = 'View File';
 
                 if (href.startsWith('/')) {
-                    href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + href;
+                    href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '' + href;
                     fileName = link.split('/').pop();
                 } else {
                     fileName = link.split('/').pop();

@@ -79,7 +79,7 @@ async function askAI() {
         const conversationId = getOrCreateConversationId();
         const history = getAIHistory();
 
-        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/ai/chat', {
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/ai/chat', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ text, conversationId, history })

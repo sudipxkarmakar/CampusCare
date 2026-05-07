@@ -17,9 +17,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         token = user.token;
     }
 
-    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api';
 
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s Render wake timeout
+
         // Construct URL with query params
         const params = new URLSearchParams();
         if (user) {
@@ -32,8 +35,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch(`${API_BASE_URL}/notices?${params.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         if (!response.ok) throw new Error('Failed to fetch notices');
 

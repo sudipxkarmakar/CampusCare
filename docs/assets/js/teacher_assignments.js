@@ -1,4 +1,4 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/assignment'; // Check if this endpoint exists/matches
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/assignment'; // Check if this endpoint exists/matches
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createAssignmentForm');
@@ -119,7 +119,7 @@ async function handleCreateAssignment(e) {
         // I should probably use http://localhost:5000/api/assignments based on standard REST.
         // I will assume /api/assignments for now but if 404 I check routes.
 
-        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments', { // Updated URL
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments', { // Updated URL
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${user.token}`,
@@ -169,7 +169,7 @@ async function loadCreatedAssignments() {
         // Endpoint for getting assignments created by teacher
         // Checked controller: getTeacherAssignments => GET /api/assignments/created (implied)
 
-        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments/created', {
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments/created', {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -253,7 +253,7 @@ async function viewSubmissions(assignmentId, title) {
                     if (!sub.link) return '<span style="color:#94a3b8;">No Link</span>';
                     let href = sub.link;
                     if (sub.link.startsWith('/')) {
-                        href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + href;
+                        href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '' + href;
                     }
                     return `<a href="${href}" target="_blank" style="color: #3b82f6; font-weight: 600; text-decoration: none;"><i class="fa-solid fa-file-pdf"></i> View File</a>`;
                 })()}

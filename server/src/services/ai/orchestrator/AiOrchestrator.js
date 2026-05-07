@@ -213,6 +213,27 @@ export class AiOrchestrator {
                     return { version: "v1", success: false, type: "ERROR", action: "AI_RESPONSE", message: "I attempted to execute an invalid action. Please try again.", timestamp: Date.now(), traceId: newTraceId };
                 }
 
+                // --- EARLY SECURITY LAYER ---
+                const roleRules = {
+                    'trigger_sos': ['student', 'teacher', 'hod', 'warden', 'principal', 'guest'],
+                    'draft_complaint': ['student', 'teacher', 'hod', 'warden', 'principal'],
+                    'submit_leave': ['student', 'teacher'],
+                    'create_assignment': ['teacher', 'hod'],
+                    'submit_assignment': ['student'],
+                    'get_my_content': ['student', 'teacher']
+                };
+                const userRole = user ? user.role : 'guest';
+                if (roleRules[toolName] && !roleRules[toolName].includes(userRole)) {
+                    console.warn(`[Security] Blocked unauthorized tool call: ${toolName} for role ${userRole}`);
+                    const roleNames = { 'student': 'Student', 'teacher': 'Faculty', 'hod': 'HOD', 'warden': 'Warden', 'principal': 'Principal' };
+                    return { 
+                        version: "v1", success: false, type: "WARNING", action: "AI_RESPONSE", 
+                        message: `You are logged in as a ${roleNames[userRole] || userRole}. This action is restricted to authorized personnel only.`, 
+                        timestamp: Date.now(), traceId: newTraceId 
+                    };
+                }
+                // ----------------------------
+
                 const schema = ToolRegistry[toolName]?.schema;
                 let payloadRaw = toolCall.arguments;
                 let isValid = false;

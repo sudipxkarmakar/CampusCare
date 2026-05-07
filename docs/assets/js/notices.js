@@ -1,4 +1,4 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/notices';
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/notices';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadNotices();
@@ -168,7 +168,7 @@ async function handleCreateNotice(e) {
             if (tSub) payload.targetSubBatch = tSub;
         }
 
-        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/notice', { // Using NEW Endpoint for Notices too? 
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/notice', { // Using NEW Endpoint for Notices too? 
             // My contentController has createNotice. I should use that or update this URL.
             // I'll update the URL to use content API.
             method: 'POST',

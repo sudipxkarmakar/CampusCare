@@ -1,5 +1,5 @@
 
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/documents';
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') : 'https://campuscare-backend-96cn.onrender.com') + '/api/documents';
 
 // Run on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -66,7 +66,7 @@ async function loadDocuments() {
                         <i class="fa-solid fa-eye"></i> Preview
                      </button>
                      -->
-                     <a href=(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:5000" : "https://campuscare-backend-96cn.onrender.com") + "${doc.fileUrl}" target="_blank" download
+                     <a href=(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com')" : "https://campuscare-backend-96cn.onrender.com") + "${doc.fileUrl}" target="_blank" download
                         style="padding: 6px 12px; font-size: 0.8rem; border: none; background: #3b82f6; border-radius: 6px; cursor: pointer; color: white; text-decoration:none; font-weight:500; display:flex; align-items:center; gap:5px; transition: background 0.2s;">
                         <i class="fa-solid fa-download"></i> Download
                      </a>
