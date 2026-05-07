@@ -116,6 +116,24 @@ async function loadAssignments() {
             }
         }
 
+        // --- AI PRE-FILL LOGIC ---
+        const aiSubject = sessionStorage.getItem('aiSubmitSubject');
+        if (aiSubject) {
+            console.log(`[AI] searching for pre-filled subject: ${aiSubject}`);
+            // Remove from session so it doesn't pop up every time
+            sessionStorage.removeItem('aiSubmitSubject');
+
+            const matchIndex = assignmentsList.findIndex(a => 
+                a.subject.toLowerCase().includes(aiSubject.toLowerCase()) || 
+                a.title.toLowerCase().includes(aiSubject.toLowerCase())
+            );
+
+            if (matchIndex !== -1) {
+                // Short delay to ensure DOM is rendered
+                setTimeout(() => viewAssignment(matchIndex), 500);
+            }
+        }
+
     } catch (error) {
         console.error('Error:', error);
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading assignments.</td></tr>';

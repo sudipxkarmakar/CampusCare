@@ -11,6 +11,7 @@ const workflowHandlers = {
     'draft_complaint': complaintWorkflow.execute,
     'submit_leave': leaveWorkflow.execute,
     'create_assignment': assignmentWorkflow.execute,
+    'submit_assignment': assignmentWorkflow.executeSubmit,
 };
 
 export class WorkflowService {
@@ -40,7 +41,8 @@ export class WorkflowService {
             'trigger_sos': ['student', 'teacher', 'hod', 'warden', 'principal', 'guest'],
             'draft_complaint': ['student', 'teacher', 'hod', 'warden', 'principal'],
             'submit_leave': ['student', 'teacher'],
-            'create_assignment': ['teacher', 'hod']
+            'create_assignment': ['teacher', 'hod'],
+            'submit_assignment': ['student']
         };
         
         if (roleRules[actionName] && !roleRules[actionName].includes(userRole)) {

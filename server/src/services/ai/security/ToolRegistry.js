@@ -71,11 +71,30 @@ export const ToolRegistry = {
         }),
         declaration: {
             name: "create_assignment",
-            description: "Create an assignment after getting user confirmation. (Teacher role)",
+            description: "TEACHERS ONLY: Create a new assignment. Students cannot use this.",
             parameters: {
                 type: "object",
                 properties: { subject: { type: "string" }, batch: { type: "string" }, deadline: { type: "string" }, marks: { type: "string" }, instructions: { type: "string" } },
                 required: ["subject", "batch", "deadline"]
+            }
+        },
+        retryable: true,
+        rollbackable: true,
+        critical: false
+    },
+    submit_assignment: {
+        schema: z.object({
+            subject: z.string().min(1),
+            assignmentId: z.string().optional(),
+            notes: z.string().optional()
+        }),
+        declaration: {
+            name: "submit_assignment",
+            description: "STUDENTS ONLY: Submit an assignment. Use this when a student wants to hand in their work.",
+            parameters: {
+                type: "object",
+                properties: { subject: { type: "string" }, assignmentId: { type: "string" }, notes: { type: "string" } },
+                required: ["subject"]
             }
         },
         retryable: true,
