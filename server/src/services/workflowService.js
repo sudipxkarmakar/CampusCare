@@ -14,7 +14,14 @@ const workflowHandlers = {
 };
 
 export class WorkflowService {
-    async executeWorkflow(actionName, args, user, conversationId, traceId, metadata = {}) {
+    async executeWorkflow(actionName, args, user, conversationId, traceId, metadata = {}, options = {}) {
+        const { signal, execId } = options;
+        if (signal?.aborted) {
+            const err = new Error("EXECUTION_TIMEOUT");
+            err.name = "AbortError";
+            throw err;
+        }
+
         const handler = workflowHandlers[actionName];
         if (!handler) {
             // Generic success for tools not yet explicitly separated into workflow files
@@ -43,9 +50,15 @@ export class WorkflowService {
         // 2. Validate and Sanitize arguments
         const safeArgs = sanitizeArgs(actionName, args);
 
+        if (signal?.aborted) {
+            const err = new Error("EXECUTION_TIMEOUT");
+            err.name = "AbortError";
+            throw err;
+        }
+
         const startTime = Date.now();
         try {
-            const result = await handler(safeArgs, user, conversationId, traceId);
+            const result = await handler(safeArgs, user, conversationId, traceId, { signal, execId });
             
             // Only log if not already logged (e.g., SOS logs itself with bypass)
             if (actionName !== 'trigger_sos') {

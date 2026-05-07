@@ -1,4 +1,5 @@
-export const execute = async (args, user, conversationId, traceId) => {
+export const execute = async (args, user, conversationId, traceId, options = {}) => {
+    const { signal, execId } = options;
     // 1. Validation
     if (!user) {
         throw new Error("UNAUTHORIZED: Must be logged in to draft complaints.");
@@ -6,6 +7,11 @@ export const execute = async (args, user, conversationId, traceId) => {
 
     // 2. Execution logic - For complaints, we currently just redirect to the form
     // The actual DB save happens when they submit the form on the frontend.
+    if (signal?.aborted) {
+        const e = new Error("EXECUTION_TIMEOUT");
+        e.name = "AbortError";
+        throw e;
+    }
     
     return {
         success: true,

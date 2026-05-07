@@ -5,7 +5,8 @@ export const EXECUTION_STATUS = Object.freeze({
     COMPLETED: 'COMPLETED',
     FAILED: 'FAILED',
     CANCELLED: 'CANCELLED',
-    EXPIRED: 'EXPIRED'
+    EXPIRED: 'EXPIRED',
+    EXECUTION_TIMEOUT: 'EXECUTION_TIMEOUT'
 });
 
 export const CONFIRMATION_STATUS = Object.freeze({

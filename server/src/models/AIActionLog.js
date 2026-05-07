@@ -56,6 +56,7 @@ const aiActionLogSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+aiActionLogSchema.index({ traceId: 1, conversationId: 1 }, { unique: true });
 aiActionLogSchema.index({ userId: 1, createdAt: -1 });
 aiActionLogSchema.index({ executionStatus: 1, createdAt: -1 });
 

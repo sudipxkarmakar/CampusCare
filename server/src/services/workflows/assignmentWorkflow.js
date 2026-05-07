@@ -1,6 +1,7 @@
 import { validate } from '../../validators/assignmentValidator.js';
 
-export const execute = async (args, user, conversationId, traceId) => {
+export const execute = async (args, user, conversationId, traceId, options = {}) => {
+    const { signal, execId } = options;
     // 1. Authorization
     if (!user || user.role !== 'teacher') {
         throw new Error("UNAUTHORIZED: Only teachers can create assignments.");
@@ -10,6 +11,12 @@ export const execute = async (args, user, conversationId, traceId) => {
     const validation = validate(args, user);
     if (!validation.success) {
         throw new Error(`VALIDATION_ERROR: ${validation.message}`);
+    }
+
+    if (signal?.aborted) {
+        const e = new Error("EXECUTION_TIMEOUT");
+        e.name = "AbortError";
+        throw e;
     }
 
     // Example of a backend-enforced validation policy

@@ -3,7 +3,8 @@ import AIActionLog from '../../models/AIActionLog.js';
 // Simple in-memory rate limiter for SOS
 const sosRateLimiter = new Map();
 
-export const execute = async (args, user, conversationId, traceId, metadata = {}) => {
+export const execute = async (args, user, conversationId, traceId, options = {}) => {
+    const { signal, execId } = options;
     // 1. Validation & Rate Limiting
     if (!user || !user._id) {
         throw new Error("UNAUTHORIZED: Guest users cannot trigger SOS.");
@@ -35,7 +36,14 @@ export const execute = async (args, user, conversationId, traceId, metadata = {}
     // 2. Execution Logic
     // In a real system, this would dispatch WebSocket events to security,
     // trigger WhatsApp APIs to HOD/Warden, etc.
-    
+    // Example: sendWhatsAppAlert(args, { execId }); // Idempotency tag
+
+    if (signal?.aborted) {
+        const e = new Error("EXECUTION_TIMEOUT");
+        e.name = "AbortError";
+        throw e;
+    }
+
     // Log the action explicitly
     await AIActionLog.create({
         traceId,
