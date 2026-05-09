@@ -79,7 +79,7 @@ async function askAI() {
         const conversationId = getOrCreateConversationId();
         const history = getAIHistory();
 
-        const response = await fetch('http://localhost:5000/api/ai/chat', {
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/ai/chat', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ text, conversationId, history })
@@ -131,9 +131,16 @@ async function askAI() {
         } else if (actionType === AI_ACTIONS.REDIRECT_ASSIGNMENT && resObj.payload) {
             sessionStorage.setItem('aiDraftAssignment', JSON.stringify(resObj.payload));
             responseMessage += "<br><br><i>Redirecting you to the assignment creation form...</i>";
-            // For now, this is a placeholder redirect, assumes a specific route exists
             setTimeout(() => {
-                if (window.location.pathname.includes('/teacher/')) {
+                if (window.location.pathname.includes('/teacher/') || window.location.pathname.includes('/hod/')) {
+                    window.location.href = 'assignments.html';
+                }
+            }, 2000);
+        } else if (actionType === 'REDIRECT_SUBMIT_ASSIGNMENT' && resObj.payload) {
+            sessionStorage.setItem('aiSubmitSubject', resObj.payload.subject);
+            responseMessage += "<br><br><i>Redirecting you to your assignments...</i>";
+            setTimeout(() => {
+                if (window.location.pathname.includes('/student/')) {
                     window.location.href = 'assignments.html';
                 }
             }, 2000);

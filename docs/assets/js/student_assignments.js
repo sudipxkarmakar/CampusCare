@@ -1,5 +1,5 @@
-const CONTENT_API_URL = 'http://localhost:5000/api/content/my-content';
-const ASSIGN_API_URL = 'http://localhost:5000/api/assignments';
+const CONTENT_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/my-content';
+const ASSIGN_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments';
 let fetchedAssignments = [];
 let fetchedNotes = [];
 let currentAssignmentId = null;
@@ -116,6 +116,24 @@ async function loadAssignments() {
             }
         }
 
+        // --- AI PRE-FILL LOGIC ---
+        const aiSubject = sessionStorage.getItem('aiSubmitSubject');
+        if (aiSubject) {
+            console.log(`[AI] searching for pre-filled subject: ${aiSubject}`);
+            // Remove from session so it doesn't pop up every time
+            sessionStorage.removeItem('aiSubmitSubject');
+
+            const matchIndex = assignmentsList.findIndex(a => 
+                a.subject.toLowerCase().includes(aiSubject.toLowerCase()) || 
+                a.title.toLowerCase().includes(aiSubject.toLowerCase())
+            );
+
+            if (matchIndex !== -1) {
+                // Short delay to ensure DOM is rendered
+                setTimeout(() => viewAssignment(matchIndex), 500);
+            }
+        }
+
     } catch (error) {
         console.error('Error:', error);
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading assignments.</td></tr>';
@@ -143,7 +161,7 @@ function viewAssignment(index) {
     if (assignment.link && assignment.link.trim() !== "") {
         let href = assignment.link;
         if (href.startsWith('/')) {
-            href = 'http://localhost:5000' + href; // Prepend Backend URL
+            href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + href; // Prepend Backend URL
         }
 
         linkContainer.style.display = 'block';
@@ -192,7 +210,7 @@ function viewNote(index) {
     if (noteLink && noteLink.trim() !== "") {
         let href = noteLink;
         if (href.startsWith('/')) {
-            href = 'http://localhost:5000' + href;
+            href = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '' + href;
         }
 
         linkContainer.style.display = 'block';

@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // We use fetchWithAuth but handle the options properly for FormData.
                 // FormData automatically sets the correct Content-Type with boundary.
-                const res = await fetch('http://localhost:5000/api/complaints', {
+                const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+                const res = await fetch(`${API_BASE}/api/complaints`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${user.token || localStorage.getItem('token')}`
@@ -170,7 +171,8 @@ async function aiAutoFillComplaint() {
     descEl.value = "Please wait...";
 
     try {
-        const response = await fetch('http://localhost:5000/api/ai/generate-complaint', {
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const response = await fetch(`${API_BASE}/api/ai/generate-complaint`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -197,7 +199,8 @@ async function loadComplaints() {
     if (!list) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/complaints');
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const response = await fetch(`${API_BASE}/api/complaints`);
 
         if (!response.ok) {
             throw new Error(`Server Error: ${response.status}`);
@@ -261,7 +264,7 @@ async function loadComplaints() {
                     </div>
                     
                     <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
-                    ${c.image ? `<img src="http://localhost:5000${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
+                    ${c.image ? `<img src="${(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com')}${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
                     
                     <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
                         <span><i class="fa-solid fa-user"></i> ${c.student?.name || 'Anonymous'}</span>
@@ -295,7 +298,8 @@ async function upvote(id, btnElement) {
     const user = JSON.parse(userStr);
 
     try {
-        const res = await fetch(`http://localhost:5000/api/complaints/${id}/upvote`, {
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const res = await fetch(`${API_BASE}/api/complaints/${id}/upvote`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -382,7 +386,8 @@ async function loadMyComplaints() {
     const token = localStorage.getItem('token') || user.token;
 
     try {
-        const response = await fetch('http://localhost:5000/api/complaints/my', {
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const response = await fetch(`${API_BASE}/api/complaints/my`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -442,7 +447,7 @@ async function loadMyComplaints() {
                      </div>
                      
                      <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
-                     ${c.image ? `<img src="http://localhost:5000${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
+                     ${c.image ? `<img src="${(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com')}${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
                      
                      <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
                          <span><i class="fa-solid fa-calendar"></i> ${new Date(c.createdAt).toLocaleDateString()}</span>

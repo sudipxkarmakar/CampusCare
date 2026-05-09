@@ -14,7 +14,7 @@ async function loadLeaves() {
     const list = document.getElementById('leave-applications-list');
 
     try {
-        const res = await fetch('http://localhost:5000/api/hostel/leaves?status=Pending');
+        const res = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/hostel/leaves?status=Pending');
         if (!res.ok) throw new Error("Failed to fetch leaves");
 
         const leaves = await res.json();

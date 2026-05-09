@@ -31,3 +31,29 @@ export const execute = async (args, user, conversationId, traceId, options = {})
         payload: args
     };
 };
+
+export const executeSubmit = async (args, user, conversationId, traceId, options = {}) => {
+    const { signal } = options;
+    
+    if (!user || user.role !== 'student') {
+        throw new Error("UNAUTHORIZED: Only students can submit assignments.");
+    }
+
+    if (signal?.aborted) {
+        const e = new Error("EXECUTION_TIMEOUT");
+        e.name = "AbortError";
+        throw e;
+    }
+
+    return {
+        success: true,
+        type: "REDIRECT",
+        action: "REDIRECT_SUBMIT_ASSIGNMENT",
+        message: `I have found your ${args.subject} assignment. Redirecting you to the submission page...`,
+        payload: {
+            subject: args.subject,
+            assignmentId: args.assignmentId,
+            notes: args.notes
+        }
+    };
+};

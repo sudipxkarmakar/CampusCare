@@ -1,6 +1,6 @@
 // HOD Subject Allocation Logic
 
-const BASE_API = 'http://localhost:5000/api';
+const BASE_API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
 
 const yearMapping = {
     "2026": "4th Year",

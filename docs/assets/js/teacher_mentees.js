@@ -15,7 +15,7 @@ async function loadMyMentees() {
     const user = JSON.parse(userStr);
 
     try {
-        const response = await fetch('http://localhost:5000/api/teacher/my-mentees', {
+        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/teacher/my-mentees', {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }

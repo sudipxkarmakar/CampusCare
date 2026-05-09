@@ -213,6 +213,27 @@ export class AiOrchestrator {
                     return { version: "v1", success: false, type: "ERROR", action: "AI_RESPONSE", message: "I attempted to execute an invalid action. Please try again.", timestamp: Date.now(), traceId: newTraceId };
                 }
 
+                // --- EARLY SECURITY LAYER ---
+                const roleRules = {
+                    'trigger_sos': ['student', 'teacher', 'hod', 'warden', 'principal', 'guest'],
+                    'draft_complaint': ['student', 'teacher', 'hod', 'warden', 'principal'],
+                    'submit_leave': ['student', 'teacher'],
+                    'create_assignment': ['teacher', 'hod'],
+                    'submit_assignment': ['student'],
+                    'get_my_content': ['student', 'teacher']
+                };
+                const userRole = user ? user.role : 'guest';
+                if (roleRules[toolName] && !roleRules[toolName].includes(userRole)) {
+                    console.warn(`[Security] Blocked unauthorized tool call: ${toolName} for role ${userRole}`);
+                    const roleNames = { 'student': 'Student', 'teacher': 'Faculty', 'hod': 'HOD', 'warden': 'Warden', 'principal': 'Principal' };
+                    return { 
+                        version: "v1", success: false, type: "WARNING", action: "AI_RESPONSE", 
+                        message: `You are logged in as a ${roleNames[userRole] || userRole}. This action is restricted to authorized personnel only.`, 
+                        timestamp: Date.now(), traceId: newTraceId 
+                    };
+                }
+                // ----------------------------
+
                 const schema = ToolRegistry[toolName]?.schema;
                 let payloadRaw = toolCall.arguments;
                 let isValid = false;
@@ -275,7 +296,61 @@ export class AiOrchestrator {
                         const metadata = { llmLatency: providerResponse.latency, modelName: providerResponse.provider, promptVersion: 'v1.0' };
                         const workflowResult = await workflowService.executeWorkflow(vt.name, vt.args, user, conversationId, newTraceId, metadata);
                         if (i === validatedTools.length - 1) {
-                            return { ...workflowResult, version: "v1", timestamp: Date.now(), traceId: newTraceId };
+                            // If the result is a REDIRECT, return immediately to handle UI transition
+                            if (workflowResult.type === 'REDIRECT' || workflowResult.type === 'CONFIRMATION') {
+                                return { ...workflowResult, version: "v1", timestamp: Date.now(), traceId: newTraceId };
+                            }
+
+                            // Otherwise, feed the result back to the AI for a conversational summary
+                            const toolResult = typeof workflowResult.payload === 'object' ? JSON.stringify(workflowResult.payload) : workflowResult.message;
+                            
+                            const secondTurnMessages = [
+                                { role: "system", content: PromptBuilder.getSystemInstruction(user) },
+                                ...history,
+                                { role: "user", content: text },
+                                { 
+                                    role: "assistant", 
+                                    content: providerResponse.content || "", 
+                                    tool_calls: providerResponse.toolCalls.map(tc => ({
+                                        id: tc.id,
+                                        type: 'function',
+                                        function: { name: tc.name, arguments: typeof tc.arguments === 'string' ? tc.arguments : JSON.stringify(vt.args) }
+                                    }))
+                                },
+                                { 
+                                    role: "tool", 
+                                    tool_call_id: providerResponse.toolCalls[i].id, 
+                                    name: vt.name, 
+                                    content: toolResult 
+                                }
+                            ];
+
+                            const finalResponse = await this.provider.generateResponse(secondTurnMessages, null);
+                            
+                            // Save complete history including tool turn
+                            history.push({ role: "user", content: text });
+                            history.push({ 
+                                role: "assistant", 
+                                content: providerResponse.content || "", 
+                                tool_calls: secondTurnMessages[secondTurnMessages.length - 2].tool_calls 
+                            });
+                            history.push({ 
+                                role: "tool", 
+                                tool_call_id: providerResponse.toolCalls[i].id, 
+                                name: vt.name, 
+                                content: toolResult 
+                            });
+                            history.push({ role: "assistant", content: finalResponse.content });
+
+                            const sanitizedForSave = MemoryManager.sanitizeRedisHistory(history);
+                            await RedisManager.saveHistory(conversationId, sanitizedForSave);
+
+                            return { 
+                                version: "v1", success: true, type: "SUCCESS", action: "AI_RESPONSE",
+                                message: finalResponse.content,
+                                payload: workflowResult.payload,
+                                timestamp: Date.now(), traceId: newTraceId 
+                            };
                         }
                     } else {
                         // MUST AWAIT TRACE CREATION FIRST (Authoritative State)
@@ -334,9 +409,19 @@ export class AiOrchestrator {
 
         } catch (error) {
             console.error("AI Orchestrator Error:", error);
+            
             if (error instanceof AIProviderError) {
                 return intentFallbackService.process(text, user, traceContext.id, error);
             }
+            
+            if (error instanceof ValidationError) {
+                return {
+                    version: "v1", success: false, type: "ERROR", action: "AI_RESPONSE",
+                    message: `I encountered a problem with the action details: ${error.message}`,
+                    timestamp: Date.now(), traceId: traceContext.id
+                };
+            }
+
             return {
                 version: "v1", success: false, type: "ERROR", action: "AI_RESPONSE",
                 message: "An internal orchestration error occurred while processing your request.",

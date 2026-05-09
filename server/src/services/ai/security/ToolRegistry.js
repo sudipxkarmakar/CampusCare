@@ -71,7 +71,7 @@ export const ToolRegistry = {
         }),
         declaration: {
             name: "create_assignment",
-            description: "Create an assignment after getting user confirmation. (Teacher role)",
+            description: "TEACHERS ONLY: Create a new assignment. Students cannot use this.",
             parameters: {
                 type: "object",
                 properties: { subject: { type: "string" }, batch: { type: "string" }, deadline: { type: "string" }, marks: { type: "string" }, instructions: { type: "string" } },
@@ -81,6 +81,39 @@ export const ToolRegistry = {
         retryable: true,
         rollbackable: true,
         critical: false
+    },
+    submit_assignment: {
+        schema: z.object({
+            subject: z.string().min(1),
+            assignmentId: z.string().optional(),
+            notes: z.string().optional()
+        }),
+        declaration: {
+            name: "submit_assignment",
+            description: "STUDENTS ONLY: Submit an assignment. Use this when a student wants to hand in their work.",
+            parameters: {
+                type: "object",
+                properties: { subject: { type: "string" }, assignmentId: { type: "string" }, notes: { type: "string" } },
+                required: ["subject"]
+            }
+        },
+        retryable: true,
+        rollbackable: true,
+        critical: false
+    },
+    get_my_content: {
+        schema: z.object({}), // No parameters needed, it uses the auth token
+        declaration: {
+            name: "get_my_content",
+            description: "Fetch all my pending assignments, study materials, and personal notices. Use this when the user asks 'what are my assignments' or 'show my tasks'.",
+            parameters: {
+                type: "object",
+                properties: {}
+            }
+        },
+        retryable: true,
+        rollbackable: false,
+        critical: true
     }
 };
 
