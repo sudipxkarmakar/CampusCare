@@ -63,7 +63,7 @@ export class WorkflowService {
 
         const startTime = Date.now();
         try {
-            const result = await handler(safeArgs, user, conversationId, traceId, { signal, execId });
+            const result = await handler(safeArgs, user, conversationId, traceId, metadata, { signal, execId });
             
             // Only log if not already logged (e.g., SOS logs itself with bypass)
             if (actionName !== 'trigger_sos') {

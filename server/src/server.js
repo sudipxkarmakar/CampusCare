@@ -1,13 +1,21 @@
-﻿import express from 'express';
+import 'dotenv/config';
+import express from 'express';
 import cors from 'cors';
-import connectDB from './config/db.js';
+import helmet from 'helmet';
+import compression from 'compression';
+import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import connectDB from './config/db.js';
+import { requestCorrelation } from './middleware/requestCorrelation.js';
+import { globalErrorBoundary } from './middleware/errorBoundary.js';
+import healthRoutes from './routes/healthRoutes.js';
+import { watchdog } from './services/ai/state/WorkflowWatchdog.js';
+import RedisManager from './services/ai/state/RedisManager.js';
 
+// Route imports
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
@@ -31,9 +39,9 @@ import wardenRoutes from './routes/wardenRoutes.js';
 import principalRoutes from './routes/principalRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
 
-// ... imports
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const startServer = async () => {
   await connectDB();
@@ -63,7 +71,7 @@ const startServer = async () => {
   app.use(compression());
 
   // 4. Strict CORS
-  const commonOrigins = ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:5173'];
+  const commonOrigins = ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:5173', 'http://localhost:5501'];
   const allowedOrigins = process.env.NODE_ENV === 'production' 
       ? ['https://effervescent-lily-bbbe6a.netlify.app', 'https://campuscare-backend-96cn.onrender.com', ...commonOrigins] 
       : commonOrigins;

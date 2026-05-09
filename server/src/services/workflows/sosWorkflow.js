@@ -3,7 +3,7 @@ import AIActionLog from '../../models/AIActionLog.js';
 // Simple in-memory rate limiter for SOS
 const sosRateLimiter = new Map();
 
-export const execute = async (args, user, conversationId, traceId, options = {}) => {
+export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal, execId } = options;
     // 1. Validation & Rate Limiting
     if (!user || !user._id) {

@@ -1,6 +1,6 @@
 import { validate } from '../../validators/assignmentValidator.js';
 
-export const execute = async (args, user, conversationId, traceId, options = {}) => {
+export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal, execId } = options;
     // 1. Authorization
     if (!user || user.role !== 'teacher') {
@@ -32,7 +32,7 @@ export const execute = async (args, user, conversationId, traceId, options = {})
     };
 };
 
-export const executeSubmit = async (args, user, conversationId, traceId, options = {}) => {
+export const executeSubmit = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal } = options;
     
     if (!user || user.role !== 'student') {

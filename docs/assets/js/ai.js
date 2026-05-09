@@ -92,7 +92,18 @@ async function askAI() {
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) loadingEl.remove();
 
+        if (!response.ok) {
+            const errorMsg = data.message || data.error || "Request failed";
+            historyEl.innerHTML += `<div style="margin: 5px 0; text-align: left;"><span style="color: red; background: #fee2e2; padding: 10px; border-radius: 10px; display: inline-block;">Error: ${errorMsg}</span></div>`;
+            return;
+        }
+
         const resObj = data.response;
+        if (!resObj) {
+            historyEl.innerHTML += `<div style="margin: 5px 0; text-align: left;"><span style="color: red; background: #fee2e2; padding: 10px; border-radius: 10px; display: inline-block;">Error: AI service returned an empty response.</span></div>`;
+            return;
+        }
+
         let responseMessage = resObj.message || "Processed successfully.";
         const rawMessage = responseMessage; // Keep raw for history
         const actionType = resObj.action;

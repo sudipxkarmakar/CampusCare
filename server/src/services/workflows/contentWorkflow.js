@@ -3,7 +3,7 @@ import Note from '../../models/Note.js';
 import Notice from '../../models/Notice.js';
 import Submission from '../../models/Submission.js';
 
-export const execute = async (args, user, conversationId, traceId, options = {}) => {
+export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     // 1. Authorize (Implicit in WorkflowService, but let's be sure)
     if (!user || !user.department) {
         throw new Error("UNAUTHORIZED: User profile incomplete.");

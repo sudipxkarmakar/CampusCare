@@ -1,4 +1,4 @@
-export const execute = async (args, user, conversationId, traceId, options = {}) => {
+export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal, execId } = options;
     // 1. Validation
     if (!user) {

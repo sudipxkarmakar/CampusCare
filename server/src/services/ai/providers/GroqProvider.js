@@ -5,10 +5,19 @@ import { AIProviderError, ValidationError } from '../../../utils/errors.js';
 export class GroqProvider extends BaseProvider {
     constructor() {
         super();
-        this.groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+        const apiKey = process.env.GROQ_API_KEY;
+        if (!apiKey) {
+            console.warn("[GroqProvider] GROQ_API_KEY is missing or empty. AI features will be disabled.");
+            this.groq = null;
+        } else {
+            this.groq = new Groq({ apiKey });
+        }
     }
 
     async generateResponse(messages, tools = null, toolChoice = "auto") {
+        if (!this.groq) {
+            throw new AIProviderError("AI service is not configured (missing API key)", "groq");
+        }
         const controller = new AbortController();
         let timeoutReject;
         const timeoutPromise = new Promise((_, reject) => {

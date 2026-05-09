@@ -1,6 +1,6 @@
 import Leave from '../../models/Leave.js';
 
-export const execute = async (args, user, conversationId, traceId, options = {}) => {
+export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal, execId } = options;
     if (!user || user.role !== 'student') {
         throw new Error("UNAUTHORIZED: Only students can apply for leave.");
