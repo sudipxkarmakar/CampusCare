@@ -32,9 +32,22 @@ class RedisManager {
     constructor() {
         this.client = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
             maxRetriesPerRequest: null,
-            enableReadyCheck: false
+            enableReadyCheck: false,
+            retryStrategy(times) {
+                const delay = Math.min(times * 50, 2000);
+                return delay;
+            }
         });
-        this.client.on('error', (err) => console.error('[Redis Error]', err));
+
+        let lastErrorLogged = 0;
+        this.client.on('error', (err) => {
+            const now = Date.now();
+            // Only log Redis errors once every 60 seconds to avoid spamming the console
+            if (now - lastErrorLogged > 60000) {
+                console.error('[Redis Error] Connection failed. AI state features may be degraded.', err.message);
+                lastErrorLogged = now;
+            }
+        });
     }
 
     safeParseRedisJSON(data, typeContext) {
