@@ -61,10 +61,11 @@ const startServer = async () => {
         "script-src": ["'self'", "'unsafe-inline'"], 
         "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
         "font-src": ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-        "img-src": ["'self'", "data:", "https:", "https://res.cloudinary.com"],
-        "connect-src": ["'self'", "https://api.groq.com"]
+        "img-src": ["'self'", "data:", "https:", "https://res.cloudinary.com", "http://localhost:5000", "http://127.0.0.1:5000"],
+        "connect-src": ["'self'", "https://api.groq.com", "http://localhost:5000", "http://127.0.0.1:5000"]
       }
-    }
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" }
   }));
 
   // 3. Compression
@@ -131,14 +132,18 @@ const startServer = async () => {
   app.use('/api/principal', principalRoutes);
   app.use('/api/notes', noteRoutes);
 
+  // Serve uploads directory - Move ABOVE docs static to ensure priority
+  const uploadsPath = path.join(__dirname, '../uploads');
+  app.use('/uploads', cors(), express.static(uploadsPath, {
+    setHeaders: (res) => {
+      res.set('Access-Control-Allow-Origin', '*');
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+  }));
+
   // Serve static assets from 'docs' (formerly client)
-  // The docs folder is one level up from server/src (server/../docs -> ../../docs)
   const docsPath = path.join(__dirname, '../../docs');
   app.use(express.static(docsPath));
-
-  // Serve uploads directory
-  const uploadsPath = path.join(__dirname, '../uploads');
-  app.use('/uploads', express.static(uploadsPath));
 
   // Fallback to index.html for any other route (SPA behavior)
   app.get('*', (req, res) => {
