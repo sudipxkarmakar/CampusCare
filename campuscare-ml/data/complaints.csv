@@ -1,83 +1,1441 @@
 text,category,priority
-There is a huge fire in the lab send help immediately,Civil,Urgent
-Someone is harassing me in the hallway,Personal,Urgent
-A snake was spotted near the hostel block,Civil,Urgent
-Live wire sparkling near the water cooler,Electrical,Urgent
-I am feeling very dizzy and might faint,Personal,Urgent
-A student fainted in the classroom,Personal,Urgent
-Found insects in my mess food today,Mess,Urgent
-There is a major electricity failure in the entire campus,Electrical,High
-No water in the entire girls hostel since morning,Sanitation,High
-The main server room AC is down,IT,High
-Sewage pipe burst outside block B,Sanitation,High
-Food poisoning cases reported from yesterday's dinner,Mess,Urgent
-The ceiling fan just fell in our room,Civil,Urgent
-The elevator in block C is stuck between floors with people inside,Electrical,Urgent
-Internet is completely down across all departments,IT,High
-Water cooler is giving dirty brown water,Sanitation,High
-Students are fighting violently in the ground,Disciplinary,Urgent
-My laptop was stolen from the library,Disciplinary,Urgent
-Someone stole my mobile phone,Disciplinary,Urgent
-I lost my power bank in the lab,Disciplinary,High
-I can't find my wallet it is missing,Disciplinary,High
-The corridor light is flickering,Electrical,Medium
-My room door lock is jammed,Civil,Medium
-The Wi-Fi speed is very slow in room 302,IT,Medium
-Washroom tap is leaking continuously,Sanitation,Medium
-Mess food is too spicy today,Mess,Medium
-A student is playing loud music during study hours,Disciplinary,Medium
-Projector is not working in lecture hall 2,IT,Medium
-The dustbin in our corridor is overflowing,Sanitation,Medium
-My chair has a broken leg,Civil,Medium
-I have a mild headache and need medicine,Personal,Medium
-Please change the menu for breakfast,Mess,Low
-We need more sports equipment in the hostel,Disciplinary,Low
-Can we have a vending machine near the library,Civil,Low
-The library should extend reading hours,Disciplinary,Low
-I suggest adding more vegetarian options,Mess,Low
-It would be nice to have a new coat of paint on the walls,Civil,Low
-A small crack on my windowpane,Civil,Low
-The notice board looks dirty please clean it,Sanitation,Low
-Please provide an extra LAN cable,IT,Low
-I am feeling lonely and homesick,Personal,High
-I am depressed and need someone to talk to,Personal,Urgent
-Severe stomach pain since last night,Personal,Urgent
-I broke my arm during football,Personal,Urgent
-A stray dog is inside the hostel premises,Civil,High
-Some students are smoking in the restroom,Disciplinary,High
-Someone is constantly bullying me online,Disciplinary,Urgent
-The gym equipment is rusted,Civil,Medium
-Air conditioner is making a loud noise,Electrical,Medium
-Water logging in the parking area after rain,Sanitation,High
-My assignment grades are not updating on the portal,IT,Medium
-Forgot my ID card in the mess,Disciplinary,Low
-Lost my umbrella yesterday,Disciplinary,Low
-The washroom is completely flooded and unusable,Sanitation,Urgent
-A short circuit happened in the main switchboard,Electrical,Urgent
-Food in the mess is completely raw and uncooked,Mess,High
-Our lab computers are infected with ransomware,IT,Urgent
-Someone is destroying college property in the park,Disciplinary,Urgent
-I need urgent medical attention my chest hurts,Personal,Urgent
-The roof is leaking heavily in the library,Civil,High
-My phone was stolen from hostel room,Disciplinary,High
-Lost my wallet in college campus,Disciplinary,Medium
-Gold chain missing from locker,Disciplinary,High
-Laptop stolen from lab,Disciplinary,High
-I am feeling anxious and stressed,Personal,Low
-I have severe headache today,Personal,Low
-I fainted in hostel room,Personal,High
-My phone got stolen from classroom,Disciplinary,High
-Someone took my wallet from my bag,Disciplinary,High
-My laptop is missing from hostel room,Disciplinary,High
-I lost my watch in the library,Disciplinary,Medium
-My gold ring is missing from my drawer,Disciplinary,High
-Bag containing valuables was stolen,Disciplinary,High
-My headphones were stolen from lab,Disciplinary,Medium
-Lost my purse near canteen,Disciplinary,Medium
-My jewellery box is missing,Disciplinary,High
-Someone stole my charger and power bank,Disciplinary,Medium
-Someone stole my cycle from the parking lot,Disciplinary,High
-I left my bag in the mess and it is missing,Disciplinary,High
-Lost my spectacles in the ground,Disciplinary,Medium
-My scientific calculator was stolen,Disciplinary,Medium
-Missing laptop charger from my desk,Disciplinary,Medium
+We need a new chair in the guest house because the old one is broken.,Civil,Low
+Please repair the unstable desk at classroom 302 as soon as possible.,Civil,Medium
+"The windowpane is peeling at hostel room, causing inconvenience.",Civil,Low
+Please repair the collapsed roof at the main gate as soon as possible.,Civil,Medium
+The podium structure at block B corridor looks scratched and might fall.,Civil,Urgent
+Emergency: The bench in the lab has falling apart completely blocking the way.,Civil,Urgent
+I noticed a leaking whiteboard when I visited the library.,Civil,Low
+My whiteboard inside the classroom 302 is damaged.,Civil,Medium
+A pathway fell and is now peeling in the seminar hall.,Civil,High
+The water cooler stand structure at classroom 302 looks collapsed and might fall.,Civil,Urgent
+I noticed a collapsed windowpane when I visited the seminar hall.,Civil,Low
+Huge problem in block B corridor: pathway is totally peeling.,Civil,High
+The roof in the seminar hall is falling apart and needs immediate replacement.,Civil,Medium
+Please repair the scratched chair at the seminar hall as soon as possible.,Civil,Medium
+A wall fell and is now jammed in the auditorium.,Civil,High
+Emergency: The windowpane in the study room has peeling completely blocking the way.,Civil,Urgent
+The roof structure at the faculty room looks cracked and might fall.,Civil,Urgent
+We need a new podium in the study room because the old one is shattered.,Civil,Low
+My door inside the the sports complex is shattered.,Civil,High
+I noticed a damaged staircase when I visited block B corridor.,Civil,Low
+Huge problem in the study room: whiteboard is totally shattered.,Civil,High
+We need a new water cooler stand in the seminar hall because the old one is cracked.,Civil,High
+The gym equipment structure at hostel room looks peeling and might fall.,Civil,Urgent
+classroom 302 has a rusted bookshelf which needs fixing.,Civil,Medium
+There is a wobbly desk near the library that poses a risk.,Civil,High
+I noticed a scratched windowpane when I visited hostel room.,Civil,Low
+Can someone look at the leaking bookshelf in the canteen?,Civil,Low
+The chair in the canteen is wobbly and needs immediate replacement.,Civil,Medium
+My whiteboard inside the the seminar hall is damaged.,Civil,Medium
+Can someone look at the unstable bench in the guest house?,Civil,Low
+"The wall is collapsed at classroom 302, causing inconvenience.",Civil,Medium
+Emergency: The bookshelf in block B corridor has peeling completely blocking the way.,Civil,Urgent
+My wall inside the the lab is collapsed.,Civil,Medium
+The whiteboard in classroom 101 is rusted and needs immediate replacement.,Civil,High
+My elevator door inside the classroom 101 is shattered.,Civil,Medium
+Huge problem in the guest house: windowpane is totally damaged.,Civil,High
+There is a falling apart podium near the library that poses a risk.,Civil,Urgent
+"The wall is leaking at the canteen, causing inconvenience.",Civil,Medium
+I noticed a collapsed ceiling when I visited the lab.,Civil,Low
+Please repair the scratched elevator door at the study room as soon as possible.,Civil,Medium
+Can someone look at the rusted bookshelf in classroom 302?,Civil,Low
+There is a broken whiteboard near the main gate that poses a risk.,Civil,High
+Huge problem in classroom 302: roof is totally broken.,Civil,High
+The roof in classroom 101 is damaged and needs immediate replacement.,Civil,Medium
+There is a shattered bookshelf near the seminar hall that poses a risk.,Civil,High
+Please repair the cracked podium at the guest house as soon as possible.,Civil,Medium
+Huge problem in the lab: blackboard is totally shattered.,Civil,High
+I noticed a damaged ceiling when I visited classroom 302.,Civil,Low
+A gym equipment fell and is now scratched in the faculty room.,Civil,High
+The chair in hostel room is broken and needs immediate replacement.,Civil,Medium
+My chair inside the block B corridor is shattered.,Civil,Medium
+Can someone look at the scratched desk in the library?,Civil,Low
+Please repair the rusted windowpane at the lab as soon as possible.,Civil,Medium
+"The chair is broken at the study room, causing inconvenience.",Civil,Medium
+The windowpane in the sports complex is falling apart and needs immediate replacement.,Civil,Medium
+I noticed a rusted blackboard when I visited block B corridor.,Civil,Low
+The wall in classroom 101 is scratched and needs immediate replacement.,Civil,Medium
+Emergency: The water cooler stand in hostel room has leaking completely blocking the way.,Civil,Urgent
+The podium structure at the guest house looks wobbly and might fall.,Civil,Urgent
+Please repair the shattered elevator door at classroom 101 as soon as possible.,Civil,Medium
+"The door is unstable at the auditorium, causing inconvenience.",Civil,Urgent
+"The bookshelf is cracked at classroom 101, causing inconvenience.",Civil,Medium
+There is a damaged wall near the main gate that poses a risk.,Civil,Medium
+I noticed a peeling chair when I visited block B corridor.,Civil,Low
+The windowpane in the study room is scratched and needs immediate replacement.,Civil,Medium
+"The whiteboard is leaking at block B corridor, causing inconvenience.",Civil,Medium
+A roof fell and is now leaking in hostel room.,Civil,High
+Can someone look at the falling apart whiteboard in classroom 302?,Civil,Low
+There is a shattered podium near the canteen that poses a risk.,Civil,High
+A windowpane fell and is now shattered in the auditorium.,Civil,High
+Can someone look at the unstable podium in the seminar hall?,Civil,Low
+My bookshelf inside the the study room is broken.,Civil,Medium
+Emergency: The chair in the seminar hall has cracked completely blocking the way.,Civil,Low
+The podium structure at the seminar hall looks cracked and might fall.,Civil,Urgent
+Please repair the shattered whiteboard at the study room as soon as possible.,Civil,Medium
+Emergency: The bookshelf in the seminar hall has rusted completely blocking the way.,Civil,Urgent
+The windowpane in hostel room is wobbly and needs immediate replacement.,Civil,Medium
+The bench in the lab is jammed and needs immediate replacement.,Civil,High
+the guest house has a collapsed water cooler stand which needs fixing.,Civil,Medium
+The chair in the guest house is damaged and needs immediate replacement.,Civil,Medium
+"The door is jammed at the main gate, causing inconvenience.",Civil,Medium
+I noticed a broken desk when I visited the seminar hall.,Civil,Low
+My door inside the block B corridor is jammed.,Civil,Medium
+We need a new chair in the lab because the old one is jammed.,Civil,Low
+I noticed a shattered desk when I visited the sports complex.,Civil,Low
+My wall inside the classroom 101 is scratched.,Civil,Medium
+A gym equipment fell and is now falling apart in the study room.,Civil,High
+My roof inside the the library is leaking.,Civil,Medium
+There is a broken shed near the sports complex that poses a risk.,Civil,High
+Please repair the jammed water cooler stand at the seminar hall as soon as possible.,Civil,Medium
+Please repair the broken roof at the study room as soon as possible.,Civil,Medium
+A staircase fell and is now damaged in the lab.,Civil,High
+We need a new bookshelf in the study room because the old one is scratched.,Civil,Low
+"The whiteboard is broken at classroom 302, causing inconvenience.",Civil,Medium
+Emergency: The wall in the seminar hall has peeling completely blocking the way.,Civil,Urgent
+A whiteboard fell and is now scratched in the main gate.,Civil,High
+There is a peeling shed near block B corridor that poses a risk.,Civil,High
+The gym equipment structure at the canteen looks broken and might fall.,Civil,Urgent
+"The ceiling is jammed at hostel room, causing inconvenience.",Civil,High
+Huge problem in the sports complex: whiteboard is totally wobbly.,Civil,High
+"The elevator door is wobbly at hostel room, causing inconvenience.",Civil,Medium
+The elevator door structure at the library looks collapsed and might fall.,Civil,Urgent
+We need a new shed in the guest house because the old one is wobbly.,Civil,Low
+Huge problem in the canteen: elevator door is totally scratched.,Civil,High
+Emergency: The elevator door in hostel room has shattered completely blocking the way.,Civil,Urgent
+Huge problem in the faculty room: whiteboard is totally rusted.,Civil,High
+Please repair the rusted bookshelf at the lab as soon as possible.,Civil,Medium
+My wall inside the classroom 302 is wobbly.,Civil,Medium
+We need a new whiteboard in the sports complex because the old one is damaged.,Civil,Low
+Please repair the shattered elevator door at the lab as soon as possible.,Civil,Medium
+The door in the faculty room is shattered and needs immediate replacement.,Civil,Medium
+My windowpane inside the hostel room is rusted.,Civil,Medium
+Huge problem in the guest house: ceiling is totally unstable.,Civil,High
+I noticed a cracked roof when I visited the study room.,Civil,Low
+My chair inside the hostel room is falling apart.,Civil,Medium
+My bookshelf inside the classroom 101 is rusted.,Civil,Medium
+There is a cracked water cooler stand near the lab that poses a risk.,Civil,High
+"The podium is peeling at the auditorium, causing inconvenience.",Civil,Medium
+Can someone look at the scratched bookshelf in the sports complex?,Civil,Low
+Can someone look at the unstable wall in the sports complex?,Civil,Low
+Emergency: The roof in the seminar hall has wobbly completely blocking the way.,Civil,Urgent
+"The blackboard is wobbly at block B corridor, causing inconvenience.",Civil,Medium
+There is a shattered elevator door near the seminar hall that poses a risk.,Civil,High
+"The windowpane is cracked at the library, causing inconvenience.",Civil,Medium
+The desk structure at block B corridor looks unstable and might fall.,Civil,Urgent
+A podium fell and is now rusted in hostel room.,Civil,Urgent
+I noticed a falling apart bench when I visited the main gate.,Civil,Low
+The pathway in the lab is leaking and needs immediate replacement.,Civil,Medium
+I noticed a unstable podium when I visited the guest house.,Civil,Low
+Huge problem in block B corridor: roof is totally rusted.,Civil,High
+Can someone look at the scratched bench in the auditorium?,Civil,Low
+My shed inside the the library is unstable.,Civil,Medium
+hostel room has a broken podium which needs fixing.,Civil,Medium
+We need a new bench in the study room because the old one is damaged.,Civil,Low
+Can someone look at the broken wall in the seminar hall?,Civil,Low
+Please repair the jammed water cooler stand at the auditorium as soon as possible.,Civil,Medium
+I noticed a falling apart staircase when I visited the sports complex.,Civil,Low
+There is a broken blackboard near the guest house that poses a risk.,Civil,High
+A roof fell and is now wobbly in classroom 302.,Civil,High
+We need a new door in classroom 101 because the old one is falling apart.,Civil,Low
+Please repair the peeling bench at the library as soon as possible.,Civil,Medium
+Can someone look at the peeling chair in block B corridor?,Civil,Low
+Emergency: The pathway in the main gate has cracked completely blocking the way.,Civil,Urgent
+The chair structure at the sports complex looks falling apart and might fall.,Civil,Urgent
+Emergency: The chair in classroom 101 has peeling completely blocking the way.,Civil,Urgent
+Huge problem in the guest house: shed is totally scratched.,Civil,High
+Huge problem in the guest house: roof is totally damaged.,Civil,High
+We need a new chair in the main gate because the old one is falling apart.,Civil,Low
+A podium fell and is now scratched in the study room.,Civil,High
+"The whiteboard is broken at the sports complex, causing inconvenience.",Civil,Medium
+Can someone look at the scratched chair in the auditorium?,Civil,Low
+The bookshelf structure at the seminar hall looks wobbly and might fall.,Civil,Urgent
+"The blackboard is rusted at hostel room, causing inconvenience.",Civil,Medium
+Huge problem in the sports complex: staircase is totally jammed.,Civil,High
+There is a rusted staircase near block B corridor that poses a risk.,Civil,High
+Huge problem in classroom 101: shed is totally jammed.,Civil,High
+A wall fell and is now rusted in block B corridor.,Civil,High
+Emergency: The whiteboard in the main gate has leaking completely blocking the way.,Civil,Urgent
+Emergency: The podium in the canteen has broken completely blocking the way.,Civil,Urgent
+There is a unstable roof near hostel room that poses a risk.,Civil,High
+My roof inside the the faculty room is unstable.,Civil,Medium
+Can someone look at the falling apart water cooler stand in classroom 101?,Civil,Medium
+I noticed a leaking roof when I visited the study room.,Civil,Low
+Can someone look at the collapsed podium in the auditorium?,Civil,Low
+The podium structure at the auditorium looks jammed and might fall.,Civil,Urgent
+Emergency: The elevator door in block B corridor has leaking completely blocking the way.,Civil,Medium
+A chair fell and is now unstable in the canteen.,Civil,High
+The wall structure at block B corridor looks shattered and might fall.,Civil,Urgent
+Emergency: The bookshelf in the seminar hall has peeling completely blocking the way.,Civil,Urgent
+Please repair the shattered elevator door at the auditorium as soon as possible.,Civil,Medium
+The podium in the seminar hall is cracked and needs immediate replacement.,Civil,Low
+"The elevator door is unstable at the library, causing inconvenience.",Civil,Medium
+My blackboard inside the the sports complex is damaged.,Civil,High
+Can someone look at the rusted blackboard in the auditorium?,Civil,Low
+The staircase in classroom 302 is rusted and needs immediate replacement.,Civil,Medium
+I noticed a damaged blackboard when I visited the main gate.,Civil,Low
+The desk in the lab is cracked and needs immediate replacement.,Civil,Medium
+Emergency: The windowpane in classroom 302 has shattered completely blocking the way.,Civil,Urgent
+I noticed a falling apart roof when I visited the canteen.,Civil,Low
+Can someone look at the peeling elevator door in hostel room?,Civil,Low
+We have no power because the air conditioner is unresponsive in the corridor.,Electrical,High
+"Please fix the power outlet in the main entrance, it is fused.",Electrical,Medium
+Total power failure affecting the tube light at lecture hall 2.,Electrical,Urgent
+We have no power because the street light is fused in my hostel room.,Electrical,High
+I got shocked because the exhaust fan in the main entrance is sparking.,Electrical,Urgent
+I got shocked because the power outlet in the corridor is giving electric shocks.,Electrical,Urgent
+Total power failure affecting the water heater at lecture hall 2.,Electrical,Medium
+I got shocked because the microwave in the corridor is short-circuited.,Electrical,Urgent
+I got shocked because the fire alarm in block C is fused.,Electrical,Urgent
+Emergency! tube light is unresponsive and causing a fire hazard in my hostel room.,Electrical,Urgent
+The water heater just started not working in the corridor.,Electrical,High
+We have no power because the fan is smoking in the library.,Electrical,High
+Total power failure affecting the street light at block C.,Electrical,High
+I got shocked because the socket in the pantry is unresponsive.,Electrical,Urgent
+Emergency! tube light is short-circuited and causing a fire hazard in the washroom.,Electrical,Urgent
+The bulb just started flickering in the washroom.,Electrical,High
+Emergency! microwave is smoking and causing a fire hazard in the pantry.,Electrical,Urgent
+The air conditioner is short-circuited again at the corridor.,Electrical,Medium
+The bulb just started giving electric shocks in block C.,Electrical,High
+The exhaust fan in my hostel room is giving electric shocks.,Electrical,Medium
+The street light just started smoking in the auditorium.,Electrical,High
+"Please fix the water heater in lecture hall 2, it is malfunctioning.",Electrical,Medium
+Emergency! street light is sparking and causing a fire hazard in my hostel room.,Electrical,Urgent
+We have no power because the projector is burnt out in lecture hall 2.,Electrical,High
+The generator in the server room is sparking.,Electrical,Medium
+Warning: The exhaust fan near the main entrance is sparking!,Electrical,Urgent
+Emergency! microwave is malfunctioning and causing a fire hazard in the library.,Electrical,Urgent
+Emergency! street light is making a loud noise and causing a fire hazard in the auditorium.,Electrical,Urgent
+Could you replace the power outlet in block C? It seems to be unresponsive.,Electrical,Low
+Total power failure affecting the tube light at the library.,Electrical,High
+Could you replace the elevator in the library? It seems to be malfunctioning.,Electrical,Low
+I got shocked because the microwave in the parking lot is unresponsive.,Electrical,Urgent
+Emergency! switchboard is short-circuited and causing a fire hazard in block C.,Electrical,Urgent
+The fire alarm just started short-circuited in the washroom.,Electrical,High
+"Please fix the fire alarm in the pantry, it is making a loud noise.",Electrical,Urgent
+Could you replace the fire alarm in the main entrance? It seems to be smoking.,Electrical,Low
+Emergency! air conditioner is flickering and causing a fire hazard in block C.,Electrical,Urgent
+The bulb just started short-circuited in the corridor.,Electrical,High
+Emergency! fan is burnt out and causing a fire hazard in lecture hall 2.,Electrical,Urgent
+Total power failure affecting the tube light at the auditorium.,Electrical,High
+I got shocked because the elevator in the pantry is unresponsive.,Electrical,Urgent
+The fire alarm just started completely dead in the main entrance.,Electrical,High
+Emergency! air conditioner is unresponsive and causing a fire hazard in the corridor.,Electrical,Urgent
+I got shocked because the projector in the corridor is burnt out.,Electrical,Urgent
+Warning: The bulb near lecture hall 2 is short-circuited!,Electrical,Urgent
+The air conditioner in my hostel room is completely dead.,Electrical,Medium
+The generator just started flickering in the server room.,Electrical,High
+We have no power because the socket is flickering in lecture hall 2.,Electrical,Urgent
+We have no power because the projector is short-circuited in the parking lot.,Electrical,Urgent
+I got shocked because the exhaust fan in the main entrance is fused.,Electrical,Urgent
+I got shocked because the socket in the auditorium is sparking.,Electrical,Urgent
+We have no power because the microwave is smoking in the pantry.,Electrical,High
+Emergency! microwave is making a loud noise and causing a fire hazard in the pantry.,Electrical,Urgent
+Warning: The projector near the parking lot is giving electric shocks!,Electrical,Urgent
+I got shocked because the microwave in the main entrance is not working.,Electrical,Urgent
+The air conditioner in the auditorium is unresponsive.,Electrical,Medium
+I got shocked because the projector in the washroom is unresponsive.,Electrical,Urgent
+"Please fix the water heater in the main entrance, it is smoking.",Electrical,Medium
+Total power failure affecting the bulb at the main entrance.,Electrical,High
+I got shocked because the exhaust fan in the parking lot is not working.,Electrical,Urgent
+Total power failure affecting the main gate motor at block C.,Electrical,High
+I got shocked because the socket in the auditorium is fused.,Electrical,Urgent
+I got shocked because the elevator in the auditorium is sparking.,Electrical,Urgent
+Total power failure affecting the projector at the main entrance.,Electrical,High
+Could you replace the main gate motor in the pantry? It seems to be sparking.,Electrical,Low
+Emergency! main gate motor is smoking and causing a fire hazard in the main entrance.,Electrical,Urgent
+Could you replace the main gate motor in the main entrance? It seems to be sparking.,Electrical,Low
+The elevator in the server room is unresponsive.,Electrical,Medium
+Warning: The switchboard near my hostel room is not working!,Electrical,Urgent
+Emergency! bulb is sparking and causing a fire hazard in the server room.,Electrical,Urgent
+Total power failure affecting the fire alarm at the auditorium.,Electrical,High
+The generator is unresponsive again at lecture hall 2.,Electrical,Medium
+Warning: The street light near the pantry is unresponsive!,Electrical,Urgent
+I got shocked because the air conditioner in the washroom is burnt out.,Electrical,Urgent
+Emergency! projector is completely dead and causing a fire hazard in the corridor.,Electrical,Urgent
+The main gate motor just started not working in the pantry.,Electrical,High
+"Please fix the fan in the washroom, it is not working.",Electrical,Medium
+Total power failure affecting the power outlet at the corridor.,Electrical,High
+The power outlet is unresponsive again at the server room.,Electrical,Medium
+"Please fix the elevator in the parking lot, it is flickering.",Electrical,Medium
+Warning: The fan near my hostel room is flickering!,Electrical,Urgent
+"Please fix the elevator in lecture hall 2, it is not working.",Electrical,Medium
+Total power failure affecting the generator at block C.,Electrical,Low
+Emergency! exhaust fan is completely dead and causing a fire hazard in block C.,Electrical,Urgent
+Emergency! projector is unresponsive and causing a fire hazard in my hostel room.,Electrical,Urgent
+The microwave is short-circuited again at the main entrance.,Electrical,Medium
+The street light in the pantry is giving electric shocks.,Electrical,Medium
+Emergency! exhaust fan is sparking and causing a fire hazard in the corridor.,Electrical,Urgent
+I got shocked because the elevator in the parking lot is giving electric shocks.,Electrical,Urgent
+Emergency! generator is sparking and causing a fire hazard in the corridor.,Electrical,Urgent
+The power outlet is giving electric shocks again at the auditorium.,Electrical,Medium
+Could you replace the elevator in the pantry? It seems to be short-circuited.,Electrical,Low
+Warning: The elevator near the washroom is giving electric shocks!,Electrical,Urgent
+The switchboard just started smoking in the auditorium.,Electrical,Low
+Warning: The generator near the washroom is sparking!,Electrical,Urgent
+The air conditioner is unresponsive again at block C.,Electrical,Medium
+Warning: The generator near the main entrance is completely dead!,Electrical,Urgent
+Could you replace the air conditioner in the parking lot? It seems to be fused.,Electrical,Low
+Warning: The power outlet near the main entrance is flickering!,Electrical,Urgent
+Warning: The main gate motor near the washroom is malfunctioning!,Electrical,High
+We have no power because the projector is giving electric shocks in block C.,Electrical,High
+We have no power because the fan is unresponsive in the main entrance.,Electrical,High
+I got shocked because the fan in the library is flickering.,Electrical,Urgent
+I got shocked because the elevator in my hostel room is completely dead.,Electrical,Urgent
+Total power failure affecting the fire alarm at the corridor.,Electrical,Low
+Warning: The power outlet near the pantry is giving electric shocks!,Electrical,Urgent
+Total power failure affecting the main gate motor at the library.,Electrical,High
+We have no power because the tube light is not working in lecture hall 2.,Electrical,High
+We have no power because the air conditioner is smoking in the corridor.,Electrical,High
+Could you replace the street light in the auditorium? It seems to be unresponsive.,Electrical,Low
+"Please fix the bulb in the pantry, it is completely dead.",Electrical,Urgent
+The microwave is not working again at the server room.,Electrical,Medium
+We have no power because the air conditioner is not working in the server room.,Electrical,High
+"Please fix the switchboard in the library, it is fused.",Electrical,Medium
+The street light in the pantry is burnt out.,Electrical,Medium
+Could you replace the projector in block C? It seems to be malfunctioning.,Electrical,Low
+The tube light just started giving electric shocks in my hostel room.,Electrical,High
+Emergency! tube light is completely dead and causing a fire hazard in the parking lot.,Electrical,Urgent
+Could you replace the generator in the corridor? It seems to be fused.,Electrical,Low
+The socket just started unresponsive in the auditorium.,Electrical,High
+The tube light just started giving electric shocks in the corridor.,Electrical,High
+We have no power because the fire alarm is malfunctioning in the corridor.,Electrical,High
+I got shocked because the elevator in the washroom is making a loud noise.,Electrical,Urgent
+Warning: The bulb near block C is malfunctioning!,Electrical,Urgent
+The main gate motor just started burnt out in the main entrance.,Electrical,High
+"Please fix the bulb in the library, it is flickering.",Electrical,Medium
+We have no power because the switchboard is smoking in the corridor.,Electrical,High
+Emergency! exhaust fan is unresponsive and causing a fire hazard in the parking lot.,Electrical,Urgent
+We have no power because the elevator is smoking in the washroom.,Electrical,High
+Warning: The street light near the main entrance is short-circuited!,Electrical,Urgent
+I got shocked because the air conditioner in block C is completely dead.,Electrical,Urgent
+Emergency! air conditioner is not working and causing a fire hazard in the washroom.,Electrical,Urgent
+Warning: The tube light near the parking lot is unresponsive!,Electrical,Urgent
+Emergency! air conditioner is short-circuited and causing a fire hazard in the parking lot.,Electrical,Urgent
+The street light just started malfunctioning in lecture hall 2.,Electrical,High
+Emergency! bulb is completely dead and causing a fire hazard in the corridor.,Electrical,Urgent
+Total power failure affecting the air conditioner at the server room.,Electrical,High
+Emergency! socket is completely dead and causing a fire hazard in the washroom.,Electrical,Urgent
+Could you replace the generator in the main entrance? It seems to be completely dead.,Electrical,Low
+The tube light just started completely dead in the corridor.,Electrical,High
+Could you replace the microwave in the main entrance? It seems to be fused.,Electrical,Low
+We have no power because the switchboard is completely dead in the corridor.,Electrical,High
+Could you replace the switchboard in the corridor? It seems to be unresponsive.,Electrical,Low
+Could you replace the elevator in the main entrance? It seems to be flickering.,Electrical,Low
+The tube light is smoking again at the main entrance.,Electrical,Medium
+The fan just started completely dead in the library.,Electrical,High
+"Please fix the elevator in the server room, it is short-circuited.",Electrical,Medium
+Total power failure affecting the switchboard at the corridor.,Electrical,High
+Warning: The air conditioner near the washroom is smoking!,Electrical,Urgent
+We have no power because the switchboard is unresponsive in the pantry.,Electrical,High
+Total power failure affecting the socket at the auditorium.,Electrical,High
+"Please fix the exhaust fan in the library, it is unresponsive.",Electrical,Medium
+Emergency! projector is malfunctioning and causing a fire hazard in the server room.,Electrical,Urgent
+Emergency! power outlet is completely dead and causing a fire hazard in the main entrance.,Electrical,Urgent
+Emergency! exhaust fan is fused and causing a fire hazard in the pantry.,Electrical,Urgent
+Could you replace the socket in the parking lot? It seems to be making a loud noise.,Electrical,High
+The street light in block C is completely dead.,Electrical,Medium
+The bulb is fused again at the corridor.,Electrical,Medium
+I got shocked because the exhaust fan in lecture hall 2 is malfunctioning.,Electrical,Urgent
+Warning: The projector near the washroom is short-circuited!,Electrical,Urgent
+Could you replace the air conditioner in block C? It seems to be giving electric shocks.,Electrical,Low
+Could you replace the tube light in the server room? It seems to be completely dead.,Electrical,Low
+The switchboard just started flickering in my hostel room.,Electrical,High
+Emergency! switchboard is burnt out and causing a fire hazard in the auditorium.,Electrical,Urgent
+The tube light in the library is not working.,Electrical,Medium
+Total power failure affecting the generator at the corridor.,Electrical,High
+"Please fix the microwave in my hostel room, it is sparking.",Electrical,Medium
+We have no power because the exhaust fan is sparking in the corridor.,Electrical,High
+Emergency! fan is smoking and causing a fire hazard in block C.,Electrical,Urgent
+Total power failure affecting the microwave at the pantry.,Electrical,High
+"Please fix the generator in the main entrance, it is flickering.",Electrical,Medium
+The main gate motor is sparking again at block C.,Electrical,Medium
+The fan is giving electric shocks again at the auditorium.,Electrical,Urgent
+The water heater just started burnt out in my hostel room.,Electrical,High
+Warning: The main gate motor near the main entrance is making a loud noise!,Electrical,Urgent
+We have no power because the elevator is flickering in my hostel room.,Electrical,High
+The socket just started smoking in the auditorium.,Electrical,High
+Emergency! socket is flickering and causing a fire hazard in the corridor.,Electrical,Urgent
+Emergency! air conditioner is fused and causing a fire hazard in the server room.,Electrical,Medium
+The elevator in block C is fused.,Electrical,Medium
+There is a flooded shower near the boys hostel.,Sanitation,Medium
+Major hygiene issue! water cooler is smelly in the boys hostel.,Sanitation,Urgent
+Can the sweeping staff look at the leaking water cooler in the ground floor?,Sanitation,Low
+The hallway in the library has been unusable for three days.,Sanitation,High
+Disgusting: the shower at the sports complex is filthy.,Sanitation,High
+There is a covered in mud water cooler near the girls hostel.,Sanitation,Medium
+"Please clean the sink in block A, it is full of mosquitoes.",Sanitation,Medium
+Can the sweeping staff look at the leaking toilet in the ground floor?,Sanitation,Low
+The shower is full of mosquitoes affecting everyone in the library.,Sanitation,High
+Water and waste everywhere because the dustbin in the boys hostel is unusable.,Sanitation,Urgent
+Can the sweeping staff look at the clogged garbage dump in the academic block?,Sanitation,Low
+The toilet near the library is extremely not cleaned.,Sanitation,High
+Disgusting: the washroom at the sports complex is blocked.,Sanitation,Low
+Major hygiene issue! lobby is not cleaned in the ground floor.,Sanitation,Urgent
+The washroom is completely full of mosquitoes at block A.,Sanitation,Medium
+Can the sweeping staff look at the unusable dustbin in the girls hostel?,Sanitation,Low
+There is a clogged dustbin near the ground floor.,Sanitation,Medium
+Major hygiene issue! toilet is dirty in block A.,Sanitation,Urgent
+The drinking water filter in the academic block has been leaking for three days.,Sanitation,High
+Water and waste everywhere because the sewage pipe in the academic block is full of mosquitoes.,Sanitation,Urgent
+Water and waste everywhere because the sewage pipe in block A is leaking.,Sanitation,Urgent
+Water and waste everywhere because the drainage in the sports complex is filthy.,Sanitation,Urgent
+Can the sweeping staff look at the smelly urinal in the girls hostel?,Sanitation,Low
+The water cooler is blocked affecting everyone in block A.,Sanitation,High
+There is a leaking sewage pipe near the canteen area.,Sanitation,Medium
+Major hygiene issue! lobby is unusable in the boys hostel.,Sanitation,Urgent
+The dustbin is completely unusable at block A.,Sanitation,Medium
+"Please clean the toilet in the library, it is flooded.",Sanitation,Medium
+Water and waste everywhere because the drinking water filter in the library is clogged.,Sanitation,Urgent
+"Please clean the drainage in the girls hostel, it is smelly.",Sanitation,Medium
+There is a blocked dustbin near block A.,Sanitation,Medium
+Disgusting: the sink at the boys hostel is dispensing brown water.,Sanitation,High
+There is a flooded drainage near block A.,Sanitation,Medium
+Major hygiene issue! dustbin is dispensing brown water in the academic block.,Sanitation,Urgent
+The sewage pipe is not cleaned affecting everyone in the academic block.,Sanitation,High
+The drinking water filter is completely leaking at block A.,Sanitation,Medium
+The drainage is completely blocked at the ground floor.,Sanitation,Medium
+The washroom is completely dirty at the girls hostel.,Sanitation,High
+Major hygiene issue! lobby is full of mosquitoes in the library.,Sanitation,Urgent
+The shower near the academic block is extremely not cleaned.,Sanitation,High
+The shower is overflowing affecting everyone in the library.,Sanitation,High
+"Please clean the hallway in block A, it is dirty.",Sanitation,Medium
+Water and waste everywhere because the shower in the ground floor is overflowing.,Sanitation,Urgent
+Can the sweeping staff look at the filthy staircase in the ground floor?,Sanitation,Low
+Can the sweeping staff look at the blocked sink in the ground floor?,Sanitation,Low
+"Please clean the dustbin in the sports complex, it is overflowing.",Sanitation,Urgent
+Major hygiene issue! drainage is leaking in the boys hostel.,Sanitation,Urgent
+The staircase in the library has been full of mosquitoes for three days.,Sanitation,High
+Disgusting: the staircase at the ground floor is smelly.,Sanitation,High
+Disgusting: the shower at the sports complex is dispensing brown water.,Sanitation,High
+The shower is dirty affecting everyone in the girls hostel.,Sanitation,High
+There is a overflowing shower near the canteen area.,Sanitation,Medium
+The washroom near the sports complex is extremely flooded.,Sanitation,High
+Water and waste everywhere because the water cooler in the boys hostel is dispensing brown water.,Sanitation,Urgent
+The drainage in the ground floor has been flooded for three days.,Sanitation,High
+Can the sweeping staff look at the clogged washroom in the boys hostel?,Sanitation,Low
+"Please clean the sink in the sports complex, it is dispensing brown water.",Sanitation,Medium
+The staircase is full of mosquitoes affecting everyone in the girls hostel.,Sanitation,Low
+The dustbin in the ground floor has been covered in mud for three days.,Sanitation,High
+Can the sweeping staff look at the blocked lobby in the canteen area?,Sanitation,Low
+The drinking water filter in the boys hostel has been dirty for three days.,Sanitation,High
+Water and waste everywhere because the drinking water filter in block A is unusable.,Sanitation,Urgent
+There is a smelly drainage near the ground floor.,Sanitation,Medium
+The hallway is completely flooded at the ground floor.,Sanitation,Medium
+There is a unusable drinking water filter near the academic block.,Sanitation,Medium
+The dustbin near the girls hostel is extremely smelly.,Sanitation,High
+The water cooler is completely covered in mud at the boys hostel.,Sanitation,Medium
+The urinal is covered in mud affecting everyone in the canteen area.,Sanitation,High
+The shower is completely blocked at the library.,Sanitation,Medium
+The garbage dump near the girls hostel is extremely filthy.,Sanitation,High
+Water and waste everywhere because the dustbin in block A is clogged.,Sanitation,Urgent
+Major hygiene issue! sink is dispensing brown water in the sports complex.,Sanitation,Urgent
+The hallway near the canteen area is extremely blocked.,Sanitation,High
+Water and waste everywhere because the drinking water filter in the ground floor is clogged.,Sanitation,Urgent
+Water and waste everywhere because the drinking water filter in the ground floor is smelly.,Sanitation,Urgent
+The garbage dump is unusable affecting everyone in the canteen area.,Sanitation,High
+The drinking water filter is flooded affecting everyone in the canteen area.,Sanitation,High
+The lobby is flooded affecting everyone in the canteen area.,Sanitation,High
+Water and waste everywhere because the dustbin in the ground floor is unusable.,Sanitation,Urgent
+The water cooler is leaking affecting everyone in the library.,Sanitation,High
+The staircase in block A has been smelly for three days.,Sanitation,High
+The hallway is leaking affecting everyone in the ground floor.,Sanitation,High
+The hallway is unusable affecting everyone in the canteen area.,Sanitation,High
+There is a dispensing brown water water cooler near the academic block.,Sanitation,Medium
+Major hygiene issue! washroom is not cleaned in the canteen area.,Sanitation,Urgent
+The toilet near the ground floor is extremely clogged.,Sanitation,High
+"Please clean the urinal in block A, it is covered in mud.",Sanitation,Medium
+The urinal in the sports complex has been unusable for three days.,Sanitation,High
+The dustbin is flooded affecting everyone in the boys hostel.,Sanitation,High
+"Please clean the urinal in the canteen area, it is full of mosquitoes.",Sanitation,Medium
+The drainage near block A is extremely clogged.,Sanitation,High
+The staircase near the sports complex is extremely clogged.,Sanitation,High
+The washroom is dirty affecting everyone in the academic block.,Sanitation,High
+"Please clean the dustbin in the sports complex, it is flooded.",Sanitation,Medium
+There is a unusable drinking water filter near block A.,Sanitation,Medium
+Water and waste everywhere because the water cooler in the girls hostel is overflowing.,Sanitation,Urgent
+Water and waste everywhere because the urinal in block A is flooded.,Sanitation,High
+The garbage dump is not cleaned affecting everyone in the canteen area.,Sanitation,High
+The staircase in the ground floor has been clogged for three days.,Sanitation,Low
+Disgusting: the drainage at the ground floor is unusable.,Sanitation,High
+The water cooler near the canteen area is extremely clogged.,Sanitation,High
+The urinal is smelly affecting everyone in the canteen area.,Sanitation,Low
+Water and waste everywhere because the water cooler in the library is blocked.,Sanitation,Urgent
+The hallway is leaking affecting everyone in the academic block.,Sanitation,High
+Major hygiene issue! sewage pipe is blocked in the sports complex.,Sanitation,Urgent
+The dustbin is completely clogged at the sports complex.,Sanitation,Medium
+Major hygiene issue! lobby is overflowing in the girls hostel.,Sanitation,Urgent
+There is a smelly hallway near the girls hostel.,Sanitation,Medium
+"Please clean the washroom in the canteen area, it is dispensing brown water.",Sanitation,Medium
+Disgusting: the drainage at the sports complex is smelly.,Sanitation,Medium
+The shower is completely leaking at the sports complex.,Sanitation,Medium
+Water and waste everywhere because the drainage in the library is dispensing brown water.,Sanitation,Urgent
+The drinking water filter near the academic block is extremely unusable.,Sanitation,High
+The water cooler in the canteen area has been dirty for three days.,Sanitation,High
+The sink near the girls hostel is extremely smelly.,Sanitation,High
+The toilet near the boys hostel is extremely unusable.,Sanitation,High
+Disgusting: the lobby at the library is blocked.,Sanitation,High
+The shower in the library has been clogged for three days.,Sanitation,Medium
+Can the sweeping staff look at the blocked toilet in the library?,Sanitation,Low
+Major hygiene issue! staircase is dirty in the boys hostel.,Sanitation,Urgent
+Water and waste everywhere because the urinal in the library is filthy.,Sanitation,Urgent
+Major hygiene issue! sewage pipe is unusable in the ground floor.,Sanitation,Urgent
+Major hygiene issue! hallway is covered in mud in the girls hostel.,Sanitation,Urgent
+The lobby is completely dirty at the canteen area.,Sanitation,Medium
+"Please clean the garbage dump in the sports complex, it is dirty.",Sanitation,Medium
+The sewage pipe near the boys hostel is extremely filthy.,Sanitation,High
+Major hygiene issue! drinking water filter is overflowing in the boys hostel.,Sanitation,High
+Major hygiene issue! staircase is filthy in the ground floor.,Sanitation,Urgent
+Can the sweeping staff look at the flooded sewage pipe in block A?,Sanitation,Low
+There is a clogged sewage pipe near the academic block.,Sanitation,Medium
+There is a filthy garbage dump near block A.,Sanitation,Medium
+The drinking water filter in the boys hostel has been unusable for three days.,Sanitation,High
+The lobby in the ground floor has been dispensing brown water for three days.,Sanitation,High
+The drainage in the library has been flooded for three days.,Sanitation,High
+The staircase is filthy affecting everyone in block A.,Sanitation,High
+The drinking water filter near the library is extremely clogged.,Sanitation,High
+Disgusting: the sink at the academic block is overflowing.,Sanitation,High
+"Please clean the shower in the girls hostel, it is smelly.",Sanitation,Medium
+Major hygiene issue! washroom is flooded in the library.,Sanitation,Urgent
+The washroom is completely leaking at the canteen area.,Sanitation,Medium
+The hallway is completely not cleaned at the canteen area.,Sanitation,Medium
+Can the sweeping staff look at the dirty water cooler in the canteen area?,Sanitation,Low
+"Please clean the hallway in the sports complex, it is covered in mud.",Sanitation,Medium
+The hallway is completely overflowing at the library.,Sanitation,Medium
+There is a covered in mud dustbin near the academic block.,Sanitation,Medium
+There is a smelly urinal near the academic block.,Sanitation,Medium
+There is a unusable shower near the girls hostel.,Sanitation,Medium
+Water and waste everywhere because the lobby in the canteen area is smelly.,Sanitation,Urgent
+The washroom in the canteen area has been full of mosquitoes for three days.,Sanitation,High
+The water cooler near the library is extremely dispensing brown water.,Sanitation,High
+Major hygiene issue! dustbin is overflowing in the library.,Sanitation,Urgent
+Major hygiene issue! shower is dispensing brown water in the ground floor.,Sanitation,Urgent
+Water and waste everywhere because the hallway in the sports complex is not cleaned.,Sanitation,Urgent
+Can the sweeping staff look at the blocked drainage in the sports complex?,Sanitation,Low
+There is a dirty urinal near the boys hostel.,Sanitation,Medium
+"Please clean the staircase in the boys hostel, it is not cleaned.",Sanitation,Medium
+The drainage in the canteen area has been not cleaned for three days.,Sanitation,Medium
+The sewage pipe near the sports complex is extremely dispensing brown water.,Sanitation,High
+The urinal is completely not cleaned at the sports complex.,Sanitation,Medium
+The washroom near the library is extremely dispensing brown water.,Sanitation,High
+There is a dirty water cooler near the library.,Sanitation,Medium
+Disgusting: the toilet at block A is leaking.,Sanitation,High
+The drinking water filter is completely flooded at the ground floor.,Sanitation,Medium
+The toilet in the library has been smelly for three days.,Sanitation,High
+Major hygiene issue! hallway is overflowing in the academic block.,Sanitation,Urgent
+"Please clean the urinal in the boys hostel, it is not cleaned.",Sanitation,Urgent
+The hallway near the girls hostel is extremely blocked.,Sanitation,High
+The urinal in the ground floor has been covered in mud for three days.,Sanitation,High
+"Please clean the drinking water filter in the canteen area, it is dirty.",Sanitation,Medium
+The shower is completely flooded at the boys hostel.,Sanitation,Medium
+The drinking water filter is full of mosquitoes affecting everyone in the boys hostel.,Sanitation,High
+Can the sweeping staff look at the overflowing washroom in block A?,Sanitation,Low
+The toilet in block A has been flooded for three days.,Sanitation,High
+The staircase is completely clogged at the ground floor.,Sanitation,Medium
+Disgusting: the lobby at the girls hostel is filthy.,Sanitation,High
+Can the sweeping staff look at the leaking washroom in the library?,Sanitation,Low
+"Please clean the dustbin in the library, it is full of mosquitoes.",Sanitation,Medium
+Can the sweeping staff look at the not cleaned washroom in the academic block?,Sanitation,Low
+There is a clogged sink near block A.,Sanitation,Medium
+The toilet in the academic block has been covered in mud for three days.,Sanitation,High
+I cannot access my work because the internet is hacked.,IT,High
+The campus app is unresponsive across the server room.,IT,High
+I cannot access my work because the WiFi is hacked.,IT,High
+"Please fix the internet, it keeps crashing in the library.",IT,Medium
+Security breach: The printer seems to be disconnecting frequently!,IT,Urgent
+I cannot access my work because the WiFi is completely down.,IT,High
+I cannot access my work because the VPN is showing wrong data.,IT,High
+Is the WiFi hacked for everyone in my phone?,IT,Low
+I cannot access my work because the campus app is disconnecting frequently.,IT,High
+Urgent tech support needed: VPN is disconnecting frequently.,IT,Urgent
+Is the college website crashing for everyone in all departments?,IT,Low
+Security breach: The college website seems to be completely down!,IT,Urgent
+"Please fix the department database, it keeps hacked in the entire campus.",IT,Medium
+The ERP login page system is throwing a 500 error.,IT,High
+Security breach: The VPN seems to be showing wrong data!,IT,Urgent
+I cannot access my work because the college website is hacked.,IT,Urgent
+The VPN system is unresponsive.,IT,High
+The smart board system is infected with ransomware.,IT,High
+My college website connection in the server room is hacked.,IT,Medium
+Urgent tech support needed: smart board is infected with ransomware.,IT,Urgent
+Is the lab computers hacked for everyone in the entire campus?,IT,Low
+Urgent tech support needed: lab computers is unresponsive.,IT,Urgent
+Is the lab computers completely down for everyone in the computer lab?,IT,Low
+The college website is having huge latency and it is delaying our project in my room.,IT,High
+Security breach: The campus app seems to be throwing a 500 error!,IT,Urgent
+"Please fix the campus app, it keeps completely down in my phone.",IT,Medium
+The biometric attendance is hacked across the computer lab.,IT,High
+The campus app is unresponsive across my phone.,IT,Urgent
+My department database connection in my phone is disconnecting frequently.,IT,Medium
+The campus app system is disconnecting frequently.,IT,High
+I cannot access my work because the internet is throwing a 500 error.,IT,High
+The college website system is having huge latency.,IT,High
+My biometric attendance connection in my phone is having huge latency.,IT,Medium
+The department database system is completely down.,IT,High
+Urgent tech support needed: printer is disconnecting frequently.,IT,Urgent
+My student portal connection in the server room is locked out.,IT,Medium
+My campus app connection in lecture hall 2 is disconnecting frequently.,IT,Medium
+The smart board is completely down in all departments.,IT,Medium
+I cannot access my work because the internet is crashing.,IT,High
+The smart board system is throwing a 500 error.,IT,High
+The smart board system is completely down.,IT,High
+Security breach: The lab computers seems to be completely down!,IT,Urgent
+I cannot access my work because the WiFi is infected with ransomware.,IT,High
+The campus app is throwing a 500 error across lecture hall 2.,IT,High
+The printer system is unresponsive.,IT,High
+Urgent tech support needed: department database is having huge latency.,IT,Urgent
+Is the department database very slow for everyone in the computer lab?,IT,Low
+Urgent tech support needed: ERP login page is completely down.,IT,Urgent
+The college website is infected with ransomware and it is delaying our project in the server room.,IT,High
+I cannot access my work because the ERP login page is having huge latency.,IT,High
+The biometric attendance is infected with ransomware and it is delaying our project in my phone.,IT,High
+My internet connection in the server room is infected with ransomware.,IT,Medium
+My college website connection in all departments is having huge latency.,IT,Medium
+My internet connection in lecture hall 2 is having huge latency.,IT,Medium
+The lab computers is crashing across my phone.,IT,High
+The VPN is unresponsive across my phone.,IT,High
+The campus app is having huge latency and it is delaying our project in lecture hall 2.,IT,High
+Security breach: The ERP login page seems to be crashing!,IT,Urgent
+Security breach: The VPN seems to be very slow!,IT,Urgent
+The smart board is crashing in the computer lab.,IT,Medium
+The printer is having huge latency and it is delaying our project in the entire campus.,IT,High
+Security breach: The department database seems to be locked out!,IT,Urgent
+I cannot access my work because the VPN is very slow.,IT,High
+Urgent tech support needed: ERP login page is very slow.,IT,Urgent
+The ERP login page is crashing and it is delaying our project in the entire campus.,IT,High
+I cannot access my work because the VPN is completely down.,IT,High
+The lab computers is disconnecting frequently and it is delaying our project in my room.,IT,High
+Security breach: The printer seems to be throwing a 500 error!,IT,Urgent
+I cannot access my work because the campus app is having huge latency.,IT,High
+"Please fix the WiFi, it keeps locked out in all departments.",IT,Medium
+I cannot access my work because the smart board is completely down.,IT,High
+Urgent tech support needed: student portal is showing wrong data.,IT,Urgent
+My biometric attendance connection in lecture hall 2 is unresponsive.,IT,Medium
+Urgent tech support needed: student portal is very slow.,IT,Urgent
+The ERP login page is showing wrong data and it is delaying our project in lecture hall 2.,IT,High
+"Please fix the ERP login page, it keeps showing wrong data in all departments.",IT,Medium
+The biometric attendance is completely down and it is delaying our project in lecture hall 2.,IT,High
+Is the WiFi hacked for everyone in lecture hall 2?,IT,Low
+The student portal is crashing across the server room.,IT,High
+Is the smart board crashing for everyone in all departments?,IT,Low
+Is the smart board completely down for everyone in the library?,IT,Low
+"Please fix the campus app, it keeps infected with ransomware in the entire campus.",IT,Medium
+The VPN system is very slow.,IT,High
+I cannot access my work because the campus app is locked out.,IT,High
+The internet system is disconnecting frequently.,IT,High
+Is the student portal locked out for everyone in all departments?,IT,Low
+"Please fix the lab computers, it keeps disconnecting frequently in lecture hall 2.",IT,Medium
+Security breach: The lab computers seems to be having huge latency!,IT,Urgent
+The internet is having huge latency in the entire campus.,IT,Medium
+Security breach: The smart board seems to be very slow!,IT,Urgent
+Is the student portal crashing for everyone in all departments?,IT,Low
+"Please fix the internet, it keeps having huge latency in the server room.",IT,Medium
+The biometric attendance system is having huge latency.,IT,High
+Is the biometric attendance hacked for everyone in the computer lab?,IT,Low
+I cannot access my work because the campus app is completely down.,IT,Urgent
+I cannot access my work because the college website is showing wrong data.,IT,High
+Security breach: The WiFi seems to be very slow!,IT,Urgent
+I cannot access my work because the department database is crashing.,IT,High
+Urgent tech support needed: department database is completely down.,IT,Urgent
+I cannot access my work because the internet is infected with ransomware.,IT,High
+"Please fix the college website, it keeps unresponsive in lecture hall 2.",IT,Medium
+The internet is disconnecting frequently across my room.,IT,High
+The smart board is infected with ransomware across the computer lab.,IT,High
+The department database is showing wrong data across the entire campus.,IT,High
+I cannot access my work because the VPN is unresponsive.,IT,High
+Is the lab computers crashing for everyone in the computer lab?,IT,Low
+I cannot access my work because the student portal is disconnecting frequently.,IT,High
+My ERP login page connection in all departments is very slow.,IT,Medium
+My printer connection in my phone is throwing a 500 error.,IT,Medium
+The student portal is locked out in my phone.,IT,Urgent
+My internet connection in my room is disconnecting frequently.,IT,Medium
+The college website system is unresponsive.,IT,High
+My department database connection in lecture hall 2 is infected with ransomware.,IT,Medium
+I cannot access my work because the WiFi is showing wrong data.,IT,High
+Urgent tech support needed: WiFi is very slow.,IT,Urgent
+Is the printer hacked for everyone in my phone?,IT,Low
+Is the internet having huge latency for everyone in lecture hall 2?,IT,Low
+"Please fix the internet, it keeps disconnecting frequently in the computer lab.",IT,Medium
+The printer is infected with ransomware across my phone.,IT,High
+I cannot access my work because the ERP login page is unresponsive.,IT,High
+Urgent tech support needed: WiFi is throwing a 500 error.,IT,Urgent
+I cannot access my work because the smart board is showing wrong data.,IT,High
+"Please fix the biometric attendance, it keeps having huge latency in lecture hall 2.",IT,Medium
+The college website is locked out in the server room.,IT,Medium
+"Please fix the college website, it keeps infected with ransomware in lecture hall 2.",IT,Medium
+"Please fix the campus app, it keeps completely down in my room.",IT,Medium
+Is the ERP login page disconnecting frequently for everyone in the library?,IT,Low
+My biometric attendance connection in the entire campus is completely down.,IT,Medium
+The WiFi system is locked out.,IT,High
+The lab computers is crashing across all departments.,IT,High
+My biometric attendance connection in the computer lab is completely down.,IT,Medium
+The WiFi is very slow in the computer lab.,IT,High
+Is the college website crashing for everyone in my room?,IT,Low
+Is the student portal infected with ransomware for everyone in the computer lab?,IT,Low
+The ERP login page system is completely down.,IT,High
+I cannot access my work because the printer is having huge latency.,IT,High
+The student portal is disconnecting frequently across my room.,IT,High
+I cannot access my work because the smart board is hacked.,IT,High
+"Please fix the lab computers, it keeps completely down in the entire campus.",IT,Medium
+"Please fix the VPN, it keeps hacked in the computer lab.",IT,Medium
+My smart board connection in the computer lab is throwing a 500 error.,IT,Medium
+Is the WiFi throwing a 500 error for everyone in the server room?,IT,Low
+The lab computers is very slow in my phone.,IT,Medium
+"Please fix the internet, it keeps throwing a 500 error in the computer lab.",IT,Medium
+The college website is hacked in the library.,IT,Medium
+The department database is infected with ransomware and it is delaying our project in the entire campus.,IT,High
+The college website is having huge latency and it is delaying our project in my phone.,IT,Low
+Is the biometric attendance crashing for everyone in the computer lab?,IT,Low
+The department database system is infected with ransomware.,IT,High
+"Please fix the student portal, it keeps completely down in the computer lab.",IT,Low
+The internet is crashing across the entire campus.,IT,High
+Is the internet disconnecting frequently for everyone in the server room?,IT,Low
+Urgent tech support needed: smart board is hacked.,IT,Urgent
+"Please fix the campus app, it keeps showing wrong data in my room.",IT,Medium
+The college website system is completely down.,IT,High
+The department database system is disconnecting frequently.,IT,High
+"Please fix the college website, it keeps very slow in my phone.",IT,Medium
+The campus app is disconnecting frequently and it is delaying our project in the computer lab.,IT,Low
+The internet is very slow across my room.,IT,High
+Urgent tech support needed: college website is throwing a 500 error.,IT,Urgent
+"Please fix the internet, it keeps very slow in the library.",IT,Medium
+The internet system is very slow.,IT,High
+The college website is showing wrong data in my phone.,IT,Medium
+Is the smart board very slow for everyone in my phone?,IT,Low
+The lab computers is throwing a 500 error across lecture hall 2.,IT,High
+Security breach: The college website seems to be very slow!,IT,Urgent
+My student portal connection in all departments is having huge latency.,IT,Medium
+The smart board is very slow and it is delaying our project in the library.,IT,High
+The department database is throwing a 500 error across the computer lab.,IT,High
+The WiFi is unresponsive and it is delaying our project in the server room.,IT,High
+Security breach: The lab computers seems to be showing wrong data!,IT,Urgent
+Is the ERP login page crashing for everyone in my room?,IT,Low
+Urgent tech support needed: WiFi is hacked.,IT,Urgent
+The lab computers is showing wrong data and it is delaying our project in the computer lab.,IT,High
+I cannot access my work because the student portal is having huge latency.,IT,High
+The campus app is very slow and it is delaying our project in the computer lab.,IT,High
+Is the lab computers crashing for everyone in lecture hall 2?,IT,Low
+The campus app system is infected with ransomware.,IT,High
+The campus app is infected with ransomware in lecture hall 2.,IT,Medium
+Urgent tech support needed: smart board is disconnecting frequently.,IT,Urgent
+Extremely disappointed with the completely raw food.,Mess,Medium
+The breakfast today was cold.,Mess,Medium
+Food safety alert: The drinking glasses is undercooked!,Mess,Urgent
+Please ensure the food is not too spicy tomorrow.,Mess,Medium
+I found the canteen food to be unhygienic in the mess.,Mess,High
+I found the drinking glasses to be full of insects in the mess.,Mess,High
+I found the drinking glasses to be unwashed and oily in the mess.,Mess,High
+Food safety alert: The kitchen counter is served very late!,Mess,Urgent
+Extremely disappointed with the tasteless soup.,Mess,High
+"The kitchen counter is overpriced, please take action against the contractor.",Mess,High
+Can we improve the soup? It is always overpriced.,Mess,Low
+The tea served at the mess is unwashed and oily.,Mess,Low
+We are being served overpriced plates.,Mess,High
+We are being served full of insects milk.,Mess,Medium
+Extremely disappointed with the tasteless curry.,Mess,High
+Can we improve the drinking glasses? It is always tasteless.,Mess,Low
+I found the canteen food to be full of insects in the mess.,Mess,High
+Please ensure the dinner is not too spicy tomorrow.,Mess,Low
+Can we improve the kitchen counter? It is always completely raw.,Mess,Low
+I found the kitchen counter to be too spicy in the mess.,Mess,Urgent
+The curry served at the mess is served very late.,Mess,Medium
+The drinking glasses served at the mess is unhygienic.,Mess,Medium
+Extremely disappointed with the overpriced diet plan.,Mess,High
+Can we improve the curry? It is always cold.,Mess,Low
+The food was tasteless and made several students sick.,Mess,Urgent
+I found the rice to be tasteless in the mess.,Mess,High
+The curry served at the mess is completely raw.,Mess,Medium
+I found the drinking glasses to be overpriced in the mess.,Mess,High
+Extremely disappointed with the too spicy kitchen counter.,Mess,High
+Food safety alert: The lunch is served very late!,Mess,Urgent
+I found the drinking glasses to be sour and spoiled in the mess.,Mess,High
+The kitchen counter served at the mess is unhygienic.,Mess,Medium
+"The tea is full of insects, please take action against the contractor.",Mess,High
+Can we improve the rice? It is always too spicy.,Mess,Low
+"The canteen food is cold, please take action against the contractor.",Mess,High
+Please ensure the food is not served very late tomorrow.,Mess,Urgent
+Can we improve the curry? It is always full of insects.,Mess,Low
+I found the dinner to be completely raw in the mess.,Mess,High
+The dinner served at the mess is cold.,Mess,Medium
+The rice was full of insects and made several students sick.,Mess,Urgent
+Food safety alert: The drinking glasses is served very late!,Mess,Urgent
+Extremely disappointed with the unwashed and oily food.,Mess,High
+The milk was unwashed and oily and made several students sick.,Mess,Urgent
+Food safety alert: The diet plan is full of insects!,Mess,High
+"The plates is overpriced, please take action against the contractor.",Mess,High
+The canteen food today was served very late.,Mess,Medium
+The breakfast served at the mess is full of insects.,Mess,Medium
+Extremely disappointed with the sour and spoiled lunch.,Mess,High
+I found the plates to be too spicy in the mess.,Mess,High
+"The diet plan is overpriced, please take action against the contractor.",Mess,High
+We are being served completely raw curry.,Mess,Medium
+Extremely disappointed with the undercooked curry.,Mess,High
+Can we improve the curry? It is always too spicy.,Mess,Low
+The milk served at the mess is full of insects.,Mess,High
+Please ensure the kitchen counter is not completely raw tomorrow.,Mess,Urgent
+"The drinking glasses is unwashed and oily, please take action against the contractor.",Mess,High
+The diet plan today was overpriced.,Mess,Medium
+The rice served at the mess is served very late.,Mess,Low
+I found the lunch to be completely raw in the mess.,Mess,High
+"The drinking glasses is served very late, please take action against the contractor.",Mess,High
+Extremely disappointed with the overpriced lunch.,Mess,High
+Food safety alert: The tea is served very late!,Mess,Urgent
+The plates today was tasteless.,Mess,Medium
+The kitchen counter today was cold.,Mess,Medium
+Please ensure the food is not tasteless tomorrow.,Mess,Low
+The tea was unwashed and oily and made several students sick.,Mess,Urgent
+I found the canteen food to be sour and spoiled in the mess.,Mess,Urgent
+Please ensure the tea is not served very late tomorrow.,Mess,Low
+I found the milk to be cold in the mess.,Mess,High
+The kitchen counter served at the mess is cold.,Mess,Medium
+Please ensure the canteen food is not too spicy tomorrow.,Mess,Low
+Food safety alert: The rice is unwashed and oily!,Mess,Urgent
+The curry served at the mess is unhygienic.,Mess,Medium
+The curry today was sour and spoiled.,Mess,Medium
+Can we improve the canteen food? It is always too spicy.,Mess,Low
+Extremely disappointed with the tasteless food.,Mess,High
+The drinking glasses was cold and made several students sick.,Mess,Urgent
+I found the soup to be too spicy in the mess.,Mess,High
+Extremely disappointed with the cold lunch.,Mess,High
+Extremely disappointed with the unhygienic lunch.,Mess,High
+Food safety alert: The canteen food is unwashed and oily!,Mess,Urgent
+I found the tea to be too spicy in the mess.,Mess,High
+Food safety alert: The canteen food is overpriced!,Mess,Urgent
+Can we improve the canteen food? It is always sour and spoiled.,Mess,Low
+Can we improve the tea? It is always full of insects.,Mess,Low
+The canteen food today was full of insects.,Mess,Medium
+Food safety alert: The lunch is too spicy!,Mess,Urgent
+We are being served unwashed and oily diet plan.,Mess,Medium
+The plates was served very late and made several students sick.,Mess,Urgent
+Extremely disappointed with the sour and spoiled tea.,Mess,High
+"The canteen food is overpriced, please take action against the contractor.",Mess,High
+I found the food to be unhygienic in the mess.,Mess,High
+Please ensure the breakfast is not full of insects tomorrow.,Mess,Low
+The tea was full of insects and made several students sick.,Mess,Low
+Please ensure the tea is not full of insects tomorrow.,Mess,Low
+The milk was undercooked and made several students sick.,Mess,Urgent
+Can we improve the food? It is always overpriced.,Mess,Low
+Please ensure the soup is not undercooked tomorrow.,Mess,Low
+Extremely disappointed with the unwashed and oily tea.,Mess,High
+The plates served at the mess is too spicy.,Mess,Medium
+We are being served sour and spoiled canteen food.,Mess,Medium
+Can we improve the soup? It is always unhygienic.,Mess,Low
+"The tea is undercooked, please take action against the contractor.",Mess,High
+"The curry is unwashed and oily, please take action against the contractor.",Mess,Medium
+The kitchen counter was unhygienic and made several students sick.,Mess,Urgent
+Food safety alert: The soup is tasteless!,Mess,Urgent
+Can we improve the drinking glasses? It is always sour and spoiled.,Mess,Low
+The plates was tasteless and made several students sick.,Mess,Urgent
+We are being served cold tea.,Mess,Medium
+Extremely disappointed with the full of insects food.,Mess,High
+We are being served cold rice.,Mess,Medium
+"The rice is full of insects, please take action against the contractor.",Mess,High
+The plates was too spicy and made several students sick.,Mess,Urgent
+Food safety alert: The curry is sour and spoiled!,Mess,Urgent
+We are being served undercooked dinner.,Mess,Medium
+Food safety alert: The diet plan is completely raw!,Mess,Urgent
+Food safety alert: The drinking glasses is full of insects!,Mess,Urgent
+We are being served undercooked diet plan.,Mess,Medium
+I found the curry to be overpriced in the mess.,Mess,High
+The plates served at the mess is served very late.,Mess,Medium
+The food served at the mess is too spicy.,Mess,Medium
+"The milk is too spicy, please take action against the contractor.",Mess,High
+Can we improve the milk? It is always tasteless.,Mess,Low
+I found the plates to be unhygienic in the mess.,Mess,High
+Food safety alert: The rice is too spicy!,Mess,Urgent
+The dinner was unhygienic and made several students sick.,Mess,Urgent
+Please ensure the plates is not full of insects tomorrow.,Mess,Low
+Please ensure the dinner is not tasteless tomorrow.,Mess,Low
+Food safety alert: The diet plan is served very late!,Mess,Medium
+Food safety alert: The milk is too spicy!,Mess,Urgent
+Food safety alert: The rice is tasteless!,Mess,Urgent
+The plates today was full of insects.,Mess,Medium
+"The lunch is too spicy, please take action against the contractor.",Mess,High
+The soup today was completely raw.,Mess,Medium
+The food today was completely raw.,Mess,Medium
+The rice served at the mess is unhygienic.,Mess,Medium
+Food safety alert: The milk is full of insects!,Mess,Urgent
+The plates was full of insects and made several students sick.,Mess,High
+We are being served undercooked lunch.,Mess,Medium
+I found the breakfast to be overpriced in the mess.,Mess,Low
+I found the dinner to be sour and spoiled in the mess.,Mess,High
+The canteen food was unhygienic and made several students sick.,Mess,Urgent
+Please ensure the kitchen counter is not served very late tomorrow.,Mess,Low
+Can we improve the kitchen counter? It is always cold.,Mess,Low
+The food today was full of insects.,Mess,Low
+We are being served cold soup.,Mess,Low
+"The rice is completely raw, please take action against the contractor.",Mess,High
+Can we improve the dinner? It is always unwashed and oily.,Mess,Low
+The rice today was undercooked.,Mess,Medium
+The drinking glasses was full of insects and made several students sick.,Mess,Urgent
+I found the rice to be too spicy in the mess.,Mess,Medium
+Food safety alert: The drinking glasses is tasteless!,Mess,Urgent
+We are being served completely raw tea.,Mess,Medium
+Please ensure the curry is not completely raw tomorrow.,Mess,Low
+Extremely disappointed with the served very late tea.,Mess,High
+Extremely disappointed with the served very late diet plan.,Mess,High
+Food safety alert: The rice is undercooked!,Mess,Urgent
+The canteen food today was undercooked.,Mess,Urgent
+Please ensure the lunch is not too spicy tomorrow.,Mess,Low
+Food safety alert: The dinner is cold!,Mess,Urgent
+The soup was tasteless and made several students sick.,Mess,Medium
+Please ensure the breakfast is not unhygienic tomorrow.,Mess,Low
+We are being served served very late rice.,Mess,Medium
+Can we improve the dinner? It is always tasteless.,Mess,Low
+We are being served too spicy food.,Mess,Medium
+Food safety alert: The breakfast is cold!,Mess,Urgent
+Food safety alert: The rice is cold!,Mess,Urgent
+Please ensure the tea is not too spicy tomorrow.,Mess,Low
+"The soup is served very late, please take action against the contractor.",Mess,High
+Can we improve the rice? It is always cold.,Mess,Low
+We are being served completely raw dinner.,Mess,Medium
+Extremely disappointed with the completely raw drinking glasses.,Mess,High
+The rice today was served very late.,Mess,Medium
+"The breakfast is too spicy, please take action against the contractor.",Mess,High
+We are being served full of insects lunch.,Mess,Medium
+"The breakfast is sour and spoiled, please take action against the contractor.",Mess,High
+Extremely disappointed with the tasteless drinking glasses.,Mess,High
+Can we improve the canteen food? It is always cold.,Mess,Low
+We are being served cold lunch.,Mess,Medium
+Please ensure the kitchen counter is not cold tomorrow.,Mess,Medium
+My spectacles was taken from the parking lot.,Disciplinary,Urgent
+"Can't find my charger, it was taken in my hostel room.",Disciplinary,Medium
+My laptop was lost from the lab.,Disciplinary,Urgent
+I left my headphones in my hostel room and now it is lost.,Disciplinary,High
+"I missing my jewellery near the classroom, suspecting theft.",Disciplinary,High
+My cycle was missing from my desk.,Disciplinary,Urgent
+I left my gold chain in my hostel room and now it is taken.,Disciplinary,High
+I left my cycle in my hostel room and now it is stolen.,Disciplinary,High
+I left my bag in the lab and now it is lost.,Disciplinary,High
+My phone is snatched from the library.,Disciplinary,High
+"Can't find my cycle, it was snatched in my desk.",Disciplinary,Medium
+"Can't find my laptop, it was snatched in the lab.",Disciplinary,Medium
+The laptop was stolen from the ground!,Disciplinary,Urgent
+The jewellery was snatched from the canteen!,Disciplinary,Urgent
+"Can't find my cycle, it was lost in the classroom.",Disciplinary,Medium
+"I taken my cycle near the parking lot, suspecting theft.",Disciplinary,High
+My laptop is missing from the ground.,Disciplinary,High
+"Can't find my headphones, it was snatched in the parking lot.",Disciplinary,Medium
+I left my headphones in the canteen and now it is snatched.,Disciplinary,High
+The headphones was snatched from the classroom!,Disciplinary,Urgent
+Someone snatched my gold chain while I was in the parking lot.,Disciplinary,High
+The spectacles was missing from the lab!,Disciplinary,Urgent
+I left my spectacles in my desk and now it is snatched.,Disciplinary,High
+"Can't find my jewellery, it was lost in the parking lot.",Disciplinary,Medium
+My cycle was missing from the library.,Disciplinary,Urgent
+The phone was missing from the parking lot!,Disciplinary,Urgent
+I left my laptop in the parking lot and now it is taken.,Disciplinary,High
+Someone taken my phone while I was in the classroom.,Disciplinary,High
+I left my charger in the canteen and now it is stolen.,Disciplinary,High
+I left my bag in the classroom and now it is stolen.,Disciplinary,High
+The watch was snatched from the ground!,Disciplinary,Urgent
+Someone taken my charger while I was in the library.,Disciplinary,High
+My cycle is lost from the canteen.,Disciplinary,High
+"Can't find my phone, it was stolen in the parking lot.",Disciplinary,Medium
+Someone lost my jewellery while I was in the classroom.,Disciplinary,High
+The headphones was taken from the classroom!,Disciplinary,Urgent
+I left my headphones in the parking lot and now it is missing.,Disciplinary,High
+My laptop is stolen from the lab.,Disciplinary,High
+Someone snatched my headphones while I was in my hostel room.,Disciplinary,High
+My phone is lost from the parking lot.,Disciplinary,High
+"Can't find my power bank, it was missing in the lab.",Disciplinary,Medium
+"Can't find my power bank, it was stolen in the canteen.",Disciplinary,Medium
+My headphones is missing from the library.,Disciplinary,High
+Someone snatched my spectacles while I was in the library.,Disciplinary,High
+I left my watch in the parking lot and now it is snatched.,Disciplinary,High
+My jewellery is snatched from the canteen.,Disciplinary,High
+My headphones was taken from the classroom.,Disciplinary,Urgent
+Someone stolen my charger while I was in the lab.,Disciplinary,High
+My charger is snatched from the ground.,Disciplinary,High
+My spectacles was missing from the classroom.,Disciplinary,Urgent
+The spectacles was taken from the canteen!,Disciplinary,Urgent
+"I snatched my gold chain near my desk, suspecting theft.",Disciplinary,High
+"Can't find my watch, it was stolen in my hostel room.",Disciplinary,Medium
+The spectacles was lost from the classroom!,Disciplinary,Urgent
+The jewellery was snatched from the classroom!,Disciplinary,Urgent
+My watch was taken from the ground.,Disciplinary,Urgent
+I left my wallet in the parking lot and now it is lost.,Disciplinary,High
+"Can't find my headphones, it was taken in the library.",Disciplinary,Medium
+"Can't find my spectacles, it was snatched in my desk.",Disciplinary,Medium
+My phone is taken from the classroom.,Disciplinary,High
+"I stolen my charger near my hostel room, suspecting theft.",Disciplinary,High
+Someone snatched my charger while I was in the library.,Disciplinary,High
+The wallet was missing from the classroom!,Disciplinary,Urgent
+I left my watch in my hostel room and now it is lost.,Disciplinary,High
+Someone lost my charger while I was in my hostel room.,Disciplinary,High
+The watch was missing from the library!,Disciplinary,Urgent
+My headphones is taken from the library.,Disciplinary,High
+My wallet was stolen from the lab.,Disciplinary,Urgent
+I left my power bank in my hostel room and now it is snatched.,Disciplinary,High
+"Can't find my gold chain, it was taken in the ground.",Disciplinary,Medium
+My bag is lost from the ground.,Disciplinary,High
+"I lost my phone near my hostel room, suspecting theft.",Disciplinary,High
+"Can't find my phone, it was snatched in my hostel room.",Disciplinary,Medium
+I left my headphones in the library and now it is snatched.,Disciplinary,High
+The wallet was taken from my hostel room!,Disciplinary,Urgent
+"I taken my watch near my hostel room, suspecting theft.",Disciplinary,High
+"I lost my bag near the ground, suspecting theft.",Disciplinary,High
+I left my watch in my desk and now it is stolen.,Disciplinary,High
+Someone missing my charger while I was in the lab.,Disciplinary,High
+The cycle was snatched from the parking lot!,Disciplinary,Urgent
+The laptop was taken from the canteen!,Disciplinary,Urgent
+My charger was snatched from the lab.,Disciplinary,Urgent
+My phone was stolen from the ground.,Disciplinary,Urgent
+"Can't find my charger, it was stolen in the parking lot.",Disciplinary,Medium
+Someone taken my headphones while I was in the classroom.,Disciplinary,High
+My watch is snatched from the lab.,Disciplinary,High
+Someone missing my laptop while I was in the parking lot.,Disciplinary,High
+Someone missing my wallet while I was in the library.,Disciplinary,High
+I left my charger in my hostel room and now it is lost.,Disciplinary,High
+"I stolen my watch near the parking lot, suspecting theft.",Disciplinary,High
+My gold chain was snatched from my desk.,Disciplinary,Urgent
+"I missing my spectacles near the classroom, suspecting theft.",Disciplinary,High
+My power bank was snatched from my hostel room.,Disciplinary,Urgent
+Someone lost my spectacles while I was in my desk.,Disciplinary,High
+"I taken my jewellery near the lab, suspecting theft.",Disciplinary,High
+"Can't find my jewellery, it was taken in the canteen.",Disciplinary,Medium
+My laptop is stolen from the canteen.,Disciplinary,High
+Someone lost my gold chain while I was in the parking lot.,Disciplinary,High
+I left my spectacles in the canteen and now it is missing.,Disciplinary,High
+My bag is lost from the canteen.,Disciplinary,High
+I left my power bank in my hostel room and now it is lost.,Disciplinary,High
+Someone snatched my watch while I was in my hostel room.,Disciplinary,High
+I left my power bank in the classroom and now it is missing.,Disciplinary,High
+"I stolen my headphones near my hostel room, suspecting theft.",Disciplinary,High
+My charger was stolen from the ground.,Disciplinary,Urgent
+I left my jewellery in the library and now it is missing.,Disciplinary,High
+"Can't find my power bank, it was snatched in my desk.",Disciplinary,Medium
+The laptop was taken from the ground!,Disciplinary,Urgent
+Someone taken my jewellery while I was in the lab.,Disciplinary,High
+My charger is snatched from my hostel room.,Disciplinary,High
+My spectacles is snatched from the library.,Disciplinary,High
+The gold chain was snatched from the lab!,Disciplinary,Urgent
+I left my charger in my desk and now it is missing.,Disciplinary,High
+Someone snatched my laptop while I was in the lab.,Disciplinary,High
+The headphones was lost from the canteen!,Disciplinary,Urgent
+My gold chain was lost from the classroom.,Disciplinary,Urgent
+My power bank was taken from the classroom.,Disciplinary,Urgent
+My watch was missing from the canteen.,Disciplinary,Urgent
+My bag is lost from the library.,Disciplinary,High
+My watch was taken from my hostel room.,Disciplinary,Urgent
+The charger was taken from the parking lot!,Disciplinary,Urgent
+"Can't find my charger, it was snatched in the lab.",Disciplinary,Medium
+My watch is lost from the canteen.,Disciplinary,High
+"Can't find my watch, it was stolen in the parking lot.",Disciplinary,Medium
+My gold chain is snatched from the ground.,Disciplinary,High
+"I lost my spectacles near my desk, suspecting theft.",Disciplinary,High
+"Can't find my phone, it was snatched in the lab.",Disciplinary,Medium
+My laptop is missing from my hostel room.,Disciplinary,High
+"Can't find my watch, it was taken in the classroom.",Disciplinary,Medium
+Someone missing my laptop while I was in the canteen.,Disciplinary,High
+"Can't find my headphones, it was stolen in the classroom.",Disciplinary,Medium
+My spectacles is stolen from my desk.,Disciplinary,High
+The bag was lost from the classroom!,Disciplinary,Urgent
+"Can't find my laptop, it was lost in the library.",Disciplinary,Medium
+Someone missing my phone while I was in the lab.,Disciplinary,High
+Someone snatched my watch while I was in the library.,Disciplinary,High
+"Can't find my laptop, it was stolen in the lab.",Disciplinary,Medium
+"I snatched my laptop near the ground, suspecting theft.",Disciplinary,High
+"Can't find my jewellery, it was stolen in the parking lot.",Disciplinary,Medium
+My gold chain was lost from my desk.,Disciplinary,Urgent
+I left my bag in the classroom and now it is missing.,Disciplinary,High
+I left my cycle in the lab and now it is snatched.,Disciplinary,High
+I left my jewellery in the parking lot and now it is missing.,Disciplinary,High
+Someone taken my headphones while I was in my desk.,Disciplinary,High
+"Can't find my jewellery, it was stolen in the classroom.",Disciplinary,Medium
+My cycle is missing from my hostel room.,Disciplinary,High
+My gold chain was snatched from the ground.,Disciplinary,Urgent
+I left my laptop in my hostel room and now it is snatched.,Disciplinary,High
+Someone snatched my bag while I was in the library.,Disciplinary,High
+I left my charger in my hostel room and now it is snatched.,Disciplinary,High
+My bag was missing from the library.,Disciplinary,Urgent
+I left my watch in the ground and now it is lost.,Disciplinary,High
+"I snatched my phone near the ground, suspecting theft.",Disciplinary,High
+Someone lost my bag while I was in the canteen.,Disciplinary,High
+"Can't find my headphones, it was snatched in my hostel room.",Disciplinary,Medium
+My laptop is taken from my desk.,Disciplinary,High
+I left my gold chain in the parking lot and now it is stolen.,Disciplinary,High
+"Can't find my charger, it was lost in the parking lot.",Disciplinary,Medium
+Someone stolen my phone while I was in my hostel room.,Disciplinary,High
+"Can't find my phone, it was lost in the classroom.",Disciplinary,Medium
+The spectacles was lost from the canteen!,Disciplinary,Urgent
+My laptop was lost from the parking lot.,Disciplinary,Urgent
+"I lost my charger near the canteen, suspecting theft.",Disciplinary,High
+"Can't find my power bank, it was lost in the classroom.",Disciplinary,Medium
+My charger is snatched from my desk.,Disciplinary,High
+Someone snatched my spectacles while I was in my desk.,Disciplinary,High
+"I snatched my power bank near the canteen, suspecting theft.",Disciplinary,High
+I left my headphones in the lab and now it is lost.,Disciplinary,High
+I left my watch in the classroom and now it is stolen.,Disciplinary,High
+My headphones is missing from my hostel room.,Disciplinary,High
+Someone lost my charger while I was in the canteen.,Disciplinary,High
+I left my charger in the library and now it is snatched.,Disciplinary,High
+Someone stolen my cycle while I was in my hostel room.,Disciplinary,High
+I left my laptop in the ground and now it is lost.,Disciplinary,High
+My wallet was taken from the classroom.,Disciplinary,Urgent
+"I snatched my wallet near the library, suspecting theft.",Disciplinary,High
+The cycle was lost from the parking lot!,Disciplinary,Urgent
+The jewellery was stolen from the lab!,Disciplinary,Urgent
+The bag was lost from the library!,Disciplinary,Urgent
+Someone snatched my watch while I was in the parking lot.,Disciplinary,High
+I feel lonely and homesick and need counseling.,Personal,High
+I have a mild back pain today.,Personal,Low
+My friend cut my finger on the ground.,Personal,Urgent
+A sudden vomiting started an hour ago.,Personal,High
+I have a severe dizziness and need medical help.,Personal,Urgent
+A sudden fever started an hour ago.,Personal,High
+I slipped in the lab and cannot walk properly.,Personal,Urgent
+I am suffering from panic attack in the library.,Personal,High
+I have a mild anxiety today.,Personal,Low
+My friend fainted in my room.,Personal,Urgent
+"Please send someone, I injured my leg in the hostel.",Personal,Urgent
+My friend twisted my ankle in my room.,Personal,Urgent
+My friend collapsed in the lab.,Personal,Urgent
+I cut my finger on the ground and cannot walk properly.,Personal,Urgent
+I feel extremely overwhelmed and need counseling.,Personal,High
+I am having a bleeding and need immediate support.,Personal,Urgent
+I have a severe depression and need medical help.,Personal,Urgent
+A sudden panic attack started an hour ago.,Personal,High
+My friend injured my leg on the ground.,Personal,Urgent
+I am suffering from chronic back pain.,Personal,Medium
+I collapsed in the hostel and cannot walk properly.,Personal,Urgent
+My friend twisted my ankle on the ground.,Personal,Urgent
+I have a mild depression today.,Personal,Low
+"Please send someone, I got burnt in the library.",Personal,Urgent
+I have a mild allergic reaction today.,Personal,Low
+I feel suicidal and need counseling.,Personal,High
+I am experiencing extremely overwhelmed.,Personal,Medium
+I have a mild headache today.,Personal,Low
+I am experiencing lonely and homesick.,Personal,Medium
+I injured my leg in the library and cannot walk properly.,Personal,Urgent
+I am suffering from nausea in the classroom.,Personal,High
+I am suffering from chest pain in the classroom.,Personal,High
+Emergency: I slipped in the lab.,Personal,Urgent
+I cut my finger in the lab and cannot walk properly.,Personal,Urgent
+I am suffering from chronic panic attack.,Personal,Medium
+I am suffering from chest pain in the lab.,Personal,High
+A sudden allergic reaction started an hour ago.,Personal,High
+Emergency: I collapsed in the classroom.,Personal,Urgent
+A sudden chest pain started an hour ago.,Personal,High
+I am suffering from anxiety in the library.,Personal,High
+"Please send someone, I cut my finger in the classroom.",Personal,Urgent
+"Please send someone, I cut my finger in the lab.",Personal,Urgent
+I feel stressed about my exams and need counseling.,Personal,High
+I have a mild dizziness today.,Personal,Low
+A sudden nausea started an hour ago.,Personal,High
+I am suffering from chronic fever.,Personal,Medium
+I am suffering from chronic vomiting.,Personal,Medium
+I am suffering from allergic reaction on the ground.,Personal,High
+I have a severe nausea and need medical help.,Personal,Urgent
+My friend fainted in the library.,Personal,Urgent
+Emergency: I collapsed in the library.,Personal,Urgent
+I am experiencing stressed about my exams.,Personal,Medium
+My friend twisted my ankle in the library.,Personal,Urgent
+I feel depressed and need counseling.,Personal,High
+A sudden headache started an hour ago.,Personal,High
+My friend slipped in the library.,Personal,Urgent
+My friend fainted on the ground.,Personal,Urgent
+Emergency: I slipped in my room.,Personal,Urgent
+I am suffering from chronic chest pain.,Personal,Medium
+My friend got burnt in the lab.,Personal,Urgent
+"Please send someone, I fainted in the hostel.",Personal,Urgent
+I have a mild fever today.,Personal,Low
+Emergency: I collapsed on the ground.,Personal,Urgent
+I broke my arm on the ground and cannot walk properly.,Personal,Urgent
+I am experiencing depressed.,Personal,Medium
+"Please send someone, I collapsed in the lab.",Personal,Urgent
+I am having a depression and need immediate support.,Personal,Urgent
+I have a mild stomach pain today.,Personal,Low
+I have a mild vomiting today.,Personal,Low
+"Please send someone, I twisted my ankle in the classroom.",Personal,Urgent
+"Please send someone, I broke my arm in the library.",Personal,Urgent
+I have a severe stomach pain and need medical help.,Personal,Urgent
+I am having a allergic reaction and need immediate support.,Personal,Urgent
+My friend collapsed in the library.,Personal,Urgent
+I twisted my ankle on the ground and cannot walk properly.,Personal,Urgent
+I am having a fever and need immediate support.,Personal,Urgent
+"Please send someone, I broke my arm in the hostel.",Personal,Urgent
+I am experiencing suicidal.,Personal,Medium
+I collapsed in the lab and cannot walk properly.,Personal,Urgent
+My friend twisted my ankle in the lab.,Personal,Urgent
+I have a severe panic attack and need medical help.,Personal,Urgent
+I am suffering from chronic dizziness.,Personal,Medium
+I am suffering from bleeding in the classroom.,Personal,High
+I have a mild bleeding today.,Personal,Low
+I am suffering from vomiting on the ground.,Personal,High
+I am suffering from back pain in the library.,Personal,High
+"Please send someone, I got burnt in the hostel.",Personal,Urgent
+I got burnt in my room and cannot walk properly.,Personal,Urgent
+A sudden stomach pain started an hour ago.,Personal,High
+I am suffering from nausea in the lab.,Personal,High
+I am having a vomiting and need immediate support.,Personal,Urgent
+I am suffering from chronic stomach pain.,Personal,Medium
+Emergency: I cut my finger in the lab.,Personal,Urgent
+Emergency: I twisted my ankle in my room.,Personal,Urgent
+"Please send someone, I cut my finger in my room.",Personal,Urgent
+I injured my leg in the classroom and cannot walk properly.,Personal,Urgent
+I am suffering from chronic allergic reaction.,Personal,Medium
+My friend fainted in the hostel.,Personal,Urgent
+I am having a back pain and need immediate support.,Personal,Urgent
+I broke my arm in the hostel and cannot walk properly.,Personal,Urgent
+I am suffering from panic attack in the lab.,Personal,High
+"Please send someone, I twisted my ankle in the library.",Personal,Urgent
+I am suffering from stomach pain in the classroom.,Personal,High
+My friend broke my arm in the hostel.,Personal,Urgent
+I have a severe vomiting and need medical help.,Personal,Urgent
+I got burnt in the classroom and cannot walk properly.,Personal,Urgent
+"Please send someone, I broke my arm on the ground.",Personal,Urgent
+I am suffering from chest pain in my room.,Personal,High
+I have a mild panic attack today.,Personal,Low
+A sudden depression started an hour ago.,Personal,High
+I have a severe headache and need medical help.,Personal,Urgent
+My friend broke my arm in the lab.,Personal,Urgent
+I got burnt on the ground and cannot walk properly.,Personal,Urgent
+I have a severe chest pain and need medical help.,Personal,Urgent
+I fainted in the library and cannot walk properly.,Personal,Urgent
+I cut my finger in the hostel and cannot walk properly.,Personal,Urgent
+My friend collapsed in the classroom.,Personal,Urgent
+I am having a panic attack and need immediate support.,Personal,Urgent
+"Please send someone, I slipped in the library.",Personal,Urgent
+I am suffering from anxiety on the ground.,Personal,High
+I have a mild nausea today.,Personal,Low
+"Please send someone, I twisted my ankle in the lab.",Personal,Urgent
+I am suffering from chest pain on the ground.,Personal,High
+I slipped in the classroom and cannot walk properly.,Personal,Urgent
+"Please send someone, I got burnt in the classroom.",Personal,Urgent
+Emergency: I fainted in the classroom.,Personal,Urgent
+I have a severe back pain and need medical help.,Personal,Urgent
+I am suffering from chronic depression.,Personal,Medium
+I broke my arm in my room and cannot walk properly.,Personal,Urgent
+Emergency: I injured my leg in the classroom.,Personal,Urgent
+My friend got burnt in the classroom.,Personal,Urgent
+I am having a headache and need immediate support.,Personal,Urgent
+I am suffering from chronic nausea.,Personal,Medium
+"Please send someone, I cut my finger in the library.",Personal,Urgent
+"Please send someone, I fainted in the classroom.",Personal,Urgent
+My friend cut my finger in the library.,Personal,Urgent
+I collapsed in the classroom and cannot walk properly.,Personal,Urgent
+I am suffering from chest pain in the hostel.,Personal,High
+"Please send someone, I injured my leg in the lab.",Personal,Urgent
+I have a severe bleeding and need medical help.,Personal,Urgent
+"Please send someone, I got burnt in my room.",Personal,Urgent
+I am suffering from headache in the hostel.,Personal,High
+Emergency: I broke my arm in my room.,Personal,Urgent
+My friend injured my leg in the classroom.,Personal,Urgent
+"Please send someone, I cut my finger in the hostel.",Personal,Urgent
+"Please send someone, I slipped in the lab.",Personal,Urgent
+"Please send someone, I broke my arm in the lab.",Personal,Urgent
+I have a severe allergic reaction and need medical help.,Personal,Urgent
+"Please send someone, I got burnt on the ground.",Personal,Urgent
+"Please send someone, I got burnt in the lab.",Personal,Urgent
+My friend broke my arm in the library.,Personal,Urgent
+Emergency: I got burnt in the hostel.,Personal,Urgent
+Emergency: I injured my leg in my room.,Personal,Urgent
+My friend slipped in the classroom.,Personal,Urgent
+My friend got burnt on the ground.,Personal,Urgent
+A sudden bleeding started an hour ago.,Personal,High
+I collapsed in the library and cannot walk properly.,Personal,Urgent
+I am suffering from dizziness in the hostel.,Personal,High
+I am suffering from fever in the hostel.,Personal,High
+I have a severe anxiety and need medical help.,Personal,Urgent
+I am suffering from panic attack in my room.,Personal,High
+I have a mild chest pain today.,Personal,Low
+I am suffering from headache in the lab.,Personal,High
+My friend slipped in the lab.,Personal,Urgent
+"Please send someone, I fainted on the ground.",Personal,Urgent
+I fainted in my room and cannot walk properly.,Personal,Urgent
+I am suffering from chronic anxiety.,Personal,Medium
+My friend injured my leg in the hostel.,Personal,Urgent
+"Please send someone, I cut my finger on the ground.",Personal,Urgent
+I am having a anxiety and need immediate support.,Personal,Urgent
+I am suffering from stomach pain on the ground.,Personal,High
+"Please send someone, I slipped in my room.",Personal,Urgent
+I am suffering from bleeding in the lab.,Personal,High
+I am suffering from allergic reaction in my room.,Personal,High
+I am suffering from panic attack in the hostel.,Personal,High
+A sudden back pain started an hour ago.,Personal,High
+Emergency: I broke my arm on the ground.,Personal,Urgent
+Emergency: I cut my finger on the ground.,Personal,Urgent
+"Please send someone, I fainted in the lab.",Personal,Urgent
+Emergency: I fainted in my room.,Personal,Urgent
+Why is the semester fee crashing during submission?,Financial,Low
+There is an error: refund for hostel fees is delayed by two months.,Financial,High
+I am facing an issue because refund for hostel fees is higher than my actual consumption.,Financial,Medium
+There is an error: caution money is showing incorrect amount.,Financial,High
+Why is the scholarship amount deducted but transaction failed?,Financial,Low
+Urgent: education loan document is delayed by two months and I need help.,Financial,Urgent
+Can someone explain why refund for hostel fees is showing double payment?,Financial,Low
+There is an error: scholarship amount is higher than my actual consumption.,Financial,Urgent
+The fee payment is severely delayed causing me hardship.,Financial,High
+I notice the bus transport fee is delayed by two months on the portal.,Financial,High
+Urgent: education loan document is not reflecting in the system and I need help.,Financial,Urgent
+I notice the fee payment is higher than my actual consumption on the portal.,Financial,High
+"Please check my account, the semester fee is wrongfully rejected.",Financial,Medium
+Urgent: refund for hostel fees is not reflecting in the system and I need help.,Financial,Urgent
+I notice the mess fee deduction is crashing during submission on the portal.,Financial,Urgent
+Why is the bus transport fee wrongfully rejected?,Financial,Low
+Can someone explain why library fine is not reflecting in the system?,Financial,Low
+I want to report that bus transport fee is wrongfully rejected.,Financial,Medium
+Can someone explain why semester fee is showing incorrect amount?,Financial,Low
+There is an error: caution money is crashing during submission.,Financial,High
+I want to report that caution money is showing incorrect amount.,Financial,Urgent
+"Please check my account, the late fee penalty is delayed by two months.",Financial,Urgent
+I notice the financial aid disbursement is severely delayed causing me hardship on the portal.,Financial,High
+"Please check my account, the library fine is not reflecting in the system.",Financial,Medium
+I am facing an issue because financial aid disbursement is showing double payment.,Financial,Medium
+Can someone explain why fee payment is showing incorrect amount?,Financial,Low
+"Please check my account, the refund for hostel fees is delayed by two months.",Financial,Low
+Urgent: library fine is wrongfully rejected and I need help.,Financial,Urgent
+Why is the fee payment severely delayed causing me hardship?,Financial,Low
+The stipend for the internship is showing double payment.,Financial,High
+"Please check my account, the caution money is crashing during submission.",Financial,Medium
+I want to report that semester fee is higher than my actual consumption.,Financial,Medium
+There is an error: education loan document is wrongfully rejected.,Financial,High
+My bus transport fee is crashing during submission.,Financial,Medium
+My stipend for the internship is showing incorrect amount.,Financial,High
+There is an error: stipend for the internship is not reflecting in the system.,Financial,High
+My scholarship amount is deducted but transaction failed.,Financial,High
+"Please check my account, the scholarship amount is not reflecting in the system.",Financial,Medium
+I notice the caution money is deducted but transaction failed on the portal.,Financial,High
+The financial aid disbursement is showing double payment.,Financial,High
+I want to report that scholarship amount is wrongfully rejected.,Financial,Medium
+Can someone explain why semester fee is not reflecting in the system?,Financial,High
+"Please check my account, the mess fee deduction is deducted but transaction failed.",Financial,Medium
+My financial aid disbursement is severely delayed causing me hardship.,Financial,High
+Why is the caution money crashing during submission?,Financial,Low
+My late fee penalty is higher than my actual consumption.,Financial,High
+My semester fee is higher than my actual consumption.,Financial,High
+"Please check my account, the bus transport fee is wrongfully rejected.",Financial,Urgent
+I want to report that late fee penalty is showing incorrect amount.,Financial,Medium
+There is an error: refund for hostel fees is deducted but transaction failed.,Financial,High
+There is an error: financial aid disbursement is showing double payment.,Financial,High
+Urgent: late fee penalty is wrongfully rejected and I need help.,Financial,Urgent
+Urgent: refund for hostel fees is higher than my actual consumption and I need help.,Financial,Urgent
+I want to report that refund for hostel fees is deducted but transaction failed.,Financial,Medium
+I am facing an issue because late fee penalty is wrongfully rejected.,Financial,Medium
+I want to report that semester fee is delayed by two months.,Financial,Medium
+I am facing an issue because education loan document is not reflecting in the system.,Financial,Medium
+I notice the bus transport fee is higher than my actual consumption on the portal.,Financial,High
+Why is the refund for hostel fees showing incorrect amount?,Financial,Medium
+My library fine is higher than my actual consumption.,Financial,High
+Urgent: late fee penalty is not reflecting in the system and I need help.,Financial,Urgent
+Can someone explain why refund for hostel fees is crashing during submission?,Financial,Low
+Can someone explain why education loan document is severely delayed causing me hardship?,Financial,Low
+I notice the mess fee deduction is showing double payment on the portal.,Financial,Medium
+Urgent: fee payment is deducted but transaction failed and I need help.,Financial,Urgent
+My stipend for the internship is deducted but transaction failed.,Financial,High
+Urgent: caution money is delayed by two months and I need help.,Financial,Urgent
+Can someone explain why library fine is showing double payment?,Financial,Low
+Can someone explain why caution money is deducted but transaction failed?,Financial,Low
+My library fine is deducted but transaction failed.,Financial,High
+I notice the library fine is crashing during submission on the portal.,Financial,High
+My semester fee is delayed by two months.,Financial,High
+My caution money is crashing during submission.,Financial,High
+My semester fee is deducted but transaction failed.,Financial,High
+My caution money is higher than my actual consumption.,Financial,High
+Why is the stipend for the internship showing double payment?,Financial,Low
+Why is the library fine not reflecting in the system?,Financial,Low
+I am facing an issue because mess fee deduction is showing double payment.,Financial,Low
+I am facing an issue because library fine is crashing during submission.,Financial,Urgent
+"Please check my account, the mess fee deduction is not reflecting in the system.",Financial,Medium
+There is an error: education loan document is showing incorrect amount.,Financial,High
+The stipend for the internship is severely delayed causing me hardship.,Financial,High
+I am facing an issue because education loan document is delayed by two months.,Financial,Urgent
+"Please check my account, the scholarship amount is crashing during submission.",Financial,Medium
+I want to report that library fine is wrongfully rejected.,Financial,Medium
+I notice the fee payment is wrongfully rejected on the portal.,Financial,High
+There is an error: late fee penalty is wrongfully rejected.,Financial,High
+I am facing an issue because refund for hostel fees is not reflecting in the system.,Financial,Medium
+Why is the education loan document showing double payment?,Financial,Low
+I am facing an issue because scholarship amount is wrongfully rejected.,Financial,Medium
+My mess fee deduction is showing double payment.,Financial,High
+I want to report that fee payment is showing double payment.,Financial,Medium
+There is an error: late fee penalty is showing double payment.,Financial,High
+Can someone explain why scholarship amount is not reflecting in the system?,Financial,Low
+I want to report that stipend for the internship is crashing during submission.,Financial,Medium
+Urgent: fee payment is wrongfully rejected and I need help.,Financial,High
+My refund for hostel fees is not reflecting in the system.,Financial,High
+There is an error: stipend for the internship is severely delayed causing me hardship.,Financial,High
+There is an error: late fee penalty is crashing during submission.,Financial,High
+My scholarship amount is higher than my actual consumption.,Financial,High
+I notice the scholarship amount is deducted but transaction failed on the portal.,Financial,High
+I am facing an issue because scholarship amount is higher than my actual consumption.,Financial,Medium
+I notice the semester fee is showing incorrect amount on the portal.,Financial,High
+There is an error: fee payment is delayed by two months.,Financial,High
+I want to report that scholarship amount is showing double payment.,Financial,Medium
+There is an error: education loan document is higher than my actual consumption.,Financial,High
+"Please check my account, the stipend for the internship is crashing during submission.",Financial,Medium
+There is an error: financial aid disbursement is wrongfully rejected.,Financial,High
+Can someone explain why semester fee is showing double payment?,Financial,Low
+I am facing an issue because library fine is showing incorrect amount.,Financial,Medium
+Urgent: fee payment is delayed by two months and I need help.,Financial,Low
+Urgent: library fine is deducted but transaction failed and I need help.,Financial,Urgent
+"Please check my account, the financial aid disbursement is crashing during submission.",Financial,Medium
+Urgent: fee payment is showing incorrect amount and I need help.,Financial,Urgent
+Why is the scholarship amount higher than my actual consumption?,Financial,Low
+I want to report that financial aid disbursement is not reflecting in the system.,Financial,High
+"Please check my account, the bus transport fee is not reflecting in the system.",Financial,Medium
+Urgent: financial aid disbursement is severely delayed causing me hardship and I need help.,Financial,Urgent
+Can someone explain why mess fee deduction is not reflecting in the system?,Financial,Low
+I want to report that financial aid disbursement is showing double payment.,Financial,Medium
+I notice the education loan document is not reflecting in the system on the portal.,Financial,High
+Why is the library fine severely delayed causing me hardship?,Financial,Low
+My caution money is severely delayed causing me hardship.,Financial,High
+"Please check my account, the scholarship amount is wrongfully rejected.",Financial,Medium
+My financial aid disbursement is deducted but transaction failed.,Financial,High
+I am facing an issue because library fine is deducted but transaction failed.,Financial,Medium
+The mess fee deduction is showing incorrect amount.,Financial,High
+Why is the refund for hostel fees delayed by two months?,Financial,Low
+My caution money is delayed by two months.,Financial,High
+My mess fee deduction is crashing during submission.,Financial,High
+"Please check my account, the mess fee deduction is crashing during submission.",Financial,Medium
+I want to report that late fee penalty is wrongfully rejected.,Financial,Medium
+My mess fee deduction is deducted but transaction failed.,Financial,High
+I want to report that scholarship amount is not reflecting in the system.,Financial,Medium
+My late fee penalty is delayed by two months.,Financial,High
+My scholarship amount is crashing during submission.,Financial,High
+Why is the fee payment higher than my actual consumption?,Financial,Low
+Urgent: financial aid disbursement is showing incorrect amount and I need help.,Financial,Urgent
+Why is the semester fee severely delayed causing me hardship?,Financial,Low
+The stipend for the internship is wrongfully rejected.,Financial,High
+The fee payment is crashing during submission.,Financial,High
+Urgent: semester fee is severely delayed causing me hardship and I need help.,Financial,Urgent
+Why is the refund for hostel fees higher than my actual consumption?,Financial,Low
+There is an error: financial aid disbursement is crashing during submission.,Financial,High
+I am facing an issue because fee payment is showing double payment.,Financial,Medium
+I notice the refund for hostel fees is showing double payment on the portal.,Financial,High
+Why is the financial aid disbursement showing incorrect amount?,Financial,Low
+Can someone explain why scholarship amount is showing double payment?,Financial,Low
+Can someone explain why mess fee deduction is showing incorrect amount?,Financial,Low
+I am facing an issue because library fine is higher than my actual consumption.,Financial,Medium
+I notice the refund for hostel fees is severely delayed causing me hardship on the portal.,Financial,High
+"Please check my account, the mess fee deduction is showing double payment.",Financial,Urgent
+Can someone explain why refund for hostel fees is higher than my actual consumption?,Financial,Low
+There is an error: library fine is wrongfully rejected.,Financial,High
+I notice the education loan document is delayed by two months on the portal.,Financial,High
+The stipend for the internship is crashing during submission.,Financial,High
+There is an error: bus transport fee is showing incorrect amount.,Financial,High
+I want to report that refund for hostel fees is showing double payment.,Financial,Medium
+"Please check my account, the caution money is deducted but transaction failed.",Financial,Medium
+I notice the library fine is severely delayed causing me hardship on the portal.,Financial,High
+Urgent: refund for hostel fees is delayed by two months and I need help.,Financial,Urgent
+There is an error: mess fee deduction is delayed by two months.,Financial,High
+Can someone explain why financial aid disbursement is crashing during submission?,Financial,Urgent
+I am facing an issue because stipend for the internship is deducted but transaction failed.,Financial,Low
+There is an error: bus transport fee is severely delayed causing me hardship.,Financial,High
+My scholarship amount is showing incorrect amount.,Financial,High
+There is an error: late fee penalty is not reflecting in the system.,Financial,High
+I am facing an issue because mess fee deduction is crashing during submission.,Financial,Medium
+There is an error: library fine is showing double payment.,Financial,High
+"Please check my account, the stipend for the internship is higher than my actual consumption.",Financial,Medium
+I notice the education loan document is severely delayed causing me hardship on the portal.,Financial,High
+There is an error: fee payment is crashing during submission.,Financial,High
+I am facing an issue because stipend for the internship is not reflecting in the system.,Financial,Medium
+I want to report that fee payment is not reflecting in the system.,Financial,Medium
+"Please check my account, the scholarship amount is higher than my actual consumption.",Financial,Medium
+Urgent: bus transport fee is deducted but transaction failed and I need help.,Financial,Urgent
+I notice the bus transport fee is deducted but transaction failed on the portal.,Financial,High
+Can someone explain why refund for hostel fees is showing incorrect amount?,Financial,Low
+Why is the late fee penalty wrongfully rejected?,Financial,Low
+My refund for hostel fees is showing double payment.,Financial,High

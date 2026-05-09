@@ -1,5 +1,4 @@
-import './config/env.js';
-import express from 'express';
+﻿import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import path from 'path';
@@ -31,14 +30,10 @@ import hodRoutes from './routes/hodRoutes.js';
 import wardenRoutes from './routes/wardenRoutes.js';
 import principalRoutes from './routes/principalRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
-import healthRoutes from './routes/healthRoutes.js';
-import { requestCorrelation } from './middleware/requestCorrelation.js';
-import { globalErrorBoundary } from './middleware/errorBoundary.js';
-import helmet from 'helmet';
-import compression from 'compression';
-import mongoose from 'mongoose';
-import RedisManager from './services/ai/state/RedisManager.js';
-import { watchdog } from './services/ai/state/WorkflowWatchdog.js';
+
+// ... imports
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const startServer = async () => {
   await connectDB();
