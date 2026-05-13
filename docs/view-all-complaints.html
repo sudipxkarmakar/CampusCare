@@ -11,6 +11,11 @@
   <style>
     .blog-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem;
+        min-height: 320px;
     }
     .blog-card:hover {
         transform: scale(1.03);
@@ -19,8 +24,24 @@
     .blog-container#full-complaint-list {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 1fr;
         gap: 1.5rem;
         padding: 0 2%;
+    }
+    .blog-title {
+        min-height: 2.8rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .blog-excerpt {
+        min-height: 3.8rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 0.8rem;
     }
     @media (max-width: 1200px) {
         .blog-container#full-complaint-list {
@@ -35,6 +56,7 @@
     @media (max-width: 600px) {
         .blog-container#full-complaint-list {
             grid-template-columns: 1fr;
+            grid-auto-rows: auto;
         }
     }
   </style>
