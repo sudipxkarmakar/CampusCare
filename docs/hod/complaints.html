@@ -8,6 +8,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .resolve {
+            background: #10b981;
+            color: white;
+        }
+
+        .resolve:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-action:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -37,8 +68,8 @@
                                 <th style="padding:1rem;">Student</th>
                                 <th style="padding:1rem;">Title</th>
                                 <th style="padding:1rem;">Category</th>
-                                <th style="padding:1rem;">Against</th>
                                 <th style="padding:1rem;">Status</th>
+                                <th style="padding:1rem;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="complaintsTableBody">

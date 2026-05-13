@@ -13,6 +13,7 @@ import {
     unassignSubjectTeacher,
     assignBatchMentor
 } from '../controllers/hodController.js';
+import { resolveComplaint } from '../controllers/wardenController.js';
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.put('/leaves/:id/action', protect, hod, handleLeaveAction);
 router.get('/students', protect, hod, getDepartmentStudents);
 router.get('/teachers', protect, hod, getDepartmentTeachers);
 router.get('/complaints', protect, hod, getDepartmentComplaints);
+router.put('/complaints/:id/resolve', protect, hod, resolveComplaint);
 router.get('/routine', protect, hod, getRoutine);
 router.post('/students/assign-mentor', protect, hod, assignMentor);
 router.post('/subjects/:id/assign', protect, hod, assignSubjectTeacher);
