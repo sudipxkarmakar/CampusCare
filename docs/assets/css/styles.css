@@ -607,7 +607,7 @@ header {
     flex-direction: column;
     position: relative;
     height: 100%;
-    min-height: 320px;
+    min-height: 420px; /* Adjusted to fit dual images comfortably */
 }
 
 .blog-card:hover {
@@ -675,6 +675,7 @@ header {
     padding-top: 1rem;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 0.85rem;
     color: #555;
     font-weight: 600;

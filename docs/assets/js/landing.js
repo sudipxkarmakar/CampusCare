@@ -215,10 +215,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
                 <p class="blog-meta">Reported by: ${c.student?.name || 'Student'}</p>
                 <p class="blog-excerpt">${excerpt}</p>
-                ${c.image ? `<img src="${API_BASE}${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
-                <div class="blog-footer" style="${c.image ? 'margin-top: 10px;' : ''}">
+                <div class="complaint-images-container" style="display:flex; gap:10px; margin-top:10px; margin-bottom:10px;">
+                    ${c.image ? `
+                        <div class="image-section" style="flex: 1; background:rgba(255,255,255,0.3); padding:5px; border-radius:8px; border: 1px solid rgba(0,0,0,0.05);">
+                            <div class="image-label" style="font-size:0.55rem; color:#64748b; font-weight:700; text-transform:uppercase; margin-bottom:4px;">Reported Photo</div>
+                            <img src="${API_BASE}${c.image}" alt="Reported" style="width: 100%; height: 70px; border-radius: 5px; object-fit: cover; display: block; cursor: pointer;" onclick="window.open(this.src)">
+                        </div>
+                    ` : ''}
+                    ${c.status === 'Resolved' ? `
+                        <div class="image-section" style="flex: 1; border: 1px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:5px; border-radius:8px;">
+                            <div class="image-label" style="font-size:0.55rem; color:#10b981; font-weight:700; text-transform:uppercase; margin-bottom:4px;"><i class="fa-solid fa-circle-check"></i> Resolution Proof</div>
+                            ${(c.resolutionImage || c.afterImage) ? `
+                                <img src="${API_BASE}${c.resolutionImage || c.afterImage}" alt="Resolved" style="width: 100%; height: 70px; border-radius: 5px; object-fit: cover; display: block; cursor: pointer;" onclick="window.open(this.src)">
+                            ` : `
+                                <div style="height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#059669; font-size:0.5rem; font-weight:600; text-align:center; gap:5px; background:#fff; border-radius:5px;">
+                                    <i class="fa-solid fa-image-slash" style="font-size:1.2rem; opacity:0.5;"></i>
+                                    <span>No Proof Photo</span>
+                                </div>
+                            `}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="blog-footer">
                   <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
-                    <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> Upvotes
+                    <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> ${c.upvotes === 1 ? 'Upvote' : 'Upvotes'}
                   </span>
                   <span><i class="${c.status === 'Resolved' ? 'fa-solid fa-check-circle' : 'fa-solid fa-clock'}"></i> ${dateStr}</span>
                 </div>
