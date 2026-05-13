@@ -18,14 +18,4 @@ router.post('/chat', protect, aiLimiter, handleChat);
 router.post('/generate-complaint', protect, aiLimiter, handleGenerateComplaint);
 router.get('/status/:conversationId', protect, handleGetStatus);
 
-import { analyzeComplaint } from '../utils/aiService.js';
-router.get('/test', async (req, res) => {
-    try {
-        const result = await analyzeComplaint("FIRE IN LOBBY");
-        res.json({ message: "ML Test Result", result });
-    } catch (error) {
-        res.status(500).json({ message: "ML Test Failed", error: error.message });
-    }
-});
-
 export default router;

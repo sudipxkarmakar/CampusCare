@@ -1,257 +1,236 @@
-let currentPollingController = null;
-let currentEtag = null;
-let conversationId = sessionStorage.getItem('ai_conversation_id');
-let pollingIntervalTimer = null;
+const conversationId = sessionStorage.getItem('campuscare_ai_conversation_id') || crypto.randomUUID();
+sessionStorage.setItem('campuscare_ai_conversation_id', conversationId);
 
-function getRequestId() {
-    return crypto.randomUUID ? crypto.randomUUID() : 'req-' + Date.now();
+const localBackendPorts = new Set(['5000', '5055']);
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? (localBackendPorts.has(window.location.port) ? window.location.origin : 'http://localhost:5000')
+    : 'https://campuscare-backend-96cn.onrender.com';
+
+const state = {
+    busy: false,
+    messages: JSON.parse(localStorage.getItem(`campuscare_ai_messages_${conversationId}`) || '[]')
+};
+
+const els = {};
+
+function saveMessages() {
+    localStorage.setItem(`campuscare_ai_messages_${conversationId}`, JSON.stringify(state.messages.slice(-40)));
 }
 
-function getAuthHeaders() {
-    const userStr = localStorage.getItem('user');
-    let token = '';
-    if (userStr) {
-        token = JSON.parse(userStr).token || localStorage.getItem('token');
-    }
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        'x-client-request-id': getRequestId()
-    };
+function setStatus(message, tone = 'info') {
+    if (!els.status) return;
+    els.status.textContent = message;
+    els.status.className = `status-banner ${tone}`;
 }
 
-// Session Resurrection
-async function initSession() {
-    if (!conversationId) {
-        conversationId = crypto.randomUUID ? crypto.randomUUID() : 'cid-' + Date.now();
-        sessionStorage.setItem('ai_conversation_id', conversationId);
-        renderState('IDLE', 'How can I help you today?');
-        return;
-    }
-    
-    // Anti-Herd Polling Initial Delay
-    setTimeout(() => pollStatus(0), Math.random() * 2000);
+function setBusy(value) {
+    state.busy = value;
+    if (els.input) els.input.disabled = value;
+    if (els.send) els.send.disabled = value;
+    setStatus(value ? 'Working on it...' : 'Ready.', value ? 'loading' : 'info');
 }
 
-// Polling Engine with Jitter
-async function pollStatus(retryCount = 0) {
-    if (currentPollingController) {
-        currentPollingController.abort();
+function appendMessage(role, content, persist = true) {
+    if (!els.history) return null;
+    const message = document.createElement('div');
+    message.className = `message ${role}`;
+
+    const body = document.createElement('div');
+    body.className = 'message-content';
+    body.textContent = content;
+
+    message.appendChild(body);
+    els.history.appendChild(message);
+    els.history.scrollTop = els.history.scrollHeight;
+
+    if (persist) {
+        state.messages.push({ role, content });
+        saveMessages();
     }
-    if (pollingIntervalTimer) {
-        clearTimeout(pollingIntervalTimer);
-    }
-    
-    // Visibility throttling
-    if (document.visibilityState === 'hidden') {
-        return; // Pause polling entirely while hidden
-    }
+    return message;
+}
 
-    currentPollingController = new AbortController();
-    const signal = currentPollingController.signal;
+function renderChoiceCards(result) {
+    if (!els.history) return;
+    const choices = result?.payload?.choices || [];
+    if (!choices.length) return;
 
-    try {
-        if (!navigator.onLine) {
-            renderState('OFFLINE', 'You are offline. Waiting for connection...');
-            pollingIntervalTimer = setTimeout(() => { if(!signal.aborted) pollStatus(retryCount) }, 5000);
-            return;
-        }
+    const container = document.createElement('div');
+    container.className = 'choice-container';
 
-        const headers = getAuthHeaders();
-        if (currentEtag) {
-            headers['If-None-Match'] = currentEtag;
-        }
+    choices.forEach((choice, index) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'choice-card';
+        card.dataset.choiceId = choice.id || choice._id || '';
 
-        const controller = new AbortController();
-        const signal = controller.signal;
-        
-        // 45s timeout for initial Render wake
-        const timeoutId = setTimeout(() => controller.abort(), 45000);
+        const title = document.createElement('div');
+        title.className = 'choice-title';
+        title.textContent = `${index + 1}. ${choice.title || choice.subject || 'Item'}`;
 
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
-        const res = await fetch(`${API_BASE}/api/ai/status/${conversationId}`, {
-            headers,
-            signal
+        const meta = document.createElement('div');
+        meta.className = 'choice-meta';
+        meta.textContent = buildChoiceMeta(result.entityType, choice);
+
+        card.append(title, meta);
+        card.addEventListener('click', () => {
+            const selected = card.dataset.choiceId || String(index + 1);
+            container.remove();
+            sendChat(`__choice__:${selected}`, `Selected: ${choice.title || choice.subject || 'item'}`);
         });
-        clearTimeout(timeoutId);
+        container.appendChild(card);
+    });
 
-        if (res.status === 304) {
-            scheduleNextPoll(retryCount);
-            return;
-        }
+    els.history.appendChild(container);
+    els.history.scrollTop = els.history.scrollHeight;
+}
 
-        if (!res.ok) {
-            if (res.status === 404) {
-                renderState('IDLE', 'How can I help you today?');
-                return;
-            }
-            throw new Error('Backend error');
-        }
+function buildChoiceMeta(entityType, choice) {
+    if (entityType === 'ASSIGNMENT') {
+        const due = choice.deadline ? new Date(choice.deadline).toLocaleDateString() : 'No due date';
+        return `${choice.subject || 'Subject'} | Due: ${due} | ${choice.facultyName || 'Faculty'}`;
+    }
+    if (entityType === 'SCHEDULE') {
+        return `${choice.subject || 'Class'} | ${choice.facultyName || 'Faculty'}${choice.room ? ` | Room ${choice.room}` : ''}`;
+    }
+    if (entityType === 'NOTICE') {
+        const date = choice.date ? new Date(choice.date).toLocaleDateString() : '';
+        return `${choice.subject || 'notice'}${date ? ` | ${date}` : ''}`;
+    }
+    if (entityType === 'COMPLAINT') {
+        return `${choice.subject || choice.status || 'Status'} | ${choice.category || ''} ${choice.priority || ''}`.trim();
+    }
+    if (entityType === 'SUBMISSION') {
+        const date = choice.date ? new Date(choice.date).toLocaleDateString() : '';
+        return `${choice.subject || 'Assignment'} | ${choice.status || 'Submitted'}${date ? ` | ${date}` : ''}`;
+    }
+    return [choice.subject, choice.facultyName, choice.meta].filter(Boolean).join(' | ');
+}
 
-        currentEtag = res.headers.get('ETag');
-        const data = await res.json();
+function renderAction(result) {
+    if (!els.actionArea) return;
+    els.actionArea.innerHTML = '';
 
-        renderState(data.presentationState, data.message, data);
+    if (result?.action === 'OPEN_NOTE' && result.payload?.fileUrl) {
+        window.open(result.payload.fileUrl, '_blank');
+    }
 
-        if (["AWAITING_CONFIRMATION", "EXECUTING"].includes(data.presentationState)) {
-            const baseDelay = data.presentationState === "AWAITING_CONFIRMATION" ? 3000 : 5000;
-            const jitterDelay = baseDelay + Math.random() * 1000;
-            pollingIntervalTimer = setTimeout(() => {
-                if (!signal.aborted) pollStatus(0);
-            }, jitterDelay);
-        }
+    if (result?.action === 'ASSIGNMENT_DRAFTED' && result.payload) {
+        sessionStorage.setItem('aiSubmitSubject', result.payload.subject || '');
+        sessionStorage.setItem('aiSubmitTitle', result.payload.assignmentTitle || '');
+        sessionStorage.setItem('aiSubmitAssignmentId', result.payload.assignmentId || '');
+        sessionStorage.setItem('aiDraftAssignmentText', result.payload.draftText || '');
+        const link = document.createElement('a');
+        link.href = 'student/assignments.html';
+        link.className = 'btn-confirm';
+        link.textContent = 'Review Assignment';
+        els.actionArea.appendChild(link);
+    }
 
-    } catch (err) {
-        if (err.name === 'AbortError') return;
-        
-        // Hard Polling Ceiling
-        if (retryCount >= 3) {
-            renderState('FAILED', 'Connection lost. Please tap Send to retry.');
-            return;
-        }
-        
-        const backoff = retryCount === 0 ? 5000 : (retryCount === 1 ? 10000 : 20000);
-        renderState('RECOVERING', `Trying to reconnect... (Retry in ${backoff/1000}s)`);
-        
-        pollingIntervalTimer = setTimeout(() => {
-            if (!signal.aborted) pollStatus(retryCount + 1);
-        }, backoff);
+    if (result?.action === 'PREFILL_COMPLAINT' && result.payload) {
+        sessionStorage.setItem('aiDraftTitle', result.payload.title || '');
+        sessionStorage.setItem('aiDraftDesc', result.payload.description || '');
+        const link = document.createElement('a');
+        link.href = 'complaints/index.html';
+        link.className = 'btn-confirm';
+        link.textContent = 'Review Complaint';
+        els.actionArea.appendChild(link);
+    }
+
+    if (result?.action === 'LEAVE_DRAFTED' && result.payload) {
+        sessionStorage.setItem('aiLeaveType', result.payload.type || '');
+        sessionStorage.setItem('aiLeaveReason', result.payload.reason || '');
+        const link = document.createElement('a');
+        link.href = 'hostel/index.html';
+        link.className = 'btn-confirm';
+        link.textContent = 'Review Leave';
+        els.actionArea.appendChild(link);
     }
 }
 
-function scheduleNextPoll(retryCount) {
-    const jitterDelay = 4000 + Math.random() * 1000;
-    pollingIntervalTimer = setTimeout(() => {
-        if (currentPollingController && !currentPollingController.signal.aborted) {
-            pollStatus(retryCount);
-        }
-    }, jitterDelay);
-}
-
-function cleanupPolling() {
-    if (currentPollingController) currentPollingController.abort();
-    if (pollingIntervalTimer) clearTimeout(pollingIntervalTimer);
-}
-
-// Lifecycle Hooks
-window.addEventListener('beforeunload', cleanupPolling);
-window.addEventListener('pagehide', cleanupPolling);
-
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        // Anti-Herd Delay on Restore
-        setTimeout(() => pollStatus(0), Math.random() * 2000); 
-    } else {
-        cleanupPolling(); // Pause background processing
-    }
-});
-
-window.addEventListener('offline', () => {
-    cleanupPolling();
-    renderState('OFFLINE', 'You are currently offline. Please check your connection.');
-});
-window.addEventListener('online', () => {
-    renderState('RECOVERING', 'Connection restored. Syncing...');
-    pollStatus(0);
-});
-
-// UI Rendering
-function renderState(presentationState, message, fullData = null) {
-    const statusDiv = document.getElementById('ai-status');
-    const inputField = document.getElementById('ai-input');
-    const sendBtn = document.getElementById('ai-send-btn');
-    const actionArea = document.getElementById('ai-action-area');
-
-    statusDiv.textContent = message;
-    
-    // Visual indicators
-    statusDiv.className = 'status-banner';
-    if (['FAILED', 'TIMEOUT', 'CONFLICT', 'OFFLINE'].includes(presentationState)) {
-        statusDiv.classList.add('error');
-    } else if (['EXECUTING', 'RECOVERING', 'SENDING', 'CONFIRMING'].includes(presentationState)) {
-        statusDiv.classList.add('loading');
-    } else {
-        statusDiv.classList.add('info');
-    }
-
-    // Idempotency / UI Guards
-    if (['SENDING', 'EXECUTING', 'RECOVERING', 'CONFIRMING'].includes(presentationState)) {
-        inputField.disabled = true;
-        sendBtn.disabled = true;
-        actionArea.innerHTML = '<i>Processing securely...</i>';
-    } else if (presentationState === 'AWAITING_CONFIRMATION') {
-        inputField.disabled = true;
-        sendBtn.disabled = true;
-        actionArea.innerHTML = `
-            <button id="ai-confirm-btn" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">Confirm Action</button>
-            <button id="ai-cancel-btn" style="background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
-        `;
-        document.getElementById('ai-confirm-btn').addEventListener('click', () => sendChat("yes", true));
-        document.getElementById('ai-cancel-btn').addEventListener('click', () => sendChat("cancel", true));
-    } else {
-        inputField.disabled = false;
-        sendBtn.disabled = false;
-        actionArea.innerHTML = '';
-        if (presentationState === 'IDLE') {
-            inputField.focus();
-        }
-    }
-}
-
-// Sending Chats
-let isSending = false;
-async function sendChat(textOverride = null, isConfirmation = false) {
-    if (isSending) return; // Dedupe rapid clicks
-    
-    const inputField = document.getElementById('ai-input');
-    const text = textOverride !== null ? textOverride : inputField.value.trim();
+async function sendChat(rawText = null, displayText = null) {
+    if (state.busy) return;
+    const text = rawText ?? els.input.value.trim();
     if (!text) return;
 
-    isSending = true;
-    renderState(isConfirmation ? 'CONFIRMING' : 'SENDING', 'Sending securely...');
-    
-    // Optimistic UI clear
-    if (!textOverride) inputField.value = '';
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.token) {
+        appendMessage('model', 'Please log in before using the assistant.');
+        return;
+    }
+
+    appendMessage('user', displayText || text);
+    if (!rawText && els.input) els.input.value = '';
+    setBusy(true);
 
     try {
-        const historyStr = sessionStorage.getItem('ai_chat_history');
-        const history = historyStr ? JSON.parse(historyStr) : [];
-
-        const headers = getAuthHeaders();
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
         const response = await fetch(`${API_BASE}/api/ai/chat`, {
             method: 'POST',
-            headers,
-            body: JSON.stringify({ text, conversationId, history })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify({
+                text,
+                conversationId,
+                history: state.messages.slice(-10)
+            })
         });
 
         const data = await response.json();
-        
-        // Append history
-        if (!isConfirmation && data.response) {
-            history.push({ role: 'user', content: text });
-            if (data.response.message) {
-                history.push({ role: 'model', content: data.response.message });
-            }
-            if (history.length > 20) history.splice(0, history.length - 20);
-            sessionStorage.setItem('ai_chat_history', JSON.stringify(history));
-        }
+        if (!response.ok) throw new Error(data.error || data.message || 'Assistant request failed');
 
-        // Start polling immediately to reconcile new state
-        pollStatus(0);
-
-    } catch (err) {
-        console.error("Chat error:", err);
-        renderState('FAILED', 'Failed to send message. Please check your connection.');
+        const result = data.response || data;
+        appendMessage('model', result.message || 'Done.');
+        renderChoiceCards(result);
+        renderAction(result);
+        setStatus(result.presentationState === 'FAILED' ? 'Request failed.' : 'Ready.', result.presentationState === 'FAILED' ? 'error' : 'info');
+    } catch (error) {
+        appendMessage('model', error.message || 'I could not reach the assistant.');
+        setStatus('Connection problem.', 'error');
     } finally {
-        isSending = false;
+        setBusy(false);
+        if (els.input) els.input.focus();
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('ai-send-btn').addEventListener('click', () => sendChat());
-    document.getElementById('ai-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendChat();
-    });
-    initSession();
-});
+function restoreMessages() {
+    if (!state.messages.length) {
+        appendMessage('model', 'Hi, I can help with assignments, schedules, subjects, teachers, notices, notes, complaints, and status tracking.', false);
+        return;
+    }
+    state.messages.forEach((message) => appendMessage(message.role, message.content, false));
+}
+
+function newChat() {
+    const nextId = crypto.randomUUID();
+    sessionStorage.setItem('campuscare_ai_conversation_id', nextId);
+    localStorage.removeItem(`campuscare_ai_messages_${conversationId}`);
+    window.location.reload();
+}
+
+function init() {
+    els.history = document.getElementById('ai-chat-history');
+    els.status = document.getElementById('ai-status');
+    els.actionArea = document.getElementById('ai-action-area');
+    els.input = document.getElementById('ai-input');
+    els.send = document.getElementById('ai-send-btn');
+
+    restoreMessages();
+    setStatus('Ready.');
+
+    if (els.send) els.send.addEventListener('click', () => sendChat());
+    if (els.input) {
+        els.input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChat();
+            }
+        });
+    }
+
+    const newChatBtn = document.getElementById('new-chat-btn');
+    if (newChatBtn) newChatBtn.addEventListener('click', newChat);
+}
+
+document.addEventListener('DOMContentLoaded', init);

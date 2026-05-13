@@ -2,12 +2,10 @@ import { validate } from '../../validators/assignmentValidator.js';
 
 export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal, execId } = options;
-    // 1. Authorization
     if (!user || user.role !== 'teacher') {
-        throw new Error("UNAUTHORIZED: Only teachers can create assignments.");
+        throw new Error("UNAUTHORIZED: Only faculty can define academic tasks.");
     }
 
-    // 2. Validation
     const validation = validate(args, user);
     if (!validation.success) {
         throw new Error(`VALIDATION_ERROR: ${validation.message}`);
@@ -19,15 +17,12 @@ export const execute = async (args, user, conversationId, traceId, metadata = {}
         throw e;
     }
 
-    // Example of a backend-enforced validation policy
-    // In a full implementation, you would use validators/assignmentValidator.js here
-    // to ensure user is assigned to args.subject.
-
     return {
         success: true,
+        presentationState: "SUCCESS",
         type: "REDIRECT",
         action: "REDIRECT_ASSIGNMENT",
-        message: "I have successfully prepared the assignment details. Redirecting you to the Assignment form...",
+        message: "I have prepared the academic task definition. Redirecting to the formal interface...",
         payload: args
     };
 };
@@ -36,7 +31,7 @@ export const executeSubmit = async (args, user, conversationId, traceId, metadat
     const { signal } = options;
     
     if (!user || user.role !== 'student') {
-        throw new Error("UNAUTHORIZED: Only students can submit assignments.");
+        throw new Error("UNAUTHORIZED: Access restricted to authorized students.");
     }
 
     if (signal?.aborted) {
@@ -47,11 +42,13 @@ export const executeSubmit = async (args, user, conversationId, traceId, metadat
 
     return {
         success: true,
+        presentationState: "SUCCESS",
         type: "REDIRECT",
         action: "REDIRECT_SUBMIT_ASSIGNMENT",
-        message: `I have found your ${args.subject} assignment. Redirecting you to the submission page...`,
+        message: `I have identified the academic obligation for ${args.subject}. Redirecting to the completion portal...`,
         payload: {
             subject: args.subject,
+            assignmentTitle: args.assignmentTitle,
             assignmentId: args.assignmentId,
             notes: args.notes
         }

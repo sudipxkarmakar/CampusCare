@@ -118,19 +118,34 @@ async function loadAssignments() {
 
         // --- AI PRE-FILL LOGIC ---
         const aiSubject = sessionStorage.getItem('aiSubmitSubject');
-        if (aiSubject) {
-            console.log(`[AI] searching for pre-filled subject: ${aiSubject}`);
+        const aiTitle = sessionStorage.getItem('aiSubmitTitle');
+        const aiAssignmentId = sessionStorage.getItem('aiSubmitAssignmentId');
+        
+        if (aiSubject || aiTitle || aiAssignmentId) {
+            console.log(`[AI] searching for: subject=${aiSubject}, title=${aiTitle}`);
             // Remove from session so it doesn't pop up every time
             sessionStorage.removeItem('aiSubmitSubject');
+            sessionStorage.removeItem('aiSubmitTitle');
+            sessionStorage.removeItem('aiSubmitAssignmentId');
 
-            const matchIndex = assignmentsList.findIndex(a => 
-                a.subject.toLowerCase().includes(aiSubject.toLowerCase()) || 
-                a.title.toLowerCase().includes(aiSubject.toLowerCase())
-            );
+            const matchIndex = assignmentsList.findIndex(a => {
+                if (aiAssignmentId && (a._id === aiAssignmentId || a.id === aiAssignmentId)) return true;
+                const subjectMatch = aiSubject && a.subject.toLowerCase().includes(aiSubject.toLowerCase());
+                const titleMatch = aiTitle && a.title.toLowerCase().includes(aiTitle.toLowerCase());
+                
+                // If both provided, try to find exact double match first, else fallback to either
+                if (aiSubject && aiTitle) return subjectMatch && titleMatch;
+                return subjectMatch || titleMatch;
+            });
 
-            if (matchIndex !== -1) {
-                // Short delay to ensure DOM is rendered
-                setTimeout(() => viewAssignment(matchIndex), 500);
+            // Fallback for partial match if double match failed
+            let finalIndex = matchIndex;
+            if (finalIndex === -1 && aiTitle) {
+                finalIndex = assignmentsList.findIndex(a => a.title.toLowerCase().includes(aiTitle.toLowerCase()));
+            }
+
+            if (finalIndex !== -1) {
+                setTimeout(() => viewAssignment(finalIndex), 500);
             }
         }
 
@@ -154,6 +169,7 @@ function viewAssignment(index) {
     document.getElementById('modalDeadline').innerText = assignment.deadline ? 'Due: ' + new Date(assignment.deadline).toLocaleDateString('en-GB') : 'No Deadline';
 
     document.getElementById('modalDescription').innerText = assignment.description;
+    renderAiAssignmentDraft(assignment);
 
     const linkContainer = document.getElementById('modalLinkContainer');
     const linkBtn = document.getElementById('modalLink');
@@ -189,6 +205,46 @@ function viewAssignment(index) {
 
     // Show Modal
     toggleModal('assignment-modal');
+}
+
+function renderAiAssignmentDraft(assignment) {
+    const draftText = sessionStorage.getItem('aiDraftAssignmentText');
+    let box = document.getElementById('aiAssignmentDraftBox');
+
+    if (!draftText) {
+        if (box) box.style.display = 'none';
+        return;
+    }
+
+    if (!box) {
+        box = document.createElement('div');
+        box.id = 'aiAssignmentDraftBox';
+        box.style.cssText = 'margin:1rem 0; padding:1rem; border:1px solid #bfdbfe; border-radius:10px; background:#eff6ff;';
+        const descriptionEl = document.getElementById('modalDescription');
+        descriptionEl.parentNode.insertBefore(box, descriptionEl.nextSibling);
+    }
+
+    box.style.display = 'block';
+    box.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:0.75rem;">
+            <strong style="color:#1e40af;">Assistant Draft</strong>
+            <button type="button" onclick="downloadAiAssignmentDraft()" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;">Download TXT</button>
+        </div>
+        <textarea id="aiAssignmentDraftText" rows="8" style="width:100%; border:1px solid #bfdbfe; border-radius:8px; padding:10px; font-family:inherit;">${draftText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+        <p style="font-size:0.8rem; color:#475569; margin:0.5rem 0 0;">Review this draft, export it if useful, and upload your final file yourself.</p>
+    `;
+}
+
+function downloadAiAssignmentDraft() {
+    const text = document.getElementById('aiAssignmentDraftText')?.value || sessionStorage.getItem('aiDraftAssignmentText') || '';
+    if (!text) return;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'assignment-draft.txt';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 function viewNote(index) {

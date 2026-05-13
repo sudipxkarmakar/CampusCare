@@ -12,8 +12,6 @@ import connectDB from './config/db.js';
 import { requestCorrelation } from './middleware/requestCorrelation.js';
 import { globalErrorBoundary } from './middleware/errorBoundary.js';
 import healthRoutes from './routes/healthRoutes.js';
-import { watchdog } from './services/ai/state/WorkflowWatchdog.js';
-import RedisManager from './services/ai/state/RedisManager.js';
 
 // Route imports
 import authRoutes from './routes/authRoutes.js';
@@ -162,9 +160,9 @@ const startServer = async () => {
       version: "1.0.3",
       gitCommit: process.env.RENDER_GIT_COMMIT || "local",
       nodeEnv: ENV,
-      watchdog: process.env.WORKFLOW_WATCHDOG_ENABLED === 'true',
+      assistant: "campus-agent-v1",
       port: PORT,
-      message: "Orchestration engine started"
+      message: "CampusCare server started"
     }, null, 2));
   });
 
@@ -191,12 +189,6 @@ const startServer = async () => {
         console.log('[Shutdown] HTTP server closed.');
         
         try {
-            console.log('[Shutdown] Stopping Watchdog...');
-            watchdog.stop();
-            
-            console.log('[Shutdown] Closing Redis...');
-            await RedisManager.client.quit();
-            
             console.log('[Shutdown] Closing MongoDB...');
             await mongoose.connection.close();
             

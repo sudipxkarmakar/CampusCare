@@ -1,184 +1,81 @@
-const AI_ACTIONS = {
-    PREFILL_COMPLAINT: "PREFILL_COMPLAINT",
-    REDIRECT_ASSIGNMENT: "REDIRECT_ASSIGNMENT",
-    OPEN_LEAVE_MODAL: "OPEN_LEAVE_MODAL",
-    TRIGGER_SOS: "TRIGGER_SOS",
-    AI_RESPONSE: "AI_RESPONSE",
-    ACTION_SUCCESS: "ACTION_SUCCESS"
+/**
+ * campuscare-assistant-drawer.js (Legacy name: ai.js)
+ * 
+ * This script injects the CampusCare Assistant drawer and manages its visibility.
+ * 
+ * Chat logic lives in assistant.js inside the assistant.html iframe.
+ */
+
+const AssistantDrawer = {
+    id: 'campuscare-ai-drawer',
+    
+    init() {
+        if (document.getElementById(this.id)) return;
+
+        const container = document.createElement('div');
+        container.id = this.id;
+        container.style.cssText = `
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            max-width: 90vw;
+            height: 100vh;
+            background: white;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            z-index: 9999;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #e2e8f0;
+        `;
+
+        const isSubDir = this.checkSubDir();
+        const rootPath = isSubDir ? '../' : '';
+
+        container.innerHTML = `
+            <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">CampusCare Assistant</h3>
+                <button id="close-ai-drawer" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+            <iframe src="${rootPath}assistant.html?mode=drawer" style="flex: 1; border: none; width: 100%;"></iframe>
+        `;
+
+        document.body.appendChild(container);
+        document.getElementById('close-ai-drawer').onclick = () => this.toggle(false);
+    },
+
+    checkSubDir() {
+        const segments = window.location.pathname.split('/').filter(s => s);
+        return segments.some(s => ['student', 'teacher', 'hostel', 'complaints', 'hod', 'warden', 'principal', 'dean'].includes(s.toLowerCase()));
+    },
+
+    toggle(force) {
+        this.init();
+        const drawer = document.getElementById(this.id);
+        const isOpen = drawer.style.right === '0px';
+        const shouldOpen = typeof force === 'boolean' ? force : !isOpen;
+        drawer.style.right = shouldOpen ? '0px' : '-450px';
+    }
 };
 
-// Generate UUID for Conversation State
-function getOrCreateConversationId() {
-    let cid = sessionStorage.getItem('ai_conversation_id');
-    if (!cid) {
-        cid = crypto.randomUUID ? crypto.randomUUID() : 'cid-' + Date.now();
-        sessionStorage.setItem('ai_conversation_id', cid);
-    }
-    return cid;
-}
-
-// Manage frontend history
-function getAIHistory() {
-    const histStr = sessionStorage.getItem('ai_chat_history');
-    return histStr ? JSON.parse(histStr) : [];
-}
-
-function appendToAIHistory(role, text) {
-    const history = getAIHistory();
-    history.push({ role, parts: [{ text }] });
-    
-    // Trim history to prevent token explosion
-    const MAX_HISTORY = 20;
-    if (history.length > MAX_HISTORY) {
-        history.splice(0, history.length - MAX_HISTORY);
+// Global Override for AI Modal (Compatibility with legacy SOS triggers)
+window.toggleModal = function(id) {
+    if (id === 'ai-modal') {
+        AssistantDrawer.toggle();
+        return;
     }
     
-    sessionStorage.setItem('ai_chat_history', JSON.stringify(history));
-}
-
-function escapeHtml(str = "") {
-    return str
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-async function askAI() {
-    const inputEl = document.getElementById('ai-input');
-    const historyEl = document.getElementById('ai-chat-history');
-    const text = inputEl.value.trim();
-
-    if (!text) return;
-
-    // UI Updates
-    historyEl.style.display = 'block';
-    const safeUserText = escapeHtml(text);
-    historyEl.innerHTML += `<div style="margin: 5px 0; text-align: right;"><span style="background: #e2e8f0; padding: 5px 10px; border-radius: 10px; display: inline-block;">${safeUserText}</span></div>`;
-    inputEl.value = '';
-
-    // Loading State
-    const loadingId = 'loading-' + Date.now();
-    historyEl.innerHTML += `<div id="${loadingId}" style="margin: 5px 0; text-align: left;"><span style="color: #666; font-style: italic;">AI is thinking...</span></div>`;
-    historyEl.scrollTop = historyEl.scrollHeight;
-
-    try {
-        const userStr = localStorage.getItem('user');
-        let token = '';
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            token = user.token || localStorage.getItem('token');
-        }
-
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const conversationId = getOrCreateConversationId();
-        const history = getAIHistory();
-
-        const response = await fetch((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/ai/chat', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({ text, conversationId, history })
-        });
-
-        // Add user text to local history
-        appendToAIHistory('user', text);
-
-        const data = await response.json();
-        const loadingEl = document.getElementById(loadingId);
-        if (loadingEl) loadingEl.remove();
-
-        if (!response.ok) {
-            const errorMsg = data.message || data.error || "Request failed";
-            historyEl.innerHTML += `<div style="margin: 5px 0; text-align: left;"><span style="color: red; background: #fee2e2; padding: 10px; border-radius: 10px; display: inline-block;">Error: ${errorMsg}</span></div>`;
-            return;
-        }
-
-        const resObj = data.response;
-        if (!resObj) {
-            historyEl.innerHTML += `<div style="margin: 5px 0; text-align: left;"><span style="color: red; background: #fee2e2; padding: 10px; border-radius: 10px; display: inline-block;">Error: AI service returned an empty response.</span></div>`;
-            return;
-        }
-
-        let responseMessage = resObj.message || "Processed successfully.";
-        const rawMessage = responseMessage; // Keep raw for history
-        const actionType = resObj.action;
-        
-        // Add RAW AI response to local history to avoid HTML pollution
-        appendToAIHistory('model', rawMessage);
-        
-        responseMessage = escapeHtml(responseMessage);
-        
-        // Simple Markdown parsing for Gemini's output
-        if (typeof responseMessage === 'string') {
-            responseMessage = responseMessage
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/\n/g, '<br>');
-        }
-
-        // Handle specific Agentic Actions
-        if (actionType === AI_ACTIONS.PREFILL_COMPLAINT && resObj.payload) {
-            sessionStorage.setItem('aiDraftTitle', resObj.payload.title);
-            sessionStorage.setItem('aiDraftDesc', resObj.payload.description);
-            responseMessage += "<br><br><i>Redirecting you to the complaint form...</i>";
-            setTimeout(() => {
-                if (window.location.pathname.includes('/complaints/')) {
-                    window.location.reload();
-                } else {
-                    window.location.href = (window.location.pathname.includes('/student/') || window.location.pathname.includes('/teacher/') || window.location.pathname.includes('/hostel/')) ? '../complaints/index.html' : 'complaints/index.html';
-                }
-            }, 2000);
-        } else if (actionType === AI_ACTIONS.TRIGGER_SOS) {
-            responseMessage = `<strong style="color:#ef4444;">EMERGENCY DETECTED:</strong> ${responseMessage}`;
-            setTimeout(() => {
-                toggleModal('ai-modal');
-                toggleModal('sos-modal');
-            }, 1000);
-        } else if (actionType === AI_ACTIONS.REDIRECT_ASSIGNMENT && resObj.payload) {
-            sessionStorage.setItem('aiDraftAssignment', JSON.stringify(resObj.payload));
-            responseMessage += "<br><br><i>Redirecting you to the assignment creation form...</i>";
-            setTimeout(() => {
-                if (window.location.pathname.includes('/teacher/') || window.location.pathname.includes('/hod/')) {
-                    window.location.href = 'assignments.html';
-                }
-            }, 2000);
-        } else if (actionType === 'REDIRECT_SUBMIT_ASSIGNMENT' && resObj.payload) {
-            sessionStorage.setItem('aiSubmitSubject', resObj.payload.subject);
-            responseMessage += "<br><br><i>Redirecting you to your assignments...</i>";
-            setTimeout(() => {
-                if (window.location.pathname.includes('/student/')) {
-                    window.location.href = 'assignments.html';
-                }
-            }, 2000);
-        }
-
-        // Show AI Response
-        // Different colors based on response type (UX Enhancement)
-        let bgColor = '#667eea';
-        if (resObj.type === 'CONFIRMATION') bgColor = '#f59e0b';
-        if (resObj.type === 'SUCCESS') bgColor = '#10b981';
-        if (resObj.type === 'WARNING' || resObj.type === 'ERROR') bgColor = '#ef4444';
-
-        let aiHtml = `<div style="margin: 5px 0; text-align: left;"><span style="background: ${bgColor}; color: white; padding: 10px; border-radius: 10px; display: inline-block; max-width: 80%; line-height: 1.4;">${responseMessage}</span>`;
-
-        if (resObj.draft) {
-            aiHtml += `<pre style="background: #f1f5f9; color: #333; padding: 10px; border-radius: 5px; margin-top: 5px; font-size: 0.85rem; white-space: pre-wrap;">${resObj.draft}</pre>`;
-        }
-
-        aiHtml += `</div>`;
-        historyEl.innerHTML += aiHtml;
-
-    } catch (error) {
-        console.error(error);
-        const loadingEl = document.getElementById(loadingId);
-        if (loadingEl) loadingEl.remove();
-        historyEl.innerHTML += `<div style="margin: 5px 0; text-align: left;"><span style="color: red;">Error: ${error.message}</span></div>`;
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
     }
+};
 
-    historyEl.scrollTop = historyEl.scrollHeight;
-}
+// Self-init if called from a page expecting immediate drawer setup
+// (Optional: can be removed if all pages use toggleModal)
+document.addEventListener('DOMContentLoaded', () => {
+    // If the page has an AI trigger button, make sure it works
+    const aiBtn = document.querySelector('[onclick*="toggleModal(\'ai-modal\')"]');
+    if (aiBtn) AssistantDrawer.init();
+});

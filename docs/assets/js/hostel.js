@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const leaveForm = document.getElementById('leaveForm');
     if (leaveForm) {
         leaveForm.addEventListener('submit', handleLeaveSubmit);
+        prefillAiLeaveDraft();
 
         // Initialize Flatpickr Logic for Linked Dates
         const startDatePicker = flatpickr("#startDate", {
@@ -45,6 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function prefillAiLeaveDraft() {
+    const type = sessionStorage.getItem('aiLeaveType');
+    const reason = sessionStorage.getItem('aiLeaveReason');
+    if (!type && !reason) return;
+
+    const typeEl = document.getElementById('type');
+    const reasonEl = document.getElementById('reason');
+    if (typeEl && type) typeEl.value = type;
+    if (reasonEl && reason) reasonEl.value = reason;
+
+    sessionStorage.removeItem('aiLeaveType');
+    sessionStorage.removeItem('aiLeaveReason');
+}
 
 async function loadMessMenu() {
     const tbody = document.querySelector('#mess-menu-table tbody');
