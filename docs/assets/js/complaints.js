@@ -264,7 +264,20 @@ async function loadComplaints() {
                     </div>
                     
                     <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
-                    ${c.image ? `<img src="${(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com')}${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
+                    <div class="complaint-images-container" style="display:flex; gap:10px; margin-top:10px;">
+                        ${c.image ? `
+                            <div class="image-section" style="width: 150px; background:rgba(255,255,255,0.3); padding:8px; border-radius:10px;">
+                                <div class="image-label" style="font-size:0.65rem; color:#64748b; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Reported Issue</div>
+                                <img src="${API_BASE}${c.image}" class="complaint-img" style="height: 100px;" alt="Before" onclick="window.open(this.src)">
+                            </div>
+                        ` : ''}
+                        ${c.afterImage ? `
+                            <div class="image-section" style="width: 150px; background:rgba(16,185,129,0.1); padding:8px; border-radius:10px;">
+                                <div class="image-label" style="font-size:0.65rem; color:#059669; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Resolved Proof</div>
+                                <img src="${API_BASE}${c.afterImage}" class="complaint-img" style="height: 100px;" alt="After" onclick="window.open(this.src)">
+                            </div>
+                        ` : ''}
+                    </div>
                     
                     <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
                         <span><i class="fa-solid fa-user"></i> ${c.student?.name || 'Anonymous'}</span>
@@ -447,7 +460,20 @@ async function loadMyComplaints() {
                      </div>
                      
                      <p style="color:#475569; font-size:0.95rem; line-height:1.5;">${c.description}</p>
-                     ${c.image ? `<img src="${(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com')}${c.image}" alt="Attachment" style="width: 80px; height: 60px; border-radius: 5px; object-fit: cover; margin-top: 10px; display: block;">` : ''}
+                     <div class="complaint-images-container" style="display:flex; gap:10px; margin-top:10px;">
+                        ${c.image ? `
+                            <div class="image-section" style="width: 150px; background:rgba(255,255,255,0.3); padding:8px; border-radius:10px;">
+                                <div class="image-label" style="font-size:0.65rem; color:#64748b; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Reported Issue</div>
+                                <img src="${API_BASE}${c.image}" class="complaint-img" style="height: 100px;" alt="Before" onclick="window.open(this.src)">
+                            </div>
+                        ` : ''}
+                        ${c.afterImage ? `
+                            <div class="image-section" style="width: 150px; background:rgba(16,185,129,0.1); padding:8px; border-radius:10px;">
+                                <div class="image-label" style="font-size:0.65rem; color:#059669; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Resolved Proof</div>
+                                <img src="${API_BASE}${c.afterImage}" class="complaint-img" style="height: 100px;" alt="After" onclick="window.open(this.src)">
+                            </div>
+                        ` : ''}
+                    </div>
                      
                      <div style="margin-top:1rem; border-top:1px solid rgba(0,0,0,0.05); padding-top:0.8rem; display:flex; justify-content:space-between; font-size:0.85rem; color:#94a3b8;">
                          <span><i class="fa-solid fa-calendar"></i> ${new Date(c.createdAt).toLocaleDateString()}</span>

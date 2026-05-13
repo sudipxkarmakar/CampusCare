@@ -219,25 +219,38 @@ const getDepartmentComplaints = async (req, res) => {
     try {
         const { department } = req.user;
 
-        // Find complaints where the student belongs to the department OR the complaint is against a user in the department
-        // For simplicity, let's start with complaints FROM students of this department.
+        if (!department) {
+            return res.status(400).json({ message: 'HOD has no department assigned' });
+        }
 
-        // 1. Find all students and hostelers of this department
-        const students = await User.find({ role: { $in: ['student', 'hosteler'] }, department }).select('_id');
-        const studentIds = students.map(s => s._id);
+        // 1. Find all students and staff of this department
+        const deptUsers = await User.find({ department }).select('_id');
+        const deptUserIds = deptUsers.map(u => u._id);
 
+        // 2. Find complaints where:
+        //    - Student belongs to department
+        //    OR
+        //    - AgainstUser belongs to department
         const complaints = await Complaint.find({
-            student: { $in: studentIds }
+            $or: [
+                { student: { $in: deptUserIds } },
+                { againstUser: { $in: deptUserIds } },
+                { upliftedTo: 'HOD' } // Show all escalated to HOD level if needed, or filter by dept
+            ]
         })
-            .populate('student', 'name rollNumber')
-            .populate('againstUser', 'name designation')
-            .sort({ createdAt: -1 });
+            .populate('student', 'name rollNumber department')
+            .populate('againstUser', 'name designation department')
+            .sort({ createdAt: -1 })
+            .lean();
+
+        // 3. Final filter: If it's uplifted to HOD, ensure it's related to the department if it's a student issue
+        // (The query above already covers most cases, but we can refine if there are cross-dept issues)
 
         res.json(complaints);
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('ERROR in getDepartmentComplaints:', error);
+        res.status(500).json({ message: 'Server Error fetching department complaints' });
     }
 };
 

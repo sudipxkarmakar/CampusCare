@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Leave from '../models/Leave.js';
 import Complaint from '../models/Complaint.js';
 import MessMenu from '../models/MessMenu.js';
@@ -159,15 +160,39 @@ const getHostelComplaints = async (req, res) => {
 const resolveComplaint = async (req, res) => {
     try {
         const { id } = req.params;
-        const complaint = await Complaint.findById(id);
+        
+        console.log('DEBUG: Resolve Request Received for ID:', id);
+        console.log('DEBUG: File Object:', req.file);
 
-        if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+        if (!req.file) {
+            console.error('DEBUG: No file received in req.file');
+            return res.status(400).json({ 
+                message: 'No image proof received. Please attach a photo before confirming resolution.',
+                received_body: req.body 
+            });
+        }
 
-        complaint.status = 'Resolved';
-        complaint.resolvedBy = req.user._id;
-        await complaint.save();
+        const imagePath = `/uploads/${req.file.filename}`;
+        console.log('DEBUG: Image Path to Save:', imagePath);
 
-        res.json(complaint);
+        // Force update using raw MongoDB collection to bypass any Mongoose schema issues
+        await mongoose.connection.db.collection('complaints').updateOne(
+            { _id: new mongoose.Types.ObjectId(id) },
+            {
+                $set: {
+                    status: 'Resolved',
+                    resolvedBy: new mongoose.Types.ObjectId(req.user._id),
+                    afterImage: imagePath,
+                    resolutionImage: imagePath,
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        const updatedComplaint = await Complaint.findById(id).lean();
+        console.log('DEBUG: Verification after raw update:', updatedComplaint.afterImage);
+
+        res.json(updatedComplaint);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error resolving complaint' });

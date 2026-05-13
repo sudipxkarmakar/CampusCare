@@ -1,5 +1,9 @@
 
-const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
+const BACKEND_PORT = 5000;
+const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? `${window.location.protocol}//${window.location.hostname}:${BACKEND_PORT}`
+    : 'https://campuscare-backend-96cn.onrender.com';
+const API_BASE_URL = BACKEND_URL + '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchComplaints();
@@ -22,7 +26,7 @@ async function fetchComplaints() {
             return;
         }
 
-        const res = await fetch(`${API_BASE_URL}/warden/complaints`, {
+        const res = await fetch(`${API_BASE_URL}/warden/complaints?t=${Date.now()}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -91,18 +95,176 @@ function renderComplaints(complaints) {
             <div class="complaint-body">
                 <p>${c.description}</p>
                 ${c.againstUser ? `<p class="alert-box"><strong>⚠️ Against:</strong> ${c.againstUser.name}</p>` : ''}
+                
+                <div class="complaint-images-container">
+                    ${c.image ? `
+                        <div class="image-section">
+                            <div class="image-label"><i class="fa-solid fa-camera"></i> Reported Issue</div>
+                            <img src="${BACKEND_URL}${c.image}" class="complaint-img" onclick="window.open(this.src)">
+                        </div>
+                    ` : ''}
+                    ${isResolved ? `
+                        <div class="image-section" style="border-color: #10b981; background: rgba(16, 185, 129, 0.05);">
+                            <div class="image-label" style="color:#10b981;"><i class="fa-solid fa-circle-check"></i> Resolved Proof</div>
+                            ${(c.resolutionImage || c.afterImage) ? `
+                                <img src="${BACKEND_URL}${c.resolutionImage || c.afterImage}" class="complaint-img" onclick="window.open(this.src)">
+                            ` : `
+                                <div style="height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#059669; font-size:0.75rem; font-weight:600; text-align:center; gap:5px; background:#fff; border-radius:8px;">
+                                    <i class="fa-solid fa-image-slash" style="font-size:1.2rem; opacity:0.5;"></i>
+                                    <span>No proof image attached</span>
+                                </div>
+                            `}
+                        </div>
+                    ` : ''}
+                </div>
             </div>
             <div class="complaint-actions">
                 ${!isResolved && !isUplifted ? `
-                    <button class="btn-action resolve" onclick="resolveComplaint('${c._id}')">
+                    <button class="btn-action resolve" id="resolve-btn-${c._id}" onclick="showResolveUI('${c._id}')">
                         <i class="fa-solid fa-check"></i> Resolve
                     </button>
-                ` : '<button class="btn-secondary" disabled>Action Taken</button>'}
+                    <div id="resolve-ui-${c._id}" class="resolve-upload-container">
+                        <div class="image-label">Upload Proof of Work</div>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="proof-image-${c._id}" accept="image/*" onchange="previewResolveImage(this, '${c._id}')">
+                        </div>
+                        <!-- Preview Container -->
+                        <div id="preview-container-${c._id}" style="margin-top:10px; display:none;">
+                            <img id="preview-img-${c._id}" style="width:100px; height:70px; object-fit:cover; border-radius:5px; border:1px solid #ddd;">
+                            <div style="font-size:0.6rem; color:#64748b;">Image Attached</div>
+                        </div>
+
+                        <button class="confirm-resolve-btn" onclick="confirmResolve('${c._id}')">
+                            Confirm Resolution
+                        </button>
+                        <button class="btn-secondary" style="width:100%; margin-top:5px;" onclick="hideResolveUI('${c._id}')">Cancel</button>
+                    </div>
+                ` : `<button class="btn-secondary" disabled>Issue Resolved</button>`}
             </div>
         `;
         list.appendChild(div);
     });
 }
+
+function previewResolveImage(input, id) {
+    const file = input.files[0];
+    const previewContainer = document.getElementById(`preview-container-${id}`);
+    const previewImg = document.getElementById(`preview-img-${id}`);
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        previewContainer.style.display = 'none';
+    }
+}
+
+function showResolveUI(id) {
+    document.getElementById(`resolve-ui-${id}`).classList.add('active');
+    document.getElementById(`resolve-btn-${id}`).style.display = 'none';
+}
+
+function hideResolveUI(id) {
+    document.getElementById(`resolve-ui-${id}`).classList.remove('active');
+    document.getElementById(`resolve-btn-${id}`).style.display = 'inline-flex';
+}
+
+async function confirmResolve(id) {
+    const fileInput = document.getElementById(`proof-image-${id}`);
+    const file = fileInput.files[0];
+
+    if (!file) {
+        if (!confirm('Resolve without proof image? (Recommended to upload proof)')) return;
+    } else {
+        console.log('DEBUG: File to upload:', file.name, file.size);
+    }
+
+    const formData = new FormData();
+    if (file) {
+        formData.append('resolutionImage', file);
+        console.log('DEBUG: FormData created with field: resolutionImage');
+        console.log('- File Name:', file.name);
+        console.log('- File Size:', file.size);
+    } else {
+        alert('Please attach a proof image before confirming.');
+        return;
+    }
+
+    try {
+        const userStr = localStorage.getItem('user');
+        const token = userStr ? JSON.parse(userStr).token : null;
+
+        console.log('DEBUG: Sending PUT request to resolution endpoint...');
+
+        const res = await fetch(`${API_BASE_URL}/warden/complaints/${id}/resolve`, {
+            method: 'PUT',
+            headers: { 
+                'Authorization': `Bearer ${token}`
+                // Note: Content-Type is NOT set manually to allow browser to set boundary
+            },
+            body: formData
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            console.log('DEBUG: Resolve Success. Data received:', data);
+            
+            // If the server didn't return an afterImage, something is wrong on the backend
+            if (!data.afterImage) {
+                console.error('DEBUG: WARNING! Server returned Resolve success but NO afterImage was in the response.');
+            }
+
+            console.log('Refreshing list in 1500ms (ensuring DB propagation)...');
+            setTimeout(() => fetchComplaints(), 1500);
+        } else {
+            const data = await res.json();
+            console.error('DEBUG: Resolve Failed:', data);
+            alert(data.message || 'Failed to resolve');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Server error resolving complaint');
+    }
+}
+
+// Global Paste Listener for Resolution Proof
+document.addEventListener('paste', (e) => {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    let imageFile = null;
+
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') === 0) {
+            imageFile = items[i].getAsFile();
+            break;
+        }
+    }
+
+    if (imageFile) {
+        // Find the active/visible resolve UI
+        const activeResolveUI = document.querySelector('.resolve-upload-container.active');
+        if (activeResolveUI) {
+            const id = activeResolveUI.id.replace('resolve-ui-', '');
+            const fileInput = document.getElementById(`proof-image-${id}`);
+            
+            if (fileInput) {
+                const dataTransfer = new DataTransfer();
+                const file = new File([imageFile], `resolve_proof_${Date.now()}.png`, { type: imageFile.type });
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                
+                // Trigger preview
+                previewResolveImage(fileInput, id);
+                
+                // Optional: visual feedback
+                console.log('Image pasted successfully into:', id);
+            }
+        }
+    }
+});
 
 function getCategoryBadge(cat) {
     if (cat === 'Disciplinary') return 'badge-red';
@@ -122,26 +284,10 @@ function getStatusColor(s) {
     return '#64748b';
 }
 
+// Old resolveComplaint kept as fallback or removed
 async function resolveComplaint(id) {
-    if (!confirm('Mark this complaint as Resolved?')) return;
-
-    try {
-        const userStr = localStorage.getItem('user');
-        const token = userStr ? JSON.parse(userStr).token : null;
-
-        const res = await fetch(`${API_BASE_URL}/warden/complaints/${id}/resolve`, {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (res.ok) {
-            fetchComplaints();
-        } else {
-            alert('Failed to resolve');
-        }
-    } catch (error) {
-        console.error(error);
-    }
+    // Redirect to show UI
+    showResolveUI(id);
 }
 
 

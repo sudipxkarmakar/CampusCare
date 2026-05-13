@@ -38,7 +38,13 @@ const complaintSchema = new mongoose.Schema({
         ref: 'User'
     }],
     image: {
-        type: String, // URL if we implement upload
+        type: String, // Before Image (Student Upload)
+    },
+    afterImage: {
+        type: String, // After Image (Resolution Proof)
+    },
+    resolutionImage: {
+        type: String, // Resolution Proof (User requested name)
     },
     againstUser: {
         type: mongoose.Schema.Types.ObjectId,

@@ -58,24 +58,38 @@
             </div>
         </section>
         <section class="standard-container">
-            <div style="background:white; padding:1.5rem; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
-                <h3 style="margin-bottom:1rem; color:#2d3748;">Recent Complaints</h3>
+            <div style="background:white; padding:2rem; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.04); border:1px solid #f1f5f9;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <div>
+                        <h2 style="color: #1e293b; margin: 0; font-size: 1.5rem;">Recent Complaints</h2>
+                        <p style="color: #64748b; margin: 5px 0 0 0; font-size: 0.9rem;">Overview of department issues and escalations</p>
+                    </div>
+                    <div style="position: relative;">
+                        <input type="text" id="complaintSearch" placeholder="Search complaints..." 
+                               style="padding: 10px 15px 10px 40px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 0.9rem; width: 300px; outline: none; transition: all 0.3s;">
+                        <i class="fa-solid fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    </div>
+                </div>
 
                 <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; min-width:800px;">
+                    <table style="width:100%; border-collapse:collapse; min-width:900px;">
                         <thead>
-                            <tr style="border-bottom:2px solid #e2e8f0; text-align:left; color:#64748b;">
-                                <th style="padding:1rem;">Student</th>
-                                <th style="padding:1rem;">Title</th>
-                                <th style="padding:1rem;">Category</th>
-                                <th style="padding:1rem;">Status</th>
-                                <th style="padding:1rem;">Actions</th>
+                            <tr style="text-align:left; color:#64748b; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid #f1f5f9;">
+                                <th style="padding:1rem 1.5rem; font-weight:700;">Student</th>
+                                <th style="padding:1rem 1.5rem; font-weight:700;">Title</th>
+                                <th style="padding:1rem 1.5rem; font-weight:700;">Category</th>
+                                <th style="padding:1rem 1.5rem; font-weight:700; text-align:center;">Proof (Before / After)</th>
+                                <th style="padding:1rem 1.5rem; font-weight:700;">Status</th>
+                                <th style="padding:1rem 1.5rem; font-weight:700;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="complaintsTableBody">
-                            <!-- Dynamic Content -->
+                            <!-- Table Rows injected by JS -->
                             <tr>
-                                <td colspan="5" style="text-align:center; padding:2rem;">Loading...</td>
+                                <td colspan="6" style="text-align:center; padding:4rem;">
+                                    <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem; color:#3b82f6; margin-bottom:1rem;"></i>
+                                    <p style="color:#64748b;">Loading department complaints...</p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

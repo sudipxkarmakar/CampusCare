@@ -44,6 +44,7 @@ const __dirname = path.dirname(__filename);
 const startServer = async () => {
   await connectDB();
 
+  console.log('RESTARTING SERVER: Applying new complaint resolution logic...');
   const app = express();
 
   // 1. Trust Proxy (Environment-Aware)
@@ -90,6 +91,7 @@ const startServer = async () => {
 
   // 5. Body Size Limits
   app.use(express.json({ limit: '100kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '100kb' }));
   
   // Inject Correlation ID
   app.use(requestCorrelation);

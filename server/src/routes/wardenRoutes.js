@@ -11,6 +11,7 @@ import {
     resolveComplaint,
     escalateComplaint
 } from '../controllers/wardenController.js';
+import upload from '../middleware/uploadMiddleware.js';
 
 const router = express.Router();
 
@@ -23,7 +24,8 @@ router.get('/students', protect, warden, getHostelers);
 
 // Complaint Management
 router.get('/complaints', protect, warden, getHostelComplaints);
-router.put('/complaints/:id/resolve', protect, warden, resolveComplaint);
+router.put('/complaints/:id/resolve', protect, warden, upload.single('resolutionImage'), resolveComplaint);
+router.get('/stats', protect, warden, getWardenDashboardStats);
 router.put('/complaints/:id/escalate', protect, warden, escalateComplaint);
 
 export default router;

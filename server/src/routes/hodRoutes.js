@@ -14,6 +14,8 @@ import {
     assignBatchMentor
 } from '../controllers/hodController.js';
 import { resolveComplaint } from '../controllers/wardenController.js';
+import upload from '../middleware/uploadMiddleware.js';
+
 
 const router = express.Router();
 
@@ -23,7 +25,8 @@ router.put('/leaves/:id/action', protect, hod, handleLeaveAction);
 router.get('/students', protect, hod, getDepartmentStudents);
 router.get('/teachers', protect, hod, getDepartmentTeachers);
 router.get('/complaints', protect, hod, getDepartmentComplaints);
-router.put('/complaints/:id/resolve', protect, hod, resolveComplaint);
+router.put('/complaints/:id/resolve', protect, hod, upload.single('resolutionImage'), resolveComplaint);
+
 router.get('/routine', protect, hod, getRoutine);
 router.post('/students/assign-mentor', protect, hod, assignMentor);
 router.post('/subjects/:id/assign', protect, hod, assignSubjectTeacher);
