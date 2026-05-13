@@ -2,8 +2,8 @@ import Leave from '../../models/Leave.js';
 
 export const execute = async (args, user, conversationId, traceId, metadata = {}, options = {}) => {
     const { signal, execId } = options;
-    if (!user || user.role !== 'student') {
-        throw new Error("UNAUTHORIZED: Only students can apply for leave.");
+    if (!user || user.role !== 'hosteler') {
+        throw new Error("UNAUTHORIZED: Only hostelers can apply for hostel leave.");
     }
 
     const leaveType = ['Night Out', 'Home Visit', 'Medical'].includes(args.leaveType) ? args.leaveType : 'Home Visit';

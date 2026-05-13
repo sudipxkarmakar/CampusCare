@@ -1,6 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import RedisManager from '../services/ai/state/RedisManager.js';
 
 const router = express.Router();
 
@@ -24,13 +23,6 @@ router.get('/ready', async (req, res) => {
             await Promise.race([mongoCheck, timeout(2000)]);
         } catch (e) {
             return res.status(503).json({ status: 'unavailable', reason: 'MongoDB disconnected or timed out' });
-        }
-
-        // Check Redis with timeout
-        try {
-            await Promise.race([RedisManager.client.ping(), timeout(2000)]);
-        } catch (e) {
-            return res.status(503).json({ status: 'unavailable', reason: 'Redis disconnected or timed out' });
         }
 
         res.status(200).json({ status: 'ready', timestamp: new Date().toISOString() });

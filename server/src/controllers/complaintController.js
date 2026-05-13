@@ -1,6 +1,5 @@
 import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
-import { analyzeComplaint, sendFeedback } from '../utils/aiService.js';
 
 // @desc    File a new complaint
 // @route   POST /api/complaints
@@ -8,13 +7,33 @@ import { analyzeComplaint, sendFeedback } from '../utils/aiService.js';
 // @route   POST /api/complaints
 import fs from 'fs';
 
+const includesAny = (text, words) => words.some((word) => text.includes(word));
+
+const classifyComplaint = (text = '') => {
+    const lower = text.toLowerCase();
+    let category = 'Other';
+    if (includesAny(lower, ['fan', 'light', 'electric', 'power', 'wire', 'shock'])) category = 'Electrical';
+    else if (includesAny(lower, ['toilet', 'washroom', 'dirty', 'clean', 'garbage', 'smell'])) category = 'Sanitation';
+    else if (includesAny(lower, ['bench', 'door', 'window', 'wall', 'pipe', 'water leak'])) category = 'Civil';
+    else if (includesAny(lower, ['wifi', 'internet', 'computer', 'projector', 'network'])) category = 'IT';
+    else if (includesAny(lower, ['food', 'mess', 'canteen', 'meal'])) category = 'Mess';
+    else if (includesAny(lower, ['ragging', 'fight', 'harassment', 'theft', 'stolen'])) category = 'Disciplinary';
+    else if (includesAny(lower, ['personal', 'mentor', 'teacher'])) category = 'Personal';
+
+    let priority = 'Medium';
+    if (includesAny(lower, ['fire', 'shock', 'injury', 'harassment', 'ragging', 'urgent', 'danger'])) priority = 'Urgent';
+    else if (includesAny(lower, ['not working', 'broken', 'leak', 'stolen'])) priority = 'High';
+    else if (includesAny(lower, ['minor', 'request', 'suggestion'])) priority = 'Low';
+
+    return { category, priority };
+};
+
 export const fileComplaint = async (req, res) => {
     fs.appendFileSync('debug_output.txt', `\nHEADERS: ${req.headers['content-type']}\nBODY: ${JSON.stringify(req.body)}\nFILE: ${req.file ? req.file.originalname : 'none'}\n`);
     const { title, description, studentId, againstUser } = req.body;
 
     try {
-        // AI Processing
-        const analysis = await analyzeComplaint(title + " " + description);
+        const analysis = classifyComplaint(`${title} ${description}`);
 
         // --- MOCK MODE ---
         // --- MOCK MODE REMOVED: ALWAYS SAVE TO DB ---
@@ -40,7 +59,7 @@ export const fileComplaint = async (req, res) => {
         res.status(201).json({
             message: 'Complaint filed successfully',
             complaint,
-            aiNote: `Auto-classified as ${analysis.category} with ${analysis.priority} priority.`
+            aiNote: `Classified as ${analysis.category} with ${analysis.priority} priority.`
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -206,13 +225,8 @@ export const correctComplaint = async (req, res) => {
         complaint.priority = priority;
         await complaint.save();
 
-        // 2. Send Feedback to AI for retraining
-        // Combine title and description for better context
-        const fullText = complaint.title + " " + complaint.description;
-        await sendFeedback(fullText, category, priority);
-
         res.json({
-            message: 'Complaint corrected and AI retraining triggered.',
+            message: 'Complaint corrected successfully.',
             complaint
         });
     } catch (error) {
