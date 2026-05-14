@@ -41,11 +41,27 @@
                 style="font-size:0.8rem; background:#10b981; color:white; padding:2px 8px; border-radius:10px;">Warden</span>
         </a>
         
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 15px; position: relative; cursor: pointer;">
+                <a href="index.html" class="dashboard-btn-nav">Dashboard</a>
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Warden</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=Warden&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
     </header>
-    <!-- Dashboard Button -->
-    <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
-        <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
-    </div>
+
     <main class="main-container">
         <section class="hero teacher-hero" style="background: transparent;">
             <div class="hero-left">

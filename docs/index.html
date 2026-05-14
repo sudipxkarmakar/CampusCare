@@ -27,7 +27,8 @@
     <a href="login.html" id="loginBtn" class="btn-login" style="text-decoration:none;">Login / Sign Up</a>
 
     <!-- USER PROFILE (Hidden by default) -->
-    <div id="userProfile" class="user-profile">
+    <div id="userProfile" class="user-profile" style="display: none; align-items: center; gap: 15px; position: relative;">
+      <button onclick="goToDashboard()" class="dashboard-btn-nav">Dashboard</button>
       <span id="userName" class="user-name">Hello, User</span>
       <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random"
         alt="Profile" onclick="toggleProfileMenu()">
