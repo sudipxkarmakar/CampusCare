@@ -426,10 +426,42 @@ window.checkAuthState = function () {
             `;
         }
 
+        const studentCard = document.querySelector('.student-card');
+        const teacherCard = document.querySelector('.teacher-card');
+        const hostelCard = document.querySelector('.hostel-card');
+        const wardenCard = document.querySelector('.warden-card');
+
+        // Hide all by default for logged-in users, then show specific ones
+        [studentCard, teacherCard, hostelCard, wardenCard].forEach(c => {
+            if (c) c.style.display = 'none';
+        });
+
+        if (role === 'student') {
+            if (studentCard) studentCard.style.display = 'flex';
+        } else if (role === 'teacher') {
+            if (teacherCard) teacherCard.style.display = 'flex';
+        } else if (role === 'hosteler') {
+            if (studentCard) studentCard.style.display = 'flex';
+            if (hostelCard) hostelCard.style.display = 'flex';
+        } else if (role === 'warden') {
+            if (wardenCard) wardenCard.style.display = 'flex';
+        } else if (role === 'hod' || role === 'dean' || role === 'principal' || role === 'principal') {
+            if (teacherCard) teacherCard.style.display = 'flex';
+        } else if (role === 'admin') {
+            if (studentCard) studentCard.style.display = 'flex';
+            if (teacherCard) teacherCard.style.display = 'flex';
+            if (hostelCard) hostelCard.style.display = 'flex';
+            if (wardenCard) wardenCard.style.display = 'flex';
+        }
+
     } else {
         // User is Guest
         if (loginBtn) loginBtn.style.display = 'block';
         if (userProfile) userProfile.style.display = 'none';
+        
+        // Guests see all cards but will be prompted to login when clicking
+        const cards = document.querySelectorAll('.module-card');
+        cards.forEach(c => c.style.display = 'flex');
     }
 };
 

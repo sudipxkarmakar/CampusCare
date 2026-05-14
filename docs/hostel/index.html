@@ -2,6 +2,21 @@
 <html lang="en">
 
 <head>
+    <!-- Security Gate: Prevent Unauthorized Access -->
+    <script>
+        (function() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                window.location.href = '../login.html?role=hosteler';
+                return;
+            }
+            const user = JSON.parse(userStr);
+            if (user.role !== 'hosteler' && user.role !== 'admin' && user.role !== 'warden') {
+                alert('Access Restricted: This module is only for Hostelers.');
+                window.location.href = '../index.html';
+            }
+        })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Hostel Hub | CampusCare</title>
