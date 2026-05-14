@@ -385,7 +385,8 @@ window.checkAuthState = function () {
             if (cleanPath.startsWith('http')) {
                 avatarSrc = cleanPath;
             } else {
-                const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
+                const BACKEND_URL = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
                 if (cleanPath.startsWith('/')) {
                     avatarSrc = `${BACKEND_URL}${cleanPath}`;
                 } else {

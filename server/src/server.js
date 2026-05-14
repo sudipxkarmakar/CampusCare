@@ -135,8 +135,8 @@ const startServer = async () => {
   app.use('/api/principal', principalRoutes);
   app.use('/api/notes', noteRoutes);
 
-  // Serve uploads directory - Move ABOVE docs static to ensure priority
-  const uploadsPath = path.join(__dirname, '../uploads');
+  // Serve uploads directory - Point to the root uploads folder
+  const uploadsPath = path.join(__dirname, '../../uploads');
   app.use('/uploads', cors(), express.static(uploadsPath, {
     setHeaders: (res) => {
       res.set('Access-Control-Allow-Origin', '*');
