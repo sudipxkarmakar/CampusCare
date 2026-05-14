@@ -481,8 +481,10 @@ function goToDashboard() {
 
     if (role === 'student') window.location.href = base + 'student/index.html';
     else if (role === 'warden') window.location.href = base + 'warden/index.html';
-    else if (role === 'principal' || role === 'dean') window.location.href = base + 'principal/index.html';
-    else if (role === 'teacher' || role === 'hod') window.location.href = base + 'teacher/index.html';
+    else if (role === 'principal') window.location.href = base + 'principal/index.html';
+    else if (role === 'dean') window.location.href = base + 'dean/index.html';
+    else if (role === 'hod') window.location.href = base + 'hod/index.html';
+    else if (role === 'teacher') window.location.href = base + 'teacher/index.html';
     else if (role === 'hosteler') window.location.href = base + 'hostel/index.html';
     else window.location.href = base + 'index.html';
 }
