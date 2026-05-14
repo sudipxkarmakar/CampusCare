@@ -469,14 +469,16 @@ function goToDashboard() {
     const userStr = localStorage.getItem('user');
     if (!userStr) {
         const path = window.location.pathname;
-        const isSub = path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/warden/') || path.includes('/principal/');
+        const subDirs = ['/student/', '/teacher/', '/hostel/', '/hosteler/', '/warden/', '/principal/', '/hod/', '/dean/', '/complaints/'];
+        const isSub = subDirs.some(dir => path.includes(dir));
         window.location.href = isSub ? '../login.html' : 'login.html';
         return;
     }
     const user = JSON.parse(userStr);
     const role = (user.role || '').toLowerCase();
     const path = window.location.pathname;
-    const isSub = path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/warden/') || path.includes('/principal/');
+    const subDirs = ['/student/', '/teacher/', '/hostel/', '/hosteler/', '/warden/', '/principal/', '/hod/', '/dean/', '/complaints/'];
+    const isSub = subDirs.some(dir => path.includes(dir));
     const base = isSub ? '../' : '';
 
     if (role === 'student') window.location.href = base + 'student/index.html';
