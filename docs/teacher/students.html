@@ -276,8 +276,8 @@
                     // Populate Filters
                     populateFilters(allStudents);
 
-                    // Initial Render (Empty or prompt)
-                    renderStudents([]); // Initially empty until filter selected
+                    // Initial Render (Show all by default)
+                    renderStudents(allStudents); 
 
                     // Update total count
                     const countBadge = document.getElementById('totalStudentCount');

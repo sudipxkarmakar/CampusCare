@@ -22,8 +22,16 @@ async function loadComplaints() {
         const complaints = await response.json();
 
         if (complaints.length === 0) {
-            menteeListContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:#64748b;">No complaints found.</div>';
-            againstMeListContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:#64748b;">No complaints found.</div>';
+            menteeListContainer.innerHTML = `
+                <div style="text-align:center; padding:2rem; color:#64748b;">
+                    <i class="fa-solid fa-check-circle" style="font-size:2.5rem; margin-bottom:10px; color:#10b981; opacity:0.6;"></i><br>
+                    No issues reported by your mentees.
+                </div>`;
+            againstMeListContainer.innerHTML = `
+                <div style="text-align:center; padding:2rem; color:#64748b;">
+                    <i class="fa-solid fa-shield-check" style="font-size:2.5rem; margin-bottom:10px; color:#3b82f6; opacity:0.6;"></i><br>
+                    Your record is clear. No complaints found against you.
+                </div>`;
             return;
         }
 
@@ -66,7 +74,15 @@ async function loadComplaints() {
 
 function renderComplaints(container, complaints, type, user) {
     if (complaints.length === 0) {
-        container.innerHTML = '<div style="padding:1rem; text-align:center; color:#64748b;">No complaints in this category.</div>';
+        const msg = type === 'mentee' ? 'No reports from mentees in this category.' : 'No complaints against you in this category.';
+        const icon = type === 'mentee' ? 'fa-check-circle' : 'fa-shield-check';
+        const color = type === 'mentee' ? '#10b981' : '#3b82f6';
+
+        container.innerHTML = `
+            <div style="text-align:center; padding:2rem; color:#64748b;">
+                <i class="fa-solid ${icon}" style="font-size:2rem; margin-bottom:10px; color:${color}; opacity:0.6;"></i><br>
+                ${msg}
+            </div>`;
         return;
     }
 
