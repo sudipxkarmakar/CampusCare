@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             let html = '';
-            notices.forEach(n => {
+            notices.forEach((n, index) => {
                 const date = new Date(n.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
                 html += `
-                <div class="notice-item">
+                <div class="notice-item fade-in stagger-${(index % 4) + 1}">
                     <div class="notice-date">
                         ${date.split(' ')[1]}<br><span style="font-size:1.2rem;">${date.split(' ')[0]}</span>
                     </div>
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alumniContainer.innerHTML = '<p style="text-align:center; width:100%;">No alumni profiles found.</p>';
             } else {
                 let html = '';
-                alumni.forEach(a => {
+                alumni.forEach((a, index) => {
                     const roleColor = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)];
                     const name = a.user ? a.user.name : a.name || 'Alumni'; // Handle populated user or direct name
                     const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100`;
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const user = userStr ? JSON.parse(userStr) : null;
 
         let html = '';
-        complaintsToRender.forEach(c => {
+        complaintsToRender.forEach((c, index) => {
             let statusClass = 'status-progress';
             if (c.status === 'Resolved') statusClass = 'status-resolved';
 
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isLiked = user && user._id && upvotedBy.includes(user._id);
 
             html += `
-              <div class="blog-card glass">
+              <div class="blog-card glass fade-in stagger-${(index % 4) + 1}">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
                     <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
                     <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${priorityText}</span>

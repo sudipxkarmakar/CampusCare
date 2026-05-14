@@ -133,10 +133,10 @@ body::after {
 /* Standard Hover Effect for ALL Cards */
 .standard-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 20px rgba(59, 130, 246, 0.2);
     /* Lighter, softer Gradient (Royal Blue -> Soft Violet) */
     background: linear-gradient(135deg, #00aeff 0, #c121e9 100%);
-    border-color: transparent;
+    border-color: rgba(255, 255, 255, 0.3);
     opacity: 0.95;
 }
 
@@ -337,7 +337,8 @@ header {
 }
 
 .user-profile:hover {
-    background: rgba(0, 0, 0, 0.03);
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .user-name {
@@ -611,8 +612,9 @@ header {
 }
 
 .blog-card:hover {
-    transform: scale(1.02);
-    background: rgba(255, 255, 255, 0.65);
+    transform: translateY(-8px) scale(1.02);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 15px 35px rgba(31, 38, 135, 0.15), 0 0 15px rgba(59, 130, 246, 0.1);
 }
 
 .status-badge {
@@ -798,8 +800,50 @@ footer {
     overflow: auto;
     /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
 }
+
+/* --- PREMIUM POLISH: SEARCH FOCUS --- */
+#wall-search:focus {
+    width: 240px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: var(--student-color) !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+/* --- PREMIUM POLISH: ANIMATIONS --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* --- PREMIUM GLOW EFFECT --- */
+.glow-on-hover {
+    transition: all 0.3s ease-in-out !important;
+}
+
+.glow-on-hover:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.1) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+
 
 /* --- DUAL IMAGE TRACKING STYLES --- */
 .complaint-images-container {
