@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_BASE = (window.location.hostname === '127.0.0.1' ? 'http://127.0.0.1:5000' : (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com'));
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
+    const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
 
     // 1. Immediate UI Updates (Auth & Profile)
     if (window.checkAuthState) window.checkAuthState();
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alumni.forEach(a => {
                     const roleColor = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)];
                     const name = a.user ? a.user.name : a.name || 'Alumni'; // Handle populated user or direct name
-                    const avatarUrl = a.linkedinProfile?.includes('http') ? `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random` : `https://via.placeholder.com/100`;
+                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100`;
 
                     html += `
                     <div class="faculty-card glass">
@@ -263,7 +264,8 @@ async function upvote(id) {
     const token = localStorage.getItem('token'); // Assuming token is stored here, or checking user object
 
     try {
-        const res = await fetch(`http://localhost:5000/api/complaints/${id}/upvote`, {
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const res = await fetch(`${API_BASE}/api/complaints/${id}/upvote`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

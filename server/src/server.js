@@ -78,9 +78,12 @@ const startServer = async () => {
 
   app.use(cors({
     origin: function(origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      // Allow requests with no origin (like mobile apps or curl) 
+      // AND allow origin 'null' (sent by browsers for file:// protocol)
+      if (!origin || origin === 'null' || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
+        console.warn(`[CORS] Blocked request from origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },

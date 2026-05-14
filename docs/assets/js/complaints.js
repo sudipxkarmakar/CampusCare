@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // We use fetchWithAuth but handle the options properly for FormData.
                 // FormData automatically sets the correct Content-Type with boundary.
-                const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
                 const res = await fetch(`${API_BASE}/api/complaints`, {
                     method: 'POST',
                     headers: {

@@ -105,7 +105,8 @@
   <script src="assets/js/landing.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        const API_BASE = (window.location.hostname === '127.0.0.1' ? 'http://127.0.0.1:5000' : (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com'));
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
         const container = document.getElementById('full-complaint-list');
         const searchInput = document.getElementById('full-wall-search');
         let allComplaints = [];
