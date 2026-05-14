@@ -155,17 +155,30 @@ async function loadMyLeaves() {
             return;
         }
 
-        container.innerHTML = leaves.map(l => `
-            <div style="background:#f8fafc; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <strong style="color:#334155; font-size:0.9rem;">${l.type}</strong>
-                    <div style="font-size:0.75rem; color:#64748b;">${new Date(l.startDate).toLocaleDateString()}</div>
+        container.innerHTML = leaves.map(l => {
+            const remarks = [];
+            if (l.hodRemark) remarks.push(`<strong>HOD:</strong> ${l.hodRemark}`);
+            if (l.wardenRemark) remarks.push(`<strong>Warden:</strong> ${l.wardenRemark}`);
+
+            return `
+            <div style="background:#f8fafc; padding:15px; margin-bottom:12px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong style="color:#334155; font-size:0.95rem;">${l.type}</strong>
+                        <div style="font-size:0.8rem; color:#64748b;">Applied: ${new Date(l.startDate).toLocaleDateString()}</div>
+                    </div>
+                    <span style="font-size:0.75rem; padding:4px 10px; border-radius:10px; background:${getStatusColor(l.status)}; color:white; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+                        ${l.status}
+                    </span>
                 </div>
-                <span style="font-size:0.75rem; padding:2px 8px; border-radius:10px; background:${getStatusColor(l.status)}; color:white;">
-                    ${l.status}
-                </span>
+                ${remarks.length > 0 ? `
+                <div style="background: #fff; padding: 10px; border-radius: 8px; border-left: 4px solid ${l.status.includes('Rejected') ? '#ef4444' : '#3b82f6'}; font-size: 0.85rem; color: #475569;">
+                    ${remarks.join('<br>')}
+                </div>
+                ` : ''}
             </div>
-        `).join('');
+            `;
+        }).join('');
 
     } catch (error) {
         console.error(error);
