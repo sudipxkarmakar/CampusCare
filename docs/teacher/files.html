@@ -4,12 +4,8 @@
 <head>
   <meta charset="utf-8">
   <title>Shared Files — Teacher</title>
-
-  <!-- Main global styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/styles.css">
-
-  <!-- Page-specific styles -->
-  <link rel="stylesheet" href="shared-files.css">
 </head>
 
 <body>
@@ -19,28 +15,28 @@
     <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
       <i class="fa-solid fa-graduation-cap"></i> CampusCare
     </a>
-    <div id="userProfile" style="display: none; align-items: center; gap: 10px; position: relative; cursor: pointer;">
-      <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
-      <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
-        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;" onclick="toggleProfileMenu()">
-      <div id="profileMenu" class="glass"
-        style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000; text-align: left;">
-        <p
-          style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
-          Account Details</p>
-        <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;"></p>
-        <button onclick="logout()"
-          style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;"><i
-            class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
+    <div style="display:flex; align-items:center; gap: 15px;">
+        <!-- USER PROFILE -->
+        <div id="userProfile" style="display: none; align-items: center; gap: 15px; position: relative; cursor: pointer;">
+          <a href="index.html" class="dashboard-btn-nav">Dashboard</a>
+          <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, User</span>
+          <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile"
+            style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;" onclick="toggleProfileMenu()">
+          <div id="profileMenu" class="glass"
+            style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000; text-align: left;">
+            <p
+              style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
+              Account Details</p>
+            <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;"></p>
+            <button onclick="logout()"
+              style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;"><i
+                class="fa-solid fa-right-from-bracket"></i> Logout</button>
+          </div>
+        </div>
     </div>
   </header>
-    <!-- Dashboard Button -->
-    <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
-        <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
-    </div>
 
-  <main class="container">
+  <main class="main-container">
     <!-- HERO SECTION (Specific) -->
     <section class="hero teacher-hero" style="text-align: center; margin-top: 0.5rem; margin-bottom: 2rem;">
       <div style="max-width: 800px; margin: 0 auto;">
@@ -51,21 +47,21 @@
     </section>
 
     <!-- File Cards Section -->
-    <div class="file-list">
+    <div class="standard-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
 
-      <a class="file-card" href="#">
-        <span class="file-icon">📄</span>
-        <span class="file-name">Syllabus.pdf</span>
+      <a class="file-card" href="#" style="background: white; padding: 1.5rem; border-radius: 15px; text-decoration: none; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+        <div style="font-weight: 600; color: #2d3748;">Syllabus.pdf</div>
       </a>
 
-      <a class="file-card" href="#">
-        <span class="file-icon">📄</span>
-        <span class="file-name">OS Notes.pdf</span>
+      <a class="file-card" href="#" style="background: white; padding: 1.5rem; border-radius: 15px; text-decoration: none; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+        <div style="font-weight: 600; color: #2d3748;">OS Notes.pdf</div>
       </a>
 
-      <a class="file-card" href="#">
-        <span class="file-icon">📄</span>
-        <span class="file-name">DBMS Notes — Unit 2.docx</span>
+      <a class="file-card" href="#" style="background: white; padding: 1.5rem; border-radius: 15px; text-decoration: none; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+        <div style="font-weight: 600; color: #2d3748;">DBMS Unit 2.docx</div>
       </a>
 
     </div>

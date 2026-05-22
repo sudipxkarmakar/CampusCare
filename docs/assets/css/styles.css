@@ -984,27 +984,42 @@ footer {
     cursor: pointer;
 }
 
-/* --- DASHBOARD FLOATING BUTTON --- */
-.dashboard-floating-btn {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    color: #4a5568;
-    padding: 8px 20px;
+/* --- PREMIUM DASHBOARD BUTTON (NAV & FLOATING) --- */
+.dashboard-floating-btn,
+.dashboard-btn-nav {
+    background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+    color: white !important;
+    padding: 8px 22px;
     border-radius: 50px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+    gap: 10px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.8px;
 }
 
-.dashboard-floating-btn:hover {
-    background: rgba(255, 255, 255, 0.6);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-    color: #3b82f6;
+.dashboard-floating-btn::before,
+.dashboard-btn-nav::before {
+    content: '\f015'; /* FontAwesome house/home */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    transition: transform 0.3s ease;
 }
+
+.dashboard-floating-btn:hover,
+.dashboard-btn-nav:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.45);
+    background: linear-gradient(135deg, #818cf8 0%, #4f46e5 100%);
+}
+
+.dashboard-floating-btn:hover::before,
+.dashboard-btn-nav:hover::before {
+    transform: scale(1.2) rotate(-5deg);
+}

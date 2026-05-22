@@ -66,10 +66,11 @@
 
   <header class="glass">
     <a href="index.html" class="logo" style="text-decoration: none;">
-      <i class="fa-solid fa-arrow-left" style="margin-right: 5px; font-size: 1.2rem;"></i> Back
+      CampusCare
     </a>
     
-    <div id="userProfile" class="user-profile" style="display: none;">
+    <div id="userProfile" class="user-profile" style="display: none; align-items: center; gap: 15px; position: relative;">
+      <button onclick="goToDashboard()" class="dashboard-btn-nav">Dashboard</button>
       <span id="userName" class="user-name">Hello, User</span>
       <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" onclick="toggleProfileMenu()">
       <div id="profileMenu" class="glass" style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000;">

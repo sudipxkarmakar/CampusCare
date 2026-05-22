@@ -349,16 +349,23 @@ async function upvote(id, btnElement) {
 function goToDashboard() {
     const userStr = localStorage.getItem('user');
     if (!userStr) {
-        window.location.href = '../login.html';
+        const path = window.location.pathname;
+        const isSub = path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/warden/') || path.includes('/principal/');
+        window.location.href = isSub ? '../login.html' : 'login.html';
         return;
     }
     const user = JSON.parse(userStr);
     const role = (user.role || '').toLowerCase();
+    const path = window.location.pathname;
+    const isSub = path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/warden/') || path.includes('/principal/');
+    const base = isSub ? '../' : '';
 
-    if (role === 'student') window.location.href = '../student/index.html';
-    else if (role === 'teacher') window.location.href = '../teacher/index.html';
-    else if (role === 'hosteler') window.location.href = '../hostel/index.html';
-    else window.location.href = '../index.html';
+    if (role === 'student') window.location.href = base + 'student/index.html';
+    else if (role === 'warden') window.location.href = base + 'warden/index.html';
+    else if (role === 'principal' || role === 'dean') window.location.href = base + 'principal/index.html';
+    else if (role === 'teacher' || role === 'hod') window.location.href = base + 'teacher/index.html';
+    else if (role === 'hosteler') window.location.href = base + 'hostel/index.html';
+    else window.location.href = base + 'index.html';
 }
 
 // --- TAB SWITCHING LOGIC ---

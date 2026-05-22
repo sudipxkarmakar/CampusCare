@@ -15,18 +15,35 @@
         style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
         <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
-                style="font-size:0.8rem; background:#3b82f6; color:white; padding:2px 8px; border-radius:10px;">HOD</span>
+                style="font-size:0.8rem; background:#7c3aed; color:white; padding:2px 8px; border-radius:10px;">HOD</span>
         </a>
-        <div>
-            <a href="index.html" style="text-decoration:none; color:#2d3748; font-weight:600;">Dashboard</a>
+
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 15px; position: relative; cursor: pointer;">
+                <a href="index.html" class="dashboard-btn-nav">Dashboard</a>
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, HOD</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=HOD&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <main class="main-container">
-        <section class="hero teacher-hero" style="background: transparent;">
-            <div class="hero-left">
-                <h1 class="hero-title" style="color:#2d3748;">Leave Requests</h1>
-                <p class="hero-sub" style="color:#4a5568;">Review student applications</p>
+        <section class="hero teacher-hero" style="background: transparent; text-align: center; margin-top: 0.5rem; margin-bottom: 2rem;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 class="hero-title" style="color:#2d3748; font-size: 2.5rem; margin-bottom: 0.5rem;">Leave Requests</h1>
+                <p class="hero-sub" style="color:#64748b; font-size: 1.1rem; margin-bottom: 1rem;">Review student applications</p>
             </div>
         </section>
 
@@ -73,7 +90,34 @@
         </div>
     </div>
 
+    <script src="../assets/js/landing.js"></script>
     <script src="../assets/js/hod_leaves.js"></script>
+    <script>
+        // Local auth check for consistency if needed, though hod_leaves.js might handle it.
+        // We'll ensure the UI elements exist and are populated.
+        document.addEventListener('DOMContentLoaded', () => {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.role === 'hod' || user.role === 'admin') {
+                    document.getElementById('userProfile').style.display = 'flex';
+                    document.getElementById('userName').innerText = `Hello, ${user.name}`;
+                    document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
+                    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
+                }
+            }
+        });
+
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+    </script>
 </body>
 
 </html>

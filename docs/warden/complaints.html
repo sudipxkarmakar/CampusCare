@@ -119,21 +119,33 @@
             <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
                 style="font-size:0.8rem; background:#10b981; color:white; padding:2px 8px; border-radius:10px;">Warden</span>
         </a>
-        
-    </header>
-    <!-- Dashboard Button -->
-    <div class="dashboard-nav-bar" style="max-width: 1400px; width: 95%; margin: 30px auto 0px; display: flex; justify-content: flex-end;">
-        <a href="index.html" class="dashboard-floating-btn">Dashboard</a>
-    </div>
-    <main class="main-container">
-        <section class="hero teacher-hero" style="background: transparent; padding-bottom: 1rem;">
-            <div
-                style="max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; align-items: flex-start;">
-                <div class="hero-left" style="width: 100%; margin-bottom: 1rem;">
-                    <h1 class="hero-title" style="color:#2d3748;">Hostel Complaints</h1>
-                    <p class="hero-sub" style="color:#4a5568;">Manage facility issues and student conflicts</p>
+        <div style="display:flex; align-items:center; gap: 15px;">
+            <div id="userProfile"
+                style="display: none; align-items: center; gap: 15px; position: relative; cursor: pointer;">
+                <a href="index.html" class="dashboard-btn-nav">Dashboard</a>
+                <span id="userName" style="font-weight: 600; color: #2d3748;">Warden</span>
+                <img id="userAvatar" src="https://ui-avatars.com/api/?name=Warden&background=random" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
+                    onclick="toggleProfileMenu()">
+                <div id="profileMenu" class="glass"
+                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
+                    </p>
+                    <button onclick="logout()"
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
                 </div>
-                <div class="filter-controls" style="width: 100%; display: flex; gap: 10px; align-items: center;">
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="hero teacher-hero" style="background: transparent; text-align: center; margin-top: 0.5rem; margin-bottom: 2rem;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 class="hero-title" style="color:#2d3748; font-size: 2.5rem; margin-bottom: 0.5rem;">Hostel Complaints</h1>
+                <p class="hero-sub" style="color:#64748b; font-size: 1.1rem; margin-bottom: 1rem;">Manage facility issues and student conflicts</p>
+                <div class="filter-controls" style="display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 1rem;">
                     <label for="priorityFilter" style="font-weight: 600; color: #4a5568;">Priority:</label>
                     <select id="priorityFilter"
                         style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; cursor: pointer;">
@@ -155,8 +167,7 @@
         </section>
     </main>
 
-
-
+    <script src="../assets/js/landing.js"></script>
     <script src="warden_complaints.js"></script>
 </body>
 
