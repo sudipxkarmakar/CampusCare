@@ -224,19 +224,37 @@ function renderAiAssignmentDraft(assignment) {
         descriptionEl.parentNode.insertBefore(box, descriptionEl.nextSibling);
     }
 
+    const formattedDraft = formatAiAssignmentDraftText(draftText);
+
     box.style.display = 'block';
     box.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:0.75rem;">
             <strong style="color:#1e40af;">Assistant Draft</strong>
             <button type="button" onclick="downloadAiAssignmentDraft()" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;">Download TXT</button>
         </div>
-        <textarea id="aiAssignmentDraftText" rows="8" style="width:100%; border:1px solid #bfdbfe; border-radius:8px; padding:10px; font-family:inherit;">${draftText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+        <textarea id="aiAssignmentDraftText" rows="12" style="width:100%; border:1px solid #bfdbfe; border-radius:8px; padding:12px; font-family:inherit; line-height:1.6; white-space:pre-wrap; resize:vertical;"></textarea>
         <p style="font-size:0.8rem; color:#475569; margin:0.5rem 0 0;">Review this draft, export it if useful, and upload your final file yourself.</p>
     `;
+
+    document.getElementById('aiAssignmentDraftText').value = formattedDraft;
+}
+
+function formatAiAssignmentDraftText(text) {
+    return String(text || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\*\*/g, '')
+        .replace(/^#{1,6}\s*/gm, '')
+        .replace(/\s*(Student Name:|Student:|Assignment:|Subject:|Date of Submission:)/g, '\n$1')
+        .replace(/\s*(Introduction:|Homework Questions:|Questions:|Answers:|Answer:|Conclusion:|Note:)/g, '\n\n$1')
+        .replace(/(Introduction:|Homework Questions:|Questions:|Answers:|Answer:|Conclusion:|Note:)(?=\S)/g, '$1 ')
+        .replace(/([:\n])\s*(\d+\.\s+)/g, '$1\n$2')
+        .replace(/[ \t]+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 }
 
 function downloadAiAssignmentDraft() {
-    const text = document.getElementById('aiAssignmentDraftText')?.value || sessionStorage.getItem('aiDraftAssignmentText') || '';
+    const text = document.getElementById('aiAssignmentDraftText')?.value || formatAiAssignmentDraftText(sessionStorage.getItem('aiDraftAssignmentText')) || '';
     if (!text) return;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);

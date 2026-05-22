@@ -9,12 +9,12 @@ export const handleGetStatus = async (req, res) => {
 
 export const handleChat = async (req, res, next) => {
     try {
-        const { text, history = [], conversationId } = req.body;
+        const { text, history = [], conversationId, clientContext = {} } = req.body;
         if (!text || !String(text).trim()) {
             return res.status(400).json({ error: 'Text input is required' });
         }
 
-        const result = await aiService.processInput(text, req.user, history, conversationId);
+        const result = await aiService.processInput(text, req.user, history, conversationId, clientContext);
 
         if (req.headers.accept === 'text/event-stream') {
             res.setHeader('Content-Type', 'text/event-stream');

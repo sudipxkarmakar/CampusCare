@@ -36,6 +36,7 @@ import hodRoutes from './routes/hodRoutes.js';
 import wardenRoutes from './routes/wardenRoutes.js';
 import principalRoutes from './routes/principalRoutes.js';
 import noteRoutes from './routes/noteRoutes.js';
+import achievementRoutes from './routes/achievementRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -134,6 +135,7 @@ const startServer = async () => {
   app.use('/api/warden', wardenRoutes);
   app.use('/api/principal', principalRoutes);
   app.use('/api/notes', noteRoutes);
+  app.use('/api/achievements', achievementRoutes);
 
   // Serve uploads directory - Point to the root uploads folder
   const uploadsPath = path.join(__dirname, '../../uploads');

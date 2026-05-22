@@ -93,9 +93,23 @@ function buildChoiceMeta(entityType, choice) {
     if (entityType === 'SCHEDULE') {
         return `${choice.subject || 'Class'} | ${choice.facultyName || 'Faculty'}${choice.room ? ` | Room ${choice.room}` : ''}`;
     }
+    if (entityType === 'SUBJECT') {
+        return choice.facultyName || 'Faculty not assigned';
+    }
+    if (entityType === 'TEACHER') {
+        return [choice.subject, choice.facultyName, choice.meta].filter(Boolean).join(' | ');
+    }
+    if (entityType === 'MAR_MOOC') {
+        const date = choice.date ? new Date(choice.date).toLocaleDateString() : '';
+        return [choice.subject, choice.status, choice.points !== undefined ? `${choice.points} points/credits` : '', choice.platform, date].filter(Boolean).join(' | ');
+    }
     if (entityType === 'NOTICE') {
         const date = choice.date ? new Date(choice.date).toLocaleDateString() : '';
         return `${choice.subject || 'notice'}${date ? ` | ${date}` : ''}`;
+    }
+    if (entityType === 'EVENT') {
+        const date = choice.date ? new Date(choice.date).toLocaleDateString() : '';
+        return `Event${date ? ` | ${date}` : ''}${choice.postedBy ? ` | ${choice.postedBy}` : ''}`;
     }
     if (entityType === 'COMPLAINT') {
         return `${choice.subject || choice.status || 'Status'} | ${choice.category || ''} ${choice.priority || ''}`.trim();
@@ -122,6 +136,7 @@ function renderAction(result) {
         sessionStorage.setItem('aiDraftAssignmentText', result.payload.draftText || '');
         const link = document.createElement('a');
         link.href = 'student/assignments.html';
+        link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Assignment';
         els.actionArea.appendChild(link);
@@ -132,6 +147,7 @@ function renderAction(result) {
         sessionStorage.setItem('aiDraftDesc', result.payload.description || '');
         const link = document.createElement('a');
         link.href = 'complaints/index.html';
+        link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Complaint';
         els.actionArea.appendChild(link);
@@ -142,6 +158,7 @@ function renderAction(result) {
         sessionStorage.setItem('aiLeaveReason', result.payload.reason || '');
         const link = document.createElement('a');
         link.href = 'hostel/index.html';
+        link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Leave';
         els.actionArea.appendChild(link);

@@ -1,476 +1,1258 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusCare | AI-Driven Campus Services</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/design-system.css?v=1.3" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusCare | AI-Driven Campus Services</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/styles.css">
-</head>
+  <body>
+    <div class="dashboard-wrapper modern-layout">
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar">
+        <a href="index.html" class="logo-container">
+          <img
+            src="assets/images/hero-illustration.png"
+            alt="Logo"
+            class="logo-icon"
+            onerror="
+              this.src =
+                'https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'
+            "
+          />
+          <div class="logo-text">CampusCare</div>
+        </a>
 
-<body>
+        <ul class="nav-menu">
+          <li>
+            <a href="#home" class="nav-item active"
+              ><i class="fa-solid fa-house-chimney"></i> Home</a
+            >
+          </li>
+          <li>
+            <a href="#complaint-wall" class="nav-item"
+              ><i class="fa-solid fa-shield-halved"></i> Transparency Wall</a
+            >
+          </li>
+          <li>
+            <a href="#notices" class="nav-item"
+              ><i class="fa-regular fa-calendar-days"></i> News & Events</a
+            >
+          </li>
+          <li>
+            <a href="#faculty" class="nav-item"
+              ><i class="fa-solid fa-user-group"></i> Academic Leaders</a
+            >
+          </li>
+          <li>
+            <a href="#alumni-section" class="nav-item"
+              ><i class="fa-solid fa-graduation-cap"></i> Alumni</a
+            >
+          </li>
+        </ul>
 
-  <header class="glass">
-    <a href="index.html" class="logo" style="text-decoration: none;">
-      CampusCare
-    </a>
-    <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#modules">Services</a></li>
-      <li><a href="#notices">Notices</a></li>
-      <li><a href="#complaint-wall">Public Wall</a></li>
-      <li><a href="#faculty">Faculty</a></li>
-    </ul>
-    <!-- LOGIN BUTTON (Visible by default) -->
-    <a href="login.html" id="loginBtn" class="btn-login" style="text-decoration:none;">Login / Sign Up</a>
-
-    <!-- USER PROFILE (Hidden by default) -->
-    <div id="userProfile" class="user-profile">
-      <span id="userName" class="user-name">Hello, User</span>
-      <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random"
-        alt="Profile" onclick="toggleProfileMenu()">
-
-      <!-- DROPDOWN MENU -->
-      <div id="profileMenu" class="glass"
-        style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000;">
-        <p
-          style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
-          Account Details
-        </p>
-        <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
-          Role: Student<br>ID: CSE-2025-001
-        </p>
-        <button onclick="logout()"
-          style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <section class="hero landing-hero" id="home"
-    style="position: relative; padding: 1rem 5% 0.5rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
-    <h1>Smart Campus Management<br>Powered by AI</h1>
-    <p style="margin-bottom: 1.5rem;">Seamlessly integrating Students, Teachers, and Hostels into one digital ecosystem.
-    </p>
-
-    <!-- Hero Image in Foreground (Clean & Sharp) -->
-    <div class="hero-banner" style="width: 100%; max-width: 450px; animation: float 6s ease-in-out infinite;">
-      <img src="assets/images/hero-illustration.png" alt="Campus Illustration"
-        style="width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
-    </div>
-  </section>
-
-  <!-- Add slight floating animation for life -->
-  <style>
-    @keyframes float {
-      0% {
-        transform: translateY(0px);
-      }
-
-      50% {
-        transform: translateY(-15px);
-      }
-
-      100% {
-        transform: translateY(0px);
-      }
-    }
-  </style>
-
-  <section class="modules-section" id="modules">
-    <h2 class="section-title">Core Services</h2>
-    <div class="modules-grid">
-
-      <a href="student/index.html" class="module-card glass student-card" style="text-decoration:none;"
-        onclick="checkModuleAccess(event, ['student', 'hosteler'])">
-        <i class="fa-solid fa-user-graduate module-icon"></i>
-        <div class="module-title">Student Services</div>
-        <div class="module-desc">Your digital backpack. Access assignments, view exam routines, and manage personal
-          documents.</div>
-      </a>
-
-      <a href="teacher/index.html" class="module-card glass teacher-card" style="text-decoration:none;"
-        onclick="checkModuleAccess(event, ['teacher'])">
-        <i class="fa-solid fa-chalkboard-user module-icon"></i>
-        <div class="module-title">Teacher Portal</div>
-        <div class="module-desc">Streamline grading, publish notices, and manage class schedules effortlessly.</div>
-      </a>
-
-      <a href="hostel/index.html" class="module-card glass hostel-card" style="text-decoration:none;"
-        onclick="checkModuleAccess(event, ['hosteler'])">
-        <i class="fa-solid fa-bed module-icon"></i>
-        <div class="module-title">Hosteler Hub</div>
-        <div class="module-desc">Check mess menus, apply for leave, and receive instant hostel announcements.</div>
-      </a>
-
-      <a href="warden/index.html" class="module-card glass warden-card" style="text-decoration:none; display:none;"
-        onclick="checkModuleAccess(event, ['warden'])">
-        <i class="fa-solid fa-building-user module-icon"></i>
-        <div class="module-title">Warden Portal</div>
-        <div class="module-desc">Manage hostel leaves, update mess menus, and broadcast emergency alerts.</div>
-      </a>
-
-      <a href="complaints/index.html" class="module-card glass ai-card" style="text-decoration:none;"
-        onclick="checkModuleAccess(event, 'any')">
-        <i class="fa-solid fa-robot module-icon"></i>
-        <div class="module-title">AI Complaints</div>
-        <div class="module-desc"><strong>Flagship:</strong> AI-powered issue tracking. Auto-route complaints and track
-          resolution in real-time.</div>
-      </a>
-    </div>
-  </section>
-
-  <!-- NOTICE BOARD SECTION -->
-  <section class="notice-section" id="notices" style="padding: 2rem 5%;">
-    <h1 class="section-title">Campus Notice Board</h1>
-    <div style="background: rgba(255,255,255,0.4); border-radius: 20px; width: 100%; padding: 2rem;">
-      <div class="notice-wrapper" id="public-notice-list" style="max-width: 100%; margin: 0; padding: 0;">
-        <!-- JS Injected Notices -->
-        <p style="text-align:center;">Loading notices...</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="blog-section" id="complaint-wall" style="margin-top: 1rem;">
-    <div style="position: relative; padding: 0 5%; margin-bottom: 2rem;">
-      <h2 class="section-title" style="margin-top: 0; margin-bottom: 0.5rem;">Transparency Wall (Public Complaints)</h2>
-      <p style="text-align:center; color:#4a5568; margin-bottom: 0;">See how AI is resolving campus issues in real-time.</p>
-
-      <div class="search-view-all-container" style="position: absolute; right: 5%; top: 50%; transform: translateY(-50%); margin-top: 35px; display: flex; gap: 10px; align-items: center; z-index: 5;">
-        <div style="position: relative;">
-          <input type="text" id="wall-search" placeholder="Search complaints..." class="glass glow-on-hover" style="height: 42px; padding: 0 15px 0 35px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.6); background: rgba(255,255,255,0.45); color: #1f2937; outline: none; width: 190px; font-family: 'Poppins', sans-serif; transition: all 0.3s ease;">
-          <i class="fa-solid fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #4a5568;"></i>
+        <div class="sidebar-bottom">
+          <!-- <div class="promo-box">
+          <img src="https://ui-avatars.com/api/?name=C&background=eef2ff&color=6b46c1" alt="Building"
+            style="width: 40px; height: 40px; border-radius: 8px;">
+          <h4>Empowering minds.<br>Building futures.</h4>
+          <p>Join a community that inspires innovation and excellence.</p>
+        </div> -->
+          <a
+            id="logoutBtn"
+            href="javascript:void(0)"
+            class="nav-item"
+            data-action="logout"
+            style="color: var(--danger);"
+            ><i class="fa-solid fa-right-from-bracket"></i> Logout</a
+          >
         </div>
-        <a href="view-all-complaints.html" class="glass glow-on-hover" style="height: 42px; padding: 0 24px; text-decoration: none; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; color: #1f2937; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.8);">View All</a>
-      </div>
-    </div>
-    
-    <style>
-      @media (max-width: 980px) {
-        .search-view-all-container {
-          position: static !important;
-          transform: none !important;
-          margin-top: 1.5rem;
-          justify-content: center;
-        }
-      }
-    </style>
+      </aside>
 
-    <style>
-      #complaint-list::-webkit-scrollbar { display: none; }
-      #complaint-list { 
-        -ms-overflow-style: none; 
-        scrollbar-width: none; 
-        flex-wrap: nowrap !important; 
-        overflow-x: auto; 
-        scroll-behavior: smooth; 
-        scroll-snap-type: x mandatory;
-        justify-content: flex-start; 
-      }
-      #complaint-list .blog-card { 
-        min-width: 320px; 
-        width: 320px;
-        flex: 0 0 auto; 
-        margin-bottom: 10px; 
-        scroll-snap-align: center;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-      }
-      #complaint-list .blog-card:hover {
-        transform: scale(1.03);
-      }
-      .wall-nav-btn { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-      .wall-nav-btn:hover { background: rgba(255,255,255,0.9) !important; transform: scale(1.1); color: #1f2937 !important; }
-    </style>
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- TOP NAVBAR -->
+        <header class="top-navbar">
+          <div
+            class="nav-left"
+            style="display: flex; align-items: center; gap: 32px"
+          >
+            <h1
+              style="
+                margin: 0;
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: var(--text-dark);
+              "
+            >
+              CampusCare
+            </h1>
+            <div class="search-bar">
+              <i
+                class="fa-solid fa-search"
+                style="color: var(--text-muted)"
+              ></i>
+              <input
+                type="text"
+                placeholder="Search..."
+                style="
+                  border: none;
+                  background: transparent;
+                  outline: none;
+                  font-family: inherit;
+                  flex: 1;
+                  font-size: 0.95rem;
+                "
+              />
+            </div>
+          </div>
+          <div
+            class="nav-right"
+            style="display: flex; align-items: center; gap: 20px"
+          >
+            <span
+              class="date-display"
+              style="
+                color: var(--text-muted);
+                font-size: 0.95rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+              ><i class="fa-regular fa-calendar"></i> 15 May, 2026</span
+            >
+
+            <!-- LOGIN ROLE BADGE (clickable → go to module) -->
+            <div id="navRoleBadgeWrapper" style="display: none;">
+              <!-- Filled by JS: single badge or dual badges for hosteler -->
+            </div>
+
+            <button
+              id="assistantBtn"
+              class="btn-pill btn-outline-purple"
+              data-action="toggleRightPanel"
+              data-panel-mode="assistant"
+            >
+              <i class="fa-solid fa-robot"></i> Assistant
+            </button>
+            <button
+              id="sosBtn"
+              class="btn-pill btn-outline-red"
+              data-action="toggleRightPanel"
+              data-panel-mode="sos"
+            >
+              <i class="fa-solid fa-bell-concierge"></i> SOS
+            </button>
+
+            <!-- LOGIN BUTTON -->
+            <a
+              href="login.html"
+              id="loginBtn"
+              class="btn-pill btn-filled-purple"
+            >
+              <i class="fa-solid fa-right-to-bracket"></i> Login
+            </a>
+
+            <!-- USER PROFILE (Hidden by default) -->
+            <div
+              id="userProfile"
+              class="user-profile"
+              data-action="toggleProfileMenu"
+              style="display: none; cursor: pointer; position: relative"
+            >
+              <img
+                id="userAvatar"
+                class="user-avatar"
+                src="https://ui-avatars.com/api/?name=User&background=random"
+                alt="Profile"
+              />
+              <span id="userName" class="user-name" style="cursor: pointer"
+                >Hi, User</span
+              >
+
+              <!-- DROPDOWN MENU -->
+              <div
+                id="profileMenu"
+                style="
+                  display: none;
+                  position: absolute;
+                  top: calc(100% + 10px);
+                  right: 0;
+                  background: var(--bg-color);
+                  padding: 20px;
+                  border-radius: var(--radius-lg);
+                  box-shadow: var(--shadow-lg);
+                  z-index: 1000;
+                  border: 1px solid var(--border-color);
+                  animation: fadeIn 0.2s ease;
+                "
+              >
+                <div id="userDetails">
+                  <!-- dynamically injected from js -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- ===== NEW LAYOUT: no dashboard-grid wrapper, direct sections ===== -->
+
+        <!-- ROW 1: Hero + Stats (2/3) and Notice Board (1/3) -->
+        <div class="triple-grid" style="margin-bottom: 16px; align-items: stretch;">
+          
+          <!-- LEFT COLUMN (Hero & Stats) -->
+          <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 32px;">
+            <!-- HERO SECTION -->
+            <section class="hero-card" id="home">
+              <div class="hero-content" style="max-width: 65%;">
+              <h1>Shaping Futures.<br />Building <span>Leaders.</span></h1>
+              <p>
+                Asansol Engineering College is committed to academic
+                excellence, innovation, and holistic development to prepare
+                students for a better tomorrow.
+              </p>
+              <div class="hero-buttons">
+                <button
+                  class="btn-hero-primary"
+                  data-action="scrollIntoView"
+                  data-id="faculty"
+                >
+                  Discover AEC &rarr;
+                </button>
+                <button
+                  class="btn-hero-secondary"
+                  data-alert="Video playing feature coming soon!"
+                >
+                  <i class="fa-regular fa-circle-play"></i> Watch Video
+                </button>
+              </div>
+            </div><!-- end hero-content -->
+
+              <div class="hero-image">
+                <img
+                  src="assets/images/guest_illustration.png"
+                  alt="Mascot"
+                  onerror="
+                    this.src =
+                      'https://ui-avatars.com/api/?name=Mascot&background=random'
+                  "
+                />
+              </div>
+            </section>
+
+            <!-- STATS ROW (Under Hero) -->
+            <div class="dashboard-stats-row" style="margin: 0;">
+          <div class="stat-card-new">
+            <div
+              class="icon-wrapper"
+              style="background: #fee2e2; color: #ef4444"
+            >
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <div class="stat-info">
+              <h4>Programs Offered</h4>
+              <p class="stat-value">20+</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div
+              class="icon-wrapper"
+              style="background: #e0e7ff; color: #4f46e5"
+            >
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="stat-info">
+              <h4>Experienced Faculty</h4>
+              <p class="stat-value">150+</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div
+              class="icon-wrapper"
+              style="background: #fef3c7; color: #f59e0b"
+            >
+              <i class="fa-solid fa-building"></i>
+            </div>
+            <div class="stat-info">
+              <h4>Modern Campus</h4>
+              <p class="stat-value">50 Acres</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div
+              class="icon-wrapper"
+              style="background: #d1fae5; color: #10b981"
+            >
+              <i class="fa-solid fa-globe"></i>
+            </div>
+            <div class="stat-info">
+              <h4>Global Opportunities</h4>
+              <p class="stat-value">100%</p>
+            </div>
+            </div>
+            </div> <!-- END dashboard-stats-row -->
+          </div> <!-- END LEFT COLUMN -->
+
+          <!-- RIGHT COLUMN: NOTICE BOARD -->
+          <section class="section-card" id="notices" style="display: flex; flex-direction: column;">
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-bullhorn"></i> Campus Notice Board
+              </h2>
+              <a href="view-all-notices.html" class="btn-view-all">View All</a>
+            </div>
+            <div
+              id="public-notice-list"
+              class="notice-list"
+              style="display: flex; flex-direction: column; gap: 1px; flex: 1;"
+            >
+              <!-- Loaded by JS -->
+              <div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--primary); display:block; margin-bottom:10px;"></i>
+                Loading notices...
+              </div>
+            </div>
+          </section>
+          
+        </div>
+        <!-- END ROW 1 -->
+
+        <!-- ROW 2: Transparency Wall (2/3) + Developers (1/3) -->
+        <div class="triple-grid" style="margin-bottom: 16px;">
+
+          <!-- TRANSPARENCY WALL -->
+          <section class="section-card" id="transparency" style="grid-column: span 2;">
+              <div class="section-header">
+                <h2>
+                  <i class="fa-solid fa-shield-halved"></i> Transparency Wall
+                  <span
+                    style="
+                      font-size: 0.9rem;
+                      color: var(--text-muted);
+                      font-weight: 400;
+                    "
+                    >(Public Complaints)</span
+                  >
+                </h2>
+                <div style="display: flex; gap: 12px">
+                  <div style="position: relative">
+                    <input
+                      type="text"
+                      id="wall-search"
+                      placeholder="Search complaints..."
+                      style="
+                        padding: 8px 16px 8px 36px;
+                        border-radius: var(--radius-full);
+                        border: 1px solid var(--border-color);
+                        font-size: 0.85rem;
+                        outline: none;
+                      "
+                    />
+                    <i
+                      class="fa-solid fa-search"
+                      style="
+                        position: absolute;
+                        left: 14px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: var(--text-muted);
+                      "
+                    ></i>
+                  </div>
+                  <a
+                    href="view-all-complaints.html"
+                    class="btn-view-all"
+                    style="display: flex; align-items: center"
+                    >View All</a
+                  >
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 24px; align-items: stretch">
+                <!-- LEFT COLUMN (Stats + Complaints) -->
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                  "
+                >
+                  <div
+                    class="stats-row"
+                    id="complaints-stats-row"
+                    style="margin: 0"
+                  >
+                    <div class="stat-box" style="position: relative">
+                      <div class="stat-box-icon icon-purple">
+                        <i class="fa-solid fa-chart-pie"></i>
+                      </div>
+                      <div class="stat-box-info" style="z-index: 2">
+                        <p>Total Complaints</p>
+                        <h3 id="stat-total">0</h3>
+                      </div>
+                      <div
+                        id="complaint-pie-chart"
+                        style="
+                          position: absolute;
+                          right: -15px;
+                          top: -15px;
+                          width: 65px;
+                          height: 65px;
+                          border-radius: 50%;
+                          background: #e2e8f0;
+                          box-shadow: -2px 4px 12px rgba(0, 0, 0, 0.15);
+                          transition: background 0.5s ease;
+                          z-index: 5;
+                        "
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div
+                    id="complaint-list"
+                    class="complaint-list"
+                    style="flex: 1"
+                  >
+                    <!-- Dummy Data overwritten by JS, but keeping one as skeleton if JS fails -->
+                    <div class="complaint-item">
+                      <div class="status-dot dot-red"></div>
+                      <div class="complaint-info">
+                        <h4>Wi-Fi not working in Library</h4>
+                        <p>Reported by: John Doe</p>
+                      </div>
+                      <div class="badge badge-progress">In Progress</div>
+                      <div class="notice-date">20 May, 2025</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- RIGHT COLUMN (Illustration) -->
+                <div
+                  style="
+                    width: 300px;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 16px;
+                    background: var(--bg-color);
+                    border-radius: var(--radius-md);
+                  "
+                >
+                  <img
+                    src="assets/images/transparency-illustration.png"
+                    alt="Transparency Illustration"
+                    style="
+                      width: 100%;
+                      max-width: 220px;
+                      height: auto;
+                      mix-blend-mode: multiply;
+                      margin-bottom: 12px;
+                    "
+                  />
+                  <p
+                    style="
+                      font-size: 1.1rem;
+                      font-weight: 700;
+                      color: var(--text-dark);
+                    "
+                  >
+                    Your voice matters.
+                  </p>
+                  <p
+                    style="
+                      font-size: 0.9rem;
+                      color: var(--text-muted);
+                      margin-top: 4px;
+                    "
+                  >
+                    We ensure transparency & action.
+                  </p>
+                </div>
+              </div>
+
+
+            </section>
+
+          <!-- DEVELOPERS -->
+          <section
+            class="section-card"
+            id="developers"
+          >
+            <div class="section-header">
+              <h2><i class="fa-solid fa-code"></i> Developers</h2>
+            </div>
+            <div style="margin-top: 20px">
+              <div class="developer-cards">
+                <a
+                  id="amitDevCard"
+                  class="dev-card"
+                  href="https://amit-portfolio-six-taupe.vercel.app/"
+                  target="_blank"
+                  rel="noopener"
+                  style="cursor: pointer; text-decoration: none"
+                  aria-label="Open Amit portfolio"
+                >
+                  <img
+                    src="assets/images/AMIT.jpeg"
+                    style="object-fit: cover"
+                  />
+                  <div class="dev-info">
+                    <h4>AMIT</h4>
+                    <p>Full Stack</p>
+                  </div>
+                </a>
+                <a
+                  id="sudipDevCard"
+                  class="dev-card"
+                  href="https://sudipxkarmakar.github.io/portfolio/"
+                  target="_blank"
+                  rel="noopener"
+                  style="cursor: pointer; text-decoration: none"
+                  aria-label="Open Sudip portfolio"
+                >
+                  <img
+                    src="assets/images/portfolio.jpeg"
+                    style="object-fit: cover"
+                  />
+                  <div class="dev-info">
+                    <h4>SUDIP</h4>
+                    <p>Full Stack</p>
+                  </div>
+                </a>
+                <div class="dev-card">
+                  <img
+                    src="assets/images/Komal_passport.jpg.jpeg"
+                    style="object-fit: cover"
+                  />
+                  <div class="dev-info">
+                    <h4>Komal</h4>
+                    <p>Full Stack</p>
+                  </div>
+                </div>
+                <div class="dev-card">
+                  <img
+                    src="https://ui-avatars.com/api/?name=S&background=random"
+                  />
+                  <div class="dev-info">
+                    <h4>Sumit</h4>
+                    <p>DevOps</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Project Guide Card -->
+              <div
+                style="
+                  margin-top: 16px;
+                  display: flex;
+                  align-items: center;
+                  gap: 16px;
+                "
+              >
+                <div
+                  class="dev-card"
+                  style="
+                    width: 80px;
+                    height: 100px;
+                    flex: none;
+                    background: var(--primary);
+                    color: white;
+                  "
+                >
+                  <img
+                    src="https://ui-avatars.com/api/?name=PG&background=fff&color=6b46c1"
+                    style="margin-top: 10px"
+                  />
+                  <div class="dev-info" style="opacity: 1">
+                    <h4 style="color: white; font-size: 0.75rem;">Guide</h4>
+                  </div>
+                </div>
+                <div
+                  style="
+                    flex: 1;
+                    padding: 12px;
+                    border: 1px solid var(--border-color);
+                    border-radius: var(--radius-sm);
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 0.85rem;
+                  "
+                >
+                  PROJECT GUIDE
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+        <!-- END ROW 2 -->
+
+        <!-- ROW 3: Leaders, Alumni, Achievements -->
+        <div class="triple-grid" id="alumni-section">
+          <!-- Academic Leaders -->
+          <section
+            class="section-card"
+            id="faculty"
+            style="position: relative"
+          >
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-user-group"></i> Academic Leaders
+              </h2>
+              <a
+                href="view-all-leaders.html"
+                class="btn-view-all"
+                >View All</a
+              >
+            </div>
+
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <button
+                    style="
+                      background: none;
+                      border: none;
+                      font-size: 1.2rem;
+                      color: var(--text-muted);
+                      cursor: pointer;
+                    "
+                    data-alert="Previous slide"
+                  >
+                    <i class="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <div style="display: flex; gap: 16px; flex: 1">
+                    <div
+                      class="profile-card"
+                      style="
+                        flex: 1;
+                        border: 1px solid var(--border-color);
+                        border-radius: var(--radius-md);
+                      "
+                    >
+                      <img
+                        src="https://ui-avatars.com/api/?name=JS&background=random"
+                        class="profile-img"
+                      />
+                      <p class="profile-quote">
+                        "Education is the most powerful weapon..."
+                      </p>
+                      <h4 class="profile-name">- Dr. John Smith</h4>
+                      <p class="profile-role">Principal</p>
+                    </div>
+                    <div
+                      class="profile-card"
+                      style="
+                        flex: 1;
+                        border: 1px solid var(--border-color);
+                        border-radius: var(--radius-md);
+                      "
+                    >
+                      <img
+                        src="https://ui-avatars.com/api/?name=SJ&background=random"
+                        class="profile-img"
+                      />
+                      <p class="profile-quote">
+                        "The beautiful thing about learning is that..."
+                      </p>
+                      <h4 class="profile-name">- Prof. Sarah Johnson</h4>
+                      <p class="profile-role">Head of CSE</p>
+                    </div>
+                    <div
+                      class="profile-card"
+                      style="
+                        flex: 1;
+                        border: 1px solid var(--border-color);
+                        border-radius: var(--radius-md);
+                      "
+                    >
+                      <img
+                        src="https://ui-avatars.com/api/?name=ML&background=random"
+                        class="profile-img"
+                      />
+                      <p class="profile-quote">
+                        "Leadership is not about being in charge..."
+                      </p>
+                      <h4 class="profile-name">- Dr. Michael Lee</h4>
+                      <p class="profile-role">Dean, Academics</p>
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px">
+                  <span
+                    style="
+                      display: inline-block;
+                      width: 8px;
+                      height: 8px;
+                      background: var(--primary);
+                      border-radius: 50%;
+                      margin: 0 4px;
+                    "
+                  ></span>
+                  <span
+                    style="
+                      display: inline-block;
+                      width: 8px;
+                      height: 8px;
+                      background: #cbd5e1;
+                      border-radius: 50%;
+                      margin: 0 4px;
+                    "
+                  ></span>
+                  <span
+                    style="
+                      display: inline-block;
+                      width: 8px;
+                      height: 8px;
+                      background: #cbd5e1;
+                      border-radius: 50%;
+                      margin: 0 4px;
+                    "
+                  ></span>
+                  <span
+                    style="
+                      display: inline-block;
+                      width: 8px;
+                      height: 8px;
+                      background: #cbd5e1;
+                      border-radius: 50%;
+                      margin: 0 4px;
+                    "
+                  ></span>
+                  <span
+                    style="
+                      display: inline-block;
+                      width: 8px;
+                      height: 8px;
+                      background: #cbd5e1;
+                      border-radius: 50%;
+                      margin: 0 4px;
+                    "
+                  ></span>
+                </div>
+          </section>
+
+          <!-- Alumni Excellence -->
+          <section class="section-card" id="alumni">
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-graduation-cap"></i> Alumni Excellence
+              </h2>
+              <a
+                href="view-all-alumni.html"
+                class="btn-view-all"
+                >View All</a
+              >
+            </div>
+            <div id="alumni-list">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 20px;
+                  background: var(--bg-color);
+                  padding: 20px;
+                  border-radius: var(--radius-md);
+                "
+              >
+                <img
+                  src="https://ui-avatars.com/api/?name=AR&background=random"
+                  class="profile-img"
+                  style="margin: 0; width: 70px; height: 70px"
+                />
+                <div>
+                  <h4 class="profile-name" style="font-size: 1.1rem">
+                    Ahmad Raza
+                  </h4>
+                  <p class="profile-role" style="margin-bottom: 8px">
+                    Software Engineer at Google
+                  </p>
+                  <p
+                    class="profile-quote"
+                    style="margin: 0; text-align: left"
+                  >
+                    "Hard work, consistency and curiosity will take you
+                    places."
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="alumni-stats">
+              <div class="alumni-stat-item text-center">
+                <h3>120+</h3>
+                <p>Alumni Network</p>
+              </div>
+              <div class="alumni-stat-item text-center">
+                <h3>18</h3>
+                <p>Industry Mentors</p>
+              </div>
+              <div class="alumni-stat-item text-center">
+                <h3>24</h3>
+                <p>Events Completed</p>
+              </div>
+              <div class="alumni-stat-item text-center">
+                <h3>850+</h3>
+                <p>Student Interactions</p>
+              </div>
+            </div>
+            <div style="text-align: center">
+              <a
+                href="view-all-alumni.html"
+                class="btn-view-all"
+                >Connect with Alumni &rarr;</a
+              >
+            </div>
+          </section>
+
+          <!-- Achievements -->
+          <section class="section-card" id="achievements">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-trophy"></i> Achievements</h2>
+              <a
+                href="view-all-achievements.html"
+                class="btn-view-all"
+                >View All</a
+              >
+            </div>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                margin-top: 20px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 16px;
+                  padding: 16px;
+                  background: #fef3c7;
+                  border-radius: var(--radius-md);
+                "
+              >
+                <div style="font-size: 2rem; color: #f59e0b">
+                  <i class="fa-solid fa-ranking-star"></i>
+                </div>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700">
+                    Top 10 Engineering College
+                  </h4>
+                  <p
+                    style="
+                      margin: 4px 0 0 0;
+                      font-size: 0.85rem;
+                      color: #b45309;
+                    "
+                  >
+                    Ranked by National Education Board 2025
+                  </p>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 16px;
+                  padding: 16px;
+                  background: #d1fae5;
+                  border-radius: var(--radius-md);
+                "
+              >
+                <div style="font-size: 2rem; color: #10b981">
+                  <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700">
+                    Green Campus Award
+                  </h4>
+                  <p
+                    style="
+                      margin: 4px 0 0 0;
+                      font-size: 0.85rem;
+                      color: #065f46;
+                    "
+                  >
+                    Recognized for sustainable initiatives
+                  </p>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 16px;
+                  padding: 16px;
+                  background: #e0e7ff;
+                  border-radius: var(--radius-md);
+                "
+              >
+                <div style="font-size: 2rem; color: #4f46e5">
+                  <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700">
+                    Innovation Hub Grant
+                  </h4>
+                  <p
+                    style="
+                      margin: 4px 0 0 0;
+                      font-size: 0.85rem;
+                      color: #3730a3;
+                    "
+                  >
+                    Received $50K for Robotics Lab
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+        <!-- END ROW 3 -->
+
+        <!-- (old side-col removed — notices, developers, achievements now in new layout rows above) -->
+
+        <footer
+          style="
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 20px 0;
+          "
+        >
+          &copy; 2025 Asansol Engineering College. All rights reserved.
+          <span style="float: right; display: flex; gap: 20px">
+            <a
+              href="javascript:void(0)"
+              style="color: var(--text-muted); text-decoration: none"
+              >Privacy Policy</a
+            >
+            <a
+              href="javascript:void(0)"
+              style="color: var(--text-muted); text-decoration: none"
+              >Terms of Service</a
+            >
+            <a
+              href="javascript:void(0)"
+              style="color: var(--text-muted); text-decoration: none"
+              >Contact Us</a
+            >
+          </span>
+        </footer>
+      </main>
+
+      <!-- RIGHT PANEL OVERLAY -->
+      <div
+        id="right-panel-overlay"
+        class="right-panel-overlay"
+        data-action="closeRightPanel"
+      ></div>
+
+      <!-- RIGHT PANEL -->
+      <aside class="right-panel" id="right-panel">
+        <button
+          id="rightPanelClose"
+          class="right-panel-close"
+          data-action="closeRightPanel"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- AI Assistant Card -->
+        <div class="side-card" id="assistant-section">
+          <h3>
+            <i
+              class="fa-solid fa-robot"
+              style="color: var(--primary); font-size: 1.5rem"
+            ></i>
+            AI Assistant
+          </h3>
+          <div class="ai-greeting">
+            <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
+            <div>
+              <p>Hi there! 👋</p>
+              <span>How can I help you today?</span>
+            </div>
+          </div>
+
+          <div
+            id="ai-status"
+            style="
+              margin-bottom: 12px;
+              color: var(--text-muted);
+              font-size: 0.82rem;
+              font-weight: 600;
+            "
+          >
+            Ready.
+          </div>
+
+          <div class="ai-suggestions">
+            <button
+              class="ai-suggestion-btn"
+              data-action="aiQuery"
+              data-query="General Information"
+            >
+              <i class="fa-solid fa-circle-info"></i> General Information
+            </button>
+            <button
+              class="ai-suggestion-btn"
+              data-action="aiQuery"
+              data-query="Admission Process"
+            >
+              <i class="fa-solid fa-graduation-cap"></i> Admission Process
+            </button>
+            <button
+              class="ai-suggestion-btn"
+              data-action="aiQuery"
+              data-query="Campus Facilities"
+            >
+              <i class="fa-solid fa-building"></i> Campus Facilities
+            </button>
+            <button
+              class="ai-suggestion-btn"
+              data-action="aiQuery"
+              data-query="Scholarships"
+            >
+              <i class="fa-solid fa-award"></i> Scholarships
+            </button>
+            <button
+              class="ai-suggestion-btn"
+              data-action="aiQuery"
+              data-query="Events & News"
+            >
+              <i class="fa-regular fa-calendar-days"></i> Events & News
+            </button>
+          </div>
+
+          <div
+            id="ai-chat-history"
+            style="
+              display: block;
+              max-height: 200px;
+              overflow-y: auto;
+              margin-bottom: 15px;
+              font-size: 0.85rem;
+              padding: 10px;
+              background: var(--bg-color);
+              border-radius: var(--radius-sm);
+            "
+          ></div>
+
+          <div id="ai-action-area" style="margin-bottom: 12px"></div>
+
+          <div class="ai-input-wrapper">
+            <input type="text" id="ai-input" placeholder="Ask me anything..." />
+            <button id="ai-send-btn" data-action="askAI">
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- SOS & On-Site Assistance Card -->
+        <div class="side-card" id="sos-section">
+          <h3>
+            <i
+              class="fa-solid fa-bell-concierge"
+              style="color: var(--danger); font-size: 1.5rem"
+            ></i>
+            SOS & On-Site Assistance
+          </h3>
+
+          <div class="sos-list">
+            <a href="tel:100" class="sos-item">
+              <div
+                class="sos-icon"
+                style="background: var(--danger-light); color: var(--danger)"
+              >
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div class="sos-item-info">
+                <h4>Emergency (SOS)</h4>
+                <p>Immediate help</p>
+              </div>
+            </a>
+            <button
+              data-action="sosRequest"
+              data-sos-type="Fire Emergency"
+              class="sos-item"
+            >
+              <div
+                class="sos-icon"
+                style="background: var(--warning-light); color: var(--warning)"
+              >
+                <i class="fa-solid fa-fire"></i>
+              </div>
+              <div class="sos-item-info">
+                <h4>Fire Emergency</h4>
+                <p>Report fire incident</p>
+              </div>
+            </button>
+            <a href="tel:101" class="sos-item">
+              <div
+                class="sos-icon"
+                style="
+                  background: var(--secondary-light);
+                  color: var(--secondary);
+                "
+              >
+                <i class="fa-solid fa-truck-medical"></i>
+              </div>
+              <div class="sos-item-info">
+                <h4>Medical Assistance</h4>
+                <p>Request medical help</p>
+              </div>
+            </a>
+            <button
+              data-action="sosRequest"
+              data-sos-type="Security Alert"
+              class="sos-item"
+            >
+              <div
+                class="sos-icon"
+                style="background: var(--primary-light); color: var(--primary)"
+              >
+                <i class="fa-solid fa-shield"></i>
+              </div>
+              <div class="sos-item-info">
+                <h4>Security Alert</h4>
+                <p>Report security issue</p>
+              </div>
+            </button>
+            <button
+              data-action="bloodAlert"
+              class="sos-item"
+            >
+              <div class="sos-icon" style="background: #f3e8ff; color: #7e22ce">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <div class="sos-item-info">
+                <h4>Accident Report</h4>
+                <p>Report an accident</p>
+              </div>
+            </button>
+            <button
+              data-action="sosRequest"
+              data-sos-type="Other Assistance"
+              class="sos-item"
+            >
+              <div
+                class="sos-icon"
+                style="background: var(--bg-color); color: var(--text-dark)"
+              >
+                <i class="fa-solid fa-ellipsis"></i>
+              </div>
+              <div class="sos-item-info">
+                <h4>Other Assistance</h4>
+                <p>Need other help?</p>
+              </div>
+            </button>
+          </div>
+
+          <button
+            class="btn-emergency"
+            data-action="sosRequest"
+            data-sos-type="Emergency SOS"
+          >
+            Call Emergency (1122)
+          </button>
+        </div>
+      </aside>
+    </div>
 
     <script>
-      function scrollComplaintWall(direction) {
-        const list = document.getElementById('complaint-list');
-        const card = list.querySelector('.blog-card');
-        if (card) {
-          // Calculate exact width to scroll: card width + 2rem gap (32px)
-          const scrollAmount = card.offsetWidth + 32;
-          list.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      function toggleProfileMenu() {
+        const menu = document.getElementById("profileMenu");
+        if (menu.style.display === "none") {
+          menu.style.display = "block";
+        } else {
+          menu.style.display = "none";
         }
       }
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const list = document.getElementById('complaint-list');
-        const leftBtn = document.getElementById('wall-nav-left');
-        
-        if (leftBtn) {
-           leftBtn.style.opacity = '0';
-           leftBtn.style.pointerEvents = 'none';
+      function checkModuleAccess(event, allowedRoles) {
+        const userStr = localStorage.getItem("user");
+        if (!userStr) {
+          event.preventDefault();
+          let targetRole = "student";
+          if (allowedRoles.includes("teacher")) targetRole = "teacher";
+          else if (
+            allowedRoles.includes("hosteler") &&
+            !allowedRoles.includes("student")
+          )
+            targetRole = "hosteler";
+          window.location.href = `login.html?role=${targetRole}`;
+          return;
         }
-
-        if (list && leftBtn) {
-          list.addEventListener('scroll', () => {
-            if (list.scrollLeft > 10) {
-              leftBtn.style.opacity = '1';
-              leftBtn.style.pointerEvents = 'auto';
-            } else {
-              leftBtn.style.opacity = '0';
-              leftBtn.style.pointerEvents = 'none';
-            }
-          });
+        const user = JSON.parse(userStr);
+        if (allowedRoles === "any") return;
+        if (!allowedRoles.includes(user.role)) {
+          event.preventDefault();
+          const role = (user.role || "").toLowerCase();
+          if (role === "principal") {
+            window.location.href = "principal/index.html";
+            return;
+          }
+          if (role === "hod") {
+            window.location.href = "hod/index.html";
+            return;
+          }
+          if (role === "warden") {
+            window.location.href = "warden/index.html";
+            return;
+          }
+          alert(
+            "Access Restricted: You do not have permission to view this module.",
+          );
         }
-      });
+      }
     </script>
 
-    <div style="position: relative; display: flex; align-items: center; padding: 0 2%;">
-      <button id="wall-nav-left" onclick="scrollComplaintWall(-1)" class="wall-nav-btn" style="position: absolute; left: 1%; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a5568; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1); opacity: 0; pointer-events: none;"><i class="fa-solid fa-chevron-left"></i></button>
-      
-      <div class="blog-container" id="complaint-list" style="display: flex; align-items: stretch; gap: 2rem; width: 100%; padding: 1rem 3%;">
-        <div class="blog-card glass">
-          <div class="status-badge status-resolved">RESOLVED</div>
-          <h3 class="blog-title">Hostel 3 Water Cooler Repair</h3>
-          <p class="blog-meta">Reported by: Student</p>
-          <p class="blog-excerpt">The issue regarding the RO filter in the 2nd-floor wing has been fixed. Maintenance team
-            replaced the filter cartridge.</p>
-          <div class="blog-footer">
-            <span><i class="fa-solid fa-thumbs-up"></i> 45 Upvotes</span>
-            <span><i class="fa-solid fa-check-circle"></i> Verified</span>
-          </div>
-        </div>
-
-        <div class="blog-card glass">
-          <div class="status-badge status-progress">IN PROGRESS</div>
-          <h3 class="blog-title">Projector Malfunction in Lab 4</h3>
-          <p class="blog-meta">Reported by: Faculty</p>
-          <p class="blog-excerpt">Complaint auto-routed to IT Department. A technician has been assigned and is currently
-            inspecting the wiring.</p>
-          <div class="blog-footer">
-            <span><i class="fa-solid fa-thumbs-up"></i> 12 Upvotes</span>
-            <span><i class="fa-solid fa-clock"></i> ETA: 4 Hours</span>
-          </div>
-        </div>
-
-        <div class="blog-card glass">
-          <div class="status-badge status-resolved">RESOLVED</div>
-          <h3 class="blog-title">Library Wi-Fi Connectivity</h3>
-          <p class="blog-meta">Reported by: Student</p>
-          <p class="blog-excerpt">Network congestion identified by AI analysis. Bandwidth has been increased for the
-            reading room area.</p>
-          <div class="blog-footer">
-            <span><i class="fa-solid fa-thumbs-up"></i> 89 Upvotes</span>
-            <span><i class="fa-solid fa-check-circle"></i> Verified</span>
-          </div>
-        </div>
-      </div>
-
-      <button onclick="scrollComplaintWall(1)" class="wall-nav-btn" style="position: absolute; right: 1%; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4a5568; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"><i class="fa-solid fa-chevron-right"></i></button>
-    </div>
-  </section>
-
-  <!-- ALUMNI SECTION -->
-  <section class="alumni-section" id="alumni" style="margin-bottom: 4rem;">
-    <h2 class="section-title">Alumni Excellence & Interaction</h2>
-    <p style="text-align:center; margin-bottom:2rem; color:#4a5568;">Connect with our successful graduates reaching new
-      heights.</p>
-
-    <div class="faculty-container" id="alumni-list">
-      <p style="text-align:center; width:100%;">Loading alumni profiles...</p>
-    </div>
-  </section>
-
-  <section class="faculty-section" id="faculty">
-    <h2 class="section-title">Meet Our Academic Leaders</h2>
-    <div class="faculty-container">
-      <div class="faculty-card glass">
-        <div style="position:absolute; top:15px; right:15px; cursor:pointer;" onclick="alert('Edit Icon Clicked')">
-          <i class="fa-solid fa-pen-to-square" style="color:#a0aec0;"></i>
-        </div>
-        <img src="https://ui-avatars.com/api/?name=Academic+Leader&background=random&size=100" alt="Prof Name" class="faculty-img">
-        <h3 class="faculty-name">Dr. A. Sharma</h3>
-        <p class="faculty-role">Dean of Academics</p>
-        <p class="faculty-bio">Ph.D. in Computer Science with 15+ years of experience in AI research.</p>
-      </div>
-
-      <div class="faculty-card glass">
-        <div style="position:absolute; top:15px; right:15px; cursor:pointer;" onclick="alert('Edit Icon Clicked')">
-          <i class="fa-solid fa-pen-to-square" style="color:#a0aec0;"></i>
-        </div>
-        <img src="https://ui-avatars.com/api/?name=Academic+Leader&background=random&size=100" alt="Prof Name" class="faculty-img">
-        <h3 class="faculty-name">Prof. R. Das</h3>
-        <p class="faculty-role">HOD, Mechanical Eng.</p>
-        <p class="faculty-bio">Expert in Thermodynamics and Robotics. Spearheading automated labs.</p>
-      </div>
-
-      <div class="faculty-card glass">
-        <div style="position:absolute; top:15px; right:15px; cursor:pointer;" onclick="alert('Edit Icon Clicked')">
-          <i class="fa-solid fa-pen-to-square" style="color:#a0aec0;"></i>
-        </div>
-        <img src="https://ui-avatars.com/api/?name=Academic+Leader&background=random&size=100" alt="Prof Name" class="faculty-img">
-        <h3 class="faculty-name">Mrs. K. Verma</h3>
-        <p class="faculty-role">Chief Warden (Hostels)</p>
-        <p class="faculty-bio">Dedicated to ensuring student welfare and safe hostel environment.</p>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    &copy; 2025 CampusCare. Built for the Future.
-  </footer>
-
-  <!-- FLOATING ACTION BUTTONS (SOS & AI) -->
-  <div class="fab-container"
-    style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex; flex-direction: column; gap: 15px; align-items: flex-end;">
-
-    <!-- AI Assistant Button -->
-    <button onclick="toggleModal('ai-modal')"
-      style="width: 60px; height: 60px; border-radius: 50%; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s ease;">
-      <i class="fa-solid fa-robot"></i>
-    </button>
-
-    <!-- SOS Button (Pulsating) -->
-    <button onclick="toggleModal('sos-modal')"
-      style="width: 60px; height: 60px; border-radius: 50%; border: none; background: #ef4444; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); animation: pulse-red 2s infinite;">
-      <i class="fa-solid fa-bell-concierge"></i> <!-- Using bell/alert icon, or life-ring -->
-    </button>
-  </div>
-
-  <!-- SOS MODAL -->
-  <div id="sos-modal" class="modal-overlay"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
-    <div class="modal-content glass"
-      style="background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; position: relative;">
-      <button onclick="toggleModal('sos-modal')"
-        style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-      <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-      <h2 style="color: #ef4444; margin-bottom: 0.5rem;">EMERGENCY SOS</h2>
-      <p style="margin-bottom: 1.5rem;">Select your emergency type to alert nearest help.</p>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <!-- Row 1: Calls -->
-        <a href="tel:100"
-          style="background: #1f2937; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; grid-column: 1 / -1;">
-          <i class="fa-solid fa-shield-halved"></i> Call Security / Police
-        </a>
-
-        <!-- Row 2: Medical Action -->
-        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
-          style="background: #f59e0b; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
-          <i class="fa-solid fa-kit-medical" style="font-size:1.5rem;"></i> First Aid
-        </button>
-
-        <button
-          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
-          style="background: #ef4444; color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; display:flex; flex-direction:column; align-items:center; gap:5px;">
-          <i class="fa-solid fa-droplet" style="font-size:1.5rem;"></i> Need Blood
-        </button>
-
-        <!-- Row 3: Others -->
-        <a href="tel:101"
-          style="background: #ef4444; color: white; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; display:flex; justify-content:center; align-items:center; gap:5px;">
-          <i class="fa-solid fa-truck-medical"></i> Ambulance
-        </a>
-
-        <button onclick="alert('Panic Signal Sent with Location!')"
-          style="background: #4b5563; color: white; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">
-          Other / Panic
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI ASSISTANT MODAL -->
-  <div id="ai-modal" class="modal-overlay"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
-    <div class="modal-content glass"
-      style="background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; position: relative;">
-      <button onclick="toggleModal('ai-modal')"
-        style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-      <i class="fa-solid fa-robot" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
-      <h2 style="color: #1f2937; margin-bottom: 0.5rem;">Campus AI Assistant</h2>
-      <div id="ai-chat-history"
-        style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid #eee; padding: 10px; border-radius: 10px; background: #f9fafb; display:none;">
-      </div>
-
-      <input type="text" id="ai-input" placeholder="Ask about routine, hostel..."
-        style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 1rem;">
-      <button onclick="askAI()"
-        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold;">Ask
-        AI</button>
-    </div>
-  </div>
-
-  <style>
-    @keyframes pulse-red {
-      0% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-      }
-
-      70% {
-        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-      }
-
-      100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-      }
-    }
-  </style>
-
-  <script>
-    function toggleModal(id) {
-      const modal = document.getElementById(id);
-      if (modal.style.display === 'flex') {
-        modal.style.display = 'none';
-      } else {
-        modal.style.display = 'flex';
-      }
-    }
-
-    function checkModuleAccess(event, allowedRoles) {
-      const userStr = localStorage.getItem('user');
-
-      // 1. Check if Logged In
-      if (!userStr) {
-        event.preventDefault();
-
-        // Determine target role for login redirect
-        let targetRole = 'student'; // Default
-        if (allowedRoles.includes('teacher')) targetRole = 'teacher';
-        else if (allowedRoles.includes('hosteler') && !allowedRoles.includes('student')) targetRole = 'hosteler';
-
-        window.location.href = `login.html?role=${targetRole}`;
-        return;
-      }
-
-      const user = JSON.parse(userStr);
-
-      // 2. Check Role Access
-      if (allowedRoles === 'any') return; // Allow all logged in users
-
-      if (!allowedRoles.includes(user.role)) {
-        event.preventDefault();
-
-        // Smart Redirect for Admin/Specific Roles
-        const role = (user.role || '').toLowerCase();
-
-        if (role === 'principal') {
-          window.location.href = 'principal/index.html';
-          return;
+    <!-- Scripts -->
+    <script>
+      function toggleRightPanel(mode = "assistant") {
+        const panel = document.getElementById("right-panel");
+        const overlay = document.getElementById("right-panel-overlay");
+        const assistant = document.getElementById("assistant-section");
+        const sos = document.getElementById("sos-section");
+        const requestedMode = mode === "sos" ? "sos" : "assistant";
+        const isOpen = panel && panel.classList.contains("open");
+        const currentMode = panel?.dataset.mode;
+        if (assistant) assistant.hidden = requestedMode !== "assistant";
+        if (sos) sos.hidden = requestedMode !== "sos";
+        if (panel) {
+          panel.dataset.mode = requestedMode;
+          panel.classList.toggle("open", !(isOpen && currentMode === requestedMode));
         }
-        if (role === 'hod') {
-          window.location.href = 'hod/index.html';
-          return;
-        }
-        if (role === 'warden') {
-          window.location.href = 'warden/index.html';
-          return;
-        }
-
-        alert('Access Restricted: You do not have permission to view this module.');
+        if (overlay) overlay.classList.toggle("open", panel?.classList.contains("open"));
       }
-    }
-  </script>
-
-  <!-- Scripts -->
-  <script src="assets/js/api.js"></script>
-  <script src="assets/js/ai.js"></script>
-  <script src="assets/js/landing.js?v=1.7"></script>
-</body>
-
+      function closeRightPanel() {
+        document.getElementById("right-panel")?.classList.remove("open");
+        document.getElementById("right-panel-overlay")?.classList.remove("open");
+      }
+      function toggleProfileMenu() {
+        const menu = document.getElementById("profileMenu");
+        if (menu) {
+            menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "block" : "none";
+        }
+      }
+    </script>
+    
+    <script src="assets/js/api.js?v=1.6"></script>
+    <script src="assets/js/ai.js"></script>
+    <script src="assets/js/landing.js?v=2.0"></script>
+  </body>
 </html>
+

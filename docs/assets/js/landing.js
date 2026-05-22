@@ -1,498 +1,1079 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
-    const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+function getCampusCareApiBase() {
+  const isLocal =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "" ||
+    window.location.protocol === "file:";
+  return isLocal
+    ? "http://localhost:5000"
+    : "https://campuscare-backend-96cn.onrender.com";
+}
 
-    // 1. Immediate UI Updates (Auth & Profile)
-    if (window.checkAuthState) window.checkAuthState();
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "{}");
+  } catch (error) {
+    return {};
+  }
+}
 
-    // 2. Load Public Notices
-    const noticeContainer = document.getElementById('public-notice-list');
+function getConversationId() {
+  const existing = sessionStorage.getItem("campuscare_ai_conversation_id");
+  if (existing) return existing;
+  const next = crypto.randomUUID();
+  sessionStorage.setItem("campuscare_ai_conversation_id", next);
+  return next;
+}
 
-    if (noticeContainer) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout for Render wake
+function getClientContext() {
+  const now = new Date();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
+  return {
+    isoDate: now.toISOString(),
+    weekday: now.toLocaleDateString("en-IN", { weekday: "long", timeZone }),
+    dayIndex: (now.getDay() + 6) % 7,
+    localeDate: now.toLocaleDateString("en-IN", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      timeZone,
+    }),
+    timeZone,
+    utcOffsetMinutes: -now.getTimezoneOffset(),
+  };
+}
 
-            const res = await fetch(`${API_BASE}/api/notices?role=public`, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            if (!res.ok) throw new Error('API Error');
-            const notices = await res.json();
+function appendAiMessage(role, text) {
+  const history = document.getElementById("ai-chat-history");
+  if (!history) return;
+  const bubble = document.createElement("div");
+  bubble.className = `ai-message ai-message-${role}`;
+  bubble.textContent = text;
+  history.appendChild(bubble);
+  history.scrollTop = history.scrollHeight;
+}
 
-            if (notices.length === 0) {
-                noticeContainer.innerHTML = '<div style="background:rgba(255,255,255,0.8); padding:1rem; border-radius:10px; text-align:center; color:#64748b;">No recent public notices available.</div>';
-                return;
-            }
+function appendAiChoices(result) {
+  const history = document.getElementById("ai-chat-history");
+  const choices = result?.payload?.choices || [];
+  if (!history || !choices.length) return;
 
-            let html = '';
-            notices.forEach((n, index) => {
-                const date = new Date(n.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-                html += `
-                <div class="notice-item fade-in stagger-${(index % 4) + 1}">
-                    <div class="notice-date">
-                        ${date.split(' ')[1]}<br><span style="font-size:1.2rem;">${date.split(' ')[0]}</span>
-                    </div>
-                    <div class="notice-content">
-                        <strong>${n.title}</strong>
-                        <span>${n.content}</span>
-                    </div>
-                </div>`;
-            });
-            noticeContainer.innerHTML = html;
+  const list = document.createElement("div");
+  list.className = "ai-choice-list";
+  choices.slice(0, 8).forEach((choice) => {
+    const item = document.createElement("div");
+    item.className = "ai-choice-item";
+    const title = choice.title || choice.subject || "Item";
+    const meta = [choice.subject, choice.facultyName, choice.room ? `Room ${choice.room}` : ""]
+      .filter(Boolean)
+      .join(" | ");
+    item.innerHTML = `<strong>${title}</strong>${meta ? `<span>${meta}</span>` : ""}`;
+    list.appendChild(item);
+  });
+  history.appendChild(list);
+  history.scrollTop = history.scrollHeight;
+}
 
-        } catch (error) {
-            console.error('API Error, using fallback data:', error);
-            // Fallback Data so the UI never looks broken
-            const fallbackNotices = [
-                { title: 'Semester Exams', content: 'Final exams begin from Dec 25th. Check routine.', date: new Date() },
-                { title: 'Campus Wi-Fi Update', content: 'Maintenance scheduled for Saturday night.', date: new Date(Date.now() - 86400000) },
-                { title: 'Cultural Fest 2025', content: 'Registration opens next week for all students.', date: new Date(Date.now() - 172800000) }
-            ];
+function setAiStatus(text) {
+  const status = document.getElementById("ai-status");
+  if (status) status.textContent = text;
+}
 
-            let html = '';
-            fallbackNotices.forEach(n => {
-                const date = new Date(n.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-                html += `
-                <div class="notice-item">
-                    <div class="notice-date">
-                        ${date.split(' ')[1]}<br><span style="font-size:1.2rem;">${date.split(' ')[0]}</span>
-                    </div>
-                    <div class="notice-content">
-                        <strong>${n.title}</strong>
-                        <span>${n.content}</span>
-                    </div>
-                </div>`;
-            });
-            noticeContainer.innerHTML = html;
-        }
+function enterAiConversationMode() {
+  const assistant = document.getElementById("assistant-section");
+  if (assistant) assistant.classList.add("is-chatting");
+}
+
+async function askAI() {
+  const input = document.getElementById("ai-input");
+  const sendBtn = document.getElementById("ai-send-btn");
+  const query = input?.value.trim();
+  if (!query) return;
+
+  const user = getStoredUser();
+  const token = user.token || localStorage.getItem("token");
+  enterAiConversationMode();
+  appendAiMessage("user", query);
+  if (input) input.value = "";
+
+  if (!token) {
+    appendAiMessage("bot", "Please log in to use the connected campus assistant.");
+    return;
+  }
+
+  try {
+    setAiStatus("Asking CampusCare backend...");
+    if (sendBtn) sendBtn.disabled = true;
+    const response = await fetch(`${getCampusCareApiBase()}/api/ai/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        text: query,
+        conversationId: getConversationId(),
+        clientContext: getClientContext(),
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "Assistant request failed.");
     }
+    const result = data.response || data;
+    appendAiMessage("bot", result.message || "Done.");
+    appendAiChoices(result);
+    setAiStatus("Ready.");
+  } catch (error) {
+    appendAiMessage("bot", error.message || "I could not reach the assistant.");
+    setAiStatus("Connection problem.");
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+  }
+}
 
-    // Load Alumni
-    const alumniContainer = document.getElementById('alumni-list');
-    if (alumniContainer) {
-        try {
-            const res = await fetch(`${API_BASE}/api/alumni`);
-            if (!res.ok) throw new Error('API Error');
-            const alumni = await res.json();
+async function requestSos(type) {
+  const user = getStoredUser();
+  const token = user.token || localStorage.getItem("token");
+  if (!token) {
+    alert("Please log in before triggering campus SOS.");
+    window.location.href = "login.html";
+    return;
+  }
 
-            if (alumni.length === 0) {
-                alumniContainer.innerHTML = '<p style="text-align:center; width:100%;">No alumni profiles found.</p>';
-            } else {
-                let html = '';
-                alumni.forEach((a, index) => {
-                    const roleColor = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)];
-                    const name = a.user ? a.user.name : a.name || 'Alumni'; // Handle populated user or direct name
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100`;
+  try {
+    const response = await fetch(`${getCampusCareApiBase()}/api/ai/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        text: `Emergency SOS: ${type}. Please trigger campus assistance immediately.`,
+        conversationId: getConversationId(),
+        clientContext: getClientContext(),
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "SOS request failed.");
+    }
+    const result = data.response || data;
+    alert(result.message || `${type} request sent to CampusCare.`);
+  } catch (error) {
+    alert(error.message || "Could not send SOS request. Please call campus security directly.");
+  }
+}
 
-                    html += `
-                    <div class="faculty-card glass">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100" alt="${name}" class="faculty-img" style="border-radius:15px;">
-                        <h3 class="faculty-name">${name}</h3>
-                        <p class="faculty-role" style="color:${roleColor};">${a.jobTitle} @ ${a.currentCompany}</p>
-                        <p class="faculty-bio">"${a.about || 'Proud Alumni of CampusCare'}"</p>
-                        <a href="${a.linkedinProfile || '#'}" target="_blank"
-                        style="display:inline-block; margin-top:1rem; text-decoration:none; color:#25D366; font-weight:bold;">
-                        <i class="fa-brands fa-whatsapp" style="font-size:1.5rem;"></i> Connect
-                        </a>
+window.askAI = askAI;
+
+// Global Click Handler for CSP Compliance
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-action], [data-alert]");
+  if (!el) return;
+
+  const action = el.dataset.action;
+  const id = el.dataset.id;
+  const alertMsg = el.dataset.alert;
+  const url = el.dataset.url;
+
+  if (alertMsg && !action) {
+    alert(alertMsg);
+    return;
+  }
+
+  switch (action) {
+    case "logout":
+      if (typeof logout === "function") logout();
+      break;
+    case "toggleRightPanel":
+      if (typeof toggleRightPanel === "function")
+        toggleRightPanel(el.dataset.panelMode);
+      break;
+    case "closeRightPanel":
+      if (typeof closeRightPanel === "function") closeRightPanel();
+      break;
+    case "toggleProfileMenu":
+      if (typeof toggleProfileMenu === "function") toggleProfileMenu();
+      break;
+    case "goToModule":
+      goToModule(el.dataset.moduleRole);
+      break;
+    case "bloodAlert":
+      const bg = prompt("Please enter the required Blood Group (e.g. O+):");
+      if (bg)
+        alert("Broadcasting Blood Requirement (" + bg + ") Alert to Campus!");
+      break;
+    case "aiQuery":
+      const input = document.getElementById("ai-input");
+      if (input) {
+        input.value = el.dataset.query;
+        if (typeof askAI === "function") askAI();
+      }
+      break;
+    case "askAI":
+      if (typeof askAI === "function") askAI();
+      break;
+    case "sosRequest":
+      requestSos(el.dataset.sosType || "Emergency SOS");
+      break;
+    case "upvote":
+      if (typeof upvote === "function") upvote(id);
+      break;
+    case "windowOpen":
+      window.open(url || el.src, "_blank");
+      break;
+    case "scrollIntoView":
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      break;
+  }
+});
+document.addEventListener("DOMContentLoaded", async () => {
+  const dateDisplay = document.querySelector(".date-display");
+  if (dateDisplay) {
+    dateDisplay.innerHTML = `<i class="fa-regular fa-calendar"></i> ${new Date().toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })}`;
+  }
+
+  const isLocal =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "" ||
+    window.location.protocol === "file:";
+  const API_BASE = isLocal
+    ? "http://localhost:5000"
+    : "https://campuscare-backend-96cn.onrender.com";
+
+  // 1. Immediate UI Updates (Auth & Profile)
+  if (window.checkAuthState) window.checkAuthState();
+
+  // 2. Load Public Notices
+  const noticeContainer = document.getElementById("public-notice-list");
+
+  if (noticeContainer) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout for Render wake
+
+      const res = await fetch(`${API_BASE}/api/notices?role=public`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error("API Error");
+      const notices = await res.json();
+
+      if (notices.length === 0) {
+        noticeContainer.innerHTML =
+          '<div style="background:rgba(255,255,255,0.8); padding:1rem; border-radius:10px; text-align:center; color:#64748b;">No recent public notices available.</div>';
+        return;
+      }
+
+      let html = "";
+      notices.slice(0, 3).forEach((n, index) => {
+        const date = new Date(n.date).toLocaleDateString(undefined, {
+          day: "numeric",
+          month: "short",
+        });
+        let iconClass = "fa-solid fa-bell";
+        let iconStyle = "background: #d1fae5; color: #10b981;"; // Green
+        const titleLower = n.title.toLowerCase();
+        const contentLower = n.content.toLowerCase();
+        if (
+          titleLower.includes("vacation") ||
+          titleLower.includes("holiday") ||
+          titleLower.includes("closed")
+        ) {
+          iconStyle = "background: #fee2e2; color: #ef4444;";
+          iconClass = "fa-solid fa-umbrella-beach";
+        } else if (
+          titleLower.includes("event") ||
+          titleLower.includes("competition") ||
+          titleLower.includes("tournament") ||
+          titleLower.includes("festival")
+        ) {
+          iconStyle = "background: #e0e7ff; color: #4f46e5;";
+          iconClass = "fa-solid fa-trophy";
+        }
+
+        html += `
+                <div class="notice-item fade-in stagger-${(index % 4) + 1}" data-alert="${n.title}\n\n${n.content}">
+                    <div style="${iconStyle} width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;"><i class="${iconClass}"></i></div>
+                    <div class="notice-info" style="min-width: 0;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 4px; color: var(--text-dark);">${n.title}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${n.content}</p>
+                    </div>
+                    <div class="notice-date" style="font-size: 0.8rem; font-weight: 600;">${date}</div>
+                </div>`;
+      });
+      noticeContainer.innerHTML = html;
+    } catch (error) {
+      console.error("API Error, using fallback data:", error);
+      // Fallback Data so the UI never looks broken
+      const fallbackNotices = [
+        {
+          title: "Semester Exams",
+          content: "Final exams begin from Dec 25th. Check routine.",
+          date: new Date(),
+        },
+        {
+          title: "Campus Wi-Fi Update",
+          content: "Maintenance scheduled for Saturday night.",
+          date: new Date(Date.now() - 86400000),
+        },
+        {
+          title: "Cultural Fest 2025",
+          content: "Registration opens next week for all students.",
+          date: new Date(Date.now() - 172800000),
+        },
+      ];
+
+      let html = "";
+      fallbackNotices.slice(0, 3).forEach((n) => {
+        const date = new Date(n.date).toLocaleDateString(undefined, {
+          day: "numeric",
+          month: "short",
+        });
+        let iconClass = "fa-solid fa-bell";
+        let iconStyle = "background: #d1fae5; color: #10b981;"; // Green
+        const titleLower = n.title.toLowerCase();
+        if (
+          titleLower.includes("vacation") ||
+          titleLower.includes("holiday") ||
+          titleLower.includes("closed")
+        ) {
+          iconStyle = "background: #fee2e2; color: #ef4444;";
+          iconClass = "fa-solid fa-umbrella-beach";
+        } else if (
+          titleLower.includes("event") ||
+          titleLower.includes("competition") ||
+          titleLower.includes("tournament") ||
+          titleLower.includes("festival") ||
+          titleLower.includes("fest")
+        ) {
+          iconStyle = "background: #e0e7ff; color: #4f46e5;";
+          iconClass = "fa-solid fa-trophy";
+        }
+
+        html += `
+                <div class="notice-item" data-alert="${n.title}\n\n${n.content}">
+                    <div style="${iconStyle} width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;"><i class="${iconClass}"></i></div>
+                    <div class="notice-info" style="min-width: 0;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 4px; color: var(--text-dark);">${n.title}</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${n.content}</p>
+                    </div>
+                    <div class="notice-date" style="font-size: 0.8rem; font-weight: 600;">${date}</div>
+                </div>`;
+      });
+      noticeContainer.innerHTML = html;
+    }
+  }
+
+  // Load Alumni
+  const alumniContainer = document.getElementById("alumni-list");
+  if (alumniContainer) {
+    try {
+      const res = await fetch(`${API_BASE}/api/alumni`);
+      if (!res.ok) throw new Error("API Error");
+      const alumni = await res.json();
+
+      if (alumni.length === 0) {
+        alumniContainer.innerHTML =
+          '<p style="text-align:center; width:100%;">No alumni profiles found.</p>';
+      } else {
+        let html = "";
+        const displayAlumni = alumni.slice(0, 1);
+        displayAlumni.forEach((a, index) => {
+          const roleColor = [
+            "#10b981",
+            "#3b82f6",
+            "#f59e0b",
+            "#ef4444",
+            "#8b5cf6",
+          ][Math.floor(Math.random() * 5)];
+          const name = a.user ? a.user.name : a.name || "Alumni"; // Handle populated user or direct name
+          const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100`;
+
+          html += `
+                    <div style="display: flex; align-items: center; gap: 20px; background: var(--bg-color); padding: 20px; border-radius: var(--radius-md); margin-bottom: 10px;">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100" alt="${name}" class="profile-img" style="margin: 0; width: 70px; height: 70px; border-radius: 50%;">
+                        <div>
+                            <h4 class="profile-name" style="font-size: 1.1rem; margin-bottom: 2px;">${name}</h4>
+                            <p class="profile-role" style="margin-bottom: 8px;">${a.jobTitle} @ ${a.currentCompany}</p>
+                            <p class="profile-quote" style="margin: 0; text-align: left; font-size: 0.85rem; color: var(--text-muted);">"${a.about || "Proud Alumni of CampusCare"}"</p>
+                        </div>
                     </div>
                     `;
-                });
-                alumniContainer.innerHTML = html;
-            }
+        });
+        alumniContainer.innerHTML = html;
+      }
+    } catch (error) {
+      console.error("Alumni API Error:", error);
+      alumniContainer.innerHTML =
+        '<p style="text-align:center; color:red;">Failed to load alumni.</p>';
+    }
+  }
 
-        } catch (error) {
-            console.error('Alumni API Error:', error);
-            alumniContainer.innerHTML = '<p style="text-align:center; color:red;">Failed to load alumni.</p>';
-        }
+  // Load Transparency Wall (Complaints)
+  const complaintContainer = document.getElementById("complaint-list");
+  const wallSearch = document.getElementById("wall-search");
+  let allPublicComplaints = [];
+
+  if (complaintContainer) {
+    try {
+      const res = await fetch(`${API_BASE}/api/complaints`);
+      if (res.ok) {
+        let complaints = await res.json();
+
+        // PRIVACY FILTER: Show all non-personal, BUT only show 'Personal' if it belongs to the logged-in user
+        const userStrFilter = localStorage.getItem("user");
+        const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
+
+        allPublicComplaints = complaints.filter((c) => {
+          if (c.category !== "Personal") return true;
+          const studentId =
+            c.student && c.student._id ? c.student._id : c.student;
+          if (userFilterObj && studentId === userFilterObj._id) return true;
+          return false;
+        });
+        renderWallComplaints(allPublicComplaints);
+      }
+    } catch (error) {
+      console.error("Transparency Wall Error:", error);
     }
 
-    // Load Transparency Wall (Complaints)
-    const complaintContainer = document.getElementById('complaint-list');
-    const wallSearch = document.getElementById('wall-search');
-    let allPublicComplaints = [];
+    if (wallSearch) {
+      wallSearch.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allPublicComplaints.filter(
+          (c) =>
+            c.title.toLowerCase().includes(term) ||
+            c.description.toLowerCase().includes(term),
+        );
+        renderWallComplaints(filtered);
+      });
+    }
+  }
 
-    if (complaintContainer) {
-        try {
-            const res = await fetch(`${API_BASE}/api/complaints`);
-            if (res.ok) {
-                let complaints = await res.json();
-                
-                // PRIVACY FILTER: Show all non-personal, BUT only show 'Personal' if it belongs to the logged-in user
-                const userStrFilter = localStorage.getItem('user');
-                const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
-                
-                allPublicComplaints = complaints.filter(c => {
-                    if (c.category !== 'Personal') return true;
-                    const studentId = c.student && c.student._id ? c.student._id : c.student;
-                    if (userFilterObj && studentId === userFilterObj._id) return true;
-                    return false;
-                });
-                renderWallComplaints(allPublicComplaints);
-            }
-        } catch (error) {
-            console.error('Transparency Wall Error:', error);
-        }
+  function renderWallComplaints(complaintsToRender) {
+    if (!complaintContainer) return;
 
-        if (wallSearch) {
-            wallSearch.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                const filtered = allPublicComplaints.filter(c => 
-                    c.title.toLowerCase().includes(term) || 
-                    c.description.toLowerCase().includes(term)
-                );
-                renderWallComplaints(filtered);
-            });
-        }
+    if (complaintsToRender.length === 0) {
+      complaintContainer.innerHTML =
+        '<p style="text-align: center; width: 100%; color: #64748b;">No complaints found.</p>';
+      return;
     }
 
-    function renderWallComplaints(complaintsToRender) {
-        if (!complaintContainer) return;
-        
-        if (complaintsToRender.length === 0) {
-            complaintContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #64748b;">No complaints found.</p>';
-            return;
+    // Filter uniqueness
+    const uniqueComplaints = [];
+    const seenIds = new Set();
+
+    complaintsToRender.forEach((c) => {
+      if (!seenIds.has(c._id)) {
+        uniqueComplaints.push(c);
+        seenIds.add(c._id);
+      }
+    });
+
+    // --- Dynamic Stats calculation ---
+    const total = uniqueComplaints.length;
+    let resolvedCount = 0;
+    let inProgressCount = 0;
+    let unresolvedCount = 0;
+
+    uniqueComplaints.forEach((c) => {
+      const st = (c.status || "").toLowerCase();
+      if (st === "resolved") resolvedCount++;
+      else if (st === "in progress") inProgressCount++;
+      else unresolvedCount++;
+    });
+
+    const statTotal = document.getElementById("stat-total");
+    if (statTotal) statTotal.innerText = total;
+
+    const statsArr = [
+      {
+        id: "progress",
+        count: inProgressCount,
+        title: "In Progress",
+        iconClass: "icon-yellow",
+        icon: "fa-spinner",
+        color: "var(--warning-light)",
+      },
+      {
+        id: "resolved",
+        count: resolvedCount,
+        title: "Resolved",
+        iconClass: "icon-green",
+        icon: "fa-check",
+        color: "var(--success-light)",
+      },
+      {
+        id: "unresolved",
+        count: unresolvedCount,
+        title: "Unresolved",
+        iconClass: "icon-red",
+        icon: "fa-rotate-left",
+        color: "var(--danger-light)",
+      },
+    ];
+
+    // Sort dynamically highest first
+    statsArr.sort((a, b) => b.count - a.count);
+
+    const statsRow = document.getElementById("complaints-stats-row");
+    if (statsRow) {
+      // Keep the first box (Total Complaints) and remove the rest if any
+      while (statsRow.children.length > 1) {
+        statsRow.removeChild(statsRow.lastChild);
+      }
+      // Append the sorted boxes
+      statsArr.forEach((s) => {
+        const div = document.createElement("div");
+        div.className = "stat-box";
+        div.innerHTML = `
+                    <div class="stat-box-icon ${s.iconClass}"><i class="fa-solid ${s.icon}"></i></div>
+                    <div class="stat-box-info">
+                        <p>${s.title}</p>
+                        <h3 id="stat-${s.id}">${s.count}</h3>
+                    </div>
+                `;
+        statsRow.appendChild(div);
+      });
+    }
+
+    const pieChart = document.getElementById("complaint-pie-chart");
+    if (pieChart && total > 0) {
+      let currentPercentage = 0;
+      const gradientParts = statsArr.map((s) => {
+        const percentage = (s.count / total) * 100;
+        const part = `${s.color} ${currentPercentage}% ${currentPercentage + percentage}%`;
+        currentPercentage += percentage;
+        return part;
+      });
+      pieChart.style.background = `conic-gradient(${gradientParts.join(", ")})`;
+    }
+    // --- End Dynamic Stats ---
+
+    if (uniqueComplaints.length > 0) {
+      let unresolved = null;
+      let resolved = null;
+      let inprogress = null;
+      const recents = [];
+
+      // Sort by upvotes for best match
+      const byUpvotes = [...uniqueComplaints].sort(
+        (a, b) => (b.upvotes || 0) - (a.upvotes || 0),
+      );
+
+      for (const c of byUpvotes) {
+        if (!unresolved && c.status === "Unresolved") unresolved = c;
+        else if (!resolved && c.status === "Resolved") resolved = c;
+        else if (!inprogress && c.status === "In Progress") inprogress = c;
+      }
+
+      // Fallback for Unresolved/Pending naming
+      if (!unresolved) {
+        for (const c of byUpvotes) {
+          if (
+            !unresolved &&
+            c.status !== "Resolved" &&
+            c.status !== "In Progress"
+          )
+            unresolved = c;
         }
+      }
 
-        // Deduplication: Ensure no duplicate complaints (by title) appear.
-        // We sort by upvotes first so the deduplication keeps the highest upvoted version.
-        complaintsToRender.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+      const selectedIds = new Set();
+      if (unresolved) selectedIds.add(unresolved._id);
+      if (resolved) selectedIds.add(resolved._id);
+      if (inprogress) selectedIds.add(inprogress._id);
 
-        const uniqueComplaints = [];
-        const seenTitles = new Set();
-        for (const c of complaintsToRender) {
-            const titleKey = c.title.trim().toLowerCase();
-            if (!seenTitles.has(titleKey)) {
-                seenTitles.add(titleKey);
-                uniqueComplaints.push(c);
-            }
+      // Get recent ones to fill up to 5 total
+      const byDate = [...uniqueComplaints].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+      const targetRecentsCount = 5 - selectedIds.size;
+      for (const c of byDate) {
+        if (!selectedIds.has(c._id) && recents.length < targetRecentsCount) {
+          recents.push(c);
+          selectedIds.add(c._id);
         }
-        
-        if (uniqueComplaints.length > 0) {
-            // The first element is the absolute highest upvoted complaint (due to the sort above)
-            const maxUpvoteComplaint = uniqueComplaints[0];
-            
-            // The remaining complaints
-            const remainingComplaints = uniqueComplaints.slice(1);
-            
-            // Sort remaining strictly by date (newest first)
-            remainingComplaints.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-            
-            // Recombine: Only ONE top upvoted at the front, the rest sorted by date
-            complaintsToRender = [maxUpvoteComplaint, ...remainingComplaints];
-        } else {
-            complaintsToRender = uniqueComplaints;
-        }
+      }
 
-        const userStr = localStorage.getItem('user');
-        const user = userStr ? JSON.parse(userStr) : null;
+      complaintsToRender = [];
+      if (unresolved) complaintsToRender.push(unresolved);
+      if (inprogress) complaintsToRender.push(inprogress);
+      if (resolved) complaintsToRender.push(resolved);
+      complaintsToRender = complaintsToRender.concat(recents);
+      
+      // Ensure we only show maximum 5 complaints
+      complaintsToRender = complaintsToRender.slice(0, 5);
+    } else {
+      complaintsToRender = uniqueComplaints.slice(0, 5);
+    }
 
-        let html = '';
-        complaintsToRender.forEach((c, index) => {
-            let statusClass = 'status-progress';
-            if (c.status === 'Resolved') statusClass = 'status-resolved';
+    const userStr = localStorage.getItem("user");
+    const user = userStr ? JSON.parse(userStr) : null;
 
-            const date = new Date(c.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-            const d = new Date(c.createdAt);
-            const dateStr = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
-            const excerpt = c.description.length > 80 ? c.description.substring(0, 80) + '...' : c.description;
+    let html = "";
+    complaintsToRender.forEach((c, index) => {
+      let statusClass = "badge-progress";
+      let dotClass = "dot-red";
+      let statusText = c.status || "Reported";
 
-            // Priority Badge Logic
-            let badgeColor = 'bg-blue-100 text-blue-800'; // Default Low/Medium
-            if (c.priority === 'High') badgeColor = 'bg-orange-100 text-orange-800';
-            if (c.priority === 'Urgent') badgeColor = 'bg-red-100 text-red-800';
+      if (statusText.toLowerCase() === "resolved") {
+        statusClass = "badge-resolved";
+        dotClass = "dot-green";
+      } else if (statusText.toLowerCase() === "in progress") {
+        statusClass = "badge-progress";
+        dotClass = "dot-blue";
+      } else {
+        statusText = "Submitted";
+        statusClass = "badge-progress";
+        dotClass = "dot-red";
+      }
 
-            let priorityText = c.priority || 'Medium';
+      const d = new Date(c.createdAt);
+      const dateStr =
+        String(d.getDate()).padStart(2, "0") +
+        " " +
+        d.toLocaleString("default", { month: "short" }) +
+        ", " +
+        d.getFullYear();
 
-            // Safety Check for upvotedBy
-            const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
-            const isLiked = user && user._id && upvotedBy.includes(user._id);
+      // Safety Check for upvotedBy
+      const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+      const currentUserId = user
+        ? user._id || user.identifier || user.id
+        : null;
+      const isLiked = currentUserId && upvotedBy.includes(currentUserId);
+      const iconClass = isLiked
+        ? "fa-solid fa-circle-up"
+        : "fa-regular fa-circle-up";
 
-            html += `
-              <div class="blog-card glass fade-in stagger-${(index % 4) + 1}">
-                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
-                    <div class="status-badge ${statusClass}" style="position:static; margin:0;">${c.status.toUpperCase()}</div>
-                    <span class="badge ${badgeColor}" style="padding:4px 8px; border-radius:8px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${priorityText}</span>
+      // Render Complaint Item
+      html += `
+              <div class="complaint-item fade-in stagger-${(index % 4) + 1}">
+                <div class="status-dot ${dotClass}"></div>
+                <div class="complaint-info">
+                  <h4>${c.title}</h4>
+                  <p>Reported by: ${c.student?.name || "Student"}</p>
                 </div>
                 
-                <h3 class="blog-title" style="margin-top:0;">${c.title}</h3>
-                <p class="blog-meta">Reported by: ${c.student?.name || 'Student'}</p>
-                <p class="blog-excerpt">${excerpt}</p>
-                <div class="complaint-images-container" style="display:flex; gap:10px; margin-top:10px; margin-bottom:10px;">
-                    ${c.image ? `
-                        <div class="image-section" style="flex: 1; background:rgba(255,255,255,0.3); padding:5px; border-radius:8px; border: 1px solid rgba(0,0,0,0.05);">
-                            <div class="image-label" style="font-size:0.55rem; color:#64748b; font-weight:700; text-transform:uppercase; margin-bottom:4px;">Reported Photo</div>
-                            <img src="${API_BASE}${c.image}" alt="Reported" style="width: 100%; height: 70px; border-radius: 5px; object-fit: cover; display: block; cursor: pointer;" onclick="window.open(this.src)">
-                        </div>
-                    ` : ''}
-                    ${c.status === 'Resolved' ? `
-                        <div class="image-section" style="flex: 1; border: 1px solid #10b981; background: rgba(16, 185, 129, 0.05); padding:5px; border-radius:8px;">
-                            <div class="image-label" style="font-size:0.55rem; color:#10b981; font-weight:700; text-transform:uppercase; margin-bottom:4px;"><i class="fa-solid fa-circle-check"></i> Resolution Proof</div>
-                            ${(c.resolutionImage || c.afterImage) ? `
-                                <img src="${API_BASE}${c.resolutionImage || c.afterImage}" alt="Resolved" style="width: 100%; height: 70px; border-radius: 5px; object-fit: cover; display: block; cursor: pointer;" onclick="window.open(this.src)">
-                            ` : `
-                                <div style="height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#059669; font-size:0.5rem; font-weight:600; text-align:center; gap:5px; background:#fff; border-radius:5px;">
-                                    <i class="fa-solid fa-image-slash" style="font-size:1.2rem; opacity:0.5;"></i>
-                                    <span>No Proof Photo</span>
-                                </div>
-                            `}
-                        </div>
-                    ` : ''}
+                <!-- PREVIEWS -->
+                <div style="display: flex; gap: 5px; margin-right: 15px;">
+                    ${c.image ? `<img src="${API_BASE}${c.image}" style="width:30px; height:30px; border-radius:4px; object-fit:cover; border:1px solid var(--border-color); cursor:pointer;" title="Reported Issue" data-action="windowOpen">` : ""}
+                    ${c.status === "Resolved" && (c.resolutionImage || c.afterImage) ? `<img src="${API_BASE}${c.resolutionImage || c.afterImage}" style="width:30px; height:30px; border-radius:4px; object-fit:cover; border:1px solid #10b981; cursor:pointer;" title="Resolution Proof" data-action="windowOpen">` : ""}
                 </div>
-                <div class="blog-footer">
-                  <span id="like-btn-${c._id}" onclick="upvote('${c._id}')" style="cursor:pointer; color:${isLiked ? '#3b82f6' : 'inherit'}">
-                    <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes}</span> ${c.upvotes === 1 ? 'Upvote' : 'Upvotes'}
-                  </span>
-                  <span><i class="${c.status === 'Resolved' ? 'fa-solid fa-check-circle' : 'fa-solid fa-clock'}"></i> ${dateStr}</span>
+
+                <div class="badge ${statusClass}">${statusText}</div>
+
+                <!-- UPVOTE BUTTON (Between Status and Date) -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-left: 10px; cursor:pointer; 
+                    color:${isLiked ? "#6b46c1" : "var(--text-muted)"}; 
+                    background: ${isLiked ? "#6b46c115" : "transparent"};
+                    font-size: 0.95rem; font-weight: 700; min-width: 50px; 
+                    border: 2px solid ${isLiked ? "#6b46c1" : "var(--border-color)"}; 
+                    padding: 4px 12px; border-radius: 20px; transition: all 0.2s;" 
+                    id="like-btn-${c._id}" data-action="upvote" data-id="${c._id}">
+                    <i class="${iconClass}"></i> <span id="count-${c._id}">${c.upvotes || 0}</span>
                 </div>
+
+                <div class="notice-date" style="margin-left: 10px; min-width: 90px; text-align: right;">${dateStr}</div>
               </div>
             `;
-        });
-        complaintContainer.innerHTML = html;
-    }
+    });
+    complaintContainer.innerHTML = html;
+  }
 
-    // Animate Blobs or Interactivity if needed
+  // Animate Blobs or Interactivity if needed
 });
 
 // --- UPVOTE FUNCTION ---
 async function upvote(id) {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
-        alert("Please login to upvote!");
-        window.location.href = 'login.html';
-        return;
-    }
-    const user = JSON.parse(userStr);
-    const token = localStorage.getItem('token'); // Assuming token is stored here, or checking user object
+  const userStr = localStorage.getItem("user");
+  if (!userStr) {
+    alert("Please login to upvote!");
+    window.location.href = "login.html";
+    return;
+  }
+  const user = JSON.parse(userStr);
+  const token = localStorage.getItem("token"); // Assuming token is stored here, or checking user object
 
-    try {
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
-        const res = await fetch(`${API_BASE}/api/complaints/${id}/upvote`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.token || token}`
-            }
-        });
+  try {
+    const API_BASE =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.hostname === "" ||
+      window.location.protocol === "file:"
+        ? "http://localhost:5000"
+        : "https://campuscare-backend-96cn.onrender.com";
+    const res = await fetch(`${API_BASE}/api/complaints/${id}/upvote`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token || token}`,
+      },
+    });
 
-        if (res.ok) {
-            const data = await res.json();
-            // Data structure: { action: 'added'|'removed', upvotes: number, complaint: object }
+    if (res.ok) {
+      const data = await res.json();
+      // Data structure: { action: 'added'|'removed', upvotes: number, complaint: object }
 
-            // Update Count
-            const countSpan = document.getElementById(`count-${id}`);
-            if (countSpan) countSpan.innerText = data.upvotes;
+      // Update Count
+      const countSpan = document.getElementById(`count-${id}`);
+      if (countSpan) countSpan.innerText = data.upvotes;
 
-            // Find the button to update style
-            const btn = document.getElementById(`like-btn-${id}`);
-            if (btn) {
-                if (data.action === 'added') {
-                    // Liked State
-                    btn.style.color = '#3b82f6'; // Blue
-                    btn.style.cursor = 'pointer';
-                } else {
-                    // Unliked State
-                    btn.style.color = '#64748b'; // Default gray explicitly
-                    btn.style.cursor = 'pointer';
-                }
-            }
+      // Find the button to update style
+      const btn = document.getElementById(`like-btn-${id}`);
+      if (btn) {
+        if (data.action === "added") {
+          // Liked State
+          btn.style.color = "#6b46c1";
+          btn.style.borderColor = "#6b46c1";
+          btn.style.background = "#6b46c115";
+          const icon = btn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-regular");
+            icon.classList.add("fa-solid");
+          }
+          btn.style.cursor = "pointer";
         } else {
-            const err = await res.json();
-            if (res.status === 401) {
-                alert("Session expired or invalid. Please login again to upvote.");
-                localStorage.clear();
-                window.location.href = 'login.html';
-                return;
-            }
-            alert(err.message || "Failed to upvote");
+          // Unliked State
+          btn.style.color = "var(--text-muted)";
+          btn.style.borderColor = "var(--border-color)";
+          btn.style.background = "transparent";
+          const icon = btn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-solid");
+            icon.classList.add("fa-regular");
+          }
+          btn.style.cursor = "pointer";
         }
-    } catch (error) {
-        console.error("Upvote Error:", error);
+      }
+    } else {
+      const err = await res.json();
+      if (res.status === 401) {
+        alert("Session expired or invalid. Please login again to upvote.");
+        localStorage.clear();
+        window.location.href = "login.html";
+        return;
+      }
+      alert(err.message || "Failed to upvote");
     }
+  } catch (error) {
+    console.error("Upvote Error:", error);
+  }
 }
 
 // --- AUTH FUNCTIONS ---
 // --- AUTH FUNCTIONS ---
 window.checkAuthState = function () {
-    console.log('[Auth] Checking auth state...');
-    const userStr = localStorage.getItem('user');
-    const loginBtn = document.getElementById('loginBtn');
-    const userProfile = document.getElementById('userProfile');
-    const userName = document.getElementById('userName');
-    const userAvatar = document.getElementById('userAvatar');
-    const userDetails = document.getElementById('userDetails');
+  console.log("[Auth] Checking auth state...");
+  const userStr = localStorage.getItem("user");
+  const loginBtn = document.getElementById("loginBtn");
+  const userProfile = document.getElementById("userProfile");
+  const userName = document.getElementById("userName");
+  const userAvatar = document.getElementById("userAvatar");
+  const userDetails = document.getElementById("userDetails");
 
-    if (userStr) {
-        // User is Logged In
-        const user = JSON.parse(userStr);
+  if (userStr) {
+    // User is Logged In
+    const user = JSON.parse(userStr);
 
-        if (loginBtn) loginBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = "none";
 
-        // Explicitly set flex to override CSS 'display: none' from class
-        if (userProfile) userProfile.style.display = 'flex';
+    // Explicitly set flex to override CSS 'display: none' from class
+    if (userProfile) userProfile.style.display = "flex";
 
-        if (userName) {
-            let displayName = 'User';
-            if (user.name) displayName = user.name.split(' ')[0];
-            else if (user.role) displayName = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+    if (userName) {
+      let displayName = "User";
+      if (user.name) displayName = user.name.split(" ")[0];
+      else if (user.role)
+        displayName = user.role.charAt(0).toUpperCase() + user.role.slice(1);
 
-            userName.textContent = `Hello, ${displayName}`;
+      userName.textContent = `Hello, ${displayName}`;
+    }
+
+    // Role-based Colors
+    let roleColor = "10b981"; // Default Green (Teacher/General)
+    const role = (user.role || "").toLowerCase();
+
+    if (role === "student")
+      roleColor = "3b82f6"; // Blue
+    else if (role === "hosteler")
+      roleColor = "f59e0b"; // Orange
+    else if (role === "teacher") roleColor = "10b981"; // Green
+
+    // --- DYNAMIC LOGO BADGE ---
+    const logo = document.querySelector(".logo");
+    if (logo) {
+      // Check if a badge span already exists
+      let badge = logo.querySelector("span");
+
+      // If no badge exists, create one
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.style.fontSize = "0.75rem"; // Slightly smaller for cleanliness
+        badge.style.color = "white";
+        badge.style.padding = "3px 8px";
+        badge.style.borderRadius = "20px"; // Pill shape
+        badge.style.marginLeft = "8px";
+        badge.style.fontWeight = "600";
+        badge.style.textTransform = "uppercase";
+        badge.style.letterSpacing = "0.5px";
+        logo.appendChild(badge);
+      }
+
+      // Update badge content (ensure it matches current login)
+      badge.innerText = role;
+      badge.style.background = "#" + roleColor;
+    }
+
+    // Determine path depth for relative links (Profile & Image)
+    const currentPath = window.location.pathname;
+    const isSubDir =
+      currentPath.includes("/student/") ||
+      currentPath.includes("/teacher/") ||
+      currentPath.includes("/hostel/") ||
+      currentPath.includes("/complaints/") ||
+      currentPath.includes("/notices/");
+
+    // Default Avatar
+    let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+
+    // Custom Avatar (if exists)
+    // Custom Avatar (if exists)
+    if (user.profilePicture) {
+      let cleanPath = user.profilePicture;
+
+      if (cleanPath.startsWith("http")) {
+        avatarSrc = cleanPath;
+      } else {
+        const isLocal =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1" ||
+          window.location.hostname === "" ||
+          window.location.protocol === "file:";
+        const BACKEND_URL = isLocal
+          ? "http://localhost:5000"
+          : "https://campuscare-backend-96cn.onrender.com";
+        if (cleanPath.startsWith("/")) {
+          avatarSrc = `${BACKEND_URL}${cleanPath}`;
+        } else {
+          avatarSrc = `${BACKEND_URL}/${cleanPath}`;
         }
+      }
 
-        // Role-based Colors
-        let roleColor = '10b981'; // Default Green (Teacher/General)
-        const role = (user.role || '').toLowerCase();
+      // Add timestamp to prevent caching
+      avatarSrc += `?t=${new Date().getTime()}`;
+    }
 
-        if (role === 'student') roleColor = '3b82f6'; // Blue
-        else if (role === 'hosteler') roleColor = 'f59e0b'; // Orange
-        else if (role === 'teacher') roleColor = '10b981'; // Green
+    if (userAvatar) {
+      // Fallback for 404 (Define BEFORE setting src)
+      userAvatar.onerror = function () {
+        this.onerror = null;
+        this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+      };
 
-        // --- DYNAMIC LOGO BADGE ---
-        const logo = document.querySelector('.logo');
-        if (logo) {
-            // Check if a badge span already exists
-            let badge = logo.querySelector('span');
+      userAvatar.src = avatarSrc;
+      userAvatar.style.objectFit = "cover";
+    }
 
-            // If no badge exists, create one
-            if (!badge) {
-                badge = document.createElement('span');
-                badge.style.fontSize = '0.75rem'; // Slightly smaller for cleanliness
-                badge.style.color = 'white';
-                badge.style.padding = '3px 8px';
-                badge.style.borderRadius = '20px'; // Pill shape
-                badge.style.marginLeft = '8px';
-                badge.style.fontWeight = '600';
-                badge.style.textTransform = 'uppercase';
-                badge.style.letterSpacing = '0.5px';
-                logo.appendChild(badge);
-            }
+    const navRoleBadgeWrapper = document.getElementById("navRoleBadgeWrapper");
+    if (navRoleBadgeWrapper) {
+      navRoleBadgeWrapper.style.display = "flex";
+      navRoleBadgeWrapper.style.alignItems = "center";
+      navRoleBadgeWrapper.style.gap = "8px";
 
-            // Update badge content (ensure it matches current login)
-            badge.innerText = role;
-            badge.style.background = '#' + roleColor;
-        }
+      const roleModuleMap = {
+        student: "student/index.html",
+        teacher: "teacher/index.html",
+        hod: "hod/index.html",
+        dean: "dean/index.html",
+        principal: "principal/index.html",
+        warden: "warden/index.html",
+        admin: "student/index.html",
+      };
 
-        // Determine path depth for relative links (Profile & Image)
-        const currentPath = window.location.pathname;
-        const isSubDir = currentPath.includes('/student/') || currentPath.includes('/teacher/') || currentPath.includes('/hostel/') || currentPath.includes('/complaints/') || currentPath.includes('/notices/');
+      const badgeColors = {
+        student: { bg: "#dbeafe", color: "#1d4ed8" },
+        hosteler: { bg: "#fef3c7", color: "#b45309" },
+        teacher: { bg: "#d1fae5", color: "#065f46" },
+        hod: { bg: "#ede9fe", color: "#6d28d9" },
+        dean: { bg: "#ede9fe", color: "#6d28d9" },
+        principal: { bg: "#ede9fe", color: "#6d28d9" },
+        warden: { bg: "#fee2e2", color: "#b91c1c" },
+        admin: { bg: "#f3f4f6", color: "#374151" },
+      };
 
-        // Default Avatar
-        let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+      function makeBadge(label, moduleUrl, colorKey) {
+        const colors = badgeColors[colorKey] || { bg: "#d1fae5", color: "#065f46" };
+        const btn = document.createElement("button");
+        btn.className = "role-badge-clickable";
+        btn.dataset.action = "goToModule";
+        btn.dataset.moduleRole = colorKey;
+        btn.style.background = colors.bg;
+        btn.style.color = colors.color;
+        btn.title = `Go to ${label} portal`;
+        btn.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket" style="font-size:0.8rem; margin-right:5px;"></i>${label}`;
+        return btn;
+      }
 
-        // Custom Avatar (if exists)
-        // Custom Avatar (if exists)
-        if (user.profilePicture) {
-            let cleanPath = user.profilePicture;
+      if (role === "hosteler") {
+        // Dual badges side by side
+        navRoleBadgeWrapper.innerHTML = "";
+        navRoleBadgeWrapper.appendChild(makeBadge("Student", "student/index.html", "student"));
+        navRoleBadgeWrapper.appendChild(makeBadge("Hosteler", "hosteler/complaints.html", "hosteler"));
+      } else {
+        navRoleBadgeWrapper.innerHTML = "";
+        const modulePath = roleModuleMap[role] || "index.html";
+        navRoleBadgeWrapper.appendChild(makeBadge(user.role || role, modulePath, role));
+      }
+    }
 
-            if (cleanPath.startsWith('http')) {
-                avatarSrc = cleanPath;
-            } else {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
-                const BACKEND_URL = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
-                if (cleanPath.startsWith('/')) {
-                    avatarSrc = `${BACKEND_URL}${cleanPath}`;
-                } else {
-                    avatarSrc = `${BACKEND_URL}/${cleanPath}`;
-                }
-            }
+    if (userDetails) {
+      // Determine path to profile.html based on current location
+      const currentPath = window.location.pathname;
+      const profilePath =
+        currentPath.includes("/student/") ||
+        currentPath.includes("/teacher/") ||
+        currentPath.includes("/hostel/") ||
+        currentPath.includes("/complaints/") ||
+        currentPath.includes("/notices/")
+          ? "../profile.html"
+          : "profile.html";
 
-            // Add timestamp to prevent caching
-            avatarSrc += `?t=${new Date().getTime()}`;
-        }
-
-        if (userAvatar) {
-            // Fallback for 404 (Define BEFORE setting src)
-            userAvatar.onerror = function () {
-                this.onerror = null;
-                this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true`;
-            };
-
-            userAvatar.src = avatarSrc;
-            userAvatar.style.objectFit = 'cover';
-        }
-
-        if (userDetails) {
-            // Determine path to profile.html based on current location
-            const currentPath = window.location.pathname;
-            const profilePath = (currentPath.includes('/student/') || currentPath.includes('/teacher/') || currentPath.includes('/hostel/') || currentPath.includes('/complaints/') || currentPath.includes('/notices/'))
-                ? '../profile.html'
-                : 'profile.html';
-
-            userDetails.innerHTML = `
-                <div onclick="window.location.href='${profilePath}'" style="cursor: pointer; padding: 5px; border-radius: 5px; transition: background 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
-                    <strong>${user.name || 'User'}</strong><br>
-                    <span style="text-transform: capitalize;">${user.role || 'Member'}</span><br>
-                    <span style="font-size:0.8rem;">ID: ${user.rollNumber || user.employeeId || user.identifier || '--'}</span>
-                    <div style="font-size: 0.75rem; color: #3b82f6; margin-top: 5px;">Click to view full profile <i class="fa-solid fa-arrow-right"></i></div>
+      userDetails.innerHTML = `
+                <!-- LINE 1: Account Details & Name -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; white-space: nowrap; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                    <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
+                    <strong style="color: var(--text-dark); font-size: 1rem;">${user.name || "User"}</strong>
+                </div>
+                
+                <!-- LINE 2: Type & ID -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; white-space: nowrap; margin-bottom: 20px;">
+                    <span style="text-transform: capitalize; background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.8rem;">${user.role || "Member"}</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">ID: ${user.rollNumber || user.employeeId || user.identifier || "--"}</span>
+                </div>
+                
+                <!-- LINE 3: Full Profile Link & Logout Option -->
+                <div style="display: flex; align-items: center; gap: 12px; white-space: nowrap;">
+                    <a href="${profilePath}" style="flex: 1; display: block; text-align: center; background: var(--secondary-light); color: var(--secondary); padding: 8px 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: background 0.2s;">
+                        Full Profile
+                    </a>
+                    <button data-action="logout" style="flex: 1; background: var(--danger-light); color: var(--danger); border: none; padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s;">
+                        Logout
+                    </button>
                 </div>
             `;
-        }
-
-        const studentCard = document.querySelector('.student-card');
-        const teacherCard = document.querySelector('.teacher-card');
-        const hostelCard = document.querySelector('.hostel-card');
-        const wardenCard = document.querySelector('.warden-card');
-
-        // Hide all by default for logged-in users, then show specific ones
-        [studentCard, teacherCard, hostelCard, wardenCard].forEach(c => {
-            if (c) c.style.display = 'none';
-        });
-
-        if (role === 'student') {
-            if (studentCard) studentCard.style.display = 'flex';
-        } else if (role === 'teacher') {
-            if (teacherCard) teacherCard.style.display = 'flex';
-        } else if (role === 'hosteler') {
-            if (studentCard) studentCard.style.display = 'flex';
-            if (hostelCard) hostelCard.style.display = 'flex';
-        } else if (role === 'warden') {
-            if (wardenCard) wardenCard.style.display = 'flex';
-        } else if (role === 'hod' || role === 'dean' || role === 'principal' || role === 'principal') {
-            if (teacherCard) teacherCard.style.display = 'flex';
-        } else if (role === 'admin') {
-            if (studentCard) studentCard.style.display = 'flex';
-            if (teacherCard) teacherCard.style.display = 'flex';
-            if (hostelCard) hostelCard.style.display = 'flex';
-            if (wardenCard) wardenCard.style.display = 'flex';
-        }
-
-    } else {
-        // User is Guest
-        if (loginBtn) loginBtn.style.display = 'block';
-        if (userProfile) userProfile.style.display = 'none';
-        
-        // Guests see all cards but will be prompted to login when clicking
-        const cards = document.querySelectorAll('.module-card');
-        cards.forEach(c => c.style.display = 'flex');
     }
+
+    const studentCard = document.querySelector(".student-card");
+    const teacherCard = document.querySelector(".teacher-card");
+    const hostelCard = document.querySelector(".hostel-card");
+    const wardenCard = document.querySelector(".warden-card");
+
+    // Hide all by default for logged-in users, then show specific ones
+    [studentCard, teacherCard, hostelCard, wardenCard].forEach((c) => {
+      if (c) c.style.display = "none";
+    });
+
+    if (role === "student") {
+      if (studentCard) studentCard.style.display = "flex";
+    } else if (role === "teacher") {
+      if (teacherCard) teacherCard.style.display = "flex";
+    } else if (role === "hosteler") {
+      if (studentCard) studentCard.style.display = "flex";
+      if (hostelCard) hostelCard.style.display = "flex";
+    } else if (role === "warden") {
+      if (wardenCard) wardenCard.style.display = "flex";
+    } else if (
+      role === "hod" ||
+      role === "dean" ||
+      role === "principal" ||
+      role === "principal"
+    ) {
+      if (teacherCard) teacherCard.style.display = "flex";
+    } else if (role === "admin") {
+      if (studentCard) studentCard.style.display = "flex";
+      if (teacherCard) teacherCard.style.display = "flex";
+      if (hostelCard) hostelCard.style.display = "flex";
+      if (wardenCard) wardenCard.style.display = "flex";
+    }
+  } else {
+    // User is Guest
+    if (loginBtn) loginBtn.style.display = "block";
+    if (userProfile) userProfile.style.display = "none";
+
+    // Guests see all cards but will be prompted to login when clicking
+    const cards = document.querySelectorAll(".module-card");
+    cards.forEach((c) => (c.style.display = "flex"));
+  }
 };
 
 function toggleProfileMenu() {
-    const menu = document.getElementById('profileMenu');
-    if (menu.style.display === 'flex') {
-        menu.style.display = 'none';
-    } else {
-        menu.style.display = 'flex';
-    }
+  const menu = document.getElementById("profileMenu");
+  if (menu.style.display === "flex") {
+    menu.style.display = "none";
+  } else {
+    menu.style.display = "flex";
+  }
 }
 
 // Close menu when clicking outside
-window.addEventListener('click', (e) => {
-    const menu = document.getElementById('profileMenu');
-    const avatar = document.getElementById('userAvatar');
-    if (menu && menu.style.display === 'flex' && e.target !== menu && e.target !== avatar && !menu.contains(e.target)) {
-        menu.style.display = 'none';
-    }
+window.addEventListener("click", (e) => {
+  const menu = document.getElementById("profileMenu");
+  const avatar = document.getElementById("userAvatar");
+  const profile = document.getElementById("userProfile");
+  if (
+    menu &&
+    menu.style.display === "flex" &&
+    e.target !== menu &&
+    e.target !== avatar &&
+    !menu.contains(e.target) &&
+    !profile?.contains(e.target)
+  ) {
+    menu.style.display = "none";
+  }
 });
 
+function goToModule(roleKey) {
+  const map = {
+    student: "student/index.html",
+    teacher: "teacher/index.html",
+    hod: "hod/index.html",
+    dean: "dean/index.html",
+    principal: "principal/index.html",
+    warden: "warden/index.html",
+    hosteler: "hosteler/complaints.html",
+    admin: "student/index.html",
+  };
+  const path = map[roleKey];
+  if (path) window.location.href = path;
+}
+
 function logout() {
-    localStorage.clear();
+  localStorage.clear();
 
-    // Determine path to home based on current location
-    const path = window.location.pathname;
-    let redirect = 'index.html';
+  // Determine path to home based on current location
+  const path = window.location.pathname;
+  let redirect = "index.html";
 
-    if (path.includes('/student/') || path.includes('/teacher/') || path.includes('/hostel/') || path.includes('/complaints/') || path.includes('/notices/')) {
-        redirect = '../index.html';
-    }
+  if (
+    path.includes("/student/") ||
+    path.includes("/teacher/") ||
+    path.includes("/hostel/") ||
+    path.includes("/complaints/") ||
+    path.includes("/notices/")
+  ) {
+    redirect = "../index.html";
+  }
 
-    window.location.href = redirect;
+  window.location.href = redirect;
 }

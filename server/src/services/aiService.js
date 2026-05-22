@@ -9,6 +9,7 @@ import Note from '../models/Note.js';
 import Routine from '../models/Routine.js';
 import Subject from '../models/Subject.js';
 import User from '../models/User.js';
+import MarMooc from '../models/MarMooc.js';
 import AIActionLog from '../models/AIActionLog.js';
 import { EXECUTION_STATUS, CONFIRMATION_STATUS } from '../constants/aiConstants.js';
 
@@ -32,24 +33,47 @@ const formatDate = (value) => {
     return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
-const resolveRequestedDay = (input) => {
+const sortKeyForTimeSlot = (timeSlot = '') => {
+    const match = String(timeSlot).match(/(\d{1,2})(?::(\d{2}))?/);
+    if (!match) return Number.MAX_SAFE_INTEGER;
+    let hour = Number(match[1]);
+    const minute = Number(match[2] || 0);
+    if (hour > 0 && hour < 8) hour += 12;
+    return hour * 60 + minute;
+};
+
+const dateFromClientContext = (clientContext = {}) => {
+    const rawDate = clientContext.isoDate || clientContext.date || clientContext.localeDate;
+    const date = rawDate ? new Date(rawDate) : new Date();
+    return Number.isNaN(date.getTime()) ? new Date() : date;
+};
+
+const dayIndexFromClientContext = (clientContext = {}) => {
+    if (Number.isInteger(clientContext.dayIndex) && clientContext.dayIndex >= 0 && clientContext.dayIndex < 7) {
+        return clientContext.dayIndex;
+    }
+    if (clientContext.weekday) {
+        const index = DAY_ORDER.findIndex((day) => day.toLowerCase() === String(clientContext.weekday).toLowerCase());
+        if (index >= 0) return index;
+    }
+    const date = dateFromClientContext(clientContext);
+    return (date.getDay() + 6) % 7;
+};
+
+const resolveRequestedDay = (input, clientContext = {}) => {
     const lower = input.toLowerCase();
     const explicit = DAY_ORDER.find((day) => lower.includes(day.toLowerCase()));
     if (explicit) return explicit;
 
-    const today = new Date();
+    const todayIndex = dayIndexFromClientContext(clientContext);
     if (includesAny(lower, ['today', 'todays', "today's"])) {
-        return DAY_ORDER[(today.getDay() + 6) % 7];
+        return DAY_ORDER[todayIndex];
     }
     if (includesAny(lower, ['tomorrow', "tomorrow's"])) {
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-        return DAY_ORDER[(tomorrow.getDay() + 6) % 7];
+        return DAY_ORDER[(todayIndex + 1) % 7];
     }
     if (includesAny(lower, ['yesterday', "yesterday's"])) {
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-        return DAY_ORDER[(yesterday.getDay() + 6) % 7];
+        return DAY_ORDER[(todayIndex + 6) % 7];
     }
     return null;
 };
@@ -62,7 +86,7 @@ class CampusAgentService {
         this.model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
     }
 
-    async processInput(text, user, history = [], conversationId = null) {
+    async processInput(text, user, history = [], conversationId = null, clientContext = {}) {
         const input = clean(text);
         const traceId = getTraceId();
         const activeConversationId = conversationId || crypto.randomUUID();
@@ -79,22 +103,23 @@ class CampusAgentService {
             const contextResult = await this.answerFromContext(input, activeConversationId, traceId);
             if (contextResult) return contextResult;
 
-            intent = this.detectIntent(input, user);
+            intent = this.detectIntent(input, user, activeConversationId);
             let result;
 
             if (intent === 'complaint_create') result = await this.createComplaint(input, user, activeConversationId, traceId);
             else if (intent === 'assignment_submit') result = await this.submitAssignment(input, user, activeConversationId, traceId);
             else if (intent === 'assignments') result = await this.getAssignments(user, activeConversationId, traceId, input);
-            else if (intent === 'schedule') result = await this.getSchedule(user, activeConversationId, traceId, input);
+            else if (intent === 'schedule') result = await this.getSchedule(user, activeConversationId, traceId, input, clientContext);
             else if (intent === 'subjects') result = await this.getSubjects(user, activeConversationId, traceId);
-            else if (intent === 'teachers') result = await this.getTeachers(user, activeConversationId, traceId);
+            else if (intent === 'teachers') result = await this.getTeachers(user, activeConversationId, traceId, input);
             else if (intent === 'events') result = await this.getNotices(user, activeConversationId, traceId, input, false, true);
             else if (intent === 'notices') result = await this.getNotices(user, activeConversationId, traceId, input);
             else if (intent === 'holidays') result = await this.getNotices(user, activeConversationId, traceId, input, true);
             else if (intent === 'notes') result = await this.getNotes(user, activeConversationId, traceId, input);
+            else if (intent === 'mar_moocs') result = await this.getMarMoocs(user, activeConversationId, traceId, input);
             else if (intent === 'status') result = await this.getStatus(user, traceId, input);
             else if (intent === 'leave') result = await this.draftLeave(input, user, activeConversationId, traceId);
-            else result = await this.answerGeneral(input, user, history, traceId);
+            else result = await this.answerGeneral(input, user, history, traceId, clientContext);
 
             await this.logAction({
                 traceId,
@@ -102,7 +127,7 @@ class CampusAgentService {
                 user,
                 intent,
                 status: result.success === false ? EXECUTION_STATUS.FAILED : EXECUTION_STATUS.COMPLETED,
-                args: { text: input }
+                args: { text: input, clientContext }
             });
 
             return result;
@@ -114,7 +139,7 @@ class CampusAgentService {
                 user,
                 intent: 'ERROR',
                 status: EXECUTION_STATUS.FAILED,
-                args: { text: input },
+                args: { text: input, clientContext },
                 errorMessage: error.message
             });
             return this.reply('I could not complete that request. Please try again with a little more detail.', {
@@ -125,8 +150,19 @@ class CampusAgentService {
         }
     }
 
-    detectIntent(input, user) {
+    detectIntent(input, user, conversationId = null) {
         const lower = input.toLowerCase();
+        const ctx = conversationId ? contextByConversation.get(conversationId) : null;
+        if (ctx && (ctx.entityType === 'NOTICE' || ctx.entityType === 'EVENT')) {
+            if (includesAny(lower, ['do that', 'fetch archived', 'archived', 'archive', 'old', 'older', 'previous', 'past'])) {
+                return ctx.entityType === 'EVENT' ? 'events' : 'notices';
+            }
+        }
+        if (ctx?.entityType === 'SCHEDULE') {
+            if (includesAny(lower, ['today', 'todays', "today's", 'tomorrow', "tomorrow's", 'yesterday', "yesterday's", ...DAY_ORDER.map((day) => day.toLowerCase())])) {
+                return 'schedule';
+            }
+        }
         if (includesAny(lower, ['night out', 'leave', 'home visit', 'medical leave', 'apply for'])) return 'leave';
         if (includesAny(lower, ['submit', 'turn in', 'complete', 'upload', 'draft', 'write', 'prepare']) && includesAny(lower, ['assignment', 'homework', 'work'])) return 'assignment_submit';
         if (includesAny(lower, ['complaint', 'complain', 'issue', 'problem', 'broken', 'not working', 'harassment', 'ragging'])) return 'complaint_create';
@@ -137,6 +173,7 @@ class CampusAgentService {
         if (includesAny(lower, ['holiday', 'vacation', 'college closed', 'closed tomorrow'])) return 'holidays';
         if (includesAny(lower, ['event', 'seminar', 'workshop', 'competition', 'tournament', 'cultural', 'sports'])) return 'events';
         if (includesAny(lower, ['notice', 'announcement', 'circular', 'news'])) return 'notices';
+        if (includesAny(lower, ['mar', 'mooc', 'monthly assessment'])) return 'mar_moocs';
         if (includesAny(lower, ['note', 'notes', 'study material', 'material', 'lecture'])) return 'notes';
         if (includesAny(lower, ['status', 'track', 'progress', 'resolved', 'submitted'])) return 'status';
         return 'general';
@@ -310,6 +347,37 @@ class CampusAgentService {
             updatedAt: Date.now()
         });
 
+        const entityType = ctx?.entityType || item.entityType || 'ITEM';
+        if (entityType === 'TEACHER') {
+            const lines = [
+                item.title || 'Faculty',
+                item.meta ? `Role: ${item.meta}` : null,
+                item.subject ? `Designation: ${item.subject}` : null,
+                item.facultyName ? `Department: ${item.facultyName}` : null
+            ].filter(Boolean);
+            return this.reply(lines.join('\n'), {
+                action: 'AI_RESPONSE',
+                payload: { item },
+                traceId
+            });
+        }
+
+        if (entityType === 'MAR_MOOC') {
+            const lines = [
+                item.title || 'MAR/MOOC Record',
+                item.subject ? `Category: ${item.subject}` : null,
+                item.status ? `Status: ${item.status}` : null,
+                item.points !== undefined ? `Points/Credits: ${item.points}` : null,
+                item.platform ? `Platform: ${item.platform}` : null,
+                item.date ? `Date: ${formatDate(item.date)}` : null
+            ].filter(Boolean);
+            return this.reply(lines.join('\n'), {
+                action: 'AI_RESPONSE',
+                payload: { item },
+                traceId
+            });
+        }
+
         const lines = [
             item.title || item.subject || 'Details',
             item.subject ? `Type/subject: ${item.subject}` : null,
@@ -326,7 +394,7 @@ class CampusAgentService {
             presentationState: 'SUCCESS',
             action: 'AI_RESPONSE',
             semanticType: 'DETAIL_VIEW',
-            entityType: ctx?.entityType || item.entityType || 'ITEM',
+            entityType,
             message: lines.join('\n'),
             payload: { item },
             timestamp: Date.now(),
@@ -407,9 +475,9 @@ class CampusAgentService {
         };
     }
 
-    async getSchedule(user, conversationId, traceId, input = '') {
+    async getSchedule(user, conversationId, traceId, input = '', clientContext = {}) {
         this.requireUser(user);
-        const selectedDay = resolveRequestedDay(input);
+        const selectedDay = resolveRequestedDay(input, clientContext);
         const filter = { department: user.department };
 
         if (user.role === 'student' || user.role === 'hosteler') {
@@ -435,7 +503,7 @@ class CampusAgentService {
 
         rows.sort((a, b) => {
             const dayDelta = DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day);
-            return dayDelta || (a.period || 0) - (b.period || 0) || String(a.timeSlot).localeCompare(String(b.timeSlot));
+            return dayDelta || sortKeyForTimeSlot(a.timeSlot) - sortKeyForTimeSlot(b.timeSlot) || (a.period || 0) - (b.period || 0);
         });
 
         const choices = rows.map((row) => ({
@@ -447,9 +515,10 @@ class CampusAgentService {
             entityType: 'SCHEDULE'
         }));
 
+        const dateNote = clientContext.localeDate ? ` based on ${clientContext.localeDate}` : '';
         const message = choices.length
-            ? `Here ${selectedDay ? `is your ${selectedDay}` : 'is your'} class schedule.`
-            : selectedDay ? `I could not find any classes for ${selectedDay} in your batch schedule.` : 'I could not find a schedule for your profile.';
+            ? `Here ${selectedDay ? `is your ${selectedDay}` : 'is your'} class schedule${selectedDay ? dateNote : ''}.`
+            : selectedDay ? `I could not find any classes for ${selectedDay} in your batch schedule${dateNote}.` : 'I could not find a schedule for your profile.';
 
         this.rememberCollection(conversationId, 'SCHEDULE', choices);
         return this.collection('SCHEDULE', choices, message, traceId, 'SCHEDULE_VIEW');
@@ -474,22 +543,29 @@ class CampusAgentService {
             filter.$or = [{ teacher: user._id }, { teachers: user._id }, { name: { $in: user.teachingSubjects || [] } }];
         }
 
-        const subjects = await Subject.find(filter).populate('teacher teachers', 'name').lean();
-        const choices = subjects.map((subject) => ({
-            id: subject._id.toString(),
-            title: `${subject.name} (${subject.code})`,
-            subject: subject.name,
-            facultyName: subject.teacher?.name || subject.teachers?.map((teacher) => teacher.name).join(', ') || 'Faculty not assigned',
-            entityType: 'SUBJECT'
-        }));
+        const subjects = await Subject.find(filter).populate('teacher teachers batchAssignments.teacher', 'name').lean();
+        const batches = this.batchValues(user.batch);
+        const choices = subjects
+            .filter((subject) => !/(^|\b)(mar|mooc|monthly assessment)(\b|$)/i.test(`${subject.name || ''} ${subject.code || ''}`))
+            .map((subject) => {
+                const assignedTeacher = this.teacherForStudentBatch(subject, batches);
+                return {
+                    id: subject._id.toString(),
+                    title: `${subject.name} (${subject.code})`,
+                    subject: subject.name,
+                    facultyName: assignedTeacher?.name || 'Faculty not assigned',
+                    entityType: 'SUBJECT'
+                };
+            });
 
         this.rememberCollection(conversationId, 'SUBJECT', choices);
         return this.collection('SUBJECT', choices, choices.length ? `You have ${choices.length} subject${choices.length === 1 ? '' : 's'} for your batch.` : 'I could not find subjects for your profile.', traceId);
     }
 
-    async getTeachers(user, conversationId, traceId) {
+    async getTeachers(user, conversationId, traceId, input = '') {
         this.requireUser(user);
         let teachers = [];
+        const wantsMentor = /\bmentor\b/i.test(input);
 
         if (user.role === 'student' || user.role === 'hosteler') {
             const batches = this.batchValues(user.batch);
@@ -516,20 +592,19 @@ class CampusAgentService {
             const addTeacher = (teacher, relation = 'Assigned faculty') => {
                 if (!teacher?._id) return;
                 const id = teacher._id.toString();
-                teacherMap.set(id, { ...teacher, relation: teacherMap.get(id)?.relation === 'Mentor' ? 'Mentor' : relation });
+                teacherMap.set(id, { ...teacher, relation });
             };
 
             routines.forEach((routine) => addTeacher(routine.teacher));
             subjects.forEach((subject) => {
-                addTeacher(subject.teacher);
-                (subject.teachers || []).forEach((teacher) => addTeacher(teacher));
-                (subject.batchAssignments || []).forEach((assignment) => {
-                    if (!assignment.batch || batches.includes(assignment.batch)) addTeacher(assignment.teacher);
-                });
+                addTeacher(this.teacherForStudentBatch(subject, batches));
             });
 
-            const fullUser = await User.findById(user._id).populate('mentor', 'name role designation department specialization email contactNumber').lean();
-            addTeacher(fullUser?.mentor, 'Mentor');
+            if (wantsMentor) {
+                const fullUser = await User.findById(user._id).populate('mentor', 'name role designation department specialization email contactNumber').lean();
+                teacherMap.clear();
+                addTeacher(fullUser?.mentor, 'Mentor');
+            }
             teachers = Array.from(teacherMap.values());
         } else {
             const filter = { role: { $in: ['teacher', 'hod', 'warden', 'principal', 'dean'] } };
@@ -547,17 +622,37 @@ class CampusAgentService {
         }));
 
         this.rememberCollection(conversationId, 'TEACHER', choices);
-        return this.collection('TEACHER', choices, choices.length ? 'Here are the relevant faculty and staff members.' : 'I could not find matching faculty records.', traceId);
+        const message = wantsMentor
+            ? (choices.length ? 'Here is your assigned mentor.' : 'I could not find a mentor assigned to your profile.')
+            : (choices.length ? `You have ${choices.length} assigned teacher${choices.length === 1 ? '' : 's'} for your batch.` : 'I could not find batch-assigned faculty records.');
+        return this.collection('TEACHER', choices, message, traceId);
     }
 
     async getNotices(user, conversationId, traceId, input = '', holidaysOnly = false, eventsOnly = false) {
         const lower = input.toLowerCase();
+        const ctx = contextByConversation.get(conversationId);
         const audience = this.audienceFor(user);
         const filter = { audience: { $in: audience } };
-        const allowOld = includesAny(lower, ['old', 'older', 'all', 'previous', 'past', 'archive', 'history']);
+        const allowOld = includesAny(lower, ['do that', 'old', 'older', 'all', 'previous', 'past', 'archive', 'archived', 'history'])
+            || (ctx && (ctx.entityType === 'NOTICE' || ctx.entityType === 'EVENT') && !ctx.items?.length);
 
         if (user?.department && !['admin', 'principal', 'dean', 'warden'].includes(user.role)) {
             filter.$and = [{ $or: [{ targetDept: user.department }, { targetDept: { $exists: false } }, { targetDept: '' }] }];
+        }
+
+        if ((user?.role === 'student' || user?.role === 'hosteler') && user.year) {
+            filter.$and = [
+                ...(filter.$and || []),
+                { $or: [{ targetYear: user.year }, { targetYear: { $exists: false } }, { targetYear: '' }] }
+            ];
+        }
+
+        if ((user?.role === 'student' || user?.role === 'hosteler') && user.batch) {
+            const batches = this.batchValues(user.batch);
+            filter.$and = [
+                ...(filter.$and || []),
+                { $or: [{ targetBatch: { $in: batches } }, { targetBatch: { $exists: false } }, { targetBatch: '' }] }
+            ];
         }
 
         if (!allowOld) {
@@ -599,7 +694,7 @@ class CampusAgentService {
         }));
 
         const message = choices.length
-            ? eventsOnly ? 'Here are the upcoming or recent events I found.' : holidaysOnly ? 'Here are the holiday or closure notices I found.' : 'Here are the recent notices.'
+            ? eventsOnly ? (allowOld ? 'Here are the archived event notices I found.' : 'Here are the upcoming or recent events I found.') : holidaysOnly ? 'Here are the holiday or closure notices I found.' : allowOld ? 'Here are the archived notices I found.' : 'Here are the recent notices.'
             : eventsOnly ? 'I could not find any current event notices. Ask for old events if you want archived notices.' : holidaysOnly ? 'I could not find any current holiday notices.' : 'I could not find recent notices for your profile. Ask for old notices if you want archived ones.';
 
         this.rememberCollection(conversationId, eventsOnly ? 'EVENT' : 'NOTICE', choices);
@@ -676,6 +771,34 @@ class CampusAgentService {
         return this.collection('SUBMISSION', choices, choices.length ? 'Here are your latest assignment submissions.' : 'No assignment submissions found.', traceId);
     }
 
+    async getMarMoocs(user, conversationId, traceId, input = '') {
+        this.requireRole(user, ['student', 'hosteler'], 'MAR and MOOC records are available for student accounts.');
+        const lower = input.toLowerCase();
+        const filter = { student: user._id };
+        if (lower.includes('mar') && !lower.includes('mooc')) filter.category = 'mar';
+        if (lower.includes('mooc') && !lower.includes('mar')) filter.category = 'mooc';
+
+        const records = await MarMooc.find(filter).sort({ completionDate: -1, createdAt: -1 }).limit(10).lean();
+        const choices = records.map((record) => ({
+            id: record._id.toString(),
+            title: record.title,
+            subject: record.category === 'mooc' ? 'MOOC' : 'MAR Activity',
+            status: record.status,
+            points: record.points,
+            platform: record.platform || '',
+            date: record.completionDate || record.createdAt,
+            entityType: 'MAR_MOOC'
+        }));
+
+        this.rememberCollection(conversationId, 'MAR_MOOC', choices);
+        const total = records.reduce((sum, record) => sum + (Number(record.points) || 0), 0);
+        const label = filter.category === 'mar' ? 'MAR' : filter.category === 'mooc' ? 'MOOC' : 'MAR/MOOC';
+        const message = choices.length
+            ? `Here are your ${label} records. Total points/credits shown: ${total}.`
+            : `I could not find ${label} records for your profile.`;
+        return this.collection('MAR_MOOC', choices, message, traceId);
+    }
+
     async draftLeave(input, user, conversationId, traceId) {
         this.requireUser(user);
         const lower = input.toLowerCase();
@@ -723,7 +846,7 @@ class CampusAgentService {
         };
     }
 
-    async answerGeneral(input, user, history, traceId) {
+    async answerGeneral(input, user, history, traceId, clientContext = {}) {
         const role = user?.role || 'guest';
         const prompt = [
             {
@@ -735,6 +858,7 @@ class CampusAgentService {
                     'For data-backed tasks, answer from the provided backend result or ask for the one missing detail. Never redirect the user to an external LMS unless the backend has no record.',
                     'Never claim you performed an action unless a backend tool result is present.',
                     'Be concise and practical.',
+                    `Current user date/time context: ${clientContext.localeDate || formatDate(clientContext.isoDate)}; timezone=${clientContext.timeZone || 'unknown'}; iso=${clientContext.isoDate || 'unknown'}. Use this for words like today, tomorrow, and yesterday.`,
                     '',
                     this.buildProfileContext(user)
                 ].join('\n')
@@ -770,7 +894,7 @@ class CampusAgentService {
         ].join('\n');
 
         return this.llmText([
-            { role: 'system', content: 'Prepare a polished student assignment submission from the available assignment details. Keep it original, structured, and suitable for faculty review. Do not invent citations or data.' },
+            { role: 'system', content: 'Prepare a polished student assignment submission from the available assignment details. Keep it original, structured, and suitable for faculty review. Do not invent citations or data. Return readable plain text with clear line breaks and blank lines between sections. Do not use markdown bold markers like **.' },
             { role: 'user', content: `Student: ${user.name}\nSubject: ${assignment.subject}\nTitle: ${assignment.title}\nDescription: ${assignment.description || 'No description'}\nStudent request: ${input}` }
         ], fallback);
     }
@@ -888,6 +1012,17 @@ class CampusAgentService {
         return match?.[1]?.replace(/\b(notes?|materials?|assignment|class|routine)\b/ig, '').trim();
     }
 
+    teacherForStudentBatch(subject, batches = []) {
+        const batchAssignment = (subject.batchAssignments || []).find((assignment) => {
+            const assignmentBatches = this.batchValues(assignment.batch);
+            return assignment.teacher && assignmentBatches.some((batch) => batches.includes(batch));
+        });
+        if (batchAssignment?.teacher) return batchAssignment.teacher;
+        if (!subject.batchAssignments?.length && subject.teacher) return subject.teacher;
+        if (!subject.batchAssignments?.length && subject.teachers?.length === 1) return subject.teachers[0];
+        return null;
+    }
+
     rememberCollection(conversationId, entityType, items, setPending = true) {
         contextByConversation.set(conversationId, {
             entityType,
@@ -979,7 +1114,6 @@ class CampusAgentService {
         if (!user?._id) return 'Profile: guest user, not authenticated.';
 
         const parts = [
-            `id=${asId(user)}`,
             `name=${user.name || 'Unknown'}`,
             `role=${user.role || 'unknown'}`,
             `designation=${user.designation || 'not set'}`,
