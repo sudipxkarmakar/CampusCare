@@ -256,7 +256,7 @@ body::after {
 header {
     position: sticky;
     top: 20px;
-    z-index: 1000;
+    z-index: var(--z-header);
     margin: 0 auto;
     width: 95%;
     max-width: 1400px;
@@ -279,7 +279,7 @@ header {
     color: #2d3748;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-16);
 }
 
 .nav-links {
@@ -297,8 +297,8 @@ header {
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
+    gap: var(--space-16);
+    padding: var(--space-16);
     border-radius: 8px;
 }
 
@@ -328,10 +328,10 @@ header {
     display: none;
     /* Default hidden, toggled via JS */
     align-items: center;
-    gap: 15px;
+    gap: var(--space-16);
     position: relative;
     cursor: pointer;
-    padding: 5px 10px;
+    padding: var(--space-16);
     border-radius: 50px;
     transition: background 0.3s ease;
 }
@@ -363,7 +363,7 @@ header {
     /* Normal padding */
     padding: 1rem 5% 1rem;
     position: relative;
-    z-index: 1;
+    z-index: var(--z-base);
 }
 
 /* Landing Page Hero Specific - ADJUSTED: Reduced Gap */
@@ -407,7 +407,7 @@ header {
     /* Lets the image determine the height */
     margin: 0 auto;
     /* Centers the block */
-    z-index: 2;
+    z-index: calc(var(--z-base) + 1);
 
     /* Optional: Add a glass platform beneath the illustration */
     /* If you want it floating freely, remove the 'background' and 'border' lines below */
@@ -495,7 +495,7 @@ header {
     color: #2d3748;
     /* Dark Grey */
     transition: all 0.4s ease;
-    z-index: 2;
+    z-index: calc(var(--z-base) + 1);
 }
 
 /* Description Text (Hidden initially) */
@@ -510,7 +510,7 @@ header {
     /* White text for the hover state */
     opacity: 0;
     transition: all 0.4s ease;
-    z-index: 3;
+    z-index: calc(var(--z-base) + 2);
 }
 
 /* --- HOVER EFFECTS --- */
@@ -589,7 +589,7 @@ header {
 .notice-content span {
     font-size: 0.9rem;
     color: #666;
-    margin-top: 4px;
+    margin-top: var(--space-16);
 }
 
 /* --- 3. PUBLIC COMPLAINT WALL (Previously Blog) --- */
@@ -621,7 +621,7 @@ header {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    padding: 4px 12px;
+    padding: var(--space-16);
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: bold;
@@ -745,34 +745,8 @@ footer {
 @media (max-width:980px) {
     .hero {
         grid-template-columns: 1fr;
-        gap: 20px
-    }
-
-    .hero-right {
-        order: 2
-    }
-
-    .hero-left {
-        order: 1
-    }
-
-    .card-grid {
-        grid-template-columns: repeat(2, 1fr)
-    }
-}
-
-@media (max-width:520px) {
-    .hero-title {
-        font-size: 24px
-    }
-
-    .card-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px
-    }
-
-    .module-card img {
-        width: 40px;
+        gap: } .hero-right { order: 2 } .hero-left { order: 1 } .card-grid { grid-template-columns: repeat(2, 1fr) } } @media (max-width:520px) { .hero-title { font-size: } .card-grid { grid-template-columns: repeat(2, 1fr);
+        gap: } .module-card img { width:;
         height: 40px
     }
 }
@@ -789,7 +763,7 @@ footer {
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 2000;
+    z-index: var(--z-modal);
     /* Sit on top */
     left: 0;
     top: 0;
@@ -848,15 +822,15 @@ footer {
 /* --- DUAL IMAGE TRACKING STYLES --- */
 .complaint-images-container {
     display: flex;
-    gap: 15px;
-    margin-top: 15px;
+    gap: var(--space-16);
+    margin-top: var(--space-16);
     flex-wrap: wrap;
 }
 
 .image-section {
     width: 200px; /* Fixed width for consistency */
     background: rgba(255, 255, 255, 0.6);
-    padding: 8px;
+    padding: var(--space-16);
     border-radius: 12px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -873,10 +847,10 @@ footer {
     font-weight: 800;
     text-transform: uppercase;
     color: #64748b;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-16);
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: var(--space-16);
     letter-spacing: 0.5px;
 }
 
@@ -894,8 +868,8 @@ footer {
 }
 
 .resolve-upload-container {
-    margin-top: 15px;
-    padding: 15px;
+    margin-top: var(--space-16);
+    padding: var(--space-16);
     background: #f0f9ff;
     border: 1px dashed #3b82f6;
     border-radius: 12px;
@@ -907,7 +881,7 @@ footer {
 }
 
 .file-input-wrapper {
-    margin-top: 10px;
+    margin-top: var(--space-16);
 }
 
 .file-input-wrapper input[type="file"] {
@@ -916,9 +890,9 @@ footer {
 }
 
 .confirm-resolve-btn {
-    margin-top: 10px;
+    margin-top: var(--space-16);
     width: 100%;
-    padding: 8px;
+    padding: var(--space-16);
     background: #10b981;
     color: white;
     border: none;
@@ -939,14 +913,14 @@ footer {
     /* Top alignment */
     justify-content: center;
     /* Center horizontal */
-    padding-top: 100px;
+    padding-top: var(--space-16);
     /* Offset from top (Middle Top) */
 }
 
 .modal-content {
     background-color: #ffffff;
     /* margin: 5% auto; Removed in favor of flex parent */
-    padding: 24px;
+    padding: var(--space-16);
     border: 1px solid rgba(255, 255, 255, 0.5);
     width: 90%;
     max-width: 500px;
@@ -989,13 +963,13 @@ footer {
 .dashboard-btn-nav {
     background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
     color: white !important;
-    padding: 8px 22px;
+    padding: var(--space-16);
     border-radius: 50px;
     text-decoration: none;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-16);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);

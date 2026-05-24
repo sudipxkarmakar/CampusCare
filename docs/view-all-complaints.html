@@ -7,7 +7,7 @@
   <title>All Public Complaints | CampusCare</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/design-system.css?v=1.6">
   <style>
     .blog-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -72,9 +72,9 @@
     <div id="userProfile" class="user-profile" style="display: none; align-items: center; gap: 15px; position: relative;">
       <button onclick="goToDashboard()" class="dashboard-btn-nav">Dashboard</button>
       <span id="userName" class="user-name">Hello, User</span>
-      <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" onclick="toggleProfileMenu()">
+      <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" onclick="toggleProfileMenu()" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu">
       <div id="profileMenu" class="glass" style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 200px; padding: 1rem; background: white; z-index: 2000;">
-        <button onclick="logout()" style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;">
+        <button style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer;">
           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </button>
       </div>

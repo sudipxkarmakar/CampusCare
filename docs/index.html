@@ -167,7 +167,7 @@
             <div
               id="userProfile"
               class="user-profile"
-              data-action="toggleProfileMenu"
+              data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu"
               style="display: none; cursor: pointer; position: relative"
             >
               <img
@@ -604,8 +604,7 @@
           <!-- Academic Leaders -->
           <section
             class="section-card"
-            id="faculty"
-            style="position: relative"
+            id="faculty" style="position: relative"
           >
             <div class="section-header">
               <h2>
@@ -1055,7 +1054,7 @@
 
           <div class="ai-input-wrapper">
             <input type="text" id="ai-input" placeholder="Ask me anything..." />
-            <button id="ai-send-btn" data-action="askAI">
+            <button id="ai-send-btn" data-action="askAI" aria-label="Open AI Assistant" aria-expanded="false" aria-haspopup="dialog">
               <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>

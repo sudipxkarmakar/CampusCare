@@ -2,143 +2,255 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Warden Portal | CampusCare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Warden Portal | CampusCare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/design-system.css?v=1.6">
+  <style>
+      .fa-solid, .fas { font-family: "Font Awesome 6 Free" !important; }
+      
+      .module-card {
+          background: var(--bg-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-lg);
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          text-decoration: none;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+          position: relative;
+      }
+      .module-card:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-md);
+          border-color: var(--primary-light);
+      }
+      .module-icon {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.8rem;
+          margin-bottom: 1rem;
+      }
+      .module-title {
+          font-family: 'Poppins', sans-serif;
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: var(--text-dark);
+          margin-bottom: 0.25rem;
+      }
+      .module-desc {
+          font-size: 0.85rem;
+          color: var(--text-muted);
+      }
+      .badge-count {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          background: var(--danger);
+          color: white;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.75rem;
+          font-weight: 700;
+      }
+  </style>
 </head>
 
 <body>
+  <div class="dashboard-wrapper modern-layout">
 
-    <header class="glass"
-        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
-        <a href="../index.html" class="logo"
-            style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
-                style="font-size:0.8rem; background:#10b981; color:white; padding:2px 8px; border-radius:10px;">Warden</span>
-        </a>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="../index.html" class="logo-container">
+        <img src="../assets/images/hero-illustration.png" alt="Logo" class="logo-icon"
+          onerror="this.src='https://ui-avatars.com/api/?name=CC&background=10b981&color=fff&rounded=true'" />
+        <div class="logo-text">CampusCare</div>
+      </a>
 
-        <div style="display:flex; align-items:center; gap: 15px;">
-            <!-- USER PROFILE -->
-            <div id="userProfile"
-                style="display: none; align-items: center; gap: 15px; position: relative; cursor: pointer;">
-                <a href="../index.html" class="dashboard-btn-nav">Home</a>
-                <span id="userName" style="font-weight: 600; color: #2d3748;">Hello, Warden</span>
-                <img id="userAvatar" src="https://ui-avatars.com/api/?name=Warden&background=random" alt="Profile"
-                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
-                    onclick="toggleProfileMenu()">
-                <div id="profileMenu" class="glass"
-                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                    <p
-                        style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: bold; font-size: 0.9rem;">
-                        Account Details
-                    </p>
-                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
-                        <!-- Injected by JS -->
-                    </p>
-                    <button onclick="logout()"
-                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
-                </div>
-            </div>
+      <div class="sidebar-portal-text"
+        style="padding: 0 24px; margin-bottom: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+        Warden Portal
+      </div>
+
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-item active"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li>
+            <a href="leaves.html" class="nav-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-stamp"></i> Leave Approvals</span>
+                <span id="leaveCountBadgeSidebar" style="background: #fee2e2; color: #ef4444; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; display: none;">0</span>
+            </a>
+        </li>
+        <li><a href="complaints.html" class="nav-item"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
+        <li><a href="mess_menu.html" class="nav-item"><i class="fa-solid fa-utensils"></i> Mess Menu</a></li>
+        <li><a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i> Residents</a></li>
+        <li><a href="notices.html" class="nav-item"><i class="fa-solid fa-bullhorn"></i> Notice Board</a></li>
+        <li><a href="library.html" class="nav-item"><i class="fa-solid fa-book-open"></i> Library</a></li>
+      </ul>
+
+      <div class="sidebar-bottom">
+        <a id="logoutBtn" href="javascript:void(0)" onclick="logout()" class="nav-item" data-action="logout"
+          style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <div class="nav-left" style="display: flex; align-items: center; gap: 32px">
+          <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
+            CampusCare <span style="font-size: 0.8rem; background: var(--success); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">Warden</span>
+          </h1>
         </div>
-    </header>
 
-    <main class="main-container">
-        <section class="hero teacher-hero" style="background: transparent;">
-            <div class="hero-left">
-                <h1 class="hero-title" style="color:#2d3748;">Hostel Administration</h1>
-                <p class="hero-sub" style="color:#4a5568;">Ensure Resident Welfare & Discipline</p>
+        <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
+          <!-- USER PROFILE -->
+          <div id="userProfile" class="user-profile" data-action="toggleProfileMenu"
+            style="display: flex; cursor: pointer; position: relative">
+            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=Warden&background=random" alt="Profile" />
+            <div style="display: flex; flex-direction: column;">
+              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hello, Warden</span>
+              <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted);">Hostel Admin</span>
             </div>
-        </section>
 
-        <!-- DASHBOARD GRID -->
-        <div class="row"
-            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem; margin-top:2rem; padding: 0 5%;">
-
-            <!-- SECTION 1: LEAVE & GATE PASS -->
-            <section class="standard-container" style="margin:0; width:100%;">
-                <h2
-                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #f59e0b; padding-left:10px; font-size:1.3rem;">
-                    Approvals</h2>
-                <div style="display:flex; flex-direction:column; gap:1.5rem;">
-
-                    <a href="leaves.html" class="module-card-dashboard standard-card"
-                        style="text-decoration:none; padding:1.5rem; text-align:center;">
-                        <div style="position:absolute; top:10px; right:15px; background:red; color:white; border-radius:50%; width:25px; height:25px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.8rem;"
-                            id="leaveCountBadge">0</div>
-                        <i class="fa-solid fa-stamp module-icon" style="font-size:2rem; color:#f59e0b;"></i>
-                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Gate Pass / Leaves</div>
-                        <div class="module-desc">Final Approval</div>
-                    </a>
-
-                </div>
-            </section>
-
-            <!-- SECTION 2: HOSTEL SERVICES -->
-            <section class="standard-container" style="margin:0; width:100%;">
-                <h2
-                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #3b82f6; padding-left:10px; font-size:1.3rem;">
-                    Services</h2>
-                <div style="display:flex; flex-direction:column; gap:1.5rem;">
-
-                    <a href="mess_menu.html" class="module-card-dashboard standard-card"
-                        style="text-decoration:none; padding:1.5rem; text-align:center;">
-                        <i class="fa-solid fa-utensils module-icon" style="font-size:2rem; color:#3b82f6;"></i>
-                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Mess Menu</div>
-                        <div class="module-desc">View & Update</div>
-                    </a>
-
-                    <a href="complaints.html" class="module-card-dashboard standard-card"
-                        style="text-decoration:none; padding:1.5rem; text-align:center;">
-                        <i class="fa-solid fa-triangle-exclamation module-icon"
-                            style="font-size:2rem; color:#ef4444;"></i>
-                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Hostel Complaints</div>
-                        <div class="module-desc">Resolve Issues</div>
-                    </a>
-
-                    <a href="notices.html" class="module-card-dashboard standard-card"
-                        style="text-decoration:none; padding:1.5rem; text-align:center;">
-                        <i class="fa-solid fa-bullhorn module-icon" style="font-size:2rem; color:#805ad5;"></i>
-                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Notice Board</div>
-                        <div class="module-desc">Post & View</div>
-                    </a>
-
-                    <a href="library.html" class="module-card-dashboard standard-card"
-                        style="text-decoration:none; padding:1.5rem; text-align:center;">
-                        <i class="fa-solid fa-book-open module-icon" style="font-size:2rem; color:#06b6d4;"></i>
-                        <div class="module-title" style="font-size:1.1rem; margin:0.5rem 0;">Library</div>
-                        <div class="module-desc">Search Books</div>
-                    </a>
-
-                </div>
-            </section>
-
-            <!-- SECTION 3: HOSTEL INSIGHTS -->
-            <section class="standard-container" style="margin:0; width:100%;">
-                <h2
-                    style="color:#2d3748; margin-bottom:1rem; border-left:5px solid #10b981; padding-left:10px; font-size:1.3rem;">
-                    Hostel Layout</h2>
-                <div style="background:white; padding:1.5rem; border-radius:15px; text-align:center;">
-                    <div style="margin-bottom:1rem;">
-                        <div style="font-size:2.5rem; font-weight:bold; color:#047857;" id="hostelerCountVal">0</div>
-                        <div style="color:#64748b;">Active Residents</div>
-                    </div>
-                    <a href="students.html"
-                        style="display:block; width:100%; padding:0.8rem; border:1px solid #cbd5e1; color:#0f172a; text-decoration:none; border-radius:8px; font-weight:600; margin-top:10px;">View
-                        Student List</a>
-                </div>
-            </section>
-
+            <!-- DROPDOWN MENU -->
+            <div id="profileMenu"
+              style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
+              <p style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+                Account Details
+              </p>
+              <div id="userDetails" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+                  <!-- Injected by JS -->
+              </div>
+              <button onclick="logout()"
+                  style="background: var(--danger); color: white; border: none; padding: 0.6rem; width: 100%; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
+                  <i class="fa-solid fa-right-from-bracket"></i> Logout
+              </button>
+            </div>
+          </div>
         </div>
+      </header>
+
+      <!-- HERO -->
+      <section class="hero-card" style="padding: 30px 40px; margin-bottom: 32px; border-radius: 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+        <div class="hero-content" style="max-width: 100%;">
+          <h1 style="font-size: 2.2rem; margin-bottom: 8px; color: white;">Hostel Administration</h1>
+          <p style="font-size: 1.1rem; opacity: 0.9; margin: 0;">Ensure Resident Welfare & Discipline</p>
+        </div>
+      </section>
+
+      <!-- DASHBOARD GRID -->
+      <div class="triple-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+          
+          <!-- SECTION 1: LEAVE & GATE PASS -->
+          <section class="section-card">
+              <h2 style="font-size: 1.2rem; color: var(--text-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                  <i class="fa-solid fa-stamp" style="color: var(--warning);"></i> Approvals
+              </h2>
+              
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                  <a href="leaves.html" class="module-card">
+                      <div id="leaveCountBadge" class="badge-count" style="display: none;">0</div>
+                      <div class="module-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                          <i class="fa-solid fa-file-signature"></i>
+                      </div>
+                      <div class="module-title">Gate Pass / Leaves</div>
+                      <div class="module-desc">Review & Final Approval</div>
+                  </a>
+              </div>
+          </section>
+
+          <!-- SECTION 2: HOSTEL SERVICES -->
+          <section class="section-card">
+              <h2 style="font-size: 1.2rem; color: var(--text-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                  <i class="fa-solid fa-concierge-bell" style="color: var(--primary);"></i> Services
+              </h2>
+              
+              <div class="triple-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                  <a href="mess_menu.html" class="module-card" style="padding: 1rem;">
+                      <div class="module-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
+                          <i class="fa-solid fa-utensils"></i>
+                      </div>
+                      <div class="module-title" style="font-size: 0.95rem;">Mess Menu</div>
+                      <div class="module-desc" style="font-size: 0.75rem;">View & Update</div>
+                  </a>
+
+                  <a href="complaints.html" class="module-card" style="padding: 1rem;">
+                      <div class="module-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
+                          <i class="fa-solid fa-triangle-exclamation"></i>
+                      </div>
+                      <div class="module-title" style="font-size: 0.95rem;">Complaints</div>
+                      <div class="module-desc" style="font-size: 0.75rem;">Resolve Issues</div>
+                  </a>
+
+                  <a href="notices.html" class="module-card" style="padding: 1rem;">
+                      <div class="module-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--secondary); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
+                          <i class="fa-solid fa-bullhorn"></i>
+                      </div>
+                      <div class="module-title" style="font-size: 0.95rem;">Notices</div>
+                      <div class="module-desc" style="font-size: 0.75rem;">Post Updates</div>
+                  </a>
+
+                  <a href="library.html" class="module-card" style="padding: 1rem;">
+                      <div class="module-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
+                          <i class="fa-solid fa-book-open"></i>
+                      </div>
+                      <div class="module-title" style="font-size: 0.95rem;">Library</div>
+                      <div class="module-desc" style="font-size: 0.75rem;">Search Books</div>
+                  </a>
+              </div>
+          </section>
+
+          <!-- SECTION 3: HOSTEL INSIGHTS -->
+          <section class="section-card">
+              <h2 style="font-size: 1.2rem; color: var(--text-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                  <i class="fa-solid fa-building-user" style="color: var(--success);"></i> Hostel Layout
+              </h2>
+              
+              <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100% - 3rem);">
+                  <div style="font-size: 3.5rem; font-weight: 800; color: var(--success); line-height: 1;" id="hostelerCountVal">0</div>
+                  <div style="color: var(--text-muted); font-weight: 500; margin-top: 0.5rem; margin-bottom: 1.5rem;">Active Residents</div>
+                  
+                  <a href="students.html" class="btn-outline-purple" style="width: 100%; border-color: var(--success); color: var(--success);">
+                      <i class="fa-solid fa-users" style="margin-right: 8px;"></i> View Resident List
+                  </a>
+              </div>
+          </section>
+
+      </div>
+
     </main>
+  </div>
 
-    <script src="../assets/js/landing.js"></script>
-    <script src="../assets/js/warden.js"></script>
+  <script src="../assets/js/landing.js"></script>
+  <script src="../assets/js/warden.js"></script>
+  <script>
+      // Profile menu toggle logic
+      document.querySelector('[data-action="toggleProfileMenu"]').addEventListener('click', function(e) {
+          e.stopPropagation();
+          const menu = document.getElementById('profileMenu');
+          menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+      });
+      document.addEventListener('click', function(e) {
+          const menu = document.getElementById('profileMenu');
+          if (menu && menu.style.display === 'block' && !e.target.closest('#userProfile')) {
+              menu.style.display = 'none';
+          }
+      });
+  </script>
 </body>
 
 </html>

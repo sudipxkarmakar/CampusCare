@@ -995,6 +995,10 @@ body {
   font-size: 0;
 }
 
+.modern-layout .sidebar-portal-text {
+  display: none;
+}
+
 .modern-layout .top-navbar {
   margin-bottom: 40px;
 }
@@ -1817,3 +1821,141 @@ body {
 .cal-day { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: auto; border-radius: 50%; cursor: pointer; }
 .cal-day.muted { color: #cbd5e1; }
 .cal-day.active { background: var(--primary); color: white; font-weight: bold; }
+
+/* Teacher Dashboard specific layouts */
+.dashboard-2-1-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start; }
+.quick-access-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+.dashboard-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.dashboard-table th { text-align: left; padding: 12px; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border-color); }
+.dashboard-table td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+.dashboard-table tr:last-child td { border-bottom: none; }
+@media (max-width: 1024px) { .dashboard-2-1-grid { grid-template-columns: 1fr; } .quick-access-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+
+/* ======================================================== */
+/* WORKSPACE LAYOUT (Task Modules) */
+/* ======================================================== */
+.workspace-layout {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+  min-height: calc(100vh - 120px);
+}
+
+.workspace-filter {
+  width: 250px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workspace-feed {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workspace-details {
+  width: 350px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .workspace-details {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace-layout {
+    flex-direction: column;
+  }
+  .workspace-filter {
+    width: 100%;
+  }
+}
+
+/* ======================================================== */
+/* OFFICIAL INSTITUTIONAL GRID SYSTEM */
+/* ======================================================== */
+.dashboard-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 24px !important;
+    align-items: start !important;
+}
+
+.grid-1x1 { grid-column: span 1 !important; grid-row: span 1 !important; }
+.grid-2x1 { grid-column: span 2 !important; grid-row: span 1 !important; }
+.grid-1x2 { grid-column: span 1 !important; grid-row: span 2 !important; }
+.grid-2x2 { grid-column: span 2 !important; grid-row: span 2 !important; }
+.grid-3x1 { grid-column: span 3 !important; grid-row: span 1 !important; }
+.grid-3x2 { grid-column: span 3 !important; grid-row: span 2 !important; }
+
+/* SPACING TOKENS */
+:root {
+    --space-8: 8px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --space-48: 48px;
+    --surface: #ffffff;
+}
+
+/* SECTION CARD STANDARDIZATION */
+.section-card {
+    border-radius: var(--radius-lg) !important;
+    padding: 24px !important;
+    background: var(--surface) !important;
+    box-shadow: var(--shadow-sm) !important;
+    border: none !important;
+}
+
+/* HERO SECTION RULES */
+.hero-card {
+    min-height: 280px;
+    padding: 32px 48px !important;
+    position: relative;
+    overflow: hidden !important;
+}
+.hero-content {
+    max-width: 60% !important;
+    z-index: 2;
+}
+.hero-image {
+    position: absolute !important;
+    right: 0 !important;
+    bottom: -10px !important;
+    max-width: 40% !important;
+    z-index: 1 !important;
+}
+.hero-image img {
+    height: 300px !important;
+    object-fit: contain !important;
+}
+
+/* RESPONSIVE RULES */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .grid-3x1, .grid-3x2 {
+        grid-column: span 2 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .grid-1x1, .grid-2x1, .grid-1x2, .grid-2x2, .grid-3x1, .grid-3x2 {
+        grid-column: span 1 !important;
+    }
+}

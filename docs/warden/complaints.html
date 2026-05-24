@@ -2,173 +2,234 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Hostel Complaints | Warden Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/styles.css">
-    <style>
-        .complaint-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hostel Complaints | Warden Portal | CampusCare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/design-system.css?v=1.6">
+  <style>
+      .fa-solid, .fas { font-family: "Font Awesome 6 Free" !important; }
+      
+      .complaint-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+      }
+      
+      .complaint-card {
+          background: var(--bg-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-lg);
+          padding: 1.5rem;
+          transition: transform 0.2s, box-shadow 0.2s;
+          border-left: 5px solid var(--primary);
+      }
+      .complaint-card:hover {
+          box-shadow: var(--shadow-md);
+      }
+      .complaint-card.disciplinary {
+          border-left-color: var(--danger);
+          background: #fff1f2;
+      }
 
-        .complaint-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-            border-left: 5px solid #3b82f6;
-        }
+      .complaint-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid var(--border-color);
+      }
 
-        .complaint-card.disciplinary {
-            border-left-color: #ef4444;
-            background-color: #fff1f2;
-        }
+      .badge {
+          padding: 4px 10px;
+          border-radius: var(--radius-full);
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-right: 5px;
+      }
+      .badge-blue { background: #e0f2fe; color: #0369a1; }
+      .badge-green { background: #dcfce7; color: #15803d; }
+      .badge-red { background: #fee2e2; color: #b91c1c; }
+      .badge-yellow { background: #fef3c7; color: #b45309; }
 
-        .complaint-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
+      .complaint-actions {
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px solid var(--border-color);
+          display: flex;
+          gap: 10px;
+      }
 
-        .badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 5px;
-        }
+      .btn-action {
+          padding: 8px 16px;
+          border-radius: var(--radius-md);
+          border: none;
+          cursor: pointer;
+          font-weight: 600;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          transition: background 0.2s;
+      }
+      .resolve { background: var(--success); color: white; }
+      .resolve:hover { background: #059669; }
+      .escalate { background: var(--warning); color: white; }
+      .escalate:hover { background: #d97706; }
 
-        .badge-blue {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
+      .alert-box {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          padding: 10px 12px;
+          border-radius: var(--radius-md);
+          color: #991b1b;
+          font-size: 0.9rem;
+          margin-top: 10px;
+      }
 
-        .badge-green {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .badge-red {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .badge-yellow {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .complaint-actions {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-action {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .resolve {
-            background: #10b981;
-            color: white;
-        }
-
-        .escalate {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .alert-box {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            padding: 10px;
-            border-radius: 8px;
-            color: #991b1b;
-        }
-
-        .uplift-info {
-            font-size: 0.8rem;
-            background: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-top: 5px;
-        }
-    </style>
+      .uplift-info {
+          font-size: 0.8rem;
+          background: var(--border-color);
+          color: var(--text-dark);
+          padding: 2px 8px;
+          border-radius: var(--radius-sm);
+          display: inline-block;
+          margin-top: 5px;
+          font-weight: 500;
+      }
+  </style>
 </head>
 
 <body>
-    <header class="glass"
-        style="position: sticky; top: 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; width: 95%; max-width: 1400px; border-radius: 16px;">
-        <a href="index.html" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-graduation-cap"></i> CampusCare <span
-                style="font-size:0.8rem; background:#10b981; color:white; padding:2px 8px; border-radius:10px;">Warden</span>
-        </a>
-        <div style="display:flex; align-items:center; gap: 15px;">
-            <div id="userProfile"
-                style="display: none; align-items: center; gap: 15px; position: relative; cursor: pointer;">
-                <a href="index.html" class="dashboard-btn-nav">Dashboard</a>
-                <span id="userName" style="font-weight: 600; color: #2d3748;">Warden</span>
-                <img id="userAvatar" src="https://ui-avatars.com/api/?name=Warden&background=random" alt="Profile"
-                    style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc;"
-                    onclick="toggleProfileMenu()">
-                <div id="profileMenu" class="glass"
-                    style="display: none; position: absolute; top: 50px; right: 0; flex-direction: column; width: 220px; padding: 1rem; background: white; z-index: 2000; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                    <p id="userDetails" style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.4;">
-                    </p>
-                    <button onclick="logout()"
-                        style="background: #ef4444; color: white; border: none; padding: 0.5rem; width: 100%; border-radius: 5px; cursor: pointer; font-weight: 500;">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
-                </div>
-            </div>
+  <div class="dashboard-wrapper modern-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="../index.html" class="logo-container">
+        <img src="../assets/images/hero-illustration.png" alt="Logo" class="logo-icon"
+          onerror="this.src='https://ui-avatars.com/api/?name=CC&background=10b981&color=fff&rounded=true'" />
+        <div class="logo-text">CampusCare</div>
+      </a>
+
+      <div class="sidebar-portal-text"
+        style="padding: 0 24px; margin-bottom: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+        Warden Portal
+      </div>
+
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li>
+            <a href="leaves.html" class="nav-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-stamp"></i> Leave Approvals</span>
+                <span id="leaveCountBadgeSidebar" style="background: #fee2e2; color: #ef4444; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; display: none;">0</span>
+            </a>
+        </li>
+        <li><a href="complaints.html" class="nav-item active"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
+        <li><a href="mess_menu.html" class="nav-item"><i class="fa-solid fa-utensils"></i> Mess Menu</a></li>
+        <li><a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i> Residents</a></li>
+        <li><a href="notices.html" class="nav-item"><i class="fa-solid fa-bullhorn"></i> Notice Board</a></li>
+        <li><a href="library.html" class="nav-item"><i class="fa-solid fa-book-open"></i> Library</a></li>
+      </ul>
+
+      <div class="sidebar-bottom">
+        <a id="logoutBtn" href="javascript:void(0)" class="nav-item" data-action="logout"
+          style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <div class="nav-left" style="display: flex; align-items: center; gap: 32px">
+          <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
+            CampusCare <span style="font-size: 0.8rem; background: var(--success); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">Warden</span>
+          </h1>
         </div>
-    </header>
 
-    <main class="main-container">
-        <section class="hero teacher-hero" style="background: transparent; text-align: center; margin-top: 0.5rem; margin-bottom: 2rem;">
-            <div style="max-width: 800px; margin: 0 auto;">
-                <h1 class="hero-title" style="color:#2d3748; font-size: 2.5rem; margin-bottom: 0.5rem;">Hostel Complaints</h1>
-                <p class="hero-sub" style="color:#64748b; font-size: 1.1rem; margin-bottom: 1rem;">Manage facility issues and student conflicts</p>
-                <div class="filter-controls" style="display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 1rem;">
-                    <label for="priorityFilter" style="font-weight: 600; color: #4a5568;">Priority:</label>
-                    <select id="priorityFilter"
-                        style="padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; cursor: pointer;">
-                        <option value="All">All Priorities</option>
-                        <option value="Urgent">Urgent</option>
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                    </select>
-                </div>
+        <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
+          <!-- USER PROFILE -->
+          <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu"
+            style="display: flex; cursor: pointer; position: relative">
+            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=Warden&background=random" alt="Profile" />
+            <div style="display: flex; flex-direction: column;">
+              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hello, Warden</span>
+              <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted);">Hostel Admin</span>
             </div>
-        </section>
 
-        <section class="complaint-container" id="complaintList">
-            <!-- Loaded via JS -->
-            <div style="text-align:center; padding:2rem;">
-                <i class="fa-solid fa-circle-notch fa-spin"></i> Loading complaints...
+            <!-- DROPDOWN MENU -->
+            <div id="profileMenu"
+              style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
+              <p style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+                Account Details
+              </p>
+              <div id="userDetails" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+                  <!-- Injected by JS -->
+              </div>
+              <button style="background: var(--danger); color: white; border: none; padding: 0.6rem; width: 100%; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
+                  <i class="fa-solid fa-right-from-bracket"></i> Logout
+              </button>
             </div>
-        </section>
+          </div>
+        </div>
+      </header>
+
+      <!-- HERO -->
+      <section class="hero-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+        <div class="hero-content" style="max-width: 100%; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+          <div>
+              <h1 style="font-size: 2rem; margin-bottom: 8px; color: white;">Hostel Complaints</h1>
+              <p style="font-size: 1rem; opacity: 0.9; margin: 0;">Manage facility issues and student conflicts</p>
+          </div>
+          
+          <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.1); padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.2);">
+              <label for="priorityFilter" style="font-weight: 600; color: white; font-size: 0.9rem;">Priority:</label>
+              <select id="priorityFilter" style="padding: 6px 12px; border-radius: var(--radius-md); border: none; font-family: 'Inter'; font-size: 0.9rem; outline: none; cursor: pointer;">
+                  <option value="All">All Priorities</option>
+                  <option value="Urgent">Urgent</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+              </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTENT -->
+      <div class="workspace-layout" style="grid-template-columns: 1fr;">
+          <section class="section-card">
+              <div id="complaintList" class="complaint-container">
+                  <!-- Loaded via JS -->
+                  <div style="text-align:center; padding:3rem; background: var(--bg-color); border-radius: var(--radius-lg); border: 1px solid var(--border-color); color: var(--text-muted);">
+                      <i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 8px;"></i> Loading complaints...
+                  </div>
+              </div>
+          </section>
+      </div>
+
     </main>
+  </div>
 
-    <script src="../assets/js/landing.js"></script>
-    <script src="warden_complaints.js"></script>
+  <script src="../assets/js/landing.js"></script>
+  <script src="warden_complaints.js"></script>
+  <script>
+      // Profile menu toggle logic
+      document.querySelector('[data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu"]').addEventListener('click', function(e) {
+          e.stopPropagation();
+          const menu = document.getElementById('profileMenu');
+          menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+      });
+      document.addEventListener('click', function(e) {
+          const menu = document.getElementById('profileMenu');
+          if (menu && menu.style.display === 'block' && !e.target.closest('#userProfile')) {
+              menu.style.display = 'none';
+          }
+      });
+  </script>
 </body>
 
 </html>
