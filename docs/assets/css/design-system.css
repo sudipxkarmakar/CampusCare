@@ -1395,6 +1395,232 @@ body {
   justify-content: center !important;
 }
 
+/* --- PREMIUM HOVER-EXPANDING SIDEBAR --- */
+.modern-layout .sidebar {
+  width: 80px !important;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-radius 0.3s ease !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  padding: 40px 15px !important;
+}
+
+.modern-layout .sidebar:hover {
+  width: 260px !important;
+  box-shadow: 12px 0 45px rgba(107, 70, 193, 0.08) !important;
+}
+
+/* Logo container alignment */
+.modern-layout .logo-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin-bottom: 40px !important;
+  gap: 0 !important;
+  transition: padding 0.3s ease, gap 0.3s ease, margin-bottom 0.3s ease !important;
+  overflow: hidden !important;
+}
+
+.modern-layout .sidebar:hover .logo-container {
+  justify-content: flex-start !important;
+  padding: 0 12px !important;
+  margin-bottom: 32px !important;
+  gap: 12px !important;
+}
+
+.modern-layout .logo-icon {
+  width: 40px !important;
+  height: 40px !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modern-layout .sidebar:hover .logo-icon {
+  transform: rotate(360deg) scale(1.05);
+}
+
+.modern-layout .logo-text {
+  display: block !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  transition: opacity 0.25s ease, width 0.25s ease !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+  color: var(--primary) !important;
+  line-height: 1.2 !important;
+}
+
+.modern-layout .sidebar:hover .logo-text {
+  opacity: 1 !important;
+  width: auto !important;
+}
+
+/* Sidebar Portal Header Label */
+.modern-layout .sidebar-portal-text {
+  display: block !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.25s ease, visibility 0.25s ease !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  padding: 0 24px !important;
+  margin-bottom: 8px !important;
+  width: 100% !important;
+  text-align: left !important;
+  overflow: hidden !important;
+}
+
+.modern-layout .sidebar:hover .sidebar-portal-text {
+  opacity: 0.7 !important;
+  visibility: visible !important;
+}
+
+/* Nav menu list container */
+.modern-layout .nav-menu {
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.modern-layout .nav-menu li {
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Nav Item styling inside collapsed and expanded states */
+.modern-layout .nav-item {
+  width: 50px !important;
+  height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 16px !important;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, justify-content 0.3s ease, background-color 0.2s ease, color 0.2s ease !important;
+  position: relative !important;
+  gap: 0 !important;
+}
+
+.modern-layout .sidebar:hover .nav-item {
+  width: 100% !important;
+  padding: 14px 16px !important;
+  justify-content: flex-start !important;
+  border-radius: var(--radius-md) !important;
+  gap: 14px !important;
+}
+
+.modern-layout .nav-item i {
+  font-size: 1.3rem !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Aligns the icon and text horizontally when wrapped in a span child */
+.modern-layout .nav-item > span:first-child {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  transition: gap 0.3s ease !important;
+  height: 100% !important;
+}
+
+.modern-layout .sidebar:hover .nav-item > span:first-child {
+  gap: 14px !important;
+}
+
+/* Dynamic label inside nav item */
+.modern-layout .nav-label {
+  opacity: 0 !important;
+  width: 0 !important;
+  display: inline-block !important;
+  visibility: hidden !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  transition: opacity 0.25s ease, width 0.25s ease, visibility 0.25s ease, margin-left 0.25s ease !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  margin-left: 0 !important;
+}
+
+.modern-layout .sidebar:hover .nav-label {
+  opacity: 1 !important;
+  width: auto !important;
+  visibility: visible !important;
+  margin-left: 12px !important;
+}
+
+/* Sidebar Bottom alignment */
+.modern-layout .sidebar-bottom {
+  width: 100% !important;
+  margin-top: auto !important;
+  border-top: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.modern-layout .sidebar:hover .sidebar-bottom {
+  justify-content: flex-start !important;
+}
+
+/* Badges styling in collapsed vs expanded sidebar */
+.modern-layout .nav-item .badge-count,
+.modern-layout .nav-item [id*="Badge"],
+.modern-layout .nav-item [id*="count"] {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  background: var(--danger) !important;
+  color: white !important;
+  font-size: 0.65rem !important;
+  padding: 1px 4px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  z-index: 5 !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1.5px solid #ffffff !important;
+  box-sizing: content-box !important;
+}
+
+.modern-layout .sidebar:hover .nav-item .badge-count,
+.modern-layout .sidebar:hover .nav-item [id*="Badge"],
+.modern-layout .sidebar:hover .nav-item [id*="count"] {
+  position: static !important;
+  margin-left: auto !important;
+  font-size: 0.75rem !important;
+  padding: 2px 6px !important;
+  height: auto !important;
+  border-radius: 10px !important;
+  border: none !important;
+}
+
 
 /* ILLUSTRATION BREAKOUT OVERRIDES */
 .modern-layout .hero-card {

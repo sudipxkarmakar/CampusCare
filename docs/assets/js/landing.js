@@ -229,7 +229,66 @@ document.addEventListener("click", (e) => {
       break;
   }
 });
+function initSidebar() {
+  if (window.sidebarInitialized) return;
+  window.sidebarInitialized = true;
+  document.querySelectorAll(".nav-item").forEach(item => {
+    function wrapTextNodes(element) {
+      if (element.classList.contains("badge-count") || (element.id && (element.id.toLowerCase().includes("badge") || element.id.toLowerCase().includes("count")))) {
+        return; // Don't wrap badge elements
+      }
+      
+      const childNodes = Array.from(element.childNodes);
+      childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const val = node.textContent.trim();
+          if (val.length > 0) {
+            const span = document.createElement("span");
+            span.className = "nav-label";
+            span.textContent = val;
+            if (node.parentNode) {
+              node.parentNode.replaceChild(span, node);
+            }
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== "I" && node.tagName !== "SPAN") {
+          wrapTextNodes(node);
+        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
+          if (!node.classList.contains("nav-label") && !node.classList.contains("badge-count") && !(node.id && (node.id.toLowerCase().includes("badge") || node.id.toLowerCase().includes("count")))) {
+            wrapTextNodes(node);
+          }
+        }
+      });
+    }
+
+    // Determine the full tooltip text (before wrapping text nodes)
+    let fullText = "";
+    item.childNodes.forEach(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        fullText += node.textContent.trim();
+      } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains("badge-count") && !(node.id && (node.id.toLowerCase().includes("badge") || node.id.toLowerCase().includes("count")))) {
+        // Handle nested span text (like in Warden leaves)
+        fullText += node.textContent.trim();
+      }
+    });
+    fullText = fullText.trim();
+    if (fullText) {
+      item.setAttribute("data-tooltip", fullText);
+      item.setAttribute("aria-label", fullText);
+    }
+
+    wrapTextNodes(item);
+  });
+}
+
+if (document.readyState === "interactive" || document.readyState === "complete") {
+  initSidebar();
+} else {
+  document.addEventListener("DOMContentLoaded", initSidebar);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+
+
   const dateDisplay = document.querySelector(".date-display");
   if (dateDisplay) {
     dateDisplay.innerHTML = `<i class="fa-regular fa-calendar"></i> ${new Date().toLocaleDateString("en-GB", {

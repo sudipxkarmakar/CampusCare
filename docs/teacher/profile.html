@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -175,7 +175,7 @@
             style="display: flex; cursor: pointer; position: relative">
             <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=Teacher&background=random" alt="Profile" />
             <div style="display: flex; flex-direction: column;">
-              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, Faculty 👋</span>
+              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, Faculty ðŸ‘‹</span>
               <span id="userDept" style="font-size: 0.75rem; color: var(--text-muted);">Department</span>
             </div>
 
@@ -277,7 +277,7 @@
               const user = JSON.parse(localStorage.getItem('user')); // Or fetch from /me
               if (user) {
                   document.getElementById('profileName').textContent = user.name;
-                  document.getElementById('userName').textContent = "Hi, " + user.name.split(' ')[0] + " 👋";
+                  document.getElementById('userName').textContent = "Hi, " + user.name.split(' ')[0] + " ðŸ‘‹";
                   document.getElementById('profileEmail').textContent = user.email;
                   document.getElementById('profileDesignation').textContent = user.designation || 'Assistant Professor';
                   document.getElementById('profileDept').textContent = user.department || 'N/A';
@@ -335,7 +335,7 @@
       }
       
       // Profile menu toggle logic
-      document.querySelector('[data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu"]').addEventListener('click', function() {
+      document.querySelector('[data-action="toggleProfileMenu"]').addEventListener('click', function() {
           const menu = document.getElementById('profileMenu');
           menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
       });

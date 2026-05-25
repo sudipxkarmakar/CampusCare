@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -156,7 +156,7 @@
 
     <!-- Hero Banner (dynamic: shows top achievement) -->
     <div class="hero-banner" id="hero-banner">
-      <div class="hero-banner-icon">🏆</div>
+      <div class="hero-banner-icon">ðŸ†</div>
       <div class="hero-banner-content">
         <h2>Top 10 Engineering College in West Bengal</h2>
         <p>Ranked among the top 10 engineering colleges by the National Education Board. AEC continues its journey of excellence in technical education, research, and innovation.</p>
@@ -167,19 +167,19 @@
     <div class="stats-strip">
       <div class="stat-chip">
         <div class="stat-chip-icon" style="background:#fef3c7; color:#f59e0b;"><i class="fa-solid fa-trophy"></i></div>
-        <div class="stat-chip-info"><h4 id="stat-total">—</h4><p>Total Achievements</p></div>
+        <div class="stat-chip-info"><h4 id="stat-total">â€”</h4><p>Total Achievements</p></div>
       </div>
       <div class="stat-chip">
         <div class="stat-chip-icon" style="background:#d1fae5; color:#10b981;"><i class="fa-solid fa-medal"></i></div>
-        <div class="stat-chip-info"><h4 id="stat-awards">—</h4><p>Awards</p></div>
+        <div class="stat-chip-info"><h4 id="stat-awards">â€”</h4><p>Awards</p></div>
       </div>
       <div class="stat-chip">
         <div class="stat-chip-icon" style="background:#dbeafe; color:#1d4ed8;"><i class="fa-solid fa-flask"></i></div>
-        <div class="stat-chip-info"><h4 id="stat-research">—</h4><p>Research</p></div>
+        <div class="stat-chip-info"><h4 id="stat-research">â€”</h4><p>Research</p></div>
       </div>
       <div class="stat-chip">
         <div class="stat-chip-icon" style="background:#ede9fe; color:#7c3aed;"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div class="stat-chip-info"><h4 id="stat-placement">—</h4><p>Placement</p></div>
+        <div class="stat-chip-info"><h4 id="stat-placement">â€”</h4><p>Placement</p></div>
       </div>
     </div>
 
@@ -254,12 +254,12 @@
     const FALLBACK = [
       { title: 'Top 10 Engineering College', description: 'Ranked by National Education Board 2025 among leading institutions in India.', category: 'award', year: 2025, priority: 1 },
       { title: 'Green Campus Award', description: 'Recognized for outstanding sustainable campus initiatives including solar energy and zero-waste programs.', category: 'award', year: 2024, priority: 2 },
-      { title: 'Innovation Hub Grant', description: 'Received ₹50 Lakh grant for establishing the new Robotics and AI Lab on campus.', category: 'research', year: 2024, priority: 3 },
+      { title: 'Innovation Hub Grant', description: 'Received â‚¹50 Lakh grant for establishing the new Robotics and AI Lab on campus.', category: 'research', year: 2024, priority: 3 },
       { title: 'Smart India Hackathon National Winners', description: 'AEC team won 1st place at Smart India Hackathon 2024 in the smart city solutions category.', category: 'academic', year: 2024, priority: 4 },
       { title: 'Inter-University Sports Champions', description: 'Gold in basketball and silver in athletics at the East Zone Inter-University Games 2024.', category: 'sports', year: 2024, priority: 5 },
-      { title: '100% Placement Record – CSE 2024', description: 'The 2024 CSE batch achieved 100% campus placement with top recruiters including Google, TCS, and Infosys.', category: 'placement', year: 2024, priority: 6 },
+      { title: '100% Placement Record â€“ CSE 2024', description: 'The 2024 CSE batch achieved 100% campus placement with top recruiters including Google, TCS, and Infosys.', category: 'placement', year: 2024, priority: 6 },
       { title: 'Research Publications Milestone', description: 'Faculty published 50+ research papers in international journals indexed in Scopus and Web of Science.', category: 'research', year: 2023, priority: 7 },
-      { title: 'Patent Filed – 8 Innovations', description: 'AEC filed 8 patents for innovative solutions developed by students and faculty in various engineering domains.', category: 'research', year: 2023, priority: 8 },
+      { title: 'Patent Filed â€“ 8 Innovations', description: 'AEC filed 8 patents for innovative solutions developed by students and faculty in various engineering domains.', category: 'research', year: 2023, priority: 8 },
       { title: 'Cultural Fest Best College Award', description: 'Recognized as Best Participating College at the Inter-University Cultural Fest organized in Kolkata.', category: 'cultural', year: 2023, priority: 9 },
     ];
 
@@ -398,7 +398,7 @@
       if (allAch.length > 0) {
         const top = allAch[0];
         document.getElementById('hero-banner').innerHTML = `
-          <div class="hero-banner-icon">🏆</div>
+          <div class="hero-banner-icon">ðŸ†</div>
           <div class="hero-banner-content">
             <h2>${top.title}</h2>
             <p>${top.description}</p>
@@ -432,3 +432,4 @@
   </script>
 </body>
 </html>
+

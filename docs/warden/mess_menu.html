@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -235,7 +235,7 @@
   <script src="../assets/js/warden_mess.js"></script>
   <script>
       // Profile menu toggle logic
-      document.querySelector('[data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu"]').addEventListener('click', function(e) {
+      document.querySelector('[data-action="toggleProfileMenu"]').addEventListener('click', function(e) {
           e.stopPropagation();
           const menu = document.getElementById('profileMenu');
           menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
