@@ -841,6 +841,41 @@ window.checkAuthState = function () {
   const userAvatar = document.getElementById("userAvatar");
   const userDetails = document.getElementById("userDetails");
 
+  if (userAvatar && !userAvatar.dataset.intercepted) {
+    userAvatar.dataset.intercepted = "true";
+    try {
+      const originalDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+      Object.defineProperty(userAvatar, 'src', {
+        get: function() {
+          return originalDescriptor.get.call(this);
+        },
+        set: function(value) {
+          const user = getStoredUser();
+          if (user.profilePicture && value && value.includes("ui-avatars.com/api")) {
+            let avatarSrc = user.profilePicture;
+            if (!avatarSrc.startsWith("http")) {
+              const isLocal = window.location.hostname === "localhost" ||
+                              window.location.hostname === "127.0.0.1" ||
+                              window.location.hostname === "" ||
+                              window.location.protocol === "file:";
+              const BACKEND_URL = isLocal
+                ? "http://localhost:5000"
+                : "https://campuscare-backend-96cn.onrender.com";
+              avatarSrc = avatarSrc.startsWith("/") ? `${BACKEND_URL}${avatarSrc}` : `${BACKEND_URL}/${avatarSrc}`;
+            }
+            avatarSrc += (avatarSrc.includes("?") ? "&" : "?") + `t=${new Date().getTime()}`;
+            originalDescriptor.set.call(this, avatarSrc);
+          } else {
+            originalDescriptor.set.call(this, value);
+          }
+        },
+        configurable: true
+      });
+    } catch (e) {
+      console.error("[Auth] Failed to intercept avatar src:", e);
+    }
+  }
+
   if (userStr) {
     // User is Logged In
     const user = JSON.parse(userStr);
@@ -996,41 +1031,71 @@ window.checkAuthState = function () {
       }
     }
 
-    if (userDetails) {
+    const profileMenu = document.getElementById("profileMenu");
+    if (profileMenu) {
       // Determine path to profile.html based on current location
       const currentPath = window.location.pathname;
       const profilePath =
         currentPath.includes("/student/") ||
         currentPath.includes("/teacher/") ||
         currentPath.includes("/hostel/") ||
+        currentPath.includes("/hosteler/") ||
+        currentPath.includes("/warden/") ||
+        currentPath.includes("/principal/") ||
+        currentPath.includes("/hod/") ||
+        currentPath.includes("/dean/") ||
         currentPath.includes("/complaints/") ||
         currentPath.includes("/notices/")
           ? "../profile.html"
           : "profile.html";
 
-      userDetails.innerHTML = `
-                <!-- LINE 1: Account Details & Name -->
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; white-space: nowrap; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
-                    <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
-                    <strong style="color: var(--text-dark); font-size: 1rem;">${user.name || "User"}</strong>
-                </div>
-                
-                <!-- LINE 2: Type & ID -->
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; white-space: nowrap; margin-bottom: 20px;">
-                    <span style="text-transform: capitalize; background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.8rem;">${user.role || "Member"}</span>
-                    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500;">ID: ${user.rollNumber || user.employeeId || user.identifier || "--"}</span>
-                </div>
-                
-                <!-- LINE 3: Full Profile Link & Logout Option -->
-                <div style="display: flex; align-items: center; gap: 12px; white-space: nowrap;">
-                    <a href="${profilePath}" style="flex: 1; display: block; text-align: center; background: var(--secondary-light); color: var(--secondary); padding: 8px 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: background 0.2s;">
-                        Full Profile
-                    </a>
-                    <button data-action="logout" style="flex: 1; background: var(--danger-light); color: var(--danger); border: none; padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s;">
-                        Logout
-                    </button>
-                </div>
-            `;
+      // Role-based Colors & Badges mapping
+      const badgeColors = {
+        student: { bg: "#dbeafe", color: "#1d4ed8" },
+        hosteler: { bg: "#fef3c7", color: "#b45309" },
+        teacher: { bg: "#d1fae5", color: "#065f46" },
+        hod: { bg: "#ede9fe", color: "#6d28d9" },
+        dean: { bg: "#ede9fe", color: "#6d28d9" },
+        principal: { bg: "#ede9fe", color: "#6d28d9" },
+        warden: { bg: "#fee2e2", color: "#b91c1c" },
+        admin: { bg: "#f3f4f6", color: "#374151" },
+      };
+
+      const role = (user.role || "").toLowerCase();
+      const colors = badgeColors[role] || { bg: "#ede9fe", color: "#6d28d9" };
+      const roleLabel = user.role ? (user.role.toUpperCase() === 'HOD' ? 'HOD' : user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Member';
+
+      profileMenu.style.flexDirection = "column";
+      profileMenu.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 12px; min-width: 240px; padding: 2px;">
+          <!-- Line 1: Header with Badge -->
+          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 2px;">
+            <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
+            <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-sm); background: ${colors.bg}; color: ${colors.color};">${roleLabel}</span>
+          </div>
+          
+          <!-- Line 2: Details (preserves #userDetails ID for inline scripts) -->
+          <div id="userDetails" style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 !important;">
+            <strong style="font-size: 0.95rem; color: var(--text-dark);">${user.name || "User"}</strong>
+            <span style="word-break: break-all;">${user.email || ""}</span>
+            <span style="font-weight: 500;">
+              ID: ${user.rollNumber || user.employeeId || user.identifier || "--"}
+              ${user.department ? ` • Dept: ${user.department}` : ""}
+              ${user.hostelName ? ` • Hostel: ${user.hostelName}` : ""}
+            </span>
+          </div>
+
+          <!-- Line 3: Actions -->
+          <div style="display: flex; gap: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <a href="${profilePath}" class="btn-outline-purple" style="flex: 1 !important; text-align: center; font-size: 0.8rem; padding: 8px 10px; text-decoration: none; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
+              <i class="fa-regular fa-user"></i> Profile
+            </a>
+            <button data-action="logout" class="btn-outline-red" style="flex: 1 !important; font-size: 0.8rem; padding: 8px 10px; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1px solid var(--danger); transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     const studentCard = document.querySelector(".student-card");
@@ -1154,6 +1219,11 @@ function logout() {
     path.includes("/student/") ||
     path.includes("/teacher/") ||
     path.includes("/hostel/") ||
+    path.includes("/hosteler/") ||
+    path.includes("/warden/") ||
+    path.includes("/principal/") ||
+    path.includes("/hod/") ||
+    path.includes("/dean/") ||
     path.includes("/complaints/") ||
     path.includes("/notices/")
   ) {
@@ -1162,3 +1232,16 @@ function logout() {
 
   window.location.href = redirect;
 }
+
+// Robust global export to prevent sub-script overrides
+window.logout = logout;
+document.addEventListener("DOMContentLoaded", () => {
+  window.logout = logout;
+  // Use a small timeout to re-assert in case sub-scripts loaded after DOMContentLoaded
+  setTimeout(() => {
+    window.logout = logout;
+  }, 100);
+  setTimeout(() => {
+    window.logout = logout;
+  }, 500);
+});

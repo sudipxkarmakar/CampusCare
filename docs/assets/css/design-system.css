@@ -2349,4 +2349,70 @@ body {
     margin: 0 !important;
 }
 
+/* PROFILE DROPDOWN MENU BEAUTIFICATION */
+#profileMenu {
+    flex-direction: column !important;
+    gap: 12px !important;
+    min-width: 260px !important;
+    padding: 20px !important;
+    border-radius: var(--radius-lg) !important;
+    border: 1px solid var(--border-color) !important;
+    background: var(--card-bg) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+#profileMenu p {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: var(--text-dark) !important;
+    margin: 0 !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+#userDetails {
+    font-size: 0.85rem !important;
+    color: var(--text-muted) !important;
+    margin: 8px 0 !important;
+    line-height: 1.6 !important;
+    display: block !important;
+}
+
+#userDetails strong {
+    font-size: 0.9rem !important;
+    color: var(--primary) !important;
+    background: var(--primary-light) !important;
+    padding: 3px 12px !important;
+    border-radius: var(--radius-full) !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    text-transform: uppercase !important;
+}
+
+#profileMenu button,
+#profileMenu [data-action="logout"] {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: var(--danger);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#profileMenu button:hover,
+#profileMenu [data-action="logout"]:hover {
+    background: #dc2626;
+}
+
+
 

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -8,7 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/design-system.css?v=1.6">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <style>
+        /* Cropper circular overrides */
+        .cropper-view-box,
+        .cropper-face {
+            border-radius: 50%;
+        }
+        .cropper-view-box {
+            outline: 0;
+            box-shadow: 0 0 0 1px #39f;
+        }
+
         :root {
             --primary: #4f46e5;
             --secondary: #ec4899;
@@ -19,13 +30,14 @@
         }
 
         body {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            display: block !important;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab) !important;
+            background-size: 400% 400% !important;
+            animation: gradientBG 15s ease infinite !important;
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px !important;
             color: var(--text-main);
         }
 
@@ -46,6 +58,8 @@
         .back-nav {
             max-width: 1100px;
             margin: 0 auto 1.5rem auto;
+            display: flex;
+            justify-content: flex-end;
         }
 
         .back-btn {
@@ -370,12 +384,12 @@
 
         /* Final 2-Column Layout */
         .profile-page-container {
-            max-width: 1350px;
+            max-width: 1100px;
             /* Much wider container */
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            /* Two Equal Columns */
+            grid-template-columns: 360px 1fr;
+            /* Left sidebar + Right details layout */
             gap: 2.5rem;
             align-items: start;
         }
@@ -548,6 +562,38 @@
         </div>
     </div>
 
+    <!-- Crop Image Modal -->
+    <div id="cropModal" class="modal"
+        style="display: none; position: fixed; z-index: 1010; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="modal-content glass"
+            style="padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; position: relative; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+            <span class="close-modal" onclick="closeCropModal()"
+                style="position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa;">&times;</span>
+            <h2 style="margin-top: 0; margin-bottom: 20px; color: #333; text-align: center; font-weight: 700;">Crop Profile Picture</h2>
+            
+            <!-- Cropper Wrapper -->
+            <div style="width: 100%; max-height: 350px; background-color: #f1f5f9; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <img id="cropImage" src="" alt="Source Image" style="max-width: 100%; max-height: 350px; display: block;">
+            </div>
+
+            <!-- Controls (Zoom, Rotate) -->
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
+                <button type="button" id="zoomInBtn" style="background: #e2e8f0; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: #475569; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                <button type="button" id="zoomOutBtn" style="background: #e2e8f0; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: #475569; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                <button type="button" id="rotateLeftBtn" style="background: #e2e8f0; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: #475569; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"><i class="fa-solid fa-rotate-left"></i></button>
+                <button type="button" id="rotateRightBtn" style="background: #e2e8f0; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: #475569; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"><i class="fa-solid fa-rotate-right"></i></button>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <button type="button" onclick="closeCropModal()"
+                    style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #475569; font-weight: 600; cursor: pointer; font-size: 1rem; transition: background 0.2s;">Cancel</button>
+                <button type="button" id="saveCropBtn"
+                    style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%); color: white; font-weight: 600; cursor: pointer; font-size: 1rem; transition: opacity 0.3s;">Crop & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <script src="assets/js/profile.js?v=1.4"></script>
     <script>
         // Simple element animation on load

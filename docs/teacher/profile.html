@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -266,6 +266,9 @@
 
   <script src="../assets/js/api.js"></script>
   <script>
+      window.location.replace('../profile.html');
+  </script>
+  <script style="display:none;">
       // Inline script for now to fetch profile data
       document.addEventListener('DOMContentLoaded', async () => {
           const token = localStorage.getItem('token');

@@ -7,6 +7,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const token = JSON.parse(userStr).token;
 
+    // Dynamic Dashboard link and Title localization
+    try {
+        const user = JSON.parse(userStr);
+        const role = (user.role || '').toLowerCase();
+        
+        // 1. Dynamic routing for dashboard button
+        const backBtn = document.querySelector('.back-btn');
+        if (backBtn) {
+            let dashPath = 'index.html';
+            if (role === 'student') dashPath = 'student/index.html';
+            else if (role === 'teacher') dashPath = 'teacher/index.html';
+            else if (role === 'hod') dashPath = 'hod/index.html';
+            else if (role === 'dean') dashPath = 'dean/index.html';
+            else if (role === 'principal') dashPath = 'principal/index.html';
+            else if (role === 'warden') dashPath = 'warden/index.html';
+            else if (role === 'hosteler') dashPath = 'hostel/index.html';
+            
+            backBtn.href = dashPath;
+            backBtn.innerHTML = `<i class="fa-solid fa-house"></i> Dashboard`;
+        }
+
+        // 2. Dynamic Title based on role (Academic vs Professional)
+        if (['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(role)) {
+            const titleElem = document.querySelector('.section-title');
+            if (titleElem) {
+                titleElem.textContent = 'Professional Details';
+            }
+            const titleIcon = document.querySelector('.section-icon i');
+            if (titleIcon) {
+                titleIcon.className = 'fa-solid fa-briefcase';
+            }
+        }
+    } catch (e) {
+        console.error('Failed to localize profile elements:', e);
+    }
+
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
     const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
 
@@ -25,55 +61,128 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('loading').innerHTML = `<p style="color:#ef4444; font-size:1.2rem;">Error: ${error.message}</p>`;
     }
 
-    // Avatar Upload Logic
+    // Avatar Crop and Upload Logic
     const avatarInput = document.getElementById('avatarInput');
-    avatarInput.addEventListener('change', async (e) => {
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    const saveCropBtn = document.getElementById('saveCropBtn');
+    let activeCropper = null;
+
+    // Zoom/Rotation controls setup
+    document.getElementById('zoomInBtn').addEventListener('click', () => activeCropper && activeCropper.zoom(0.1));
+    document.getElementById('zoomOutBtn').addEventListener('click', () => activeCropper && activeCropper.zoom(-0.1));
+    document.getElementById('rotateLeftBtn').addEventListener('click', () => activeCropper && activeCropper.rotate(-45));
+    document.getElementById('rotateRightBtn').addEventListener('click', () => activeCropper && activeCropper.rotate(45));
+
+    // Global helper to close crop modal safely
+    window.closeCropModal = function () {
+        cropModal.style.display = 'none';
+        if (activeCropper) {
+            activeCropper.destroy();
+            activeCropper = null;
+        }
+        avatarInput.value = '';
+    };
+
+    // Close modal on background click
+    window.addEventListener('click', (e) => {
+        if (e.target === cropModal) {
+            closeCropModal();
+        }
+    });
+
+    avatarInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Preview immediately (Optimistic UI)
         const reader = new FileReader();
-        reader.onload = (e) => document.getElementById('p-avatar').src = e.target.result;
-        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            cropImage.src = event.target.result;
+            cropModal.style.display = 'flex';
 
-        // Upload
-        const formData = new FormData();
-        formData.append('profileImage', file);
+            if (activeCropper) {
+                activeCropper.destroy();
+            }
 
-        try {
-            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
-            const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
-            const res = await fetch(`${API_BASE}/api/auth/profile-picture`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }, // No Content-Type for FormData
-                body: formData
+            activeCropper = new Cropper(cropImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                background: false,
+                responsive: true,
+                autoCropArea: 0.8
             });
+        };
+        reader.readAsDataURL(file);
+    });
 
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.message || 'Upload failed');
+    saveCropBtn.addEventListener('click', async () => {
+        if (!activeCropper) return;
+
+        saveCropBtn.innerText = 'Uploading...';
+        saveCropBtn.disabled = true;
+
+        const canvas = activeCropper.getCroppedCanvas({
+            width: 400,
+            height: 400
+        });
+
+        canvas.toBlob(async (blob) => {
+            if (!blob) {
+                alert('Could not crop image');
+                saveCropBtn.innerText = 'Crop & Save';
+                saveCropBtn.disabled = false;
+                return;
             }
 
-            const data = await res.json();
-            console.log('Upload success:', data);
+            const formData = new FormData();
+            formData.append('profileImage', blob, 'avatar.jpg');
 
-            // Update LocalStorage to reflect in header immediately
-            const userStr = localStorage.getItem('user');
-            if (userStr) {
-                const userObj = JSON.parse(userStr);
-                userObj.profilePicture = data.profilePicture;
-                localStorage.setItem('user', JSON.stringify(userObj));
+            try {
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
+                const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+                const res = await fetch(`${API_BASE}/api/auth/profile-picture`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
 
-                // Force header update if checkAuthState is available
-                if (window.checkAuthState) window.checkAuthState();
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Upload failed');
+                }
+
+                const data = await res.json();
+                console.log('Upload success:', data);
+
+                // Update LocalStorage to reflect in header immediately
+                const userStr = localStorage.getItem('user');
+                if (userStr) {
+                    const userObj = JSON.parse(userStr);
+                    userObj.profilePicture = data.profilePicture;
+                    localStorage.setItem('user', JSON.stringify(userObj));
+
+                    // Force header update if checkAuthState is available
+                    if (window.checkAuthState) window.checkAuthState();
+                }
+
+                // Update profile avatar image immediately
+                const src = data.profilePicture.startsWith('http')
+                    ? data.profilePicture
+                    : `${API_BASE}${data.profilePicture}`;
+                document.getElementById('p-avatar').src = src + `?t=${new Date().getTime()}`;
+
+                alert('Profile Picture Updated!');
+                closeCropModal();
+
+            } catch (error) {
+                console.error(error);
+                alert(`Upload Failed: ${error.message}`);
+            } finally {
+                saveCropBtn.innerText = 'Crop & Save';
+                saveCropBtn.disabled = false;
             }
-            alert('Profile Picture Updated!');
-
-        } catch (error) {
-            console.error(error);
-            alert(`Upload Failed: ${error.message}`);
-            // Revert preview? For now simple error alert is fine.
-        }
+        }, 'image/jpeg');
     });
 });
 
@@ -208,10 +317,28 @@ function renderProfile(user) {
 
             addItem('Hostel', user.hostelName, academic, 'fa-solid fa-hotel', count++);
             addItem('Room No', user.roomNumber, academic, 'fa-solid fa-door-closed', count++);
-        } else if (user.role === 'teacher') {
-            addItem('Designation', user.designation, academic, 'fa-solid fa-briefcase', count++);
-            addItem('Experience', `${user.yearsExperience || 0} Years`, academic, 'fa-solid fa-chart-line', count++);
-            addItem('Specialization', user.specialization, academic, 'fa-solid fa-microchip', count++);
+        } else if (['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(user.role)) {
+            let defaultDesignation = 'Faculty';
+            if (user.role === 'hod') defaultDesignation = 'Head of Department';
+            else if (user.role === 'dean') defaultDesignation = 'Dean';
+            else if (user.role === 'principal') defaultDesignation = 'Principal';
+            else if (user.role === 'warden') defaultDesignation = 'Hostel Warden';
+            else if (user.role === 'admin') defaultDesignation = 'Administrator';
+
+            addItem('Designation', user.designation || defaultDesignation, academic, 'fa-solid fa-briefcase', count++);
+            
+            if (user.yearsExperience !== undefined && user.yearsExperience !== null) {
+                addItem('Experience', `${user.yearsExperience} Years`, academic, 'fa-solid fa-chart-line', count++);
+            } else if (user.role === 'teacher' || user.role === 'hod') {
+                addItem('Experience', '0 Years', academic, 'fa-solid fa-chart-line', count++);
+            }
+
+            if (user.specialization) {
+                addItem('Specialization', user.specialization, academic, 'fa-solid fa-microchip', count++);
+            }
+            if (user.department) {
+                addItem('Department', user.department, academic, 'fa-solid fa-building-user', count++);
+            }
         }
 
         // Common Stats for Everyone
