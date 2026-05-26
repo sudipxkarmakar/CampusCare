@@ -27,18 +27,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             backBtn.href = dashPath;
             backBtn.innerHTML = `<i class="fa-solid fa-house"></i> Dashboard`;
         }
-
-        // 2. Dynamic Title based on role (Academic vs Professional)
-        if (['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(role)) {
-            const titleElem = document.querySelector('.section-title');
-            if (titleElem) {
-                titleElem.textContent = 'Professional Details';
-            }
-            const titleIcon = document.querySelector('.section-icon i');
-            if (titleIcon) {
-                titleIcon.className = 'fa-solid fa-briefcase';
-            }
-        }
     } catch (e) {
         console.error('Failed to localize profile elements:', e);
     }
@@ -195,46 +183,10 @@ function renderProfile(user) {
         const pName = document.getElementById('p-name');
         if (pName) pName.textContent = user.name;
 
-        // Sidebar Content Injection
-        const container = document.getElementById('sidebar-info-container');
-        if (container) {
-            container.innerHTML = `
-            <div class="info-row">
-                <i class="fa-regular fa-envelope"></i>
-                <span>
-                    <strong>Email</strong>
-                    ${user.email}
-                </span>
-            </div>
-            <div class="info-row">
-                <i class="fa-regular fa-id-badge"></i>
-                <span>
-                    <strong>${user.role === 'teacher' ? 'Employee ID' : 'Roll Number'}</strong>
-                    ${user.rollNumber || user.employeeId || 'N/A'}
-                </span>
-            </div>
-            <div class="info-row">
-                <i class="fa-solid fa-building-user"></i>
-                <span>
-                    <strong>Department</strong>
-                    ${user.department || 'General'}
-                </span>
-            </div>
-            <div class="info-row">
-                <i class="fa-solid fa-droplet"></i>
-                <span>
-                    <strong>Blood Group</strong>
-                    ${user.bloodGroup || 'Not Provided'}
-                </span>
-            </div>
-            <div class="info-row">
-                <i class="fa-solid fa-phone"></i>
-                <span>
-                    <strong>Contact</strong>
-                    ${user.contactNumber || 'N/A'}
-                </span>
-            </div>
-            `;
+        // Render About Me / Bio in Sidebar
+        const pBioText = document.getElementById('p-bio-text');
+        if (pBioText) {
+            pBioText.textContent = user.about || "No bio added yet. Click edit to write something about yourself!";
         }
 
         const roleElem = document.getElementById('p-role-badge');
@@ -274,9 +226,10 @@ function renderProfile(user) {
         }
 
         // Grids
-        const academic = document.getElementById('academic-grid');
-        // Clear previous content if any (safeguard)
-        if (academic) academic.innerHTML = '';
+        const personalGrid = document.getElementById('personal-grid');
+        const academicGrid = document.getElementById('academic-grid');
+        if (personalGrid) personalGrid.innerHTML = '';
+        if (academicGrid) academicGrid.innerHTML = '';
 
         const addItem = (label, value, grid, iconClass, delayIndex) => {
             if (!value || !grid) return;
@@ -293,31 +246,54 @@ function renderProfile(user) {
             grid.appendChild(div);
         };
 
-        let count = 0;
+        let personalCount = 0;
+        let academicCount = 0;
 
-        // Role Specific Fields
+        // 1. Populate Personal Details Grid
+        const joinYear = user.joiningYear || (user.createdAt ? new Date(user.createdAt).getFullYear() : '2024');
+        addItem('Email Address', user.email, personalGrid, 'fa-regular fa-envelope', personalCount++);
+        addItem('Contact Number', user.contactNumber || 'Not Provided', personalGrid, 'fa-solid fa-phone', personalCount++);
+        addItem('Blood Group', user.bloodGroup || 'Not Provided', personalGrid, 'fa-solid fa-droplet', personalCount++);
+        addItem('Member Since', joinYear, personalGrid, 'fa-regular fa-calendar-check', personalCount++);
+
+        // 2. Adjust Card Title and Icon based on role
+        const detailsTitle = document.getElementById('details-section-title');
+        const detailsIcon = document.getElementById('details-section-icon');
+        const isStaff = ['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(user.role);
+        
+        if (isStaff) {
+            if (detailsTitle) detailsTitle.textContent = 'Professional Details';
+            if (detailsIcon) detailsIcon.innerHTML = '<i class="fa-solid fa-briefcase"></i>';
+        } else {
+            if (detailsTitle) detailsTitle.textContent = 'Academic Details';
+            if (detailsIcon) detailsIcon.innerHTML = '<i class="fa-solid fa-graduation-cap"></i>';
+        }
+
+        // 3. Populate Academic / Professional Details Grid
         if (user.role === 'student' || user.role === 'hosteler') {
-            // Roll & Dept are in Sidebar now
-            addItem('Batch', user.batch, academic, 'fa-solid fa-layer-group', count++);
-            addItem('Section', user.section || 'N/A', academic, 'fa-solid fa-people-group', count++); // Fallback for section
+            addItem('Roll Number', user.rollNumber || 'N/A', academicGrid, 'fa-regular fa-id-badge', academicCount++);
+            addItem('Department', user.department || 'General', academicGrid, 'fa-solid fa-building-user', academicCount++);
+            addItem('Batch', user.batch, academicGrid, 'fa-solid fa-layer-group', academicCount++);
+            addItem('Section', user.section || 'N/A', academicGrid, 'fa-solid fa-people-group', academicCount++);
 
-            // Use real semester from DB, fallback to 'N/A' or calculated if needed
-            let sem = user.semester ? (user.semester + (['1', '2', '3'].includes(String(user.semester).split('').pop()) ? ['st', 'nd', 'rd'][String(user.semester).split('').pop() - 1] : 'th')) : 'N/A';
-
-            // Or simpler: just show the number if that's what is stored, or append suffix
-            // The DB has integer 7. So "7th".
+            let sem = 'N/A';
             if (user.semester) {
                 const s = String(user.semester);
                 const last = s.slice(-1);
                 const suffix = (last === '1' && s !== '11') ? 'st' : (last === '2' && s !== '12') ? 'nd' : (last === '3' && s !== '13') ? 'rd' : 'th';
                 sem = `${s}${suffix}`;
             }
+            addItem('Semester', sem, academicGrid, 'fa-solid fa-book-open', academicCount++);
 
-            addItem('Semester', sem, academic, 'fa-solid fa-book-open', count++);
-
-            addItem('Hostel', user.hostelName, academic, 'fa-solid fa-hotel', count++);
-            addItem('Room No', user.roomNumber, academic, 'fa-solid fa-door-closed', count++);
-        } else if (['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(user.role)) {
+            addItem('Hostel', user.hostelName, academicGrid, 'fa-solid fa-hotel', academicCount++);
+            addItem('Room No', user.roomNumber, academicGrid, 'fa-solid fa-door-closed', academicCount++);
+            
+            // Add missing student academic stats
+            addItem('CGPA', user.cgpa ? user.cgpa.toFixed(2) : 'Not Specified', academicGrid, 'fa-solid fa-chart-line', academicCount++);
+            addItem('Attendance', user.attendance !== undefined && user.attendance !== null ? user.attendance + '%' : 'Not Specified', academicGrid, 'fa-solid fa-clipboard-user', academicCount++);
+            addItem('Mentor', user.mentor ? user.mentor.name : 'Not Assigned', academicGrid, 'fa-solid fa-user-tie', academicCount++);
+            addItem('Enrolled Subjects', user.subjects && user.subjects.length > 0 ? user.subjects.join(', ') : 'None Enrolled', academicGrid, 'fa-solid fa-book', academicCount++);
+        } else if (isStaff) {
             let defaultDesignation = 'Faculty';
             if (user.role === 'hod') defaultDesignation = 'Head of Department';
             else if (user.role === 'dean') defaultDesignation = 'Dean';
@@ -325,29 +301,29 @@ function renderProfile(user) {
             else if (user.role === 'warden') defaultDesignation = 'Hostel Warden';
             else if (user.role === 'admin') defaultDesignation = 'Administrator';
 
-            addItem('Designation', user.designation || defaultDesignation, academic, 'fa-solid fa-briefcase', count++);
+            addItem('Employee ID', user.employeeId || user.rollNumber || 'N/A', academicGrid, 'fa-regular fa-id-badge', academicCount++);
+            addItem('Designation', user.designation || defaultDesignation, academicGrid, 'fa-solid fa-briefcase', academicCount++);
+            addItem('Department', user.department || 'General', academicGrid, 'fa-solid fa-building-user', academicCount++);
             
+            let exp = '0 Years';
             if (user.yearsExperience !== undefined && user.yearsExperience !== null) {
-                addItem('Experience', `${user.yearsExperience} Years`, academic, 'fa-solid fa-chart-line', count++);
-            } else if (user.role === 'teacher' || user.role === 'hod') {
-                addItem('Experience', '0 Years', academic, 'fa-solid fa-chart-line', count++);
+                exp = `${user.yearsExperience} Years`;
             }
+            addItem('Experience', exp, academicGrid, 'fa-solid fa-chart-line', academicCount++);
+            addItem('Specialization', user.specialization || 'Not Specified', academicGrid, 'fa-solid fa-microchip', academicCount++);
 
-            if (user.specialization) {
-                addItem('Specialization', user.specialization, academic, 'fa-solid fa-microchip', count++);
-            }
-            if (user.department) {
-                addItem('Department', user.department, academic, 'fa-solid fa-building-user', count++);
+            // Add missing faculty/staff professional details
+            addItem('Teaching Subjects', user.teachingSubjects && user.teachingSubjects.length > 0 ? user.teachingSubjects.join(', ') : 'None Assigned', academicGrid, 'fa-solid fa-book', academicCount++);
+            addItem('Teaching Batches', user.teachingBatches && user.teachingBatches.length > 0 ? user.teachingBatches.map(b => b.batch ? `${b.batch} (${b.passOutYear})` : b).join(', ') : 'None Assigned', academicGrid, 'fa-solid fa-users', academicCount++);
+            addItem('Expertise Areas', user.expertise && user.expertise.length > 0 ? user.expertise.join(', ') : 'Not Specified', academicGrid, 'fa-solid fa-award', academicCount++);
+            if (user.weeklyLoad) {
+                addItem('Weekly Workload', user.weeklyLoad + ' Hours', academicGrid, 'fa-solid fa-clock', academicCount++);
             }
         }
 
-        // Common Stats for Everyone
-        const joinYear = user.joiningYear || (user.createdAt ? new Date(user.createdAt).getFullYear() : '2024');
-        addItem('Member Since', joinYear, academic, 'fa-regular fa-calendar-check', count++);
-
         // --- MAR / MOOCs Section (Student Only) ---
         if (user.role === 'student') {
-            fetchMarMoocs(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : '', academic, count);
+            fetchMarMoocs(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).token : '', academicGrid, academicCount);
         } else {
             const actContainer = document.getElementById('activity-log-container');
             if (actContainer) actContainer.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:1rem;">Not applicable for this role.</p>';
@@ -485,13 +461,34 @@ function openEditModal() {
 
     setVal('editName', user.name);
     setVal('editEmail', user.email);
-    setVal('editRoll', user.rollNumber || user.employeeId);
-    setVal('editDept', user.department);
-    setVal('editBatch', user.batch);
-    setVal('editSection', user.section);
     setVal('editContact', user.contactNumber);
     setVal('editBloodGroup', user.bloodGroup);
     setVal('editAbout', user.about);
+
+    const isStaff = ['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(user.role);
+    const studentGroup = document.getElementById('student-fields-group');
+    const staffGroup = document.getElementById('staff-fields-group');
+
+    if (isStaff) {
+        if (studentGroup) studentGroup.style.display = 'none';
+        if (staffGroup) staffGroup.style.display = 'flex';
+
+        setVal('editEmpId', user.employeeId || user.rollNumber);
+        setVal('editStaffDept', user.department);
+        setVal('editDesignation', user.designation);
+        setVal('editExperience', user.yearsExperience);
+        setVal('editSpecialization', user.specialization);
+    } else {
+        if (staffGroup) staffGroup.style.display = 'none';
+        if (studentGroup) studentGroup.style.display = 'flex';
+
+        setVal('editRoll', user.rollNumber);
+        setVal('editDept', user.department);
+        setVal('editBatch', user.batch);
+        setVal('editSection', user.section);
+        setVal('editHostelName', user.hostelName);
+        setVal('editRoomNumber', user.roomNumber);
+    }
 
     modal.style.display = 'flex';
 }
@@ -515,23 +512,35 @@ if (editForm) {
     editForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const oldUser = JSON.parse(userStr);
+        const token = oldUser.token;
+        const isStaff = ['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(oldUser.role);
+
         // payload construction
-        const payload = {
+        let payload = {
             name: document.getElementById('editName').value,
             email: document.getElementById('editEmail').value,
-            rollNumber: document.getElementById('editRoll').value,
-            department: document.getElementById('editDept').value,
-            batch: document.getElementById('editBatch').value,
-            section: document.getElementById('editSection').value,
             contactNumber: document.getElementById('editContact').value,
             bloodGroup: document.getElementById('editBloodGroup').value,
             about: document.getElementById('editAbout').value
         };
 
-        const userStr = localStorage.getItem('user');
-        if (!userStr) return;
-        const oldUser = JSON.parse(userStr);
-        const token = oldUser.token;
+        if (isStaff) {
+            payload.employeeId = document.getElementById('editEmpId').value;
+            payload.department = document.getElementById('editStaffDept').value;
+            payload.designation = document.getElementById('editDesignation').value;
+            payload.yearsExperience = document.getElementById('editExperience').value ? parseInt(document.getElementById('editExperience').value) : 0;
+            payload.specialization = document.getElementById('editSpecialization').value;
+        } else {
+            payload.rollNumber = document.getElementById('editRoll').value;
+            payload.department = document.getElementById('editDept').value;
+            payload.batch = document.getElementById('editBatch').value;
+            payload.section = document.getElementById('editSection').value;
+            payload.hostelName = document.getElementById('editHostelName').value;
+            payload.roomNumber = document.getElementById('editRoomNumber').value;
+        }
 
         const submitBtn = editForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerText;

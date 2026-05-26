@@ -330,7 +330,7 @@ export const loginUser = async (req, res) => {
 // @access  Private
 export const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password');
+        const user = await User.findById(req.user._id).select('-password').populate('mentor', 'name email');
         if (user) {
             res.json(user);
         } else {
@@ -402,6 +402,12 @@ export const updateProfile = async (req, res) => {
                 user.rollNumber = req.body.rollNumber;
             }
 
+            if (req.body.employeeId && req.body.employeeId !== user.employeeId && ['teacher', 'hod', 'dean', 'principal', 'warden', 'admin'].includes(user.role)) {
+                const exists = await User.findOne({ employeeId: req.body.employeeId });
+                if (exists) return res.status(400).json({ message: 'Employee ID already taken.' });
+                user.employeeId = req.body.employeeId;
+            }
+
             // 3. Academic / Other Fields (Allowing update if provided)
             if (req.body.department) user.department = req.body.department;
             if (req.body.batch) user.batch = req.body.batch;
@@ -409,8 +415,8 @@ export const updateProfile = async (req, res) => {
             if (req.body.hostelName) user.hostelName = req.body.hostelName;
             if (req.body.roomNumber) user.roomNumber = req.body.roomNumber;
 
-            // Teacher specific
-            if (user.role === 'teacher') {
+            // Teacher / Staff specific
+            if (['teacher', 'hod', 'dean', 'principal', 'warden'].includes(user.role)) {
                 if (req.body.designation) user.designation = req.body.designation;
                 if (req.body.yearsExperience) user.yearsExperience = req.body.yearsExperience;
                 if (req.body.specialization) user.specialization = req.body.specialization;

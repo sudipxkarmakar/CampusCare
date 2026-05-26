@@ -427,7 +427,7 @@
 
     <div class="profile-page-container" id="profileContent" style="display: none; animation: fadeIn 0.6s ease-out;">
 
-        <!-- 1. Identity Panel -->
+        <!-- 1. Left Sidebar: Identity Panel -->
         <div class="glass-panel identity-card">
             <div class="avatar-wrapper">
                 <img id="p-avatar" src="" alt="Profile" class="profile-avatar">
@@ -448,24 +448,37 @@
             <h1 id="p-name" class="user-name">--</h1>
             <span id="p-role-badge" class="role-badge">--</span>
 
-            <div id="sidebar-info-container"
-                style="margin-top: 2rem; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1.5rem; text-align: left;">
-                <!-- Injected via JS -->
+            <!-- Clean Bio section in sidebar -->
+            <div id="p-bio-container" style="margin-top: 2rem; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1.5rem; text-align: left;">
+                <span class="detail-label" style="text-transform: uppercase; font-size: 0.8rem; font-weight: 600; color: #64748b; letter-spacing: 0.6px; display: block; margin-bottom: 8px;">About Me</span>
+                <p id="p-bio-text" style="font-size: 0.95rem; font-style: italic; color: #475569; line-height: 1.6; margin: 0;"></p>
             </div>
         </div>
 
-        <!-- 2. Academic Details Panel -->
-        <div class="glass-panel">
-            <div class="section-header">
-                <div class="section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <h2 class="section-title">Academic Details</h2>
+        <!-- 2. Right Main Panel: Stacked Cards -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Card A: Personal Details -->
+            <div class="glass-panel">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-user"></i></div>
+                    <h2 class="section-title">Personal Details</h2>
+                </div>
+                <div class="grid-container" id="personal-grid">
+                    <!-- JS Injected -->
+                </div>
             </div>
-            <div class="grid-container" id="academic-grid">
-                <!-- JS Injected -->
+
+            <!-- Card B: Academic / Professional Details -->
+            <div class="glass-panel">
+                <div class="section-header">
+                    <div class="section-icon" id="details-section-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h2 class="section-title" id="details-section-title">Academic Details</h2>
+                </div>
+                <div class="grid-container" id="academic-grid">
+                    <!-- JS Injected -->
+                </div>
             </div>
         </div>
-
-
 
     </div>
 
@@ -495,31 +508,75 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label for="editRoll" style="font-weight: 600; font-size: 0.9rem; color: #555;">ID (Roll /
-                            Emp)</label>
-                        <input type="text" id="editRoll" name="rollNumber" placeholder="ID"
-                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                <!-- Student Specific Form Group -->
+                <div id="student-fields-group" style="display: none; flex-direction: column; gap: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editRoll" style="font-weight: 600; font-size: 0.9rem; color: #555;">Roll Number</label>
+                            <input type="text" id="editRoll" name="rollNumber" placeholder="Roll Number"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="editDept" style="font-weight: 600; font-size: 0.9rem; color: #555;">Department</label>
+                            <input type="text" id="editDept" name="department" placeholder="Department"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="editDept"
-                            style="font-weight: 600; font-size: 0.9rem; color: #555;">Department</label>
-                        <input type="text" id="editDept" name="department" placeholder="Department"
-                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editBatch" style="font-weight: 600; font-size: 0.9rem; color: #555;">Batch</label>
+                            <input type="text" id="editBatch" name="batch" placeholder="e.g. 2024"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="editSection" style="font-weight: 600; font-size: 0.9rem; color: #555;">Section</label>
+                            <input type="text" id="editSection" name="section" placeholder="Section"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editHostelName" style="font-weight: 600; font-size: 0.9rem; color: #555;">Hostel Name</label>
+                            <input type="text" id="editHostelName" name="hostelName" placeholder="Hostel Name"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="editRoomNumber" style="font-weight: 600; font-size: 0.9rem; color: #555;">Room Number</label>
+                            <input type="text" id="editRoomNumber" name="roomNumber" placeholder="Room Number"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label for="editBatch" style="font-weight: 600; font-size: 0.9rem; color: #555;">Batch</label>
-                        <input type="text" id="editBatch" name="batch" placeholder="e.g. 2024"
-                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                <!-- Staff Specific Form Group -->
+                <div id="staff-fields-group" style="display: none; flex-direction: column; gap: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editEmpId" style="font-weight: 600; font-size: 0.9rem; color: #555;">Employee ID</label>
+                            <input type="text" id="editEmpId" name="employeeId" placeholder="Employee ID"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="editStaffDept" style="font-weight: 600; font-size: 0.9rem; color: #555;">Department</label>
+                            <input type="text" id="editStaffDept" name="department" placeholder="Department"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="editDesignation" style="font-weight: 600; font-size: 0.9rem; color: #555;">Designation</label>
+                            <input type="text" id="editDesignation" name="designation" placeholder="e.g. Professor"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="editExperience" style="font-weight: 600; font-size: 0.9rem; color: #555;">Experience (Years)</label>
+                            <input type="number" id="editExperience" name="yearsExperience" placeholder="Years of Experience" min="0"
+                                style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="editSection"
-                            style="font-weight: 600; font-size: 0.9rem; color: #555;">Section</label>
-                        <input type="text" id="editSection" name="section" placeholder="Section"
+                        <label for="editSpecialization" style="font-weight: 600; font-size: 0.9rem; color: #555;">Specialization</label>
+                        <input type="text" id="editSpecialization" name="specialization" placeholder="e.g. Machine Learning, Cloud Computing"
                             style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
                     </div>
                 </div>
