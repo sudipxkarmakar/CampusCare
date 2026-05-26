@@ -109,7 +109,7 @@ function renderComplaints(complaints) {
                             ${(c.resolutionImage || c.afterImage) ? `
                                 <img src="${BACKEND_URL}${c.resolutionImage || c.afterImage}" class="complaint-img" onclick="window.open(this.src)">
                             ` : `
-                                <div style="height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#059669; font-size:0.75rem; font-weight:600; text-align:center; gap:5px; background:#fff; border-radius:8px;">
+                                <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#059669; font-size:0.75rem; font-weight:600; text-align:center; gap:5px; background:#fff;">
                                     <i class="fa-solid fa-image-slash" style="font-size:1.2rem; opacity:0.5;"></i>
                                     <span>No proof image attached</span>
                                 </div>
