@@ -2323,3 +2323,30 @@ body {
     box-shadow: 0 4px 15px rgba(107, 70, 193, 0.1);
 }
 
+/* Dashboard Button styling for submodule headers */
+.btn-dashboard {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-dark) !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+    border-radius: var(--radius-full) !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn-dashboard:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(107, 70, 193, 0.1) !important;
+}
+.btn-dashboard i {
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+}
+
+
