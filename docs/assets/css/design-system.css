@@ -2219,3 +2219,107 @@ body {
         grid-column: span 1 !important;
     }
 }
+
+/* ======================================================== */
+/* PREMIUM HOVER EFFECTS & MICRO-INTERACTIONS */
+/* ======================================================== */
+
+/* General Button Transitions & Hovers */
+.btn-pill,
+.btn-filled-purple,
+.btn-outline-purple,
+.btn-outline-red,
+.btn-hero-primary,
+.btn-hero-secondary,
+.btn-emergency {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.btn-pill:hover,
+.btn-filled-purple:hover,
+.btn-outline-purple:hover,
+.btn-outline-red:hover,
+.btn-hero-primary:hover,
+.btn-hero-secondary:hover,
+.btn-emergency:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(107, 70, 193, 0.15) !important;
+}
+
+.btn-outline-red:hover,
+.btn-emergency:hover {
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Specific button text & icon translates on hover */
+.btn-hero-primary:hover i,
+.btn-hero-secondary:hover i {
+    transform: translateX(4px);
+}
+.btn-hero-primary i,
+.btn-hero-secondary i {
+    transition: transform 0.2s ease;
+}
+
+/* Card Lift & Shadow Scale Effects */
+.dashboard-stat-box,
+.module-card,
+.stat-card-new,
+.stat-card-link,
+.section-card.stat-card-link,
+.stat-box {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Hover States for Interactive Cards */
+.dashboard-stat-box:hover,
+.module-card:hover,
+.stat-card-new:hover,
+.stat-card-link:hover,
+.stat-box:hover {
+    transform: translateY(-5px) scale(1.005) !important;
+    box-shadow: 0 16px 36px rgba(107, 70, 193, 0.08) !important;
+    border-color: rgba(107, 70, 193, 0.2) !important;
+}
+
+/* Icon Animations inside Cards */
+.dashboard-stat-box i,
+.module-card .module-icon,
+.module-card i,
+.stat-card-new .icon-wrapper,
+.stat-box-icon {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.dashboard-stat-box:hover i,
+.module-card:hover .module-icon,
+.module-card:hover i,
+.stat-card-new:hover .icon-wrapper,
+.stat-box:hover .stat-box-icon {
+    transform: scale(1.15) translateY(-2px) !important;
+}
+
+/* List Item Sliding Micro-Interactions */
+.notice-item,
+.complaint-item {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.notice-item:hover,
+.complaint-item:hover {
+    transform: translateX(6px) !important;
+    background: #ffffff !important;
+    border-color: rgba(107, 70, 193, 0.15) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Sidebar Nav Item Hover Effects */
+.modern-layout .nav-item {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modern-layout .nav-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(107, 70, 193, 0.1);
+}
+
