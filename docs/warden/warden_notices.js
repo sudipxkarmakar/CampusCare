@@ -40,17 +40,26 @@ async function fetchNotices() {
 
 function filterNotices(type, btn) {
     if (btn) {
-        // Reset all buttons
-        document.querySelectorAll('.filter-btn').forEach(b => {
+        // Reset all tabs (use .filter-tab selector)
+        document.querySelectorAll('.filter-tab').forEach(b => {
             b.classList.remove('active');
             b.style.background = 'transparent';
             b.style.color = '#64748b';
+            b.style.borderColor = 'var(--border-color)';
         });
 
-        // Activate clicked button
+        // Determine theme color based on filter type
+        let activeBg = '#6b46c1'; // Default Purple for 'all'
+        if (type === 'hosteler') activeBg = '#f59e0b'; // Orange
+        else if (type === 'student') activeBg = '#3b82f6'; // Blue
+        else if (type === 'teacher') activeBg = '#ef4444'; // Red
+        else if (type === 'general') activeBg = '#10b981'; // Green
+
+        // Activate clicked tab
         btn.classList.add('active');
-        btn.style.background = '#3b82f6';
+        btn.style.background = activeBg;
         btn.style.color = 'white';
+        btn.style.borderColor = activeBg;
     }
     renderNotices(type);
 }

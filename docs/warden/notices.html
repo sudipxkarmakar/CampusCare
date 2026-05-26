@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -62,6 +62,45 @@
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
+      }
+
+      /* --- CLASSY & PREMIUM FORM INPUT STYLES --- */
+      .form-input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-md);
+          outline: none;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.95rem;
+          background: var(--bg-color);
+          color: var(--text-dark);
+          transition: all 0.2s ease;
+      }
+
+      .form-input:focus {
+          border-color: var(--primary);
+          background: white;
+          box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+      }
+
+      select.form-input {
+          height: 48px;
+          padding: 0 16px;
+          padding-right: 40px;
+          appearance: none;
+          background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          background-size: 16px;
+          cursor: pointer;
+      }
+
+      select.form-input option {
+          background-color: #ffffff;
+          color: #1e293b;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.95rem;
       }
   </style>
 </head>
@@ -152,32 +191,33 @@
 
       <div class="workspace-layout">
           <!-- LEFT COLUMN: CREATE NOTICE -->
-          <div class="workspace-main">
+          <div class="workspace-main" style="width: 380px; max-width: 100%; flex-shrink: 0;">
               <section class="section-card">
                   <h3 style="margin-bottom:1.5rem; color:var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
                       <i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Post New Notice
                   </h3>
 
-                  <div class="form-grid">
-                      <div class="form-group" style="margin: 0;">
-                          <input type="text" id="notice-title" class="form-input" placeholder="Notice Title">
-                      </div>
+                  <div class="form-group" style="margin-bottom: 1.25rem;">
+                      <label style="display:block; font-weight:600; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">Notice Title</label>
+                      <input type="text" id="notice-title" class="form-input" placeholder="Enter notice title...">
+                  </div>
 
-                      <div class="form-group" style="margin: 0;">
-                          <select id="notice-audience" class="form-input" style="appearance: auto;">
-                              <option value="hosteler">Hostelers Only</option>
-                              <option value="student">All Students</option>
-                              <option value="teacher">All Teachers</option>
-                              <option value="hod">HODs Only</option>
-                              <option value="principal">Principal Only</option>
-                              <option value="warden">Wardens Only</option>
-                              <option value="general">General (Entire College)</option>
-                          </select>
-                      </div>
+                  <div class="form-group" style="margin-bottom: 1.25rem;">
+                      <label style="display:block; font-weight:600; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">Target Audience</label>
+                      <select id="notice-audience" class="form-input">
+                          <option value="hosteler">Hostelers Only</option>
+                          <option value="student">All Students</option>
+                          <option value="teacher">All Teachers</option>
+                          <option value="hod">HODs Only</option>
+                          <option value="principal">Principal Only</option>
+                          <option value="warden">Wardens Only</option>
+                          <option value="general">General (Entire College)</option>
+                      </select>
                   </div>
 
                   <div class="form-group" style="margin-bottom: 1.5rem;">
-                      <textarea id="notice-content" class="form-input" placeholder="Write your notice details here..." rows="4" style="resize: vertical;"></textarea>
+                      <label style="display:block; font-weight:600; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">Notice Content</label>
+                      <textarea id="notice-content" class="form-input" placeholder="Write notice description and details here..." rows="5" style="resize: vertical;"></textarea>
                   </div>
 
                   <div style="display: flex; justify-content: flex-end;">
@@ -189,7 +229,7 @@
           </div>
 
           <!-- RIGHT COLUMN: NOTICES LIST -->
-          <div class="workspace-sidebar">
+          <div class="workspace-sidebar" style="flex: 1; min-width: 0;">
               <section class="section-card">
                   
                   <div class="filter-tabs-container">
