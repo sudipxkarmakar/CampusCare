@@ -115,11 +115,11 @@
         </div>
         
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
-          <button id="assistantBtn" class="btn-outline-purple" data-action="toggleModal" data-modal-id="ai-modal">
+          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal" data-modal-id="ai-modal">
             <i class="fa-solid fa-robot"></i> Assistant
           </button>
           
-          <button id="sosBtn" class="btn-outline-purple" style="border-color: var(--danger); color: var(--danger);" data-action="toggleModal" data-modal-id="sos-modal">
+          <button id="sosBtn" class="btn-pill btn-outline-red" data-action="toggleModal" data-modal-id="sos-modal">
             <i class="fa-solid fa-bell-concierge"></i> SOS
           </button>
 
@@ -133,15 +133,9 @@
             
             <!-- DROPDOWN MENU -->
             <div id="profileMenu" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
-              <p style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">
-                Account Details
-              </p>
-              <div id="userDetails" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+              <div id="userDetails">
                 <!-- dynamically injected from js -->
               </div>
-              <button style="background: var(--danger); color: white; border: none; padding: 0.6rem; width: 100%; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
-                  <i class="fa-solid fa-right-from-bracket"></i> Logout
-              </button>
             </div>
           </div>
         </div>
@@ -218,9 +212,6 @@
     </div>
   </div>
 
-  <!-- AI ASSISTANT MODAL -->
-  
-  </div>
 
   <script>
     function toggleModal(id) { 

@@ -1,4 +1,4 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/assignment'; // Check if this endpoint exists/matches
+var API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/assignment'; // Check if this endpoint exists/matches
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createAssignmentForm');

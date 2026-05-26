@@ -68,7 +68,12 @@ window.toggleModal = function(id) {
     
     const modal = document.getElementById(id);
     if (modal) {
-        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        const currentDisplay = modal.style.display || window.getComputedStyle(modal).display;
+        if (currentDisplay === 'none') {
+            modal.style.display = 'flex';
+        } else {
+            modal.style.display = 'none';
+        }
     }
 };
 

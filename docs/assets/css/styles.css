@@ -996,4 +996,4 @@ footer {
 .dashboard-floating-btn:hover::before,
 .dashboard-btn-nav:hover::before {
     transform: scale(1.2) rotate(-5deg);
-}
+}

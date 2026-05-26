@@ -1,5 +1,5 @@
 
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/documents';
+var API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/documents';
 
 // Run on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,7 +19,7 @@ function checkAuth() {
 }
 
 async function loadDocuments() {
-    const listContainer = document.querySelector('.doc-section ul');
+    const listContainer = document.getElementById('my-documents-list') || document.querySelector('.doc-section ul');
     if (!listContainer) return;
 
     try {
@@ -32,7 +32,7 @@ async function loadDocuments() {
         const documents = await response.json();
 
         if (documents.length === 0) {
-            listContainer.innerHTML = '<li style="padding:1rem; text-align:center; color:#64748b;">No documents found. Upload one!</li>';
+            listContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:#64748b;">No documents found. Upload one!</div>';
             return;
         }
 
@@ -50,7 +50,7 @@ async function loadDocuments() {
             else { iconClass = 'fa-image'; iconColor = '#10b981'; }
 
             return `
-            <li class="list-row-hover" style="padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; background: white; margin-bottom: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div class="list-row-hover" style="padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; background: white; margin-bottom: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                     <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; color: #1f2937;">
                         <i class="fa-solid ${iconClass}" style="color: ${iconColor}; font-size: 1.1rem;"></i> 
@@ -75,18 +75,18 @@ async function loadDocuments() {
                         <i class="fa-solid fa-trash"></i>
                      </button>
                 </div>
-            </li>
+            </div>
             `;
         }).join('');
 
     } catch (error) {
         console.error(error);
-        listContainer.innerHTML = '<li style="padding:1rem; text-align:center; color:red;">Error loading documents.</li>';
+        listContainer.innerHTML = '<div style="padding:1rem; text-align:center; color:red;">Error loading documents.</div>';
     }
 }
 
 function setupUploadForm() {
-    const form = document.querySelector('.doc-section form');
+    const form = document.getElementById('upload-document-form') || document.querySelector('.doc-section form');
     const fileInput = document.getElementById('fileInput');
     const previewArea = document.getElementById('previewArea');
     const titleInput = document.querySelector('input[type="text"]');
