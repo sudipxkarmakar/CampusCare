@@ -1,52 +1,60 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Notices | Student Portal | CampusCare</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/design-system.css?v=1.6">
   <style>
-      .fa-solid, .fas { font-family: "Font Awesome 6 Free" !important; }
-      
-      .notice-filter-bar {
-          display: flex;
-          gap: 15px;
-          margin-bottom: 2rem;
-          border-bottom: 1px solid var(--border-color);
-          padding-bottom: 1rem;
-      }
-      
-      .notice-filter-tab {
-          padding: 8px 16px;
-          border-radius: var(--radius-full);
-          font-weight: 600;
-          font-size: 0.9rem;
-          cursor: pointer;
-          color: var(--text-muted);
-          transition: all 0.2s;
-      }
-      
-      .notice-filter-tab.active {
-          background: var(--primary);
-          color: white;
-      }
+    .fa-solid,
+    .fas {
+      font-family: "Font Awesome 6 Free" !important;
+    }
+
+    .notice-filter-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .notice-filter-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .notice-filter-tab.active {
+      background: var(--primary);
+      color: white;
+    }
   </style>
 </head>
 
 <body>
   <div class="dashboard-wrapper modern-layout">
-    
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <a href="../index.html" class="logo-container">
-        <img src="../assets/images/hero-illustration.png" alt="Logo" class="logo-icon" onerror="this.src='https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'"/>
+        <img src="../assets/images/hero-illustration.png" alt="Logo" class="logo-icon"
+          onerror="this.src='https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'" />
         <div class="logo-text">CampusCare</div>
       </a>
 
-      <div class="sidebar-portal-text" style="padding: 0 24px; margin-bottom: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+      <div class="sidebar-portal-text"
+        style="padding: 0 24px; margin-bottom: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
         Student Portal
       </div>
 
@@ -60,40 +68,46 @@
       </ul>
 
       <div class="sidebar-bottom">
-        <a id="logoutBtn" href="javascript:void(0)" class="nav-item" data-action="logout" style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a id="logoutBtn" href="javascript:void(0)" class="nav-item" data-action="logout"
+          style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
       </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-      
+
       <!-- TOP NAVBAR -->
       <header class="top-navbar">
         <div class="nav-left" style="display: flex; align-items: center; gap: 32px">
           <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
-            CampusCare <span style="font-size: 0.8rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">Student</span>
+            CampusCare <span
+              style="font-size: 0.8rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">Student</span>
           </h1>
         </div>
-        
+
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
-          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal" data-modal-id="ai-modal">
+          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal"
+            data-modal-id="ai-modal">
             <i class="fa-solid fa-robot"></i> Assistant
           </button>
-          
+
           <button id="sosBtn" class="btn-pill btn-outline-red" data-action="toggleModal" data-modal-id="sos-modal">
             <i class="fa-solid fa-bell-concierge"></i> SOS
           </button>
 
           <!-- USER PROFILE -->
-          <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu" style="display: flex; cursor: pointer; position: relative">
-            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile" />
+          <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" aria-label="Toggle Profile Menu"
+            aria-expanded="false" aria-haspopup="menu" style="display: flex; cursor: pointer; position: relative">
+            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=User&background=random"
+              alt="Profile" />
             <div style="display: flex; flex-direction: column;">
-                <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, User</span>
-                <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted);">CSE 3rd Year</span>
+              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, User</span>
+              <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted);">CSE 3rd Year</span>
             </div>
-            
+
             <!-- DROPDOWN MENU -->
-            <div id="profileMenu" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
+            <div id="profileMenu"
+              style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
               <div id="userDetails">
                 <!-- dynamically injected from js -->
               </div>
@@ -111,20 +125,21 @@
       </section>
 
       <!-- NOTICES LIST -->
-      <section class="section-card" style="min-">
+      <section class="section-card">
         <div class="notice-filter-bar">
-            <div class="notice-filter-tab active" data-type="all">All Notices</div>
-            <div class="notice-filter-tab" data-type="academic">Academic</div>
-            <div class="notice-filter-tab" data-type="hostel">Hostel</div>
-            <div class="notice-filter-tab" data-type="personal">Personal</div>
+          <div class="notice-filter-tab active" data-type="all">All Notices</div>
+          <div class="notice-filter-tab" data-type="academic">Academic</div>
+          <div class="notice-filter-tab" data-type="hostel">Hostel</div>
+          <div class="notice-filter-tab" data-type="personal">Personal</div>
         </div>
 
         <div id="noticeList" class="notice-wrapper" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Notices will be loaded here dynamically -->
-            <div style="text-align: center; color: var(--text-muted); padding: 3rem; background: var(--bg-color); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <p>Loading notices...</p>
-            </div>
+          <!-- Notices will be loaded here dynamically -->
+          <div
+            style="text-align: center; color: var(--text-muted); padding: 3rem; background: var(--bg-color); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>Loading notices...</p>
+          </div>
         </div>
       </section>
 
@@ -132,27 +147,39 @@
   </div>
 
   <!-- SOS MODAL -->
-  <div id="sos-modal" class="modal-overlay" role="dialog" aria-modal="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
-    <div class="modal-content glass" style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
-      <button data-action="toggleModal" data-modal-id="sos-modal" style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark);"><i class="fa-solid fa-xmark"></i></button>
-      <i class="fa-solid fa-triangle-exclamation" style="font-size: 3.5rem; color: var(--danger); margin-bottom: 1rem;"></i>
+  <div id="sos-modal" class="modal-overlay" role="dialog" aria-modal="true"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="sos-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark);"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-triangle-exclamation"
+        style="font-size: 3.5rem; color: var(--danger); margin-bottom: 1rem;"></i>
       <h2 style="color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">EMERGENCY SOS</h2>
-      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Select your emergency type to alert nearest help immediately.</p>
+      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Select your emergency type to alert nearest help
+        immediately.</p>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <a href="tel:100" style="background: var(--text-dark); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; grid-column: 1 / -1; transition: background 0.2s;">
+        <a href="tel:100"
+          style="background: var(--text-dark); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; grid-column: 1 / -1; transition: background 0.2s;">
           <i class="fa-solid fa-shield-halved"></i> Call Campus Security
         </a>
-        <button data-alert="Requesting First Aid Kit... Warden Notified!" style="background: var(--warning); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+        <button data-alert="Requesting First Aid Kit... Warden Notified!"
+          style="background: var(--warning); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
           <i class="fa-solid fa-kit-medical" style="font-size:1.8rem;"></i> First Aid
         </button>
-        <button onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)" style="background: var(--danger); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+        <button
+          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
+          style="background: var(--danger); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
           <i class="fa-solid fa-droplet" style="font-size:1.8rem;"></i> Need Blood
         </button>
-        <a href="tel:101" style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; display:flex; justify-content:center; align-items:center; gap:8px; transition: background 0.2s;">
+        <a href="tel:101"
+          style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; display:flex; justify-content:center; align-items:center; gap:8px; transition: background 0.2s;">
           <i class="fa-solid fa-truck-medical"></i> Ambulance
         </a>
-        <button onclick="alert('Panic Signal Sent with Location!')" style="background: var(--text-muted); color: white; padding: 12px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">
+        <button onclick="alert('Panic Signal Sent with Location!')"
+          style="background: var(--text-muted); color: white; padding: 12px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">
           Other / Panic
         </button>
       </div>
@@ -161,34 +188,35 @@
 
 
   <script>
-    function toggleModal(id) { 
-        const m = document.getElementById(id); 
-        if (m.style.display === 'flex') { 
-            m.style.display = 'none'; 
-        } else { 
-            m.style.display = 'flex'; 
-        } 
+    function toggleModal(id) {
+      const m = document.getElementById(id);
+      if (m.style.display === 'flex') {
+        m.style.display = 'none';
+      } else {
+        m.style.display = 'flex';
+      }
     }
-    
+
     function toggleProfileMenu() {
-        const menu = document.getElementById('profileMenu');
-        if (menu.style.display === 'none' || menu.style.display === '') {
-            menu.style.display = 'block';
-        } else {
-            menu.style.display = 'none';
-        }
+      const menu = document.getElementById('profileMenu');
+      if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'block';
+      } else {
+        menu.style.display = 'none';
+      }
     }
-    
+
     document.querySelectorAll('.notice-filter-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.notice-filter-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            // Filter logic will be handled by notices.js which we didn't change
-        });
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.notice-filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        // Filter logic will be handled by notices.js which we didn't change
+      });
     });
   </script>
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/ai.js"></script>
   <script src="../assets/js/notices.js"></script>
 </body>
+
 </html>
