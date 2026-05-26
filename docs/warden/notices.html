@@ -256,20 +256,7 @@
 
   <script src="../assets/js/landing.js"></script>
   <script src="warden_notices.js"></script>
-  <script>
-      // Profile menu toggle logic
-      document.querySelector('[data-action="toggleProfileMenu"]').addEventListener('click', function(e) {
-          e.stopPropagation();
-          const menu = document.getElementById('profileMenu');
-          menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-      });
-      document.addEventListener('click', function(e) {
-          const menu = document.getElementById('profileMenu');
-          if (menu && menu.style.display === 'block' && !e.target.closest('#userProfile')) {
-              menu.style.display = 'none';
-          }
-      });
-  </script>
+
 </body>
 
 </html>

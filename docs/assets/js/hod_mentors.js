@@ -1,4 +1,6 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/hod';
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
+const BASE_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+const API_URL = `${BASE_URL}/api/hod`;
 
 // State
 let allTeachers = [];
@@ -294,14 +296,5 @@ function checkAuth() {
     if (userProfileEl) userProfileEl.style.display = 'flex';
     if (userDetailsEl) {
         userDetailsEl.innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
-    }
-
-    window.toggleProfileMenu = function () {
-        const menu = document.getElementById('profileMenu');
-        if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    }
-    window.logout = function () {
-        localStorage.removeItem('user');
-        window.location.href = '../login.html';
     }
 }

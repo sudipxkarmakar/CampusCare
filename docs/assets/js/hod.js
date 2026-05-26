@@ -1,4 +1,6 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/hod';
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
+const BASE_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+const API_URL = `${BASE_URL}/api/hod`;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDashboardStats();
@@ -70,12 +72,3 @@ function setupProfile() {
     }
 }
 
-function toggleProfileMenu() {
-    const menu = document.getElementById('profileMenu');
-    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-}
-
-function logout() {
-    localStorage.removeItem('user');
-    window.location.href = '../index.html';
-}

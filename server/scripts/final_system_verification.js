@@ -63,7 +63,7 @@ const runVerification = async () => {
 
         // 4. ROUTINE
         console.log("\n📅 Verifying Routine...");
-        const routineRes = await fetch(`${BASE_URL}/routine?dept=${user.department}&year=${user.year}&batch=${user.batch}`, { headers });
+        const routineRes = await fetch(`${BASE_URL}/routine/student?dept=${user.department}&year=${user.year}&batch=${user.batch}`, { headers });
         const routineData = await routineRes.json();
 
         if (routineData.length > 0) {

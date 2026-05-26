@@ -1,7 +1,5 @@
-const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? `http://${window.location.hostname}:5000`
-    : 'https://campuscare-backend-96cn.onrender.com';
-
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
+const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
 const API_BASE = BACKEND_URL;
 const API_URL = API_BASE + '/api/hod';
 
@@ -264,15 +262,6 @@ function checkAuth() {
 
     const userNameEl = document.getElementById('userName');
     if (userNameEl) userNameEl.innerText = `Hello, ${user.name}`;
-
-    window.toggleProfileMenu = function () {
-        const menu = document.getElementById('profileMenu');
-        if (menu) menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    }
-    window.logout = function () {
-        localStorage.clear();
-        window.location.href = '../login.html';
-    }
 }
 
 // Global Paste Support for Modal

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -358,27 +358,7 @@
   </div>
 
   <script>
-    function toggleProfileMenu() {
-        const menu = document.getElementById('profileMenu');
-        if (menu.style.display === 'none' || menu.style.display === '') {
-            menu.style.display = 'block';
-        } else {
-            menu.style.display = 'none';
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            if (user.role === 'hod' || user.role === 'admin') {
-                document.getElementById('userProfile').style.display = 'flex';
-                document.getElementById('userName').innerText = `Hello, ${user.name}`;
-                document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
-                document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
-            }
-        }
-        
         // Modal handlers
         document.querySelectorAll('.close-modal-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -389,11 +369,6 @@
             });
         });
     });
-
-    function logout() {
-        localStorage.removeItem('user');
-        window.location.href = '../index.html';
-    }
   </script>
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/hod_subjects.js?v=8"></script>
