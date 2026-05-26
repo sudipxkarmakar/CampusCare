@@ -202,18 +202,31 @@ body {
   gap: 12px;
 }
 
-.btn-pill {
+.btn-pill,
+.btn-filled-purple,
+.btn-outline-purple,
+.btn-outline-red {
   padding: 10px 20px;
-  border-radius: var(--radius-full);
   font-weight: 600;
   font-size: 0.9rem;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
-  border: none;
   transition: all 0.3s ease;
   text-decoration: none;
+}
+
+.btn-pill {
+  border-radius: var(--radius-full);
+  border: none;
+}
+
+.btn-filled-purple,
+.btn-outline-purple,
+.btn-outline-red {
+  border-radius: var(--radius-md);
 }
 
 .btn-outline-purple {
@@ -305,6 +318,10 @@ body {
   color: var(--text-muted);
   margin-bottom: 32px;
   line-height: 1.6;
+}
+
+.hero-card .hero-content p {
+  color: inherit;
 }
 
 .hero-buttons {
