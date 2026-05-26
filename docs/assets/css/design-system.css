@@ -2146,14 +2146,22 @@ body {
 
 /* HERO SECTION RULES */
 .hero-card {
-    min-height: 280px;
-    padding: 32px 48px !important;
+    min-height: auto;
+    padding: 24px 32px !important;
     position: relative;
     overflow: hidden !important;
+}
+.hero-card:has(.hero-image),
+.hero-card#home {
+    min-height: 280px;
+    padding: 32px 48px !important;
 }
 .hero-content {
     max-width: 60% !important;
     z-index: 2;
+}
+.hero-card:not(:has(.hero-image)) .hero-content {
+    max-width: 100% !important;
 }
 .hero-image {
     position: absolute !important;
@@ -2166,6 +2174,15 @@ body {
     height: 300px !important;
     object-fit: contain !important;
 }
+
+/* SPACING ADJUSTMENTS FOR MODERN LAYOUT */
+.modern-layout .top-navbar {
+    margin-bottom: 0 !important;
+}
+.modern-layout .hero-card {
+    margin-bottom: 0 !important;
+}
+
 
 /* RESPONSIVE RULES */
 @media (max-width: 1024px) {
