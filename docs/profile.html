@@ -289,29 +289,29 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             /* Wider default cards */
-            gap: 1.5rem;
+            gap: 1rem;
             margin-bottom: 0;
         }
 
         /* Activity Log Specifics */
         #activity-log-container .detail-card {
             /* Make list items look good in narrow column */
-            padding: 1.2rem;
+            padding: 1rem;
         }
 
         .detail-card {
             background: rgba(255, 255, 255, 0.6);
-            padding: 1.5rem;
-            border-radius: 20px;
+            padding: 0.9rem 1.1rem;
+            border-radius: 14px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .detail-card::after {
@@ -320,16 +320,16 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 4px;
+            height: 3px;
             background: var(--primary);
             opacity: 0;
             transition: opacity 0.3s;
         }
 
         .detail-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
             opacity: 1;
             /* Fix for hover opacity if set elsewhere */
         }
@@ -339,17 +339,17 @@
         }
 
         .detail-icon-box {
-            width: 50px;
-            height: 50px;
+            width: 38px;
+            height: 38px;
             background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             color: var(--primary);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            min-width: 50px;
+            min-width: 38px;
             /* Prevent shrink */
         }
 
@@ -360,24 +360,24 @@
         }
 
         .detail-label {
-            font-size: 0.85rem;
+            font-size: 0.72rem;
             /* Slightly larger */
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
             color: #64748b;
             /* Keep muted but readable */
-            margin-bottom: 6px;
+            margin-bottom: 2px;
             display: block;
             font-weight: 600;
             /* Bolder label */
         }
 
         .detail-value {
-            font-size: 1.2rem;
+            font-size: 0.95rem;
             /* Larger value */
             color: #0f172a;
             /* Darker black */
-            font-weight: 800;
+            font-weight: 650;
             /* Extra Bold */
             word-wrap: break-word;
         }

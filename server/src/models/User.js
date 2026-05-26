@@ -96,6 +96,10 @@ const userSchema = new mongoose.Schema({
     cgpa: { type: Number, default: 0 },
 
     // Common for Student/Teacher/Hosteler
+    about: {
+        type: String,
+        default: ''
+    },
     department: {
         type: String, // e.g. 'CSE'
     },
