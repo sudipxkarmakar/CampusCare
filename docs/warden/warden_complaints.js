@@ -279,9 +279,10 @@ function getPriorityBadge(p) {
 }
 
 function getStatusColor(s) {
-    if (s === 'Resolved') return '#10b981';
-    if (s === 'In Progress') return '#f59e0b';
-    return '#64748b';
+    if (s === 'Resolved') return '#10b981'; // Green
+    if (s === 'In Progress' || s === 'Under Progress' || s === 'Escalated') return '#3b82f6'; // Blue
+    if (s === 'Submitted' || s === 'Unresolved' || s === 'Reported' || s === 'Pending') return '#ef4444'; // Red
+    return '#ef4444';
 }
 
 // Old resolveComplaint kept as fallback or removed

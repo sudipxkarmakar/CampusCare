@@ -904,6 +904,39 @@ window.checkAuthState = function () {
       roleColor = "f59e0b"; // Orange
     else if (role === "teacher") roleColor = "10b981"; // Green
 
+    // --- WARDEN SIDEBAR BADGE SYNCING ---
+    const sidebarBadge = document.getElementById("leaveCountBadgeSidebar");
+    if (sidebarBadge && (role === "warden" || role === "admin") && user.token) {
+      const backendUrl = getCampusCareApiBase();
+      fetch(`${backendUrl}/api/warden/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch warden stats");
+        return res.json();
+      })
+      .then(data => {
+        sidebarBadge.innerText = data.pendingLeaves;
+        if (data.pendingLeaves > 0) {
+          sidebarBadge.style.display = 'inline-block';
+        } else {
+          sidebarBadge.style.display = 'none';
+        }
+        // Also sync the main leave count badge on the main dashboard if it exists
+        const mainBadge = document.getElementById("leaveCountBadge");
+        if (mainBadge) {
+          mainBadge.innerText = data.pendingLeaves;
+          if (data.pendingLeaves > 0) mainBadge.style.display = 'flex';
+          else mainBadge.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching warden badge count:", err);
+      });
+    }
+
     // --- DYNAMIC LOGO BADGE ---
     const logo = document.querySelector(".logo");
     if (logo) {

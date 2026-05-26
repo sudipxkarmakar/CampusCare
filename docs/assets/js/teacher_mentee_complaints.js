@@ -89,9 +89,9 @@ function renderComplaints(container, complaints, type, user) {
     container.innerHTML = complaints.map(complaint => {
         const student = complaint.student || { name: 'Unknown', roomNumber: 'N/A', rollNumber: 'N/A' };
 
-        let statusColor = '#3b82f6'; // Blue
+        let statusColor = '#ef4444'; // Red for Submitted / Pending / Unresolved
         if (complaint.status === 'Resolved') statusColor = '#10b981'; // Green
-        if (complaint.status === 'In Progress') statusColor = '#f59e0b'; // Orange
+        if (complaint.status === 'In Progress' || complaint.status === 'Under Progress' || complaint.status === 'Escalated') statusColor = '#3b82f6'; // Blue
         if (complaint.isUplifted) statusColor = '#8b5cf6'; // Purple
 
         const isResolved = complaint.status === 'Resolved';

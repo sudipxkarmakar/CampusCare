@@ -35,8 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // availableOnly
         });
 
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:')
+            ? 'http://localhost:5000'
+            : 'https://campuscare-backend-96cn.onrender.com';
+
         try {
-            const res = await fetch(`http://localhost:5000/api/library?${queryParams}`);
+            const res = await fetch(`${API_BASE}/api/library?${queryParams}`);
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.message || 'Failed to fetch books');

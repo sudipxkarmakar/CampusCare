@@ -239,9 +239,9 @@ async function loadComplaints() {
 
             if (c.status === 'Resolved') {
                 statusColor = 'text-green-600 font-bold';
-            } else if (c.status === 'In Progress') {
-                statusColor = 'text-yellow-600 font-bold';
-            } else if (c.status === 'Submitted' || c.status === 'Pending') {
+            } else if (c.status === 'In Progress' || c.status === 'Under Progress' || c.status === 'Escalated') {
+                statusColor = 'text-blue-600 font-bold';
+            } else {
                 statusColor = 'text-red-600 font-bold';
             }
 
@@ -435,9 +435,9 @@ async function loadMyComplaints() {
 
             if (c.status === 'Resolved') {
                 statusColor = 'text-green-600 font-bold';
-            } else if (c.status === 'In Progress') {
-                statusColor = 'text-yellow-600 font-bold';
-            } else if (c.status === 'Submitted' || c.status === 'Pending') {
+            } else if (c.status === 'In Progress' || c.status === 'Under Progress' || c.status === 'Escalated') {
+                statusColor = 'text-blue-600 font-bold';
+            } else {
                 statusColor = 'text-red-600 font-bold';
             }
 
