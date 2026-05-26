@@ -43,6 +43,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!res.ok) throw new Error('Failed to load profile');
         const user = await res.json();
+        
+        // Sync with localStorage so edit modal gets fresh data
+        const localUserStr = localStorage.getItem('user');
+        if (localUserStr) {
+            const localUser = JSON.parse(localUserStr);
+            const token = localUser.token;
+            localStorage.setItem('user', JSON.stringify({ ...user, token }));
+        }
+
         renderProfile(user);
 
     } catch (error) {
@@ -478,6 +487,7 @@ function openEditModal() {
         setVal('editDesignation', user.designation);
         setVal('editExperience', user.yearsExperience);
         setVal('editSpecialization', user.specialization);
+        setVal('editExpertise', user.expertise && user.expertise.length > 0 ? user.expertise.join(', ') : '');
     } else {
         if (staffGroup) staffGroup.style.display = 'none';
         if (studentGroup) studentGroup.style.display = 'flex';
@@ -533,6 +543,7 @@ if (editForm) {
             payload.designation = document.getElementById('editDesignation').value;
             payload.yearsExperience = document.getElementById('editExperience').value ? parseInt(document.getElementById('editExperience').value) : 0;
             payload.specialization = document.getElementById('editSpecialization').value;
+            payload.expertise = document.getElementById('editExpertise').value;
         } else {
             payload.rollNumber = document.getElementById('editRoll').value;
             payload.department = document.getElementById('editDept').value;

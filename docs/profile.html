@@ -495,15 +495,13 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
-                        <label for="editName" style="font-weight: 600; font-size: 0.9rem; color: #555;">Full
-                            Name</label>
-                        <input type="text" id="editName" name="name" placeholder="Full Name"
+                        <label for="editName" style="font-weight: 600; font-size: 0.9rem; color: #555;">Full Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="editName" name="name" placeholder="Full Name" required
                             style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
                     </div>
                     <div class="form-group">
-                        <label for="editEmail" style="font-weight: 600; font-size: 0.9rem; color: #555;">Email
-                            (Unique)</label>
-                        <input type="email" id="editEmail" name="email" placeholder="Email Address"
+                        <label for="editEmail" style="font-weight: 600; font-size: 0.9rem; color: #555;">Email (Unique) <span style="color: #ef4444;">*</span></label>
+                        <input type="email" id="editEmail" name="email" placeholder="Email Address" required
                             style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
                     </div>
                 </div>
@@ -577,6 +575,11 @@
                     <div class="form-group">
                         <label for="editSpecialization" style="font-weight: 600; font-size: 0.9rem; color: #555;">Specialization</label>
                         <input type="text" id="editSpecialization" name="specialization" placeholder="e.g. Machine Learning, Cloud Computing"
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpertise" style="font-weight: 600; font-size: 0.9rem; color: #555;">Expertise Areas (comma-separated)</label>
+                        <input type="text" id="editExpertise" name="expertise" placeholder="e.g. Artificial Intelligence, Cryptography"
                             style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
                     </div>
                 </div>

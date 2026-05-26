@@ -384,9 +384,9 @@ export const updateProfile = async (req, res) => {
             // We consciously exclude Name, Role, RollNumber, etc. for integrity.
             // 1. Basic Fields
             if (req.body.name) user.name = req.body.name;
-            if (req.body.contactNumber) user.contactNumber = req.body.contactNumber;
-            if (req.body.bloodGroup) user.bloodGroup = req.body.bloodGroup;
-            if (req.body.about) user.about = req.body.about;
+            if (req.body.contactNumber !== undefined) user.contactNumber = req.body.contactNumber;
+            if (req.body.bloodGroup !== undefined) user.bloodGroup = req.body.bloodGroup;
+            if (req.body.about !== undefined) user.about = req.body.about;
 
             // 2. Sensitive Fields (Duplicate Checks)
             if (req.body.email && req.body.email !== user.email) {
@@ -418,8 +418,15 @@ export const updateProfile = async (req, res) => {
             // Teacher / Staff specific
             if (['teacher', 'hod', 'dean', 'principal', 'warden'].includes(user.role)) {
                 if (req.body.designation) user.designation = req.body.designation;
-                if (req.body.yearsExperience) user.yearsExperience = req.body.yearsExperience;
+                if (req.body.yearsExperience !== undefined) user.yearsExperience = req.body.yearsExperience;
                 if (req.body.specialization) user.specialization = req.body.specialization;
+                if (req.body.expertise !== undefined) {
+                    if (Array.isArray(req.body.expertise)) {
+                        user.expertise = req.body.expertise;
+                    } else if (typeof req.body.expertise === 'string') {
+                        user.expertise = req.body.expertise.split(',').map(s => s.trim()).filter(Boolean);
+                    }
+                }
             }
 
             // Backend Validation (Basic)
