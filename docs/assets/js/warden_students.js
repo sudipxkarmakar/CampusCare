@@ -1,4 +1,6 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/warden';
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
+const BASE_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+const API_URL = `${BASE_URL}/api/warden`;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadStudents();
@@ -58,7 +60,7 @@ function renderTable(students) {
     const getAvatarUrl = (path, name) => {
         if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
         if (path.startsWith('http')) return path;
-        return `http://localhost:5000${path.startsWith('/') ? '' : '/'}${path}`;
+        return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
     };
 
     noResults.style.display = 'none';
@@ -120,7 +122,7 @@ function viewStudentDetails(id) {
     // Populate Modal
     let profilePic = student.profilePicture;
     if (profilePic && !profilePic.startsWith('http')) {
-        profilePic = `http://localhost:5000${profilePic.startsWith('/') ? '' : '/'}${profilePic}`;
+        profilePic = `${BASE_URL}${profilePic.startsWith('/') ? '' : '/'}${profilePic}`;
     }
     if (!profilePic) profilePic = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`;
 

@@ -1,9 +1,7 @@
 
-const BACKEND_PORT = 5000;
-const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? `${window.location.protocol}//${window.location.hostname}:${BACKEND_PORT}`
-    : 'https://campuscare-backend-96cn.onrender.com';
-const API_BASE_URL = BACKEND_URL + '/api';
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
+const BACKEND_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+const API_BASE_URL = `${BACKEND_URL}/api`;
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchComplaints();

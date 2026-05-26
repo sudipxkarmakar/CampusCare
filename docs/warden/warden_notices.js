@@ -1,6 +1,9 @@
 
-const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
+const BASE_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+const API_BASE_URL = `${BASE_URL}/api`;
 let allNotices = [];
+let currentFilter = 'all';
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
@@ -30,7 +33,7 @@ async function fetchNotices() {
 
         allNotices = await res.json();
         console.log('Fetched Notices:', allNotices);
-        renderNotices('all');
+        renderNotices(currentFilter);
 
     } catch (error) {
         console.error('Error fetching notices:', error);
@@ -39,6 +42,7 @@ async function fetchNotices() {
 }
 
 function filterNotices(type, btn) {
+    currentFilter = type;
     if (btn) {
         // Reset all tabs (use .filter-tab selector)
         document.querySelectorAll('.filter-tab').forEach(b => {
