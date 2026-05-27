@@ -1,5 +1,6 @@
-const CONTENT_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/content/my-content';
-const ASSIGN_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/assignments';
+var BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+var CONTENT_API_URL = BASE_URL + '/api/content/my-content';
+var ASSIGN_API_URL = BASE_URL + '/api/assignments';
 let fetchedAssignments = [];
 let fetchedNotes = [];
 let currentAssignmentId = null;
@@ -45,6 +46,13 @@ async function loadAssignments() {
         // Store globally for modal access
         fetchedAssignments = assignmentsList;
         fetchedNotes = notesList; // Store notes too if needed for modal logic differentiation
+
+        // Show dynamic toast detailing submitted (raised) assignments
+        const submittedCount = assignmentsList.filter(a => a.submitted).length;
+        const totalCount = assignmentsList.length;
+        if (typeof showSummaryToast === 'function') {
+            showSummaryToast(submittedCount, totalCount);
+        }
 
         // Render ASSIGNMENTS
         if (assignmentsList.length === 0) {
@@ -356,4 +364,62 @@ async function submitAssignment() {
         submitBtn.innerText = 'Mark as Done & Submit';
         submitBtn.disabled = false;
     }
+}
+
+// Summary Toast notification on load
+function showSummaryToast(submittedCount, totalCount) {
+    if (sessionStorage.getItem('assignment_summary_toast_shown')) return;
+    sessionStorage.setItem('assignment_summary_toast_shown', 'true');
+
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: white;
+        border-left: 5px solid var(--primary);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        padding: 16px 20px;
+        border-radius: var(--radius-md);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    toast.innerHTML = `
+        <div style="background: var(--primary-light); color: var(--primary); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+            <i class="fa-solid fa-file-invoice"></i>
+        </div>
+        <div style="flex: 1;">
+            <h5 style="margin: 0 0 2px 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Assignment Status</h5>
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height:1.4;">You have submitted (raised) <strong>${submittedCount}</strong> out of <strong>${totalCount}</strong> assignments.</p>
+        </div>
+        <button style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-muted); margin-left: 8px;" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    if (!document.getElementById('toast-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animation-style';
+        style.textContent = `
+            @keyframes slideInUp {
+                from { transform: translateY(100px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.transition = 'opacity 0.5s, transform 0.5s';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 6000);
 }

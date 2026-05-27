@@ -1,6 +1,4 @@
-const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '' || window.location.protocol === 'file:';
-const BASE_URL = IS_LOCAL ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
-const API_URL = `${BASE_URL}/api/hod`;
+var API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api/hod';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDashboardStats();

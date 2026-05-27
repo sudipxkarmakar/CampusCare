@@ -187,6 +187,20 @@ document.addEventListener("click", (e) => {
     case "logout":
       if (typeof logout === "function") logout();
       break;
+    case "toggleModal":
+      const modalId = el.dataset.modalId || el.dataset.id || id;
+      if (modalId) {
+        if (typeof window.toggleModal === "function") {
+          window.toggleModal(modalId);
+        } else {
+          const modal = document.getElementById(modalId);
+          if (modal) {
+            const currentDisplay = modal.style.display || window.getComputedStyle(modal).display;
+            modal.style.display = currentDisplay === 'none' ? 'flex' : 'none';
+          }
+        }
+      }
+      break;
     case "toggleRightPanel":
       if (typeof toggleRightPanel === "function")
         toggleRightPanel(el.dataset.panelMode);
@@ -287,7 +301,23 @@ if (document.readyState === "interactive" || document.readyState === "complete")
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-
+  // Wrap CampusCare logo/text with landing page link dynamically
+  const topNavbar = document.querySelector(".top-navbar");
+  if (topNavbar) {
+    const h1 = topNavbar.querySelector("h1");
+    if (h1 && h1.textContent.includes("CampusCare")) {
+      const pathSegments = window.location.pathname.split("/").filter(Boolean);
+      const isSubDir = pathSegments.some(s =>
+        ["student", "teacher", "hostel", "hosteler", "complaints", "hod", "warden", "principal", "dean"].includes(s.toLowerCase())
+      );
+      const targetUrl = isSubDir ? "../index.html" : "index.html";
+      if (!h1.querySelector("a")) {
+        const span = h1.querySelector("span");
+        const badgeHtml = span ? span.outerHTML : "";
+        h1.innerHTML = `<a href="${targetUrl}" style="text-decoration: none; color: inherit; cursor: pointer;">CampusCare</a>${badgeHtml ? ' ' + badgeHtml : ''}`;
+      }
+    }
+  }
 
   const dateDisplay = document.querySelector(".date-display");
   if (dateDisplay) {
@@ -894,6 +924,37 @@ window.checkAuthState = function () {
       userName.textContent = `Hello, ${displayName}`;
     }
 
+    const userRoleEl = document.getElementById("userRole");
+    if (userRoleEl) {
+      const role = (user.role || "").toLowerCase();
+      if (role === "student" || role === "hosteler") {
+        const dept = user.department || "Student";
+        let yrText = "";
+        if (user.semester) {
+          const yr = Math.ceil(parseInt(user.semester) / 2);
+          const suffixes = ["st", "nd", "rd", "th"];
+          const suffix = (yr >= 1 && yr <= 4) ? suffixes[yr - 1] : "th";
+          yrText = `, ${yr}${suffix} Year`;
+        } else if (user.batch) {
+          yrText = `, Batch ${user.batch}`;
+        }
+        userRoleEl.textContent = `${dept}${yrText}`;
+      } else if (role === "teacher" || role === "hod" || role === "warden" || role === "dean" || role === "principal") {
+        const roleLabels = {
+          teacher: "Faculty",
+          hod: "Head of Department",
+          warden: "Hostel Admin",
+          dean: "Dean of Students",
+          principal: "Principal"
+        };
+        const label = roleLabels[role] || (role.charAt(0).toUpperCase() + role.slice(1));
+        const deptText = user.department ? `, Dept: ${user.department}` : "";
+        userRoleEl.textContent = `${label}${deptText}`;
+      } else {
+        userRoleEl.textContent = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : "User";
+      }
+    }
+
     // Role-based Colors
     let roleColor = "10b981"; // Default Green (Teacher/General)
     const role = (user.role || "").toLowerCase();
@@ -1202,10 +1263,10 @@ function goToDashboard() {
 
 function toggleProfileMenu() {
   const menu = document.getElementById("profileMenu");
-  if (menu.style.display === "flex") {
+  if (menu.style.display === "flex" || menu.style.display === "block") {
     menu.style.display = "none";
   } else {
-    menu.style.display = "flex";
+    menu.style.display = "block";
   }
 }
 
@@ -1216,7 +1277,7 @@ window.addEventListener("click", (e) => {
   const profile = document.getElementById("userProfile");
   if (
     menu &&
-    menu.style.display === "flex" &&
+    (menu.style.display === "flex" || menu.style.display === "block") &&
     e.target !== menu &&
     e.target !== avatar &&
     !menu.contains(e.target) &&

@@ -1,5 +1,5 @@
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
-const API_URL = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
+var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === "" || window.location.protocol === 'file:';
+var API_URL = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
 
 const api = {
     // Generic Fetch with Auth (GET)

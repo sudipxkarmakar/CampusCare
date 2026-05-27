@@ -11,7 +11,7 @@ if (user.role !== 'teacher' && user.role !== 'hod') {
     window.location.href = '../index.html';
 }
 
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
+var API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Hero Greeting
