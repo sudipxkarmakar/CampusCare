@@ -158,17 +158,32 @@
           </h3>
 
           <div style="display:flex; gap:15px; margin-bottom:1rem; flex-wrap: wrap;">
-              <input type="text" id="notice-title" placeholder="Notice Title" class="input-field" style="flex: 2; min-width: 200px;">
+              <div style="flex: 2; min-width: 200px;">
+                  <label style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.75rem; color: var(--primary); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px;">
+                      <i class="fa-solid fa-signature" style="font-size: 0.85rem;"></i> Notice Title
+                  </label>
+                  <input type="text" id="notice-title" placeholder="Notice Title" class="input-field">
+              </div>
 
-              <select id="notice-audience" class="filter-select" style="flex: 1; min-width: 200px; height: 100%;">
-                  <option value="department">My Department (Everyone)</option>
-                  <option value="dept_teachers">Teachers Only (My Dept)</option>
-                  <option value="dept_students">Students Only (My Dept)</option>
-                  <option value="general">General (Entire College)</option>
-              </select>
+              <div style="flex: 1; min-width: 200px;">
+                  <label style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.75rem; color: var(--primary); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px;">
+                      <i class="fa-solid fa-users" style="font-size: 0.85rem;"></i> Target Audience
+                  </label>
+                  <select id="notice-audience" class="filter-select" style="width: 100%;">
+                      <option value="department">My Department (Everyone)</option>
+                      <option value="dept_teachers">Teachers Only (My Dept)</option>
+                      <option value="dept_students">Students Only (My Dept)</option>
+                      <option value="general">General (Entire College)</option>
+                  </select>
+              </div>
           </div>
 
-          <textarea id="notice-content" placeholder="Write your notice details here..." class="input-field" style="min-height: 120px; resize: vertical; margin-bottom: 1.5rem;" rows="4"></textarea>
+          <div style="margin-bottom: 1.5rem;">
+              <label style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.75rem; color: var(--primary); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.8px;">
+                  <i class="fa-solid fa-align-left" style="font-size: 0.85rem;"></i> Notice Details
+              </label>
+              <textarea id="notice-content" placeholder="Write your notice details here..." class="input-field" style="min-height: 120px; resize: vertical;" rows="4"></textarea>
+          </div>
 
           <button onclick="postNotice()" class="btn-filled-purple" style="padding: 12px 24px; font-size: 1rem;">
               <i class="fa-solid fa-paper-plane" style="margin-right:8px;"></i> Post Notice
