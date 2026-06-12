@@ -135,7 +135,7 @@ function renderAction(result) {
         sessionStorage.setItem('aiSubmitAssignmentId', result.payload.assignmentId || '');
         sessionStorage.setItem('aiDraftAssignmentText', result.payload.draftText || '');
         const link = document.createElement('a');
-        link.href = 'student/assignments.html';
+        link.href = 'modules/assignments/view.html';
         link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Assignment';
@@ -146,7 +146,7 @@ function renderAction(result) {
         sessionStorage.setItem('aiDraftTitle', result.payload.title || '');
         sessionStorage.setItem('aiDraftDesc', result.payload.description || '');
         const link = document.createElement('a');
-        link.href = 'complaints/index.html';
+        link.href = 'modules/complaints/post.html';
         link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Complaint';

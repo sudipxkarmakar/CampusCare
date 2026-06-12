@@ -1,10 +1,10 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CampusCare â€” Teacher Dashboard</title>
+  <title>CampusCare — Teacher Dashboard</title>
 
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap"
@@ -89,28 +89,28 @@
 
       <ul class="nav-menu">
         <li><a href="index.html" class="nav-item active"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
-        <li><a href="routine.html" class="nav-item"><i class="fa-solid fa-calendar-days"></i> My Classes</a></li>
-        <li><a href="assignments.html" class="nav-item"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
-        <li><a href="notes.html" class="nav-item"><i class="fa-solid fa-file-arrow-up"></i> Notes</a></li>
-        <li><a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a></li>
+        <li><a href="../modules/routine/view.html" class="nav-item"><i class="fa-solid fa-calendar-days"></i> My Classes</a></li>
+        <li><a href="../modules/assignments/post.html" class="nav-item"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
+        <li><a href="../modules/documents/post.html" class="nav-item"><i class="fa-solid fa-file-arrow-up"></i> Notes</a></li>
+        <li><a href="../modules/student-database/view.html" class="nav-item"><i class="fa-solid fa-users"></i> Students</a></li>
         <li><a href="mentees.html" class="nav-item"><i class="fa-solid fa-hands-holding-child"></i> Mentees</a></li>
         <li>
-          <a href="mentee_complaints.html" class="nav-item"
+          <a href="../modules/complaints/resolve.html" class="nav-item"
             style="display: flex; justify-content: space-between; align-items: center;">
             <span><i class="fa-solid fa-circle-exclamation"></i> Complaints</span>
             <span id="complaints-badge"
               style="background: #e0e7ff; color: #4f46e5; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">2</span>
           </a>
         </li>
-        <li><a href="mar_moocs_approval.html" class="nav-item"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
+        <li><a href="../modules/mar-moocs/post.html" class="nav-item"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
         <li><a href="personal_space.html" class="nav-item"><i class="fa-solid fa-folder-open"></i> Personal Space</a>
         </li>
-        <li><a href="library.html" class="nav-item"><i class="fa-solid fa-book"></i> Library</a></li>
-        <li><a href="notices.html" class="nav-item"><i class="fa-regular fa-bell"></i> Official Notices</a></li>
+        <li><a href="../modules/library.html" class="nav-item"><i class="fa-solid fa-book"></i> Library</a></li>
+        <li><a href="../modules/notices/post.html" class="nav-item"><i class="fa-regular fa-bell"></i> Official Notices</a></li>
       </ul>
 
       <div class="sidebar-bottom">
-        <a href="profile.html" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a href="../modules/profile.html" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
         <a id="logoutBtn" href="javascript:void(0)" onclick="logout()" class="nav-item" data-action="logout"
           style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
       </div>
@@ -149,7 +149,7 @@
             <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=Teacher&background=random"
               alt="Profile" />
             <div style="display: flex; flex-direction: column;">
-              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, Faculty ðŸ‘‹</span>
+              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, Faculty 👋</span>
               <span id="userDept" style="font-size: 0.75rem; color: var(--text-muted);">Department</span>
             </div>
 
@@ -176,7 +176,7 @@
               style="padding: 40px; display:flex; justify-content:space-between; align-items:center; border-radius: 24px;">
               <div class="hero-content" style="max-width: 60%; z-index: 2;">
                 <h1 id="teacher-greeting" style="font-size:2.5rem; margin-bottom:12px; color: var(--text-dark);">Good
-                  morning! ðŸ‘‹</h1>
+                  morning! 👋</h1>
                 <p style="font-size:1rem; color:var(--text-muted); margin-bottom: 0;">
                   Here's an overview of your teaching activities.
                 </p>
@@ -194,7 +194,7 @@
                     class="fa-solid fa-calendar-day"></i></div>
                 <h4>Classes Today</h4>
                 <p class="stat-value" id="stat-classes">3</p>
-                <a href="routine.html"
+                <a href="../modules/routine/view.html"
                   style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View
                   Schedule</a>
               </div>
@@ -203,7 +203,7 @@
                 </div>
                 <h4>Students</h4>
                 <p class="stat-value" id="stat-students">86</p>
-                <a href="students.html"
+                <a href="../modules/student-database/view.html"
                   style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">Total
                   Students</a>
               </div>
@@ -234,22 +234,22 @@
               <h2><i class="fa-solid fa-bolt"></i> Quick Access</h2>
             </div>
             <div class="quick-access-grid-4">
-              <a href="routine.html" class="qa-item">
+              <a href="../modules/routine/view.html" class="qa-item">
                 <div class="qa-icon" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-calendar-days"></i>
                 </div>
                 <span style="font-weight: 600; font-size: 0.85rem;">My Classes</span>
               </a>
-              <a href="assignments.html" class="qa-item">
+              <a href="../modules/assignments/post.html" class="qa-item">
                 <div class="qa-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-file-pen"></i>
                 </div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Assignments</span>
               </a>
-              <a href="notes.html" class="qa-item">
+              <a href="../modules/documents/post.html" class="qa-item">
                 <div class="qa-icon" style="background:#ede9fe; color:#7c3aed"><i class="fa-solid fa-file-lines"></i>
                 </div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Notes</span>
               </a>
-              <a href="students.html" class="qa-item">
+              <a href="../modules/student-database/view.html" class="qa-item">
                 <div class="qa-icon" style="background:#d1fae5; color:#059669"><i class="fa-solid fa-users"></i></div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Students</span>
               </a>
@@ -258,14 +258,14 @@
                     class="fa-solid fa-hands-holding-child"></i></div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Mentees</span>
               </a>
-              <a href="mentee_complaints.html" class="qa-item" style="position: relative;">
+              <a href="../modules/complaints/resolve.html" class="qa-item" style="position: relative;">
                 <span
                   style="position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">2</span>
                 <div class="qa-icon" style="background:#ffedd5; color:#ea580c"><i
                     class="fa-solid fa-triangle-exclamation"></i></div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Complaints</span>
               </a>
-              <a href="mar_moocs_approval.html" class="qa-item">
+              <a href="../modules/mar-moocs/post.html" class="qa-item">
                 <div class="qa-icon" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-award"></i></div>
                 <span style="font-weight: 600; font-size: 0.85rem; text-align: center;">MAR & MOOCs<br>Approval</span>
               </a>
@@ -274,11 +274,11 @@
                 </div>
                 <span style="font-weight: 600; font-size: 0.85rem; text-align: center;">Personal<br>Space</span>
               </a>
-              <a href="library.html" class="qa-item">
+              <a href="../modules/library.html" class="qa-item">
                 <div class="qa-icon" style="background:#d1fae5; color:#059669"><i class="fa-solid fa-book"></i></div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Library</span>
               </a>
-              <a href="notices.html" class="qa-item">
+              <a href="../modules/notices/post.html" class="qa-item">
                 <div class="qa-icon" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-bullhorn"></i>
                 </div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Official Notices</span>
@@ -288,7 +288,7 @@
                 </div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Reports</span>
               </a>
-              <a href="profile.html" class="qa-item">
+              <a href="../modules/profile.html" class="qa-item">
                 <div class="qa-icon" style="background:#ede9fe; color:#7c3aed"><i class="fa-solid fa-gear"></i></div>
                 <span style="font-weight: 600; font-size: 0.85rem;">Settings</span>
               </a>
@@ -350,7 +350,7 @@
           <section class="section-card">
             <div class="section-header">
               <h2><i class="fa-solid fa-users-rectangle"></i> My Students</h2>
-              <a href="students.html" class="btn-view-all">View All</a>
+              <a href="../modules/student-database/view.html" class="btn-view-all">View All</a>
             </div>
             <div style="overflow-x: auto;">
               <table class="dashboard-table" id="students-table">
@@ -470,7 +470,7 @@
           <section class="section-card">
             <div class="section-header">
               <h2><i class="fa-regular fa-calendar-check"></i> Today's Schedule</h2>
-              <a href="routine.html" class="btn-view-all">View Full</a>
+              <a href="../modules/routine/view.html" class="btn-view-all">View Full</a>
             </div>
             <div id="todays-schedule-list" style="display: flex; flex-direction: column; margin-top: 16px;">
               <!-- Placeholder items -->
@@ -565,7 +565,7 @@
           <section class="section-card">
             <div class="section-header">
               <h2><i class="fa-solid fa-triangle-exclamation"></i> Recent Complaints</h2>
-              <a href="mentee_complaints.html" class="btn-view-all">View All</a>
+              <a href="../modules/complaints/resolve.html" class="btn-view-all">View All</a>
             </div>
             <div id="recent-complaints-list"
               style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
@@ -649,7 +649,7 @@
           <section class="section-card">
             <div class="section-header">
               <h2><i class="fa-regular fa-file-lines"></i> Official Notices</h2>
-              <a href="notices.html" class="btn-view-all">View All</a>
+              <a href="../modules/notices/post.html" class="btn-view-all">View All</a>
             </div>
             <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
               <div class="notice-item">
@@ -658,7 +658,7 @@
                   <i class="fa-solid fa-bullhorn"></i></div>
                 <div class="notice-info" style="flex: 1;">
                   <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Department Meeting</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">24 May 2025 â€¢ 11:00 AM</p>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">24 May 2025 • 11:00 AM</p>
                 </div>
                 <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
               </div>
@@ -668,7 +668,7 @@
                   <i class="fa-solid fa-file-contract"></i></div>
                 <div class="notice-info" style="flex: 1;">
                   <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Curriculum Update</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">20 May 2025 â€¢ 02:00 PM</p>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">20 May 2025 • 02:00 PM</p>
                 </div>
                 <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
               </div>
@@ -679,7 +679,7 @@
                 <div class="notice-info" style="flex: 1;">
                   <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Mid Semester Exam
                     Schedule</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">19 May 2025 â€¢ 10:30 AM</p>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">19 May 2025 • 10:30 AM</p>
                 </div>
                 <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
               </div>

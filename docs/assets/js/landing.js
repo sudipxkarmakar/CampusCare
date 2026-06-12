@@ -1117,7 +1117,7 @@ window.checkAuthState = function () {
         // Dual badges side by side
         navRoleBadgeWrapper.innerHTML = "";
         navRoleBadgeWrapper.appendChild(makeBadge("Student", "student/index.html", "student"));
-        navRoleBadgeWrapper.appendChild(makeBadge("Hosteler", "hosteler/complaints.html", "hosteler"));
+        navRoleBadgeWrapper.appendChild(makeBadge("Hosteler", "modules/complaints/post.html", "hosteler"));
       } else {
         navRoleBadgeWrapper.innerHTML = "";
         const modulePath = roleModuleMap[role] || "index.html";
@@ -1127,7 +1127,7 @@ window.checkAuthState = function () {
 
     const profileMenu = document.getElementById("profileMenu");
     if (profileMenu) {
-      // Determine path to profile.html based on current location
+      // Determine path to the shared profile module based on current location
       const currentPath = window.location.pathname;
       const profilePath =
         currentPath.includes("/student/") ||
@@ -1140,8 +1140,8 @@ window.checkAuthState = function () {
         currentPath.includes("/dean/") ||
         currentPath.includes("/complaints/") ||
         currentPath.includes("/notices/")
-          ? "../profile.html"
-          : "profile.html";
+          ? "../modules/profile.html"
+          : "modules/profile.html";
 
       // Role-based Colors & Badges mapping
       const badgeColors = {
@@ -1295,7 +1295,7 @@ function goToModule(roleKey) {
     dean: "dean/index.html",
     principal: "principal/index.html",
     warden: "warden/index.html",
-    hosteler: "hosteler/complaints.html",
+    hosteler: "modules/complaints/post.html",
     admin: "student/index.html",
   };
   const path = map[roleKey];
