@@ -92,10 +92,10 @@ function renderNotices(notices) {
             </div>
             <div class="notice-content" style="width: 100%;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%; margin-bottom: 5px;">
-                    <strong style="font-size:1.1rem; color:#2d3748; padding-right: 10px;">${notice.title}</strong>
+                    <strong style="font-size:1.1rem; color:#2d3748; padding-right: 10px;">${esc(notice.title)}</strong>
                     <span style="font-size:0.7rem; background:${badgeColor}; color:white; padding:2px 6px; border-radius:4px; text-transform:uppercase; white-space:nowrap; margin-left:auto;">${notice.audience}</span>
                 </div>
-                <span style="display:block; color:#4a5568; line-height:1.5;">${notice.content}</span>
+                <span style="display:block; color:#4a5568; line-height:1.5; white-space: pre-wrap;">${formatNoticeContent(notice.content)}</span>
             </div>
         </div>
         `;
@@ -192,3 +192,134 @@ async function handleCreateNotice(e) {
         alert('Error posting notice');
     }
 }
+
+function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch]));
+}
+
+function formatNoticeContent(text) {
+    if (!text) return '';
+    
+    const hasHtml = /<[a-z/][^>]*>/i.test(text);
+    if (hasHtml) {
+      return sanitizeHTML(text);
+    }
+
+    let escaped = esc(text || '');
+    
+    escaped = escaped.replace(/\[left\]([\s\S]*?)\[\/left\]/g, '<div style="text-align: left;">$1</div>');
+    escaped = escaped.replace(/\[center\]([\s\S]*?)\[\/center\]/g, '<div style="text-align: center;">$1</div>');
+    escaped = escaped.replace(/\[right\]([\s\S]*?)\[\/right\]/g, '<div style="text-align: right;">$1</div>');
+
+    escaped = escaped.replace(/\*\*(?!\s)([^\n]+?)(?<!\s)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\*(?!\s)([^\n]+?)(?<!\s)\*/g, '<em>$1</em>');
+    escaped = escaped.replace(/__(?!\s)([^\n]+?)(?<!\s)__/g, '<u>$1</u>');
+    
+    escaped = escaped.replace(/!\[([^\]\n]*?)\]\(([^)\n]+?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0; display: block; box-shadow: var(--shadow-sm);">');
+    escaped = escaped.replace(/\[([^\]\n]+?)\]\(([^)\n]+?)\)/g, '<a href="$2" target="_blank" style="color: #6b46c1; text-decoration: underline; font-weight: 600;">$1</a>');
+
+    const lines = escaped.split('\n');
+    let inUl = false;
+    let inOl = false;
+    const processedLines = [];
+    let currentList = '';
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('* ')) {
+        if (inOl) {
+          currentList += '</ol>';
+          processedLines.push(currentList);
+          currentList = '';
+          inOl = false;
+        }
+        if (!inUl) {
+          currentList = '<ul style="margin: 8px 0; padding-left: 24px; list-style-type: disc;">';
+          inUl = true;
+        }
+        currentList += `<li style="margin-bottom: 4px;">${line.replace(/^\s*\*\s+/, '')}</li>`;
+      }
+      else if (/^\d+\.\s+/.test(trimmed)) {
+        if (inUl) {
+          currentList += '</ul>';
+          processedLines.push(currentList);
+          currentList = '';
+          inUl = false;
+        }
+        if (!inOl) {
+          currentList = '<ol style="margin: 8px 0; padding-left: 24px; list-style-type: decimal;">';
+          inOl = true;
+        }
+        currentList += `<li style="margin-bottom: 4px;">${line.replace(/^\s*\d+\.\s+/, '')}</li>`;
+      }
+      else {
+        if (inUl) {
+          currentList += '</ul>';
+          processedLines.push(currentList);
+          currentList = '';
+          inUl = false;
+        }
+        if (inOl) {
+          currentList += '</ol>';
+          processedLines.push(currentList);
+          currentList = '';
+          inOl = false;
+        }
+        processedLines.push(line);
+      }
+    }
+
+    if (inUl) {
+      currentList += '</ul>';
+      processedLines.push(currentList);
+    }
+    if (inOl) {
+      currentList += '</ol>';
+      processedLines.push(currentList);
+    }
+
+    return processedLines.join('\n');
+}
+
+function sanitizeHTML(html) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    
+    const allElements = temp.querySelectorAll('*');
+    allElements.forEach(el => {
+      if (el.tagName === 'SCRIPT') {
+        el.remove();
+        return;
+      }
+      
+      const allowedAttrs = ['href', 'src', 'alt', 'style', 'target', 'align'];
+      const attrs = Array.from(el.attributes);
+      attrs.forEach(attr => {
+        if (!allowedAttrs.includes(attr.name.toLowerCase())) {
+          el.removeAttribute(attr.name);
+        } else if (attr.name.toLowerCase() === 'href' || attr.name.toLowerCase() === 'src') {
+          const val = attr.value.trim().toLowerCase();
+          if (val.startsWith('javascript:')) {
+            el.removeAttribute(attr.name);
+          }
+        } else if (attr.name.toLowerCase() === 'style') {
+          const styleVal = attr.value.toLowerCase();
+          const allowedStyles = ['text-align', 'color', 'text-decoration', 'font-weight', 'max-width', 'height', 'border-radius', 'margin', 'display', 'box-shadow'];
+          const styleParts = styleVal.split(';').filter(part => {
+            const prop = part.split(':')[0].trim();
+            return allowedStyles.includes(prop);
+          });
+          if (styleParts.length > 0) {
+            el.setAttribute('style', styleParts.join('; ') + ';');
+          } else {
+            el.removeAttribute(attr.name);
+          }
+        }
+      });
+    });
+    
+    return temp.innerHTML;
+}
+

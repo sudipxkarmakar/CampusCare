@@ -216,12 +216,38 @@
     const colors = badgeColors[userRole] || { bg: "#ede9fe", color: "#6d28d9" };
     const roleLabel = user.role ? (user.role.toUpperCase() === 'HOD' ? 'HOD' : user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Member';
 
+    let roleColor = "10b981";
+    if (userRole === "student") roleColor = "3b82f6";
+    else if (userRole === "hosteler") roleColor = "f59e0b";
+    else if (userRole === "teacher") roleColor = "10b981";
+    else if (userRole === "warden") roleColor = "ef4444";
+
+    let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || "User")}&background=${roleColor}&color=fff&rounded=true&bold=true`;
+
+    if (user.profilePicture) {
+      let cleanPath = user.profilePicture;
+      if (cleanPath.startsWith("http")) {
+        avatarSrc = cleanPath;
+      } else {
+        const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+        const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+        if (cleanPath.startsWith("/")) {
+          avatarSrc = `${BACKEND_URL}${cleanPath}`;
+        } else {
+          avatarSrc = `${BACKEND_URL}/${cleanPath}`;
+        }
+      }
+      avatarSrc += `?t=${new Date().getTime()}`;
+    }
+
+    const displayName = (user.name || user.fullName || 'User').split(' ')[0];
+
     let profileSectionHtml = '';
     if (user.token) {
       profileSectionHtml = `
                 <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" style="display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative">
-                  <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random" alt="Profile" />
-                  <span id="userName" class="user-name" style="cursor: pointer">Hi, ${esc(userName)}</span>
+                  <img id="userAvatar" class="user-avatar" src="${avatarSrc}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=${roleColor}&color=fff&rounded=true&bold=true';" style="object-fit: cover;" alt="Profile" />
+                  <span id="userName" class="user-name" style="cursor: pointer">Hi, ${esc(displayName)}</span>
                   <div id="profileMenu" style="
                     display: none;
                     position: absolute;
@@ -369,8 +395,12 @@
         });
       });
 
-      if (cfg.mode === 'post') renderPostForm(info);
-      else {
+      if (cfg.mode === 'post') {
+        // Hide the hero card in Notices post view
+        const hero = document.getElementById('home');
+        if (hero) hero.style.display = 'none';
+        renderNoticesPostForm(info);
+      } else {
         // Hide the hero card in Notices list view
         const hero = document.getElementById('home');
         if (hero) hero.style.display = 'none';
@@ -576,7 +606,7 @@
                   <span style="${badgeStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${badgeLabel}</span>
                 </div>
                 <h3 style="margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(title)}</h3>
-                <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(contentSnippet)}</p>
+                <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${stripNoticeContent(contentSnippet)}</p>
               </div>
             </div>
             <div style="display: flex; align-items: center; margin-left: 20px; flex-shrink: 0;">
@@ -631,11 +661,146 @@
             <span>${d}</span>
           </div>
           <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; max-height: 280px; overflow-y: auto; color: #334155; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap;">
-            ${esc(notice.content || notice.description || '')}
+            ${formatNoticeContent(notice.content || notice.description || '')}
           </div>
         `;
         overlay.style.display = 'flex';
-      }
+    }
+  }
+}
+
+  function renderNoticesPostForm(info) {
+    content(`
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+        <button type="button" id="noticeBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Post Notice</h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Publish official announcements for students, faculty, or hostelers.</p>
+        </div>
+      </div>
+
+      <div class="section-card module-panel" style="width: 100%; padding: 32px; border-radius: var(--radius-lg); background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
+        <form id="modulePostForm" class="module-form" style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- 1st Row: Title on Left, Audience on Right -->
+          <div style="display: flex; gap: 24px; width: 100%; align-items: flex-end;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Notice Title</label>
+              <input type="text" name="title" placeholder="Enter notice title..." required style="padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 1rem; width: 100%; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+            </div>
+            
+            <div style="width: 250px; display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Target Audience</label>
+              <select name="audience" required style="padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 1rem; width: 100%; background: white; cursor: pointer; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+                <option value="general">General</option>
+                <option value="student">Students</option>
+                <option value="teacher">Teachers</option>
+                <option value="hosteler">Hostelers</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 2nd Row: Full-width Body (MS Word Style) -->
+          <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+            <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Notice Content</label>
+            <div style="border: 1px solid var(--border-color); border-radius: 16px; background: #f1f5f9; padding: 24px; min-height: 500px; display: flex; flex-direction: column;" id="editorWorkspace">
+              <!-- Toolbar -->
+              <div style="display: flex; gap: 16px; background: white; padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; color: var(--text-muted); font-size: 0.95rem; flex-wrap: wrap; box-shadow: var(--shadow-sm); align-items: center; text-align: left;">
+                <span style="font-weight: 700; color: var(--text-dark); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-pen-to-square"></i> Editor Toolbar</span>
+                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                <span data-format="bold" class="editor-btn"><i class="fa-solid fa-bold" title="Bold"></i></span>
+                <span data-format="italic" class="editor-btn"><i class="fa-solid fa-italic" title="Italic"></i></span>
+                <span data-format="underline" class="editor-btn"><i class="fa-solid fa-underline" title="Underline"></i></span>
+                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                <span data-format="left" class="editor-btn"><i class="fa-solid fa-align-left" title="Align Left"></i></span>
+                <span data-format="center" class="editor-btn"><i class="fa-solid fa-align-center" title="Align Center"></i></span>
+                <span data-format="right" class="editor-btn"><i class="fa-solid fa-align-right" title="Align Right"></i></span>
+                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                <span data-format="list-ul" class="editor-btn"><i class="fa-solid fa-list-ul" title="Bullet List"></i></span>
+                <span data-format="list-ol" class="editor-btn"><i class="fa-solid fa-list-ol" title="Numbered List"></i></span>
+                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                <span data-format="link" class="editor-btn"><i class="fa-solid fa-link" title="Insert Link"></i></span>
+                <span data-format="image" class="editor-btn"><i class="fa-solid fa-image" title="Insert Image"></i></span>
+              </div>
+              
+              <!-- Paper Sheet -->
+              <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 40px 50px; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 24px rgba(0,0,0,0.03); min-height: 400px; transition: border-color 0.2s;" onfocusin="this.style.borderColor='var(--primary)';" onfocusout="this.style.borderColor='var(--border-color)';">
+                <style>
+                  .editor-btn {
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    padding: 6px 10px;
+                    border-radius: 6px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--text-muted);
+                  }
+                  .editor-btn:hover {
+                    color: var(--primary) !important;
+                    background: #f3f0ff;
+                  }
+                  .editor-btn.active {
+                    color: var(--primary) !important;
+                    background: #e9d5ff !important;
+                  }
+                  #editorContent:empty::before {
+                    content: attr(placeholder);
+                    color: var(--text-muted);
+                    cursor: text;
+                  }
+                  #editorContent ul {
+                    margin: 8px 0;
+                    padding-left: 24px;
+                    list-style-type: disc;
+                  }
+                  #editorContent ol {
+                    margin: 8px 0;
+                    padding-left: 24px;
+                    list-style-type: decimal;
+                  }
+                  #editorContent li {
+                    margin-bottom: 4px;
+                  }
+                </style>
+                <div id="editorContent" contenteditable="true" style="outline: none; font-size: 1.05rem; width: 100%; flex: 1; min-height: 350px; line-height: 1.7; color: var(--text-dark); font-family: 'Inter', sans-serif; text-align: left;" placeholder="Start typing the body of the notice here..."></div>
+                <textarea name="content" required style="display: none;"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+            <button type="submit" class="btn-filled-purple" style="display: flex; align-items: center; gap: 10px; padding: 14px 32px; font-size: 1rem; border-radius: 12px; cursor: pointer; font-weight: 700; border: none; background: var(--primary); color: white; transition: all 0.2s; box-shadow: 0 4px 12px rgba(107, 70, 193, 0.2);" onmouseenter="this.style.background='#55309d'; this.style.transform='translateY(-1px)';" onmouseleave="this.style.background='var(--primary)'; this.style.transform='none';">
+              <i class="fa-solid fa-paper-plane"></i> Publish Notice
+            </button>
+          </div>
+        </form>
+      </div>
+    `);
+
+    document.getElementById('noticeBackBtn')?.addEventListener('click', goToDashboard);
+    document.getElementById('modulePostForm').addEventListener('submit', submitPost);
+
+    // Attach formatting toolbar handlers with focus prevention
+    document.querySelectorAll('[data-format]').forEach(btn => {
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Prevent editor focus loss
+        formatText(btn.dataset.format);
+      });
+    });
+
+    const editor = document.getElementById('editorContent');
+    const textarea = document.querySelector('textarea[name="content"]');
+    if (editor && textarea) {
+      editor.addEventListener('input', () => {
+        textarea.value = editor.innerHTML.trim() === '<br>' ? '' : editor.innerHTML;
+      });
+
+      // Update toolbar active states on selection change or caret movement
+      ['keyup', 'mouseup', 'click', 'focus'].forEach(evt => {
+        editor.addEventListener(evt, updateToolbarState);
+      });
     }
   }
 
@@ -1040,6 +1205,248 @@
 
       wrapTextNodes(item);
     });
+  }
+
+  function formatText(command) {
+    const editor = document.getElementById('editorContent');
+    const textarea = document.querySelector('textarea[name="content"]');
+    if (!editor || !textarea) return;
+
+    editor.focus();
+
+    switch (command) {
+      case 'bold':
+        document.execCommand('bold', false, null);
+        break;
+      case 'italic':
+        document.execCommand('italic', false, null);
+        break;
+      case 'underline':
+        document.execCommand('underline', false, null);
+        break;
+      case 'left':
+        document.execCommand('justifyLeft', false, null);
+        break;
+      case 'center':
+        document.execCommand('justifyCenter', false, null);
+        break;
+      case 'right':
+        document.execCommand('justifyRight', false, null);
+        break;
+      case 'list-ul':
+        document.execCommand('insertUnorderedList', false, null);
+        break;
+      case 'list-ol':
+        document.execCommand('insertOrderedList', false, null);
+        break;
+      case 'link': {
+        const url = prompt('Enter the link URL (e.g. https://google.com):');
+        if (url) {
+          document.execCommand('createLink', false, url);
+          const selection = window.getSelection();
+          if (selection.rangeCount > 0) {
+            const container = selection.getRangeAt(0).commonAncestorContainer;
+            const linkEl = container.tagName === 'A' ? container : container.parentNode;
+            if (linkEl && linkEl.tagName === 'A') {
+              linkEl.target = '_blank';
+              linkEl.style.color = 'var(--primary)';
+              linkEl.style.textDecoration = 'underline';
+              linkEl.style.fontWeight = '600';
+            }
+          }
+        }
+        break;
+      }
+      case 'image': {
+        const url = prompt('Enter the image URL:');
+        if (url) {
+          document.execCommand('insertImage', false, url);
+          setTimeout(() => {
+            const imgs = editor.querySelectorAll('img[src="' + url + '"]');
+            imgs.forEach(img => {
+              img.style.maxWidth = '100%';
+              img.style.height = 'auto';
+              img.style.borderRadius = '8px';
+              img.style.margin = '12px 0';
+              img.style.display = 'block';
+              img.style.boxShadow = 'var(--shadow-sm)';
+            });
+          }, 50);
+        }
+        break;
+      }
+      default:
+        return;
+    }
+
+    textarea.value = editor.innerHTML.trim() === '<br>' ? '' : editor.innerHTML;
+    updateToolbarState();
+  }
+
+  function updateToolbarState() {
+    const formatButtons = {
+      bold: 'bold',
+      italic: 'italic',
+      underline: 'underline',
+      left: 'justifyLeft',
+      center: 'justifyCenter',
+      right: 'justifyRight',
+      'list-ul': 'insertUnorderedList',
+      'list-ol': 'insertOrderedList'
+    };
+
+    Object.entries(formatButtons).forEach(([format, command]) => {
+      const btn = document.querySelector(`[data-format="${format}"]`);
+      if (!btn) return;
+      
+      const isActive = document.queryCommandState(command);
+      if (isActive) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  function sanitizeHTML(html) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    
+    const allElements = temp.querySelectorAll('*');
+    allElements.forEach(el => {
+      if (el.tagName === 'SCRIPT') {
+        el.remove();
+        return;
+      }
+      
+      const allowedAttrs = ['href', 'src', 'alt', 'style', 'target', 'align'];
+      const attrs = Array.from(el.attributes);
+      attrs.forEach(attr => {
+        if (!allowedAttrs.includes(attr.name.toLowerCase())) {
+          el.removeAttribute(attr.name);
+        } else if (attr.name.toLowerCase() === 'href' || attr.name.toLowerCase() === 'src') {
+          const val = attr.value.trim().toLowerCase();
+          if (val.startsWith('javascript:')) {
+            el.removeAttribute(attr.name);
+          }
+        } else if (attr.name.toLowerCase() === 'style') {
+          const styleVal = attr.value.toLowerCase();
+          const allowedStyles = ['text-align', 'color', 'text-decoration', 'font-weight', 'max-width', 'height', 'border-radius', 'margin', 'display', 'box-shadow'];
+          const styleParts = styleVal.split(';').filter(part => {
+            const prop = part.split(':')[0].trim();
+            return allowedStyles.includes(prop);
+          });
+          if (styleParts.length > 0) {
+            el.setAttribute('style', styleParts.join('; ') + ';');
+          } else {
+            el.removeAttribute(attr.name);
+          }
+        }
+      });
+    });
+    
+    return temp.innerHTML;
+  }
+
+  function formatNoticeContent(text) {
+    if (!text) return '';
+    
+    const hasHtml = /<[a-z/][^>]*>/i.test(text);
+    if (hasHtml) {
+      return sanitizeHTML(text);
+    }
+
+    let escaped = esc(text || '');
+    
+    escaped = escaped.replace(/\[left\]([\s\S]*?)\[\/left\]/g, '<div style="text-align: left;">$1</div>');
+    escaped = escaped.replace(/\[center\]([\s\S]*?)\[\/center\]/g, '<div style="text-align: center;">$1</div>');
+    escaped = escaped.replace(/\[right\]([\s\S]*?)\[\/right\]/g, '<div style="text-align: right;">$1</div>');
+
+    escaped = escaped.replace(/\*\*(?!\s)([^\n]+?)(?<!\s)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\*(?!\s)([^\n]+?)(?<!\s)\*/g, '<em>$1</em>');
+    escaped = escaped.replace(/__(?!\s)([^\n]+?)(?<!\s)__/g, '<u>$1</u>');
+    
+    escaped = escaped.replace(/!\[([^\]\n]*?)\]\(([^)\n]+?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0; display: block; box-shadow: var(--shadow-sm);">');
+    escaped = escaped.replace(/\[([^\]\n]+?)\]\(([^)\n]+?)\)/g, '<a href="$2" target="_blank" style="color: var(--primary); text-decoration: underline; font-weight: 600;">$1</a>');
+
+    const lines = escaped.split('\n');
+    let inUl = false;
+    let inOl = false;
+    const processedLines = [];
+    let currentList = '';
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('* ')) {
+        if (inOl) {
+          currentList += '</ol>';
+          processedLines.push(currentList);
+          currentList = '';
+          inOl = false;
+        }
+        if (!inUl) {
+          currentList = '<ul style="margin: 8px 0; padding-left: 24px; list-style-type: disc;">';
+          inUl = true;
+        }
+        currentList += `<li style="margin-bottom: 4px;">${line.replace(/^\s*\*\s+/, '')}</li>`;
+      }
+      else if (/^\d+\.\s+/.test(trimmed)) {
+        if (inUl) {
+          currentList += '</ul>';
+          processedLines.push(currentList);
+          currentList = '';
+          inUl = false;
+        }
+        if (!inOl) {
+          currentList = '<ol style="margin: 8px 0; padding-left: 24px; list-style-type: decimal;">';
+          inOl = true;
+        }
+        currentList += `<li style="margin-bottom: 4px;">${line.replace(/^\s*\d+\.\s+/, '')}</li>`;
+      }
+      else {
+        if (inUl) {
+          currentList += '</ul>';
+          processedLines.push(currentList);
+          currentList = '';
+          inUl = false;
+        }
+        if (inOl) {
+          currentList += '</ol>';
+          processedLines.push(currentList);
+          currentList = '';
+          inOl = false;
+        }
+        processedLines.push(line);
+      }
+    }
+
+    if (inUl) {
+      currentList += '</ul>';
+      processedLines.push(currentList);
+    }
+    if (inOl) {
+      currentList += '</ol>';
+      processedLines.push(currentList);
+    }
+
+    return processedLines.join('\n');
+  }
+
+  function stripNoticeContent(text) {
+    if (!text) return '';
+    let clean = text.replace(/<[^>]*>/g, '');
+    clean = clean
+      .replace(/\*\*(?!\s)([^\n]+?)(?<!\s)\*\*/g, '$1')
+      .replace(/\*(?!\s)([^\n]+?)(?<!\s)\*/g, '$1')
+      .replace(/__(?!\s)([^\n]+?)(?<!\s)__/g, '$1')
+      .replace(/!\[([^\]\n]*?)\]\(([^)\n]+?)\)/g, '$1')
+      .replace(/\[([^\]\n]+?)\]\(([^)\n]+?)\)/g, '$1')
+      .replace(/\[\/?(left|center|right)\]/g, '')
+      .replace(/^\s*\*\s+/gm, '')
+      .replace(/^\s*\d+\.\s+/gm, '');
+    return esc(clean);
   }
 
   function safeJson(text) {
