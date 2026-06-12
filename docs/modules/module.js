@@ -118,9 +118,163 @@
       .filter(([key, value]) => ['view', 'post', 'resolve'].includes(key) && value)
       .map(([key, value]) => `<a class="btn-dashboard ${cfg.mode === key ? 'active' : ''}" href="${value}"><i class="fa-solid ${key === 'post' ? 'fa-plus' : key === 'resolve' ? 'fa-check' : 'fa-eye'}"></i> ${label(key)}</a>`)
       .join('');
+    
+    const userRole = (user.role || 'Guest').toLowerCase();
     const role = label(user.role || 'Guest');
     const userName = user.name || user.fullName || 'User';
     const dateText = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    let portalText = 'Module';
+    let navMenuHtml = '';
+
+    if (userRole === 'student' || userRole === 'hosteler') {
+      portalText = 'Student Portal';
+      navMenuHtml = `
+        <li><a href="${rootPrefix}student/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
+        <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-regular fa-calendar"></i> Class Routine</a></li>
+        <li><a href="${rootPrefix}modules/assignments/view.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
+        <li><a href="${rootPrefix}modules/documents/view.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-pdf"></i> Documents</a></li>
+        <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-bell"></i> Personal Notice</a></li>
+        <li><a href="${rootPrefix}modules/mar-moocs/view.html" class="nav-item ${cfg.module === 'mar-moocs' ? 'active' : ''}"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
+      `;
+    } else if (userRole === 'teacher') {
+      portalText = 'Teacher Portal';
+      navMenuHtml = `
+        <li><a href="${rootPrefix}teacher/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> My Classes</a></li>
+        <li><a href="${rootPrefix}modules/assignments/post.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
+        <li><a href="${rootPrefix}modules/documents/post.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-arrow-up"></i> Notes</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Students</a></li>
+        <li><a href="${rootPrefix}teacher/mentees.html" class="nav-item"><i class="fa-solid fa-hands-holding-child"></i> Mentees</a></li>
+        <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-circle-exclamation"></i> Complaints</a></li>
+        <li><a href="${rootPrefix}modules/mar-moocs/post.html" class="nav-item ${cfg.module === 'mar-moocs' ? 'active' : ''}"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
+        <li><a href="${rootPrefix}teacher/personal_space.html" class="nav-item"><i class="fa-solid fa-folder-open"></i> Personal Space</a></li>
+        <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Library</a></li>
+        <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-bell"></i> Official Notices</a></li>
+      `;
+    } else if (userRole === 'warden') {
+      portalText = 'Warden Portal';
+      navMenuHtml = `
+        <li><a href="${rootPrefix}warden/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li><a href="${rootPrefix}modules/gate-pass/approve.html" class="nav-item ${cfg.module === 'gate-pass' ? 'active' : ''}"><i class="fa-solid fa-stamp"></i> Leave Approvals</a></li>
+        <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
+        <li><a href="${rootPrefix}modules/mess-menu/post.html" class="nav-item ${cfg.module === 'mess-menu' ? 'active' : ''}"><i class="fa-solid fa-utensils"></i> Mess Menu</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Residents</a></li>
+        <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notice Board</a></li>
+        <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book-open"></i> Library</a></li>
+      `;
+    } else if (userRole === 'hod') {
+      portalText = 'HOD Portal';
+      navMenuHtml = `
+        <li><a href="${rootPrefix}hod/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li><a href="${rootPrefix}modules/gate-pass/approve.html" class="nav-item ${cfg.module === 'gate-pass' ? 'active' : ''}"><i class="fa-solid fa-file-signature"></i> Leave Requests</a></li>
+        <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-gavel"></i> Dept Complaints</a></li>
+        <li><a href="${rootPrefix}hod/subject_allocation.html" class="nav-item"><i class="fa-solid fa-book-open-reader"></i> Subject Allocation</a></li>
+        <li><a href="${rootPrefix}modules/routine/post.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-week"></i> Routine Management</a></li>
+        <li><a href="${rootPrefix}hod/mentors.html" class="nav-item"><i class="fa-solid fa-chalkboard-user"></i> Mentor Assignment</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
+        <li><a href="${rootPrefix}hod/teachers.html" class="nav-item"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
+        <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
+      `;
+    } else if (userRole === 'principal') {
+      portalText = 'Principal Portal';
+      navMenuHtml = `
+        <li><a href="${rootPrefix}principal/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> All Students</a></li>
+        <li><a href="${rootPrefix}principal/teachers.html" class="nav-item"><i class="fa-solid fa-person-chalkboard"></i> All Teachers</a></li>
+        <li><a href="${rootPrefix}principal/hods.html" class="nav-item"><i class="fa-solid fa-user-tie"></i> HODs</a></li>
+        <li><a href="${rootPrefix}principal/wardens.html" class="nav-item"><i class="fa-solid fa-user-shield"></i> Wardens</a></li>
+        <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-list-check"></i> Complaints</a></li>
+        <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Global Notices</a></li>
+        <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Central Library</a></li>
+      `;
+    } else {
+      portalText = 'Guest Portal';
+      navMenuHtml = `
+        <li><a href="${rootPrefix}index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
+        <li><a href="${rootPrefix}index.html#complaint-wall" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Transparency Wall</a></li>
+        <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-calendar-days"></i> News & Events</a></li>
+        <li><a href="${rootPrefix}index.html#faculty" class="nav-item"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}index.html#alumni-section" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+      `;
+    }
+
+    let badgeBg = 'var(--primary)';
+    if (userRole === 'warden') badgeBg = 'var(--success)';
+    const roleBadge = user.role ? `<span style="font-size: 0.8rem; background: ${badgeBg}; color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px; text-transform: uppercase;">${role}</span>` : '';
+
+    const badgeColors = {
+      student: { bg: "#dbeafe", color: "#1d4ed8" },
+      hosteler: { bg: "#fef3c7", color: "#b45309" },
+      teacher: { bg: "#d1fae5", color: "#065f46" },
+      hod: { bg: "#ede9fe", color: "#6d28d9" },
+      dean: { bg: "#ede9fe", color: "#6d28d9" },
+      principal: { bg: "#ede9fe", color: "#6d28d9" },
+      warden: { bg: "#fee2e2", color: "#b91c1c" },
+      admin: { bg: "#f3f4f6", color: "#374151" },
+    };
+    const colors = badgeColors[userRole] || { bg: "#ede9fe", color: "#6d28d9" };
+    const roleLabel = user.role ? (user.role.toUpperCase() === 'HOD' ? 'HOD' : user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Member';
+
+    let profileSectionHtml = '';
+    if (user.token) {
+      profileSectionHtml = `
+                <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" style="display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative">
+                  <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random" alt="Profile" />
+                  <span id="userName" class="user-name" style="cursor: pointer">Hi, ${esc(userName)}</span>
+                  <div id="profileMenu" style="
+                    display: none;
+                    position: absolute;
+                    top: calc(100% + 10px);
+                    right: 0;
+                    background: var(--bg-color);
+                    padding: 20px;
+                    border-radius: var(--radius-lg);
+                    box-shadow: var(--shadow-lg);
+                    z-index: 1000;
+                    border: 1px solid var(--border-color);
+                    animation: fadeIn 0.2s ease;
+                    text-align: left;
+                  ">
+                    <div style="display: flex; flex-direction: column; gap: 12px; min-width: 240px; padding: 2px;">
+                      <!-- Line 1: Header with Badge -->
+                      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 2px;">
+                        <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
+                        <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-sm); background: ${colors.bg}; color: ${colors.color};">${roleLabel}</span>
+                      </div>
+                      
+                      <!-- Line 2: Details -->
+                      <div id="userDetails" style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 !important; text-align: left;">
+                        <strong style="font-size: 0.95rem; color: var(--text-dark);">${esc(user.name || "User")}</strong>
+                        <span style="word-break: break-all;">${esc(user.email || "")}</span>
+                        <span style="font-weight: 500;">
+                          ID: ${esc(user.rollNumber || user.employeeId || user.identifier || "--")}
+                          ${user.department ? ` • Dept: ${esc(user.department)}` : ""}
+                          ${user.hostelName ? ` • Hostel: ${esc(user.hostelName)}` : ""}
+                        </span>
+                      </div>
+
+                      <!-- Line 3: Actions -->
+                      <div style="display: flex; gap: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                        <a href="${rootPrefix}modules/profile.html" class="btn-outline-purple" style="flex: 1 !important; text-align: center; font-size: 0.8rem; padding: 8px 10px; text-decoration: none; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
+                          <i class="fa-regular fa-user"></i> Profile
+                        </a>
+                        <button type="button" data-action="logout" class="btn-outline-red" style="flex: 1 !important; font-size: 0.8rem; padding: 8px 10px; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1px solid var(--danger); transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
+                          <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+      `;
+    } else {
+      profileSectionHtml = `
+                <a href="${rootPrefix}login.html" id="loginBtn" class="btn-pill btn-filled-purple">
+                  <i class="fa-solid fa-right-to-bracket"></i> Login
+                </a>
+      `;
+    }
+
     return `
       <div class="module-page">
         <div class="dashboard-wrapper modern-layout">
@@ -136,23 +290,14 @@
             </a>
 
             <div class="sidebar-portal-text" style="padding: 0 24px; margin-bottom: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
-              Module
+              ${portalText}
             </div>
 
             <ul class="nav-menu">
-              <li><a href="${rootPrefix}index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
-              <li><a href="${rootPrefix}student/index.html" class="nav-item"><i class="fa-solid fa-user-graduate"></i> Student</a></li>
-              <li><a href="${rootPrefix}teacher/index.html" class="nav-item"><i class="fa-solid fa-chalkboard-user"></i> Teacher</a></li>
-              <li><a href="${rootPrefix}modules/complaints/view.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
-              <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
-              <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> Routine</a></li>
-              <li><a href="${rootPrefix}modules/assignments/view.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
-              <li><a href="${rootPrefix}modules/documents/view.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-pdf"></i> Documents</a></li>
-              <li><a href="${rootPrefix}modules/mar-moocs/view.html" class="nav-item ${cfg.module === 'mar-moocs' ? 'active' : ''}"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
-              <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book-open"></i> Library</a></li>
+              ${navMenuHtml}
             </ul>
 
-            <div class="sidebar-bottom">
+            <div class="sidebar-bottom" style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 4px !important;">
               <a href="${rootPrefix}modules/profile.html" class="nav-item ${cfg.module === 'profile' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Settings</a>
               <a href="javascript:void(0)" class="nav-item" data-action="logout" style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
             </div>
@@ -161,8 +306,8 @@
           <main class="main-content">
             <header class="top-navbar">
               <div class="nav-left" style="display: flex; align-items: center; gap: 32px">
-                <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
-                  CampusCare <span class="module-role-badge">${role}</span>
+                <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center;">
+                  <a href="${rootPrefix}index.html" style="text-decoration: none; color: inherit; cursor: pointer;">CampusCare</a> ${roleBadge}
                 </h1>
                 <div class="search-bar">
                   <i class="fa-solid fa-search" style="color: var(--text-muted)"></i>
@@ -173,18 +318,7 @@
                 <span class="date-display"><i class="fa-regular fa-calendar"></i> ${dateText}</span>
                 <button type="button" class="btn-pill btn-outline-purple" id="moduleAssistantBtn"><i class="fa-solid fa-robot"></i> Assistant</button>
                 <button type="button" class="btn-pill btn-outline-red" id="moduleSosBtn"><i class="fa-solid fa-bell-concierge"></i> SOS</button>
-                <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" style="display: flex; cursor: pointer; position: relative">
-                  <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random" alt="Profile" />
-                  <div style="display: flex; flex-direction: column;">
-                    <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, ${esc(userName)}</span>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">${role}</span>
-                  </div>
-                  <div id="profileMenu" class="module-profile-menu">
-                    <strong>${esc(userName)}</strong>
-                    <span>${esc(user.email || role)}</span>
-                    <a href="${rootPrefix}modules/profile.html">View profile</a>
-                  </div>
-                </div>
+                ${profileSectionHtml}
               </div>
             </header>
 
@@ -213,10 +347,39 @@
             </div>
           </main>
         </div>
-      </div>`;
+      </div>
+    `;
   }
 
   function renderPage(info) {
+    if (cfg.module === 'notices') {
+      document.getElementById('dashboardBtn')?.addEventListener('click', goToDashboard);
+      document.getElementById('moduleAssistantBtn')?.addEventListener('click', () => openModuleModal('assistant'));
+      document.getElementById('moduleSosBtn')?.addEventListener('click', () => openModuleModal('sos'));
+      document.getElementById('moduleModalClose')?.addEventListener('click', closeModuleModal);
+      document.getElementById('module-modal-overlay')?.addEventListener('click', event => {
+        if (event.target.id === 'module-modal-overlay') closeModuleModal();
+      });
+      document.getElementById('userProfile')?.addEventListener('click', toggleProfileMenu);
+      
+      document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          localStorage.removeItem('user');
+          window.location.href = `${getRootPrefix()}index.html`;
+        });
+      });
+
+      if (cfg.mode === 'post') renderPostForm(info);
+      else {
+        // Hide the hero card in Notices list view
+        const hero = document.getElementById('home');
+        if (hero) hero.style.display = 'none';
+        renderNoticesList();
+      }
+      initSidebar();
+      return;
+    }
+
     document.getElementById('dashboardBtn').addEventListener('click', goToDashboard);
     document.getElementById('moduleAssistantBtn')?.addEventListener('click', () => openModuleModal('assistant'));
     document.getElementById('moduleSosBtn')?.addEventListener('click', () => openModuleModal('sos'));
@@ -225,13 +388,255 @@
       if (event.target.id === 'module-modal-overlay') closeModuleModal();
     });
     document.getElementById('userProfile')?.addEventListener('click', toggleProfileMenu);
-    if (cfg.module === 'library') return renderLibrary();
-    if (cfg.module === 'profile') return renderProfile();
-    if (cfg.module === 'gate-pass') return renderGatePassApproval();
-    if (cfg.module === 'student-database') return renderStudentDatabase();
-    if (cfg.module === 'complaints' && cfg.mode === 'resolve') return renderComplaintResolution();
-    if (cfg.mode === 'post') return renderPostForm(info);
-    return renderList(info);
+    if (cfg.module === 'library') renderLibrary();
+    else if (cfg.module === 'profile') renderProfile();
+    else if (cfg.module === 'gate-pass') renderGatePassApproval();
+    else if (cfg.module === 'student-database') renderStudentDatabase();
+    else if (cfg.module === 'complaints' && cfg.mode === 'resolve') renderComplaintResolution();
+    else if (cfg.mode === 'post') renderPostForm(info);
+    else renderList(info);
+
+    initSidebar();
+  }
+
+  async function renderNoticesList() {
+    const el = content(`
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+        <button type="button" id="noticeBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Notices</h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Official announcements for students, faculty, and campus-wide audiences.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+        <!-- Filter Tabs -->
+        <div id="noticeFilterTabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="filter-tab active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; background: #6b46c1; color: white;">All Notices</button>
+          <button type="button" class="filter-tab" data-filter="general" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">General</button>
+          <button type="button" class="filter-tab" data-filter="student" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Students</button>
+          <button type="button" class="filter-tab" data-filter="teacher" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Teachers</button>
+          <button type="button" class="filter-tab" data-filter="hosteler" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Hostelers</button>
+          <button type="button" class="filter-tab" data-filter="admin" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Administrators</button>
+        </div>
+        <!-- Right Sort Dropdown -->
+        <div>
+          <select id="sortNotices" style="padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; color: #475569; border: 1px solid #e2e8f0; background: #fff; outline: none; cursor: pointer;">
+            <option value="recent">Most Recent</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="noticesVerticalList">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading notices...</div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('noticeBackBtn')?.addEventListener('click', goToDashboard);
+
+    let loadedNotices = [];
+    let activeFilter = 'all';
+    let activeSort = 'recent';
+
+    // Click handler for tabs
+    const tabs = el.querySelectorAll('.filter-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.style.background = '#fff';
+          t.style.border = '1px solid #e2e8f0';
+          t.style.color = '#475569';
+        });
+        tab.classList.add('active');
+        tab.style.background = '#6b46c1';
+        tab.style.border = 'none';
+        tab.style.color = '#fff';
+        activeFilter = tab.dataset.filter;
+        renderFiltered();
+      });
+    });
+
+    // Sort handler
+    const sortSelect = el.querySelector('#sortNotices');
+    sortSelect.addEventListener('change', (e) => {
+      activeSort = e.target.value;
+      renderFiltered();
+    });
+
+    try {
+      loadedNotices = await fetchList();
+      renderFiltered();
+    } catch (error) {
+      el.querySelector('#noticesVerticalList').innerHTML = `
+        <div style="text-align: center; padding: 40px; color: #ef4444;">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 8px;"></i>
+          <div>Unable to load notices. Please try again later.</div>
+        </div>
+      `;
+    }
+
+    function renderFiltered() {
+      // Filter
+      let filtered = [...loadedNotices];
+      if (activeFilter !== 'all') {
+        filtered = filtered.filter(n => {
+          const aud = (n.audience || '').toLowerCase();
+          if (activeFilter === 'general') return aud === 'general';
+          if (activeFilter === 'student') return aud === 'student' || aud === 'students';
+          if (activeFilter === 'teacher') return aud === 'teacher' || aud === 'teachers';
+          if (activeFilter === 'hosteler') return aud === 'hosteler' || aud === 'hostelers';
+          if (activeFilter === 'admin') return aud === 'admin' || aud === 'warden' || aud === 'principal' || aud === 'hod' || aud === 'administrator' || aud === 'administrators';
+          return true;
+        });
+      }
+
+      // Sort
+      if (activeSort === 'recent') {
+        filtered.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+      } else {
+        filtered.sort((a, b) => new Date(a.date || a.createdAt) - new Date(b.date || b.createdAt));
+      }
+
+      const listContainer = el.querySelector('#noticesVerticalList');
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b;">
+            <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+            <div style="font-size: 1.05rem; font-weight: 600;">No notices found</div>
+            <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">There are no announcements in this category.</div>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map((item, idx) => {
+        const title = item.title || 'Untitled Notice';
+        const contentSnippet = item.content || item.description || 'No description available.';
+        const audience = item.audience || 'general';
+        const d = new Date(item.date || item.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        
+        let iconClass = 'fa-bullhorn';
+        let bgStyle = 'background: #eff6ff; color: #3b82f6;'; 
+        
+        const titleLower = title.toLowerCase();
+        if (titleLower.includes('vacation') || titleLower.includes('holiday') || titleLower.includes('winter') || titleLower.includes('summer')) {
+          iconClass = 'fa-calendar-day';
+          bgStyle = 'background: #fff1f2; color: #f43f5e;'; 
+        } else if (titleLower.includes('fair') || titleLower.includes('competition') || titleLower.includes('sports') || titleLower.includes('tournament') || titleLower.includes('draw')) {
+          iconClass = 'fa-trophy';
+          bgStyle = 'background: #fef9c3; color: #ca8a04;'; 
+        } else if (titleLower.includes('meeting') || titleLower.includes('faculty') || titleLower.includes('routine')) {
+          iconClass = 'fa-book-open';
+          bgStyle = 'background: #faf5ff; color: #a855f7;'; 
+        } else if (titleLower.includes('environment') || titleLower.includes('celebration') || titleLower.includes('fest')) {
+          iconClass = 'fa-cake-candles';
+          bgStyle = 'background: #fff5f5; color: #ff6b6b;'; 
+        } else if (titleLower.includes('scholarship') || titleLower.includes('apply') || titleLower.includes('admission')) {
+          iconClass = 'fa-graduation-cap';
+          bgStyle = 'background: #e0e7ff; color: #4f46e5;'; 
+        } else if (titleLower.includes('library') || titleLower.includes('book')) {
+          iconClass = 'fa-bullhorn';
+          bgStyle = 'background: #eff6ff; color: #3b82f6;'; 
+        }
+
+        let badgeLabel = 'General';
+        let badgeStyle = 'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+        const aud = audience.toLowerCase();
+        if (aud === 'student' || aud === 'students') {
+          badgeStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
+          badgeLabel = 'Students';
+        } else if (aud === 'teacher' || aud === 'teachers') {
+          badgeStyle = 'background: #fdf2f8; color: #9d174d; border: 1px solid #fbcfe8;';
+          badgeLabel = 'Teachers';
+        } else if (aud === 'hosteler' || aud === 'hostelers') {
+          badgeStyle = 'background: #fffbeb; color: #92400e; border: 1px solid #fde68a;';
+          badgeLabel = 'Hostelers';
+        } else if (['admin', 'warden', 'principal', 'hod'].includes(aud)) {
+          badgeStyle = 'background: #faf5ff; color: #6b46c1; border: 1px solid #e9d5ff;';
+          badgeLabel = 'Administrators';
+        } else {
+          badgeStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
+        }
+
+        return `
+          <div class="notice-row" data-id="${item._id}" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: all 0.2s; cursor: pointer;" onmouseenter="this.style.borderColor='#e2e8f0'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.02)';" onmouseleave="this.style.borderColor='#f1f5f9'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.01)';">
+            <div style="display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0;">
+              <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; ${bgStyle}">
+                <i class="fa-solid ${iconClass}"></i>
+              </div>
+              <div style="min-width: 0; flex: 1;">
+                <div style="margin-bottom: 6px;">
+                  <span style="${badgeStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${badgeLabel}</span>
+                </div>
+                <h3 style="margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(title)}</h3>
+                <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(contentSnippet)}</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; margin-left: 20px; flex-shrink: 0;">
+              <span style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 16px;">${d}</span>
+              <i class="fa-solid fa-chevron-right" style="font-size: 0.9rem; color: #94a3b8;"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      listContainer.querySelectorAll('.notice-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = row.dataset.id;
+          openNoticeModal(id);
+        });
+      });
+    }
+
+    function openNoticeModal(noticeId) {
+      const overlay = document.getElementById('module-modal-overlay');
+      const body = document.getElementById('moduleModalBody');
+      if (!overlay || !body) return;
+      const notice = loadedNotices.find(n => n._id === noticeId);
+      if (notice) {
+        const d = new Date(notice.date || notice.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        
+        let badgeStyle = 'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+        const aud = (notice.audience || 'general').toLowerCase();
+        let badgeLabel = 'General';
+        if (aud === 'student' || aud === 'students') {
+          badgeStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
+          badgeLabel = 'Students';
+        } else if (aud === 'teacher' || aud === 'teachers') {
+          badgeStyle = 'background: #fdf2f8; color: #9d174d; border: 1px solid #fbcfe8;';
+          badgeLabel = 'Teachers';
+        } else if (aud === 'hosteler' || aud === 'hostelers') {
+          badgeStyle = 'background: #fffbeb; color: #92400e; border: 1px solid #fde68a;';
+          badgeLabel = 'Hostelers';
+        } else if (['admin', 'warden', 'principal', 'hod'].includes(aud)) {
+          badgeStyle = 'background: #faf5ff; color: #6b46c1; border: 1px solid #e9d5ff;';
+          badgeLabel = 'Administrators';
+        } else {
+          badgeStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
+        }
+
+        body.innerHTML = `
+          <div class="module-modal-icon" style="color: #6b46c1; background: #f3f0ff; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 20px auto;"><i class="fa-solid fa-bullhorn"></i></div>
+          <h2 style="margin: 0 0 12px 0; color: #1e1b4b; font-weight: 700; font-size: 1.4rem; text-align: center;">${esc(notice.title)}</h2>
+          <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span style="${badgeStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">${badgeLabel}</span>
+            <span>&bull;</span>
+            <span>${d}</span>
+          </div>
+          <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; max-height: 280px; overflow-y: auto; color: #334155; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap;">
+            ${esc(notice.content || notice.description || '')}
+          </div>
+        `;
+        overlay.style.display = 'flex';
+      }
+    }
   }
 
   async function renderList(info) {
@@ -258,7 +663,13 @@
       alumni: '/api/alumni',
       achievements: '/api/achievements'
     };
-    const endpoint = map[cfg.module];
+    let endpoint = map[cfg.module];
+    if (cfg.module === 'notices') {
+      const role = (user.role || 'public').toLowerCase();
+      const userId = user._id || '';
+      const dept = user.department || '';
+      endpoint = `/api/notices?role=${role}&userId=${userId}&department=${dept}`;
+    }
     if (!endpoint) return localItems(cfg.module);
     const res = await fetch(`${apiBase}${endpoint}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
     if (!res.ok) throw new Error('load failed');
@@ -536,7 +947,7 @@
     event.stopPropagation();
     const menu = document.getElementById('profileMenu');
     if (!menu) return;
-    menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
+    menu.style.display = menu.style.display === 'block' || menu.style.display === 'flex' ? 'none' : 'block';
   }
 
   function openModuleModal(mode) {
@@ -577,6 +988,58 @@
   function getRootPrefix() {
     const afterModules = window.location.pathname.split('/modules/')[1] || '';
     return afterModules.includes('/') ? '../../' : '../';
+  }
+
+  function initSidebar() {
+    if (window.sidebarInitialized) return;
+    window.sidebarInitialized = true;
+    document.querySelectorAll(".nav-item").forEach(item => {
+      function wrapTextNodes(element) {
+        if (element.classList.contains("badge-count") || (element.id && (element.id.toLowerCase().includes("badge") || element.id.toLowerCase().includes("count")))) {
+          return; // Don't wrap badge elements
+        }
+        
+        const childNodes = Array.from(element.childNodes);
+        childNodes.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            const val = node.textContent.trim();
+            if (val.length > 0) {
+              const span = document.createElement("span");
+              span.className = "nav-label";
+              span.textContent = val;
+              if (node.parentNode) {
+                node.parentNode.replaceChild(span, node);
+              }
+            }
+          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== "I" && node.tagName !== "SPAN") {
+            wrapTextNodes(node);
+          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
+            if (!node.classList.contains("nav-label") && !node.classList.contains("badge-count") && !(node.id && (node.id.toLowerCase().includes("badge") || node.id.toLowerCase().includes("count")))) {
+              wrapTextNodes(node);
+            }
+          }
+        });
+      }
+
+      // Determine the full tooltip text (before wrapping text nodes)
+      let fullText = "";
+      item.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          fullText += node.textContent.trim();
+        } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains("badge-count") && !(node.id && (node.id.toLowerCase().includes("badge") || node.id.toLowerCase().includes("count")))) {
+          // Handle nested span text (like in Warden leaves)
+          fullText += node.textContent.trim();
+        }
+      });
+      fullText = fullText.trim();
+      if (fullText) {
+        item.setAttribute("data-tooltip", fullText);
+        item.setAttribute("aria-label", fullText);
+        item.setAttribute("title", fullText);
+      }
+
+      wrapTextNodes(item);
+    });
   }
 
   function safeJson(text) {

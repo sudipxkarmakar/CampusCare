@@ -288,6 +288,7 @@ function initSidebar() {
     if (fullText) {
       item.setAttribute("data-tooltip", fullText);
       item.setAttribute("aria-label", fullText);
+      item.setAttribute("title", fullText);
     }
 
     wrapTextNodes(item);
