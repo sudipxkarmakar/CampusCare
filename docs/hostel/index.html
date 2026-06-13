@@ -1,70 +1,46 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <script>
-      (function() {
-          const userStr = localStorage.getItem('user');
-          if (!userStr) {
-              window.location.href = '../login.html?role=hosteler';
-              return;
-          }
-          const user = JSON.parse(userStr);
-          if (user.role !== 'hosteler' && user.role !== 'admin' && user.role !== 'warden') {
-              alert('Access Restricted: This module is only for Hostelers.');
-              window.location.href = '../index.html';
-          }
-      })();
-  </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hostel Hub | Hosteler Portal | CampusCare</title>
+  <title>Hostel Portal | CampusCare</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Flatpickr CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="../assets/css/design-system.css?v=1.6">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
       .fa-solid, .fas { font-family: "Font Awesome 6 Free" !important; }
       
-      /* Professional Mess Menu Style */
       .menu-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 0.95rem;
-          color: var(--text-dark);
-          font-family: 'Inter', sans-serif;
+          font-size: 0.9rem;
+          margin-top: 10px;
+          border-radius: var(--radius-md);
+          overflow: hidden;
       }
 
       .menu-table th {
-          text-align: center;
-          padding: 1rem;
-          background: var(--bg-color);
-          color: var(--text-muted);
+          background: var(--primary);
+          color: white;
+          padding: 12px;
+          text-align: left;
           font-weight: 600;
-          text-transform: uppercase;
-          font-size: 0.8rem;
-          letter-spacing: 0.05em;
-          border-bottom: 2px solid var(--border-color);
       }
 
       .menu-table td {
-          text-align: center;
-          padding: 1rem;
+          padding: 12px;
           border-bottom: 1px solid var(--border-color);
-          vertical-align: middle;
+          color: var(--text-dark);
       }
 
-      .menu-table tbody tr:last-child td {
-          border-bottom: none;
-      }
-
-      .menu-table tbody tr:hover {
-          background-color: rgba(0, 0, 0, 0.02);
+      .menu-table tr:hover {
+          background: rgba(107, 70, 193, 0.05);
       }
 
       .today-row {
-          background-color: rgba(59, 130, 246, 0.05) !important;
+          background: rgba(107, 70, 193, 0.1) !important;
       }
 
       .today-row td {
@@ -108,25 +84,6 @@
           display: inline-block;
       }
 
-      .btn-apply {
-          background: var(--warning);
-          color: white;
-          border: none;
-          padding: 0.7rem 1rem;
-          border-radius: var(--radius-md);
-          width: 100%;
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 0.9rem;
-          margin-top: 10px;
-          transition: 0.2s;
-          font-family: 'Inter', sans-serif;
-      }
-
-      .btn-apply:hover {
-          background: #d97706;
-      }
-
       .notice-card-item {
           background: var(--bg-color);
           border: 1px solid var(--border-color);
@@ -136,6 +93,7 @@
           gap: 1rem;
           align-items: flex-start;
           transition: all 0.2s ease;
+          cursor: pointer;
       }
 
       .notice-card-item:hover {
@@ -193,8 +151,24 @@
           background: rgba(255, 255, 255, 0.1);
           padding: 10px 16px;
           border-radius: var(--radius-md);
+          flex: 1;
+          min-width: 200px;
       }
   </style>
+  <script>
+      (function() {
+          const userStr = localStorage.getItem('user');
+          if (!userStr) {
+              window.location.href = '../login.html?role=hosteler';
+              return;
+          }
+          const user = JSON.parse(userStr);
+          if (user.role !== 'hosteler' && user.role !== 'admin' && user.role !== 'warden') {
+              alert('Access Restricted: This module is only for Hostelers.');
+              window.location.href = '../index.html';
+          }
+      })();
+  </script>
 </head>
 
 <body>
@@ -230,14 +204,22 @@
           <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
             CampusCare <span style="font-size: 0.8rem; background: var(--warning); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">Hosteler</span>
           </h1>
+          <div class="search-bar" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: var(--radius-full); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-search" style="color: var(--text-muted)"></i>
+            <input type="text" placeholder="Search..." style="border: none; background: transparent; outline: none; font-family: 'Inter', sans-serif; font-size: 0.95rem; width: 200px;" />
+          </div>
         </div>
         
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
-          <button id="assistantBtn" class="btn-pill btn-outline-purple" onclick="toggleModal('ai-modal')">
+          <span class="date-display" style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-regular fa-calendar"></i> 15 May, 2026
+          </span>
+
+          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal" data-modal-id="ai-modal">
             <i class="fa-solid fa-robot"></i> Assistant
           </button>
           
-          <button id="sosBtn" class="btn-pill btn-outline-red" onclick="toggleModal('sos-modal')">
+          <button id="sosBtn" class="btn-pill btn-outline-red" data-action="toggleModal" data-modal-id="sos-modal">
             <i class="fa-solid fa-bell-concierge"></i> SOS
           </button>
 
@@ -259,149 +241,196 @@
         </div>
       </header>
 
-      <!-- HERO -->
-      <section class="hero-card" style="background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%); color: white;">
-        <div class="hero-content" style="max-width: 100%;">
-          <h1 style="font-size: 2rem; margin-bottom: 8px; color: white;">Hostel Hub</h1>
-          <p style="font-size: 1rem; opacity: 0.9; margin: 0;">Mess Menu, Leave Applications, and Notices</p>
-        </div>
-      </section>
-
-      <!-- TWO COLUMNS -->
-      <div class="triple-grid" style="grid-template-columns: 2fr 1fr; align-items: start;">
+      <!-- ROW 1 (2:1 Ratio): Hero Banner + Apply Leave -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
         
-        <!-- LEFT COLUMN -->
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- MESS MENU -->
-            <section class="section-card">
-                <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-utensils" style="color: var(--warning);"></i> Weekly Mess Menu
-                </h3>
-                <div style="overflow-x: auto; width: 100%;">
-                    <table class="menu-table" id="mess-menu-table">
-                        <thead>
-                            <tr>
-                                <th>Day</th>
-                                <th>Breakfast</th>
-                                <th>Lunch</th>
-                                <th>Snacks</th>
-                                <th>Dinner</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Loading Menu...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <!-- Left Section (Span 2): Hero + Stats -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
+          <section class="hero-card" id="home" style="padding: 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+            <div class="hero-content" style="max-width: 60%; z-index: 2;">
+              <h1 id="hosteler-greeting" style="font-size:2.5rem; margin-bottom:12px; color: var(--text-dark);">Good morning, <span style="color: var(--warning); font-weight: 800;">Hosteler</span>! 👋</h1>
+              <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
+                Welcome to your Hostel Hub. Manage leaves, view mess menus, and stay updated.
+              </p>
+            </div>
+            <div class="hero-image" style="z-index: 1;">
+              <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;" onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
+            </div>
+          </section>
 
-            <!-- LEAVE STATUS -->
-            <section class="section-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-file-signature" style="color: var(--primary);"></i> Application Status
-                    </h3>
-                    <div id="leave-status-count" style="background: rgba(59, 130, 246, 0.1); color: var(--primary); padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem;">
-                        <i class="fa-solid fa-layer-group"></i> Loading...
-                    </div>
-                </div>
-                <div id="leave-history" style="width: 100%; overflow-x: auto;">
-                    <!-- Content injected by JS -->
-                </div>
-            </section>
-
+          <!-- Hostel Stats Row -->
+          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+            <div class="stat-card-new">
+              <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;">
+                <i class="fa-solid fa-bed"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Room No</h4>
+                <p class="stat-value" id="room-number-val">--</p>
+              </div>
+            </div>
+            <div class="stat-card-new">
+              <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;">
+                <i class="fa-solid fa-building"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Hostel</h4>
+                <p class="stat-value" id="hostel-name-val" style="font-size: 1.15rem; word-break: break-all; font-weight: 700; white-space: normal; line-height: 1.2;">--</p>
+              </div>
+            </div>
+            <div class="stat-card-new">
+              <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Approved Leaves</h4>
+                <p class="stat-value" id="approvedLeavesCount">--</p>
+              </div>
+            </div>
+            <div class="stat-card-new">
+              <div class="icon-wrapper" style="background: #fee2e2; color: #ef4444;">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Pending Leaves</h4>
+                <p class="stat-value" id="pendingLeavesCount">--</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- HOSTEL NOTICES -->
-            <section class="section-card">
-                <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-bullhorn" style="color: var(--danger);"></i> Hostel Notices
-                </h3>
-                <div id="hostel-notices-list" style="display: flex; flex-direction: column; gap: 1rem;">
-                    <!-- Content injected by JS -->
-                    <div style="text-align: center; color: var(--text-muted); padding: 1rem;">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Loading notices...
-                    </div>
+        <!-- Right Section (Span 1): Hostel Notices -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+            <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
+                <i class="fa-solid fa-bullhorn" style="color: var(--danger);"></i> Hostel Notices
+            </h3>
+            <div id="hostel-notices-list" style="display: flex; flex-direction: column; gap: 1rem; flex: 1; justify-content: flex-start; overflow-y: auto; max-height: 380px;">
+                <!-- Content injected by JS -->
+                <div style="text-align: center; color: var(--text-muted); padding: 1rem;">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading notices...
                 </div>
-            </section>
-
-            <!-- LEAVE FORM -->
-            <section class="section-card">
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: var(--text-dark);">Apply for Leave</h3>
-                    <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.85rem;">Request permission for outstation travel</p>
-                </div>
-
-                <form id="leaveForm" style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div class="form-group">
-                        <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-dark); display: block; margin-bottom: 4px;">Type</label>
-                        <select id="type" class="filter-select" style="width: 100%; border: 1px solid var(--border-color);">
-                            <option value="Night Out">Night Out</option>
-                            <option value="Home Visit">Home Visit</option>
-                            <option value="Medical">Medical Emergency</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-dark); display: block; margin-bottom: 4px;">From</label>
-                        <input type="text" id="startDate" placeholder="Select Start Date" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif;">
-                    </div>
-
-                    <div class="form-group">
-                        <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-dark); display: block; margin-bottom: 4px;">To</label>
-                        <input type="text" id="endDate" placeholder="Select End Date" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif;">
-                    </div>
-
-                    <div class="form-group">
-                        <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-dark); display: block; margin-bottom: 4px;">Reason</label>
-                        <textarea id="reason" rows="3" placeholder="Enter reason..." required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-apply">Submit Application</button>
-                </form>
-            </section>
-
-        </div>
+            </div>
+        </section>
 
       </div>
 
-      <!-- EMERGENCY CONTACTS FOOTER -->
-      <section class="section-card" style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%); color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-          <h3 style="margin: 0; color: var(--warning); display: flex; align-items: center; gap: 8px;">
+      <!-- ROW 2 (2:1 Ratio): Mess Menu + Apply Leave -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Section (Span 2): Mess Menu -->
+        <section class="section-card" style="grid-column: span 2;">
+            <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
+                <i class="fa-solid fa-utensils" style="color: var(--warning);"></i> Weekly Mess Menu
+            </h3>
+            <div style="overflow-x: auto; width: 100%;">
+                <table class="menu-table" id="mess-menu-table">
+                    <thead>
+                         <tr>
+                            <th>Day</th>
+                            <th>Breakfast</th>
+                            <th>Lunch</th>
+                            <th>Snacks</th>
+                            <th>Dinner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Loading Menu...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Right Section (Span 1): Leave Form -->
+        <section class="section-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+              <h3 style="margin: 0; color: var(--text-dark); font-size: 1.25rem;">Apply for Leave</h3>
+              <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.85rem;">Request permission for outstation travel</p>
+          </div>
+
+          <form id="leaveForm" style="display: flex; flex-direction: column; gap: 1rem; flex: 1; justify-content: center;">
+              <div class="form-group">
+                  <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Type</label>
+                  <select id="type" class="filter-select" style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; background: white;">
+                      <option value="Night Out">Night Out</option>
+                      <option value="Home Visit">Home Visit</option>
+                      <option value="Medical">Medical Emergency</option>
+                  </select>
+              </div>
+
+              <div class="form-group">
+                  <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">From</label>
+                  <input type="text" id="startDate" placeholder="Select Start Date" required style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; background: white;">
+              </div>
+
+              <div class="form-group">
+                  <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">To</label>
+                  <input type="text" id="endDate" placeholder="Select End Date" required style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; background: white;">
+              </div>
+
+              <div class="form-group">
+                  <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Reason</label>
+                  <textarea id="reason" rows="2" placeholder="Enter reason..." required style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; resize: vertical; background: white;"></textarea>
+              </div>
+
+              <button type="submit" class="btn-filled-purple" style="width: 100%; padding: 12px; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; transition: all 0.2s; margin-top: 10px;">Submit Application</button>
+          </form>
+        </section>
+
+      </div>
+
+      <!-- ROW 3 (2:1 Ratio): Application Status + Emergency Contacts -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Section (Span 2): Application Status -->
+        <section class="section-card" style="grid-column: span 2;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
+                    <i class="fa-solid fa-file-signature" style="color: var(--primary);"></i> Application Status
+                </h3>
+                <div id="leave-status-count" style="background: rgba(59, 130, 246, 0.1); color: var(--primary); padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600; font-size: 0.85rem;">
+                    <i class="fa-solid fa-layer-group"></i> Loading...
+                </div>
+            </div>
+            <div id="leave-history" style="width: 100%; display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto;">
+                <!-- Content injected by JS -->
+            </div>
+        </section>
+
+        <!-- Right Section (Span 1): Emergency Contacts -->
+        <section class="section-card" style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%); color: white; display: flex; flex-direction: column; justify-content: space-between;">
+          <h3 style="margin-bottom: 1.5rem; color: var(--warning); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
               <i class="fa-solid fa-phone"></i> Emergency Contacts
           </h3>
-          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <div style="display: flex; flex-direction: column; gap: 16px; flex: 1; justify-content: center;">
               <div class="emergency-contact-box">
-                  <i class="fa-solid fa-user-tie" style="color: #94a3b8;"></i>
+                  <i class="fa-solid fa-user-tie" style="color: #94a3b8; font-size: 1.2rem;"></i>
                   <div>
-                      <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Chief Warden</div>
-                      <div style="font-weight: 600;">+91 98765 43210</div>
+                      <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Chief Warden</div>
+                      <div style="font-weight: 600; font-size: 0.95rem;">+91 98765 43210</div>
                   </div>
               </div>
               <div class="emergency-contact-box">
-                  <i class="fa-solid fa-truck-medical" style="color: #ef4444;"></i>
+                  <i class="fa-solid fa-truck-medical" style="color: #ef4444; font-size: 1.2rem;"></i>
                   <div>
-                      <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Ambulance</div>
-                      <div style="font-weight: 600;">+91 11223 34455</div>
+                      <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Ambulance</div>
+                      <div style="font-weight: 600; font-size: 0.95rem;">+91 11223 34455</div>
                   </div>
               </div>
               <div class="emergency-contact-box">
-                  <i class="fa-solid fa-building-shield" style="color: #3b82f6;"></i>
+                  <i class="fa-solid fa-building-shield" style="color: #3b82f6; font-size: 1.2rem;"></i>
                   <div>
-                      <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Security Gate</div>
-                      <div style="font-weight: 600;">+91 99887 76655</div>
+                      <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Security Gate</div>
+                      <div style="font-weight: 600; font-size: 0.95rem;">+91 99887 76655</div>
                   </div>
               </div>
           </div>
-      </section>
+        </section>
+
+      </div>
 
     </main>
   </div>
@@ -409,7 +438,7 @@
   <!-- SOS MODAL -->
   <div id="sos-modal" class="modal-overlay" role="dialog" aria-modal="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
     <div class="modal-content glass" style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
-      <button data-action="toggleModal" data-modal-id="sos-modal" style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark);"><i class="fa-solid fa-xmark"></i></button>
+      <button data-action="toggleModal" data-modal-id="sos-modal" style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i class="fa-solid fa-xmark"></i></button>
       <i class="fa-solid fa-triangle-exclamation" style="font-size: 3.5rem; color: var(--danger); margin-bottom: 1rem;"></i>
       <h2 style="color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">EMERGENCY SOS</h2>
       <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Select your emergency type to alert nearest help immediately.</p>
@@ -435,32 +464,35 @@
   </div>
 
   <!-- AI ASSISTANT MODAL -->
-  
+  <div id="ai-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass" style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="ai-modal" style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-robot" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 700;">Campus AI Assistant</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Ask anything about your classes, routine, or campus facilities.</p>
+
+      <div id="ai-chat-history" style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid var(--border-color); padding: 15px; border-radius: var(--radius-md); background: var(--bg-color); display:none;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="ai-input" placeholder="Ask about routine, hostel..." style="flex: 1; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none;">
+        <button onclick="askAI()" class="btn-filled-purple" style="padding: 0 20px;"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
   </div>
 
-  <script>
-    function toggleModal(id) { 
-        const m = document.getElementById(id); 
-        if (m.style.display === 'flex') { 
-            m.style.display = 'none'; 
-        } else { 
-            m.style.display = 'flex'; 
-        } 
-    }
-    
-    function toggleProfileMenu() {
-        const menu = document.getElementById('profileMenu');
-        if (menu.style.display === 'none' || menu.style.display === '') {
-            menu.style.display = 'block';
-        } else {
-            menu.style.display = 'none';
-        }
-    }
+  <!-- NOTICE DETAIL MODAL -->
+  <div id="notice-detail-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass" style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 500px; text-align: center; align-items: center; position: relative; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 16px;">
+      <button data-action="toggleModal" data-modal-id="notice-detail-modal" style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); transition: background 0.2s; z-index: 10;"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-size: 1.4rem; color: var(--text-dark); margin: 0; padding: 0 30px;" id="modal-notice-title">Notice Title</h3>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="modal-notice-meta">Date | Audience</div>
+      <div style="background: var(--bg-color); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); max-height: 250px; overflow-y: auto; width: 100%;">
+        <p style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.6; margin: 0; white-space: pre-wrap;" id="modal-notice-content">Notice content text...</p>
+      </div>
+    </div>
+  </div>
 
-    function goToDashboard() {
-        window.location.href = '../student/index.html'; // Assuming Hosteler goes back to student dash or hostel home
-    }
-  </script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/hostel.js"></script>

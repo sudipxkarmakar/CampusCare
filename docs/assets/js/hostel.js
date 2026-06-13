@@ -1,5 +1,7 @@
 var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
 
+let allHostelNotices = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     // Auth Check
     const userStr = localStorage.getItem('user');
@@ -7,14 +9,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // window.location.href = '../login.html'; // Optional: Redirect if strict
     } else {
         const user = JSON.parse(userStr);
-        // document.getElementById('userName').innerText = `Hello, ${user.name}`;
-        // Load User specific data like leaves if logged in
+        
+        // Update greeting
+        const greetingEl = document.getElementById('hosteler-greeting');
+        if (greetingEl) {
+            const firstName = user.name ? user.name.split(' ')[0] : 'Hosteler';
+            greetingEl.innerHTML = getGreetingText(firstName);
+        }
+
+        // Set hostel stats
+        const roomNoEl = document.getElementById('room-number-val');
+        if (roomNoEl) roomNoEl.innerText = user.roomNumber || 'N/A';
+
+        const hostelNameEl = document.getElementById('hostel-name-val');
+        if (hostelNameEl) hostelNameEl.innerText = user.hostelName || 'N/A';
+
+        // Load user leave history
         loadMyLeaves();
     }
 
     loadMessMenu();
     loadHostelNotices();
-
 
     const leaveForm = document.getElementById('leaveForm');
     if (leaveForm) {
@@ -31,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             time_24hr: true,
             onChange: function (selectedDates, dateStr, instance) {
                 // When start date updates, set end date's minDate to the start date
-                // This prevents selecting an end date before the start date
                 endDatePicker.set('minDate', dateStr);
             }
         });
@@ -46,6 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Welcome Greeting Generator
+function getGreetingText(name) {
+    const hour = new Date().getHours();
+    let salutation = "Good morning";
+    let icon = "☀️";
+    
+    if (hour >= 5 && hour < 12) {
+        salutation = "Good morning";
+        icon = "☀️";
+    } else if (hour >= 12 && hour < 17) {
+        salutation = "Good afternoon";
+        icon = "☀️";
+    } else {
+        salutation = "Good evening";
+        icon = "🌙";
+    }
+    
+    return `${salutation}, <span style="color: var(--warning); font-weight: 800;">${name}</span>! ${icon}`;
+}
 
 function prefillAiLeaveDraft() {
     const type = sessionStorage.getItem('aiLeaveType');
@@ -63,15 +97,15 @@ function prefillAiLeaveDraft() {
 
 async function loadMessMenu() {
     const tbody = document.querySelector('#mess-menu-table tbody');
+    if (!tbody) return;
     try {
-        // Fetch from API (simulated for now if API not ready, but we made it)
         const res = await fetch(`${API_BASE}/hostel/mess`);
         if (!res.ok) throw new Error('Failed to load menu');
 
         const menu = await res.json();
 
         if (menu.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Menu not uploaded yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Menu not uploaded yet.</td></tr>';
             return;
         }
 
@@ -83,7 +117,7 @@ async function loadMessMenu() {
 
         tbody.innerHTML = menu.map(m => `
             <tr class="${m.day === today ? 'today-row' : ''}">
-                <td>${m.day}</td>
+                <td style="font-weight: 600;">${m.day}</td>
                 <td>${m.breakfast}</td>
                 <td>${m.lunch}</td>
                 <td>${m.snacks}</td>
@@ -93,7 +127,7 @@ async function loadMessMenu() {
 
     } catch (error) {
         console.error(error);
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Error loading menu.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Error loading menu.</td></tr>';
     }
 }
 
@@ -137,6 +171,7 @@ async function handleLeaveSubmit(e) {
 async function loadMyLeaves() {
     const container = document.getElementById('leave-history');
     const statusBadge = document.getElementById('leave-status-count');
+    if (!container) return;
 
     const userStr = localStorage.getItem('user');
     if (!userStr) return;
@@ -150,8 +185,25 @@ async function loadMyLeaves() {
 
         if (statusBadge) statusBadge.innerText = `${leaves.length} Applications`;
 
+        // Calculate Stats
+        let approvedCount = 0;
+        let pendingCount = 0;
+        leaves.forEach(l => {
+            if (l.status === 'Approved') {
+                approvedCount++;
+            } else if (l.status.includes('Pending') || l.status === 'Submitted') {
+                pendingCount++;
+            }
+        });
+
+        const approvedEl = document.getElementById('approvedLeavesCount');
+        if (approvedEl) approvedEl.innerText = approvedCount;
+
+        const pendingEl = document.getElementById('pendingLeavesCount');
+        if (pendingEl) pendingEl.innerText = pendingCount;
+
         if (leaves.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:#64748b;">No history.</p>';
+            container.innerHTML = '<p style="text-align:center; color:#64748b; padding: 1rem;">No leave history.</p>';
             return;
         }
 
@@ -161,16 +213,23 @@ async function loadMyLeaves() {
             if (l.wardenRemark) remarks.push(`<strong>Warden:</strong> ${l.wardenRemark}`);
 
             return `
-            <div style="background:#f8fafc; padding:15px; margin-bottom:12px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:10px;">
+            <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <strong style="color:#334155; font-size:0.95rem;">${l.type}</strong>
-                        <div style="font-size:0.8rem; color:#64748b;">Applied: ${new Date(l.startDate).toLocaleDateString()}</div>
+                        <div style="font-size:0.8rem; color:#64748b; margin-top: 2px;">
+                            From: ${new Date(l.startDate).toLocaleString()} | To: ${new Date(l.endDate).toLocaleString()}
+                        </div>
                     </div>
                     <span style="font-size:0.75rem; padding:4px 10px; border-radius:10px; background:${getStatusColor(l.status)}; color:white; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
                         ${l.status}
                     </span>
                 </div>
+                ${l.reason ? `
+                <div style="font-size:0.85rem; color:#475569; background: white; padding: 8px 12px; border-radius: 6px; border: 1px dashed #e2e8f0;">
+                    <strong>Reason:</strong> ${l.reason}
+                </div>
+                ` : ''}
                 ${remarks.length > 0 ? `
                 <div style="background: #fff; padding: 10px; border-radius: 8px; border-left: 4px solid ${l.status.includes('Rejected') ? '#ef4444' : '#3b82f6'}; font-size: 0.85rem; color: #475569;">
                     ${remarks.join('<br>')}
@@ -182,6 +241,7 @@ async function loadMyLeaves() {
 
     } catch (error) {
         console.error(error);
+        container.innerHTML = '<p style="text-align:center; color:#ef4444; padding: 1rem;">Error loading leave applications.</p>';
     }
 }
 
@@ -203,23 +263,25 @@ async function loadHostelNotices() {
     const user = JSON.parse(userStr);
 
     try {
-        // Fetch notices with role=hosteler and user department
         const res = await fetch(`${API_BASE}/notices?role=hosteler&department=${user.department || ''}`, {
             headers: { 'Authorization': `Bearer ${user.token}` }
         });
 
         if (!res.ok) throw new Error('Failed to load notices');
 
-        const notices = await res.json();
+        allHostelNotices = await res.json();
 
-        if (notices.length === 0) {
+        if (allHostelNotices.length === 0) {
             list.innerHTML = '<p style="text-align:center; color:#64748b; padding:1rem;">No new notices.</p>';
             return;
         }
 
-        list.innerHTML = notices.map(n => `
+        list.innerHTML = allHostelNotices.map(n => `
             <div class="notice-card-item" onclick="openNoticeModal('${n._id}')">
-                <div class="notice-content">
+                <div class="notice-icon-box">
+                    <i class="fa-solid ${getNoticeIcon(n.audience)}"></i>
+                </div>
+                <div class="notice-content" style="flex: 1;">
                     <h4>${n.title}</h4>
                     <p>${n.content.substring(0, 60)}${n.content.length > 60 ? '...' : ''}</p>
                     <div class="notice-date-badge">
@@ -243,7 +305,15 @@ function getNoticeIcon(audience) {
 }
 
 function openNoticeModal(id) {
-    // Optional: Implement a modal to show full notice details if needed
-    // For now, simple alert or handled by a global modal if one exists
-    // alert('Detailed view coming soon for notice: ' + id);
+    const notice = allHostelNotices.find(n => n._id === id);
+    if (notice) {
+        document.getElementById('modal-notice-title').textContent = notice.title;
+        document.getElementById('modal-notice-meta').textContent = `${new Date(notice.date).toLocaleDateString()} | Target: ${notice.audience.toUpperCase()}`;
+        document.getElementById('modal-notice-content').textContent = notice.content;
+        
+        // standard helper call
+        if (typeof toggleModal === 'function') {
+            toggleModal('notice-detail-modal');
+        }
+    }
 }
