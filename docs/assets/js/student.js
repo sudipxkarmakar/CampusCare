@@ -64,7 +64,7 @@ function getGreetingText(name) {
         icon = "🌙";
     }
     
-    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>! ${icon}`;
+    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
 }
 
 // Update UI

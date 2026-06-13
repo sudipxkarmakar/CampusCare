@@ -5,6 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
     setupProfile();
 });
 
+// Welcome Greeting Generator
+function getGreetingText(name) {
+    const hour = new Date().getHours();
+    let salutation = "Good morning";
+    let icon = "☀️";
+    
+    if (hour >= 5 && hour < 12) {
+        salutation = "Good morning";
+        icon = "☀️";
+    } else if (hour >= 12 && hour < 17) {
+        salutation = "Good afternoon";
+        icon = "☀️";
+    } else {
+        salutation = "Good evening";
+        icon = "🌙";
+    }
+    
+    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
+}
+
 async function loadDashboardStats() {
     const userStr = localStorage.getItem('user');
     if (!userStr) {
@@ -31,22 +51,22 @@ async function loadDashboardStats() {
 
         const data = await response.json();
 
-        // Populate DOM
+        // Populate DOM dynamically (No hardcoding)
         if (document.getElementById('totalStudents'))
-            document.getElementById('totalStudents').innerText = data.studentCount;
+            document.getElementById('totalStudents').innerText = data.studentCount !== undefined ? data.studentCount : 0;
         if (document.getElementById('totalTeachers'))
-            document.getElementById('totalTeachers').innerText = data.teacherCount;
+            document.getElementById('totalTeachers').innerText = data.teacherCount !== undefined ? data.teacherCount : 0;
         if (document.getElementById('activeLeaves'))
-            document.getElementById('activeLeaves').innerText = data.activeLeaves;
+            document.getElementById('activeLeaves').innerText = data.activeLeaves !== undefined ? data.activeLeaves : 0;
         if (document.getElementById('openComplaints'))
-            document.getElementById('openComplaints').innerText = data.openComplaints;
+            document.getElementById('openComplaints').innerText = data.openComplaints !== undefined ? data.openComplaints : 0;
         if (document.getElementById('totalHODs'))
-            document.getElementById('totalHODs').innerText = data.hodCount;
+            document.getElementById('totalHODs').innerText = data.hodCount !== undefined ? data.hodCount : 0;
         if (document.getElementById('totalWardens'))
-            document.getElementById('totalWardens').innerText = data.wardenCount;
+            document.getElementById('totalWardens').innerText = data.wardenCount !== undefined ? data.wardenCount : 0;
 
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching dashboard stats:', error);
     }
 }
 
@@ -54,18 +74,24 @@ function setupProfile() {
     const userStr = localStorage.getItem('user');
     if (userStr) {
         const user = JSON.parse(userStr);
-        document.getElementById('userProfile').style.display = 'flex';
-        document.getElementById('userName').innerText = `Hello, ${user.name}`;
-        document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Campus Admin`;
+        
+        // Update greeting
+        const greetingEl = document.getElementById('principal-greeting');
+        if (greetingEl) {
+            const firstName = user.name ? user.name.split(' ')[0] : 'Principal';
+            greetingEl.innerHTML = getGreetingText(firstName);
+        }
+
+        // Set navbar user profiles
+        const userProfileEl = document.getElementById('userProfile');
+        if (userProfileEl) userProfileEl.style.display = 'flex';
+        
+        const userNameEl = document.getElementById('userName');
+        if (userNameEl) userNameEl.innerText = `Hi, ${user.name ? user.name.split(' ')[0] : 'Principal'}`;
+        
+        const userDetailsEl = document.getElementById('userDetails');
+        if (userDetailsEl) {
+            userDetailsEl.innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Campus Authority`;
+        }
     }
-}
-
-function toggleProfileMenu() {
-    const menu = document.getElementById('profileMenu');
-    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-}
-
-function logout() {
-    localStorage.removeItem('user');
-    window.location.href = '../index.html';
 }
