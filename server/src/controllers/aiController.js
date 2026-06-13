@@ -57,3 +57,14 @@ export const handleGenerateNotice = async (req, res, next) => {
         next(error);
     }
 };
+
+export const handleGenerateLeaderMessage = async (req, res, next) => {
+    try {
+        const { prompt } = req.body;
+        // Prompt can be optional for general messages
+        const draft = await aiService.generateLeaderMessageDraft(prompt, req.user);
+        res.status(200).json(draft);
+    } catch (error) {
+        next(error);
+    }
+};

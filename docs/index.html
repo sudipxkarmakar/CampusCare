@@ -630,114 +630,25 @@
                   >
                     <i class="fa-solid fa-chevron-left"></i>
                   </button>
-                  <div style="display: flex; gap: 16px; flex: 1">
-                    <div
-                      class="profile-card"
-                      style="
-                        flex: 1;
-                        border: 1px solid var(--border-color);
-                        border-radius: var(--radius-md);
-                      "
-                    >
-                      <img
-                        src="https://ui-avatars.com/api/?name=JS&background=random"
-                        class="profile-img"
-                      />
-                      <p class="profile-quote">
-                        "Education is the most powerful weapon..."
-                      </p>
-                      <h4 class="profile-name">- Dr. John Smith</h4>
-                      <p class="profile-role">Principal</p>
-                    </div>
-                    <div
-                      class="profile-card"
-                      style="
-                        flex: 1;
-                        border: 1px solid var(--border-color);
-                        border-radius: var(--radius-md);
-                      "
-                    >
-                      <img
-                        src="https://ui-avatars.com/api/?name=SJ&background=random"
-                        class="profile-img"
-                      />
-                      <p class="profile-quote">
-                        "The beautiful thing about learning is that..."
-                      </p>
-                      <h4 class="profile-name">- Prof. Sarah Johnson</h4>
-                      <p class="profile-role">Head of CSE</p>
-                    </div>
-                    <div
-                      class="profile-card"
-                      style="
-                        flex: 1;
-                        border: 1px solid var(--border-color);
-                        border-radius: var(--radius-md);
-                      "
-                    >
-                      <img
-                        src="https://ui-avatars.com/api/?name=ML&background=random"
-                        class="profile-img"
-                      />
-                      <p class="profile-quote">
-                        "Leadership is not about being in charge..."
-                      </p>
-                      <h4 class="profile-name">- Dr. Michael Lee</h4>
-                      <p class="profile-role">Dean, Academics</p>
+                  <div id="academic-leaders-list" style="display: flex; gap: 16px; flex: 1; overflow-x: auto; padding-bottom: 8px;">
+                    <!-- Leaders loaded dynamically via JS -->
+                    <div style="text-align:center; width: 100%; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                      <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--primary); display:block; margin-bottom:10px;"></i>
+                      Loading academic leaders...
                     </div>
                   </div>
-                </div>
-                <div style="text-align: center; margin-top: 15px">
-                  <span
+                  <button
                     style="
-                      display: inline-block;
-                      width: 8px;
-                      height: 8px;
-                      background: var(--primary);
-                      border-radius: 50%;
-                      margin: 0 4px;
+                      background: none;
+                      border: none;
+                      font-size: 1.2rem;
+                      color: var(--text-muted);
+                      cursor: pointer;
                     "
-                  ></span>
-                  <span
-                    style="
-                      display: inline-block;
-                      width: 8px;
-                      height: 8px;
-                      background: #cbd5e1;
-                      border-radius: 50%;
-                      margin: 0 4px;
-                    "
-                  ></span>
-                  <span
-                    style="
-                      display: inline-block;
-                      width: 8px;
-                      height: 8px;
-                      background: #cbd5e1;
-                      border-radius: 50%;
-                      margin: 0 4px;
-                    "
-                  ></span>
-                  <span
-                    style="
-                      display: inline-block;
-                      width: 8px;
-                      height: 8px;
-                      background: #cbd5e1;
-                      border-radius: 50%;
-                      margin: 0 4px;
-                    "
-                  ></span>
-                  <span
-                    style="
-                      display: inline-block;
-                      width: 8px;
-                      height: 8px;
-                      background: #cbd5e1;
-                      border-radius: 50%;
-                      margin: 0 4px;
-                    "
-                  ></span>
+                    data-alert="Next slide"
+                  >
+                    <i class="fa-solid fa-chevron-right"></i>
+                  </button>
                 </div>
           </section>
 

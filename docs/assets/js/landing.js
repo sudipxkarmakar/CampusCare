@@ -507,6 +507,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Load Academic Leaders
+  const leadersContainer = document.getElementById("academic-leaders-list");
+  if (leadersContainer) {
+    try {
+      const res = await fetch(`${API_BASE}/api/academic-leaders`);
+      if (!res.ok) throw new Error("API Error");
+      const leaders = await res.json();
+
+      if (leaders.length === 0) {
+        leadersContainer.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-muted);">No academic leaders found.</p>';
+      } else {
+        let html = "";
+        // Show up to 4 leaders on the landing page
+        const displayLeaders = leaders.slice(0, 4);
+        displayLeaders.forEach((leader) => {
+          const avatarUrl = leader.image ? `${API_BASE}${leader.image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random`;
+          const quote = leader.message ? `"${leader.message}"` : '"Leading with excellence."';
+          
+          html += `
+            <div class="profile-card" style="flex: 1; min-width: 200px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+              <img src="${avatarUrl}" class="profile-img" alt="${leader.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random'" />
+              <p class="profile-quote" style="min-height: 48px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">${quote}</p>
+              <h4 class="profile-name" style="margin-top: 10px; margin-bottom: 2px;">- ${leader.name}</h4>
+              <p class="profile-role" style="color: var(--primary); font-weight: 600; font-size: 0.85rem;">${leader.role}</p>
+            </div>
+          `;
+        });
+        leadersContainer.innerHTML = html;
+      }
+    } catch (error) {
+      console.error("Academic Leaders API Error:", error);
+      leadersContainer.innerHTML = '<p style="text-align:center; width:100%; color:red;">Failed to load academic leaders.</p>';
+    }
+  }
+
   // Load Transparency Wall (Complaints)
   const complaintContainer = document.getElementById("complaint-list");
   const wallSearch = document.getElementById("wall-search");

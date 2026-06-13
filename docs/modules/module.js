@@ -431,6 +431,14 @@
       return;
     }
 
+    if (cfg.module === 'leaders') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderLeadersPage(info);
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'library') renderLibrary();
     else if (cfg.module === 'profile') renderProfile();
     else if (cfg.module === 'gate-pass') renderGatePassApproval();
@@ -1051,6 +1059,474 @@
     }
     alert('Submitted successfully.');
     form.reset();
+  }
+
+  async function renderLeadersPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const isAuthority = ['principal', 'admin', 'dean', 'hod', 'teacher'].includes(userRole);
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    // Hide the Post link from students/guests in the sub-header links
+    setTimeout(() => {
+      if (!isAuthority) {
+        document.querySelectorAll('.module-actions a[href*="post.html"]').forEach(el => el.style.display = 'none');
+      }
+    }, 50);
+
+    if (isPostMode && !isAuthority) {
+      content(`
+        <div class="section-card module-panel" style="text-align: center; padding: 40px; color: var(--danger);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+          <h3>Access Denied</h3>
+          <p>You do not have permission to post or edit academic leaders.</p>
+        </div>
+      `);
+      return;
+    }
+
+    if (isPostMode) {
+      content(`
+        <style>
+          @keyframes ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(139,92,246,0); }
+          }
+          .ai-draft-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #8b5cf6; background: #f5f3ff;
+            color: #6d28d9; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center; letter-spacing: 0.01em;
+          }
+          .ai-draft-btn:hover:not(:disabled) {
+            background: #6d28d9; color: white;
+            box-shadow: 0 4px 16px rgba(109,40,217,0.25);
+            transform: translateY(-1px);
+          }
+          .ai-draft-btn:disabled {
+            opacity: 0.65; cursor: not-allowed;
+          }
+          .ai-draft-btn.loading { animation: ai-pulse 1.4s infinite; }
+        </style>
+        
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="leaderBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Academic Leaders</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Visionary leaders directing Asansol Engineering College's academic progress.</p>
+          </div>
+        </div>
+
+        <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); max-width: 650px; margin: 0 auto;">
+          <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Academic Leader
+          </h3>
+          <form id="leaderPostForm" style="display: flex; flex-direction: column; gap: 18px;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Full Name</label>
+                <input type="text" name="name" placeholder="e.g. Dr. Jane Doe" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Role / Designation</label>
+                <select id="leaderRoleSelect" name="role" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+                  <option value="">Select Role</option>
+                  <option value="Principal">Principal</option>
+                  <option value="Vice Principal">Vice Principal</option>
+                  <option value="Dean of Academics">Dean of Academics</option>
+                  <option value="Dean of Students">Dean of Students</option>
+                  <option value="HOD">HOD (Head of Department)</option>
+                  <option value="Professor">Professor</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Department (if HOD/Prof)</label>
+                <input type="text" name="department" id="leaderDeptInput" placeholder="e.g. CSE, ECE, Mechanical" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Qualification</label>
+                <input type="text" name="qualification" placeholder="e.g. Ph.D. in Computer Science" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Years of Experience</label>
+                <input type="text" name="experience" placeholder="e.g. 20 Years" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Email Address</label>
+                <input type="email" name="email" placeholder="e.g. leader@campus.com" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Display Priority (1 = Highest)</label>
+                <input type="number" name="priority" value="5" min="1" max="100" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Profile Picture</label>
+                <input type="file" name="image" accept="image/*" style="font-size: 0.85rem; color: #64748b;">
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                <span>Inspiring Leadership Quote / Message</span>
+                <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
+              </label>
+              
+              <button type="button" id="leaderAiDraftBtn" class="ai-draft-btn" style="margin-bottom: 8px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span id="leaderAiDraftBtnLabel">Draft Quote with AI</span>
+              </button>
+
+              <textarea name="message" id="leaderQuoteInput" rows="3" placeholder="A quote or welcome message from the leader..." style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+            </div>
+
+            <button type="submit" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+              <i class="fa-solid fa-paper-plane"></i> Publish Leader
+            </button>
+          </form>
+        </div>
+      `);
+
+      document.getElementById('leaderBackBtn')?.addEventListener('click', goToDashboard);
+
+      // AI Draft Quote Event Listener
+      document.getElementById('leaderAiDraftBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('leaderAiDraftBtn');
+        const label = document.getElementById('leaderAiDraftBtnLabel');
+        const roleSel = document.getElementById('leaderRoleSelect');
+        const deptInput = document.getElementById('leaderDeptInput');
+        const quoteInput = document.getElementById('leaderQuoteInput');
+        const aiTag = document.getElementById('leaderAiTag');
+
+        const roleVal = roleSel?.value;
+        const deptVal = deptInput?.value?.trim();
+
+        let promptContext = `an academic leader`;
+        if (roleVal) {
+          promptContext = `a ${roleVal}`;
+          if (deptVal) promptContext += ` of ${deptVal} department`;
+        }
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        if (label) label.textContent = 'Generating message…';
+
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/ai/generate-leader-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: promptContext })
+          });
+          if (!res.ok) throw new Error('AI request failed');
+          const data = await res.json();
+          if (quoteInput && data.message) {
+            quoteInput.value = data.message;
+            quoteInput.style.borderColor = '#8b5cf6';
+            setTimeout(() => { quoteInput.style.borderColor = '#cbd5e1'; }, 1500);
+          }
+          if (aiTag) aiTag.style.display = 'inline-flex';
+        } catch (err) {
+          alert('AI drafting failed. Please write the quote manually.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          if (label) label.textContent = 'Draft Quote with AI';
+        }
+      });
+
+      // Submit Form
+      document.getElementById('leaderPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const token = user.token || localStorage.getItem('token') || '';
+        const formData = new FormData(form);
+
+        try {
+          const res = await fetch(`${apiBase}/api/academic-leaders`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+          if (res.ok) {
+            alert('Academic Leader published successfully.');
+            form.reset();
+            window.location.href = 'view.html';
+          } else {
+            const err = await res.json();
+            alert(err.message || 'Failed to publish academic leader.');
+          }
+        } catch (error) {
+          alert('Submission failed. Check network or server connection.');
+        }
+      });
+
+    } else {
+      // View mode
+      content(`
+        <style>
+          #leadersGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin-top: 10px;
+          }
+          .leader-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 280px;
+            box-sizing: border-box;
+          }
+          .leader-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(107, 70, 193, 0.08);
+            border-color: rgba(107, 70, 193, 0.2);
+          }
+          .leader-avatar-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #f3e8ff;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+          }
+          .leader-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .leader-delete-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            z-index: 10;
+          }
+          .leader-delete-btn:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.1);
+          }
+          .leader-role-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="leaderBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Academic Leaders</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Visionary leaders directing Asansol Engineering College's academic progress.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
+          <!-- Filter Dropdown -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="leaderRoleFilter" style="padding: 10px 18px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569; box-shadow: var(--shadow-sm);">
+              <option value="all">All Roles</option>
+              <option value="principal">Principal & Vice Principal</option>
+              <option value="dean">Deans</option>
+              <option value="hod">HODs</option>
+              <option value="other">Other Faculty</option>
+            </select>
+          </div>
+          <!-- Search Input -->
+          <div style="position: relative;">
+            <input type="text" id="leaderSearchInput" placeholder="Search by name, role, dept..." style="padding: 10px 18px 10px 38px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 250px; background: white; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+          </div>
+        </div>
+
+        <div id="leadersGrid">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading academic leaders...</div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('leaderBackBtn')?.addEventListener('click', goToDashboard);
+
+      let loadedLeaders = [];
+
+      const loadLeaders = async () => {
+        try {
+          const res = await fetch(`${apiBase}/api/academic-leaders`);
+          if (!res.ok) throw new Error();
+          loadedLeaders = await res.json();
+          renderFilteredLeaders();
+        } catch (error) {
+          const grid = document.getElementById('leadersGrid');
+          if (grid) grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #ef4444; grid-column: 1 / -1;">Unable to load academic leaders. Please try again.</div>`;
+        }
+      };
+
+      const renderFilteredLeaders = () => {
+        const grid = document.getElementById('leadersGrid');
+        if (!grid) return;
+
+        const roleFilter = document.getElementById('leaderRoleFilter')?.value || 'all';
+        const searchVal = document.getElementById('leaderSearchInput')?.value?.toLowerCase() || '';
+
+        let filtered = [...loadedLeaders];
+
+        // Filter by role
+        if (roleFilter !== 'all') {
+          filtered = filtered.filter(item => {
+            const role = (item.role || '').toLowerCase();
+            if (roleFilter === 'principal') return role.includes('principal');
+            if (roleFilter === 'dean') return role.includes('dean');
+            if (roleFilter === 'hod') return role.includes('hod') || role.includes('head');
+            if (roleFilter === 'other') return !role.includes('principal') && !role.includes('dean') && !role.includes('hod') && !role.includes('head');
+            return true;
+          });
+        }
+
+        // Filter by search query
+        if (searchVal) {
+          filtered = filtered.filter(item => {
+            return (item.name || '').toLowerCase().includes(searchVal) ||
+                   (item.role || '').toLowerCase().includes(searchVal) ||
+                   (item.department || '').toLowerCase().includes(searchVal) ||
+                   (item.qualification || '').toLowerCase().includes(searchVal);
+          });
+        }
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+              <div style="font-size: 1.05rem; font-weight: 600;">No academic leaders found</div>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = filtered.map(item => {
+          let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=6b46c1&color=fff&rounded=true&bold=true`;
+          if (item.image) {
+            avatarSrc = item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`;
+          }
+
+          let roleBadgeStyle = 'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+          const r = (item.role || '').toLowerCase();
+          if (r.includes('principal')) roleBadgeStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
+          else if (r.includes('dean')) roleBadgeStyle = 'background: #faf5ff; color: #6b46c1; border: 1px solid #e9d5ff;';
+          else if (r.includes('hod') || r.includes('head')) roleBadgeStyle = 'background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe;';
+
+          // Show delete button only to authorities
+          const deleteBtnHtml = isAuthority ? `
+            <button type="button" class="leader-delete-btn" data-id="${item._id}" title="Remove Leader">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          ` : '';
+
+          return `
+            <div class="leader-card">
+              ${deleteBtnHtml}
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="leader-avatar-wrap">
+                  <img src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=6b46c1&color=fff&rounded=true&bold=true';" style="object-fit: cover;">
+                </div>
+                <div style="overflow: hidden; min-width: 0;">
+                  <span class="leader-role-badge" style="${roleBadgeStyle}">${item.role}</span>
+                  <h3 style="margin: 4px 0 0 0; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(item.name)}</h3>
+                  <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748b; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(item.qualification)}</p>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: #475569; background: #f8fafc; padding: 12px; border-radius: 12px;">
+                ${item.department ? `<div><i class="fa-solid fa-building" style="width: 18px; color: #8b5cf6;"></i> <strong>Dept:</strong> ${esc(item.department)}</div>` : ''}
+                ${item.experience ? `<div><i class="fa-solid fa-briefcase" style="width: 18px; color: #8b5cf6;"></i> <strong>Exp:</strong> ${esc(item.experience)}</div>` : ''}
+                ${item.email ? `<div><i class="fa-solid fa-envelope" style="width: 18px; color: #8b5cf6;"></i> <a href="mailto:${item.email}" style="color: inherit; text-decoration: none;">${esc(item.email)}</a></div>` : ''}
+              </div>
+
+              ${item.message ? `
+                <div style="font-size: 0.85rem; color: #475569; font-style: italic; line-height: 1.5; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: flex; gap: 6px;">
+                  <i class="fa-solid fa-quote-left" style="color: #c084fc; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"></i>
+                  <span>"${esc(item.message)}"</span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+
+        // Attach delete event listeners
+        if (isAuthority) {
+          grid.querySelectorAll('.leader-delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              if (confirm('Are you sure you want to remove this academic leader?')) {
+                try {
+                  const token = user.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${apiBase}/api/academic-leaders/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (res.ok) {
+                    alert('Academic Leader removed successfully.');
+                    loadLeaders();
+                  } else {
+                    alert('Failed to remove academic leader.');
+                  }
+                } catch (error) {
+                  alert('Deletion failed.');
+                }
+              }
+            });
+          });
+        }
+      };
+
+      document.getElementById('leaderRoleFilter')?.addEventListener('change', renderFilteredLeaders);
+      document.getElementById('leaderSearchInput')?.addEventListener('input', renderFilteredLeaders);
+
+      loadLeaders();
+    }
   }
 
   async function renderComplaintsPage(info) {

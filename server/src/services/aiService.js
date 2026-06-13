@@ -933,6 +933,22 @@ class CampusAgentService {
         return { body: clean(body, fallbackBody) };
     }
 
+    async generateLeaderMessageDraft(prompt, user = null) {
+        const text = clean(prompt);
+        const fallbackBody = `As an academic leader, my mission is to foster a culture of excellence, innovation, and integrity. ${text ? `Focusing on ${text}.` : ''}`;
+        const body = await this.llmText([
+            {
+                role: 'system',
+                content: 'You are an academic leader (Principal, Vice Principal, Dean, HOD, or Professor). Write an inspiring, professional leadership message or quote (1-2 sentences) for the college portal. Keep it motivating, concise, and focused on student growth and academic excellence. Do not use markdown. Plain text only.'
+            },
+            {
+                role: 'user',
+                content: `Quote context: ${text}\nWrite the leadership message/quote:`
+            }
+        ], fallbackBody);
+        return { message: clean(body, fallbackBody) };
+    }
+
     heuristicComplaintDraft(text) {
         const lower = text.toLowerCase();
         let category = 'Other';
