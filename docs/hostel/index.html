@@ -248,7 +248,7 @@
         <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
           <section class="hero-card" id="home" style="padding: 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
             <div class="hero-content" style="max-width: 60%; z-index: 2;">
-              <h1 id="hosteler-greeting" style="font-size:2.5rem; margin-bottom:12px; color: var(--text-dark);">Good morning, <span style="color: var(--warning); font-weight: 800;">Hosteler</span>! 👋</h1>
+              <h1 id="hosteler-greeting" style="font-size:2.5rem; margin-bottom:12px; color: var(--text-dark); line-height: 1.3;">Good morning, <span style="color: var(--warning); font-weight: 800;">Hosteler</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">👋</span></h1>
               <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
                 Welcome to your Hostel Hub. Manage leaves, view mess menus, and stay updated.
               </p>
@@ -260,38 +260,38 @@
 
           <!-- Hostel Stats Row -->
           <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
-            <div class="stat-card-new">
+            <div class="stat-card-new" style="align-items: center; text-align: center;">
               <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;">
                 <i class="fa-solid fa-bed"></i>
               </div>
-              <div class="stat-info">
+              <div class="stat-info" style="text-align: center;">
                 <h4>Room No</h4>
                 <p class="stat-value" id="room-number-val">--</p>
               </div>
             </div>
-            <div class="stat-card-new">
+            <div class="stat-card-new" style="align-items: center; text-align: center;">
               <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;">
                 <i class="fa-solid fa-building"></i>
               </div>
-              <div class="stat-info">
+              <div class="stat-info" style="text-align: center;">
                 <h4>Hostel</h4>
                 <p class="stat-value" id="hostel-name-val" style="font-size: 1.15rem; word-break: break-all; font-weight: 700; white-space: normal; line-height: 1.2;">--</p>
               </div>
             </div>
-            <div class="stat-card-new">
+            <div class="stat-card-new" style="align-items: center; text-align: center;">
               <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;">
                 <i class="fa-solid fa-circle-check"></i>
               </div>
-              <div class="stat-info">
+              <div class="stat-info" style="text-align: center;">
                 <h4>Approved Leaves</h4>
                 <p class="stat-value" id="approvedLeavesCount">--</p>
               </div>
             </div>
-            <div class="stat-card-new">
+            <div class="stat-card-new" style="align-items: center; text-align: center;">
               <div class="icon-wrapper" style="background: #fee2e2; color: #ef4444;">
                 <i class="fa-solid fa-clock"></i>
               </div>
-              <div class="stat-info">
+              <div class="stat-info" style="text-align: center;">
                 <h4>Pending Leaves</h4>
                 <p class="stat-value" id="pendingLeavesCount">--</p>
               </div>

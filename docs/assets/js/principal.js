@@ -9,20 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function getGreetingText(name) {
     const hour = new Date().getHours();
     let salutation = "Good morning";
-    let icon = "🏛️";
+    let icon = "☀️";
     
     if (hour >= 5 && hour < 12) {
         salutation = "Good morning";
-        icon = "🏛️";
+        icon = "☀️";
     } else if (hour >= 12 && hour < 17) {
         salutation = "Good afternoon";
-        icon = "🏛️";
+        icon = "☀️";
     } else {
         salutation = "Good evening";
-        icon = "🏛️";
+        icon = "🌙";
     }
     
-    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>! ${icon}`;
+    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
 }
 
 async function loadDashboardStats() {
