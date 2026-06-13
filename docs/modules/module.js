@@ -144,8 +144,8 @@
         <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> My Classes</a></li>
         <li><a href="${rootPrefix}modules/assignments/post.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
         <li><a href="${rootPrefix}modules/documents/post.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-arrow-up"></i> Notes</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Students</a></li>
-        <li><a href="${rootPrefix}teacher/mentees.html" class="nav-item"><i class="fa-solid fa-hands-holding-child"></i> Mentees</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=my-mentees') ? 'active' : ''}"><i class="fa-solid fa-users"></i> Students</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html?filter=my-mentees" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=my-mentees') ? 'active' : ''}"><i class="fa-solid fa-hands-holding-child"></i> Mentees</a></li>
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-circle-exclamation"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/mar-moocs/post.html" class="nav-item ${cfg.module === 'mar-moocs' ? 'active' : ''}"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
         <li><a href="${rootPrefix}teacher/personal_space.html" class="nav-item"><i class="fa-solid fa-folder-open"></i> Personal Space</a></li>
@@ -171,19 +171,19 @@
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-gavel"></i> Dept Complaints</a></li>
         <li><a href="${rootPrefix}hod/subject_allocation.html" class="nav-item"><i class="fa-solid fa-book-open-reader"></i> Subject Allocation</a></li>
         <li><a href="${rootPrefix}modules/routine/post.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-week"></i> Routine Management</a></li>
-        <li><a href="${rootPrefix}hod/mentors.html" class="nav-item"><i class="fa-solid fa-chalkboard-user"></i> Mentor Assignment</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
-        <li><a href="${rootPrefix}hod/teachers.html" class="nav-item"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
+        <li><a href="${rootPrefix}hod/mentor_allocation.html" class="nav-item"><i class="fa-solid fa-chalkboard-user"></i> Mentor Assignment</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
       navMenuHtml = `
         <li><a href="${rootPrefix}principal/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> All Students</a></li>
-        <li><a href="${rootPrefix}principal/teachers.html" class="nav-item"><i class="fa-solid fa-person-chalkboard"></i> All Teachers</a></li>
-        <li><a href="${rootPrefix}principal/hods.html" class="nav-item"><i class="fa-solid fa-user-tie"></i> HODs</a></li>
-        <li><a href="${rootPrefix}principal/wardens.html" class="nav-item"><i class="fa-solid fa-user-shield"></i> Wardens</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> All Students</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> All Teachers</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-hods" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-hods') ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> HODs</a></li>
+        <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-wardens" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-wardens') ? 'active' : ''}"><i class="fa-solid fa-user-shield"></i> Wardens</a></li>
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-list-check"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Global Notices</a></li>
         <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Central Library</a></li>
@@ -324,7 +324,11 @@
             </ul>
 
             <div class="sidebar-bottom" style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 4px !important;">
-              <a href="${rootPrefix}modules/profile.html" class="nav-item ${cfg.module === 'profile' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Settings</a>
+              ${user.token ? `
+                <a href="${rootPrefix}modules/complaints/post.html" class="nav-item ${cfg.module === 'complaints' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-circle-plus"></i> Register Complaint</a>
+              ` : `
+                <a href="${rootPrefix}modules/profile.html" class="nav-item ${cfg.module === 'profile' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Settings</a>
+              `}
               <a href="javascript:void(0)" class="nav-item" data-action="logout" style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
             </div>
           </aside>
@@ -418,11 +422,19 @@
       if (event.target.id === 'module-modal-overlay') closeModuleModal();
     });
     document.getElementById('userProfile')?.addEventListener('click', toggleProfileMenu);
+
+    if (cfg.module === 'complaints') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderComplaintsPage(info);
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'library') renderLibrary();
     else if (cfg.module === 'profile') renderProfile();
     else if (cfg.module === 'gate-pass') renderGatePassApproval();
     else if (cfg.module === 'student-database') renderStudentDatabase();
-    else if (cfg.module === 'complaints' && cfg.mode === 'resolve') renderComplaintResolution();
     else if (cfg.mode === 'post') renderPostForm(info);
     else renderList(info);
 
@@ -460,8 +472,19 @@
         </div>
       </div>
       
+      <style>
+        #noticesVerticalList {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+          align-items: start;
+        }
+        @media (max-width: 900px) {
+          #noticesVerticalList { grid-template-columns: 1fr; }
+        }
+      </style>
       <div id="noticesVerticalList">
-        <div style="text-align: center; padding: 40px; color: #64748b;">
+        <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
           <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
           <div>Loading notices...</div>
         </div>
@@ -505,7 +528,7 @@
       renderFiltered();
     } catch (error) {
       el.querySelector('#noticesVerticalList').innerHTML = `
-        <div style="text-align: center; padding: 40px; color: #ef4444;">
+        <div style="text-align: center; padding: 40px; color: #ef4444; grid-column: 1 / -1;">
           <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 8px;"></i>
           <div>Unable to load notices. Please try again later.</div>
         </div>
@@ -537,7 +560,7 @@
       const listContainer = el.querySelector('#noticesVerticalList');
       if (filtered.length === 0) {
         listContainer.innerHTML = `
-          <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b;">
+          <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
             <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
             <div style="font-size: 1.05rem; font-weight: 600;">No notices found</div>
             <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">There are no announcements in this category.</div>
@@ -551,33 +574,35 @@
         const contentSnippet = item.content || item.description || 'No description available.';
         const audience = item.audience || 'general';
         const d = new Date(item.date || item.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const posterName = item.postedBy?.name || item.postedByName || 'Administration';
+        const posterRole = item.postedBy?.designation || item.postedBy?.role || '';
         
         let iconClass = 'fa-bullhorn';
-        let bgStyle = 'background: #eff6ff; color: #3b82f6;'; 
+        let bgStyle = 'background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #3b82f6;'; 
         
         const titleLower = title.toLowerCase();
         if (titleLower.includes('vacation') || titleLower.includes('holiday') || titleLower.includes('winter') || titleLower.includes('summer')) {
           iconClass = 'fa-calendar-day';
-          bgStyle = 'background: #fff1f2; color: #f43f5e;'; 
+          bgStyle = 'background: linear-gradient(135deg, #fff1f2, #ffe4e6); color: #f43f5e;'; 
         } else if (titleLower.includes('fair') || titleLower.includes('competition') || titleLower.includes('sports') || titleLower.includes('tournament') || titleLower.includes('draw')) {
           iconClass = 'fa-trophy';
-          bgStyle = 'background: #fef9c3; color: #ca8a04;'; 
+          bgStyle = 'background: linear-gradient(135deg, #fef9c3, #fef08a); color: #ca8a04;'; 
         } else if (titleLower.includes('meeting') || titleLower.includes('faculty') || titleLower.includes('routine')) {
           iconClass = 'fa-book-open';
-          bgStyle = 'background: #faf5ff; color: #a855f7;'; 
+          bgStyle = 'background: linear-gradient(135deg, #faf5ff, #ede9fe); color: #a855f7;'; 
         } else if (titleLower.includes('environment') || titleLower.includes('celebration') || titleLower.includes('fest')) {
           iconClass = 'fa-cake-candles';
-          bgStyle = 'background: #fff5f5; color: #ff6b6b;'; 
+          bgStyle = 'background: linear-gradient(135deg, #fff5f5, #ffe4e6); color: #ff6b6b;'; 
         } else if (titleLower.includes('scholarship') || titleLower.includes('apply') || titleLower.includes('admission')) {
           iconClass = 'fa-graduation-cap';
-          bgStyle = 'background: #e0e7ff; color: #4f46e5;'; 
-        } else if (titleLower.includes('library') || titleLower.includes('book')) {
-          iconClass = 'fa-bullhorn';
-          bgStyle = 'background: #eff6ff; color: #3b82f6;'; 
+          bgStyle = 'background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4f46e5;'; 
+        } else if (titleLower.includes('exam') || titleLower.includes('result') || titleLower.includes('test')) {
+          iconClass = 'fa-file-pen';
+          bgStyle = 'background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #059669;'; 
         }
 
         let badgeLabel = 'General';
-        let badgeStyle = 'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+        let badgeStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
         const aud = audience.toLowerCase();
         if (aud === 'student' || aud === 'students') {
           badgeStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
@@ -591,27 +616,37 @@
         } else if (['admin', 'warden', 'principal', 'hod'].includes(aud)) {
           badgeStyle = 'background: #faf5ff; color: #6b46c1; border: 1px solid #e9d5ff;';
           badgeLabel = 'Administrators';
-        } else {
-          badgeStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
         }
 
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(posterName)}&background=6b46c1&color=fff&rounded=true&bold=true&size=32`;
+        const posterAvatar = item.postedBy?.profilePicture || avatarUrl;
+
         return `
-          <div class="notice-row" data-id="${item._id}" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: all 0.2s; cursor: pointer;" onmouseenter="this.style.borderColor='#e2e8f0'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.02)';" onmouseleave="this.style.borderColor='#f1f5f9'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.01)';">
-            <div style="display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0;">
-              <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; ${bgStyle}">
+          <div class="notice-row" data-id="${item._id}" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 18px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); transition: all 0.22s; cursor: pointer; position: relative; overflow: hidden;" onmouseenter="this.style.borderColor='#c4b5fd'; this.style.boxShadow='0 8px 28px rgba(107,70,193,0.1)'; this.style.transform='translateY(-2px)';" onmouseleave="this.style.borderColor='#f1f5f9'; this.style.boxShadow='0 2px 12px rgba(0,0,0,0.04)'; this.style.transform='none';">
+            <!-- Top Row: Icon + Badge -->
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; ${bgStyle}">
                 <i class="fa-solid ${iconClass}"></i>
               </div>
-              <div style="min-width: 0; flex: 1;">
-                <div style="margin-bottom: 6px;">
-                  <span style="${badgeStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${badgeLabel}</span>
-                </div>
-                <h3 style="margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${esc(title)}</h3>
-                <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${stripNoticeContent(contentSnippet)}</p>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="${badgeStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${badgeLabel}</span>
+                <span style="font-size: 0.8rem; font-weight: 600; color: #94a3b8;">${d}</span>
               </div>
             </div>
-            <div style="display: flex; align-items: center; margin-left: 20px; flex-shrink: 0;">
-              <span style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 16px;">${d}</span>
-              <i class="fa-solid fa-chevron-right" style="font-size: 0.9rem; color: #94a3b8;"></i>
+
+            <!-- Title + Snippet -->
+            <div style="flex: 1;">
+              <h3 style="margin: 0 0 6px 0; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${esc(title)}</h3>
+              <p style="margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${stripNoticeContent(contentSnippet)}</p>
+            </div>
+
+            <!-- Footer: Poster info + Read More -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid #f1f5f9;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="${posterAvatar}" alt="${esc(posterName)}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e9d5ff;" onerror="this.src='${avatarUrl}'">
+                <span style="font-size: 0.8rem; font-weight: 600; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px;">${esc(posterName)}${posterRole ? `<span style="color:#94a3b8; font-weight:400;"> · ${esc(posterRole)}</span>` : ''}</span>
+              </div>
+              <span style="font-size: 0.8rem; font-weight: 600; color: #6b46c1; display: flex; align-items: center; gap: 4px;">Read <i class="fa-solid fa-arrow-right" style="font-size: 0.7rem;"></i></span>
             </div>
           </div>
         `;
@@ -652,16 +687,30 @@
           badgeStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
         }
 
+        const posterName = (typeof notice.postedBy === 'object' && notice.postedBy?.name)
+          ? notice.postedBy.name
+          : (typeof notice.postedBy === 'string' && notice.postedBy !== notice.postedBy.match(/^[a-f\d]{24}$/i)?.[0] ? notice.postedBy : 'Administration');
+        const posterRole = notice.postedBy?.designation || notice.postedBy?.role || '';
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(posterName)}&background=6b46c1&color=fff&rounded=true&bold=true&size=40`;
+        const posterAvatar = notice.postedBy?.profilePicture || avatarUrl;
+
         body.innerHTML = `
           <div class="module-modal-icon" style="color: #6b46c1; background: #f3f0ff; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 20px auto;"><i class="fa-solid fa-bullhorn"></i></div>
           <h2 style="margin: 0 0 12px 0; color: #1e1b4b; font-weight: 700; font-size: 1.4rem; text-align: center;">${esc(notice.title)}</h2>
-          <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
             <span style="${badgeStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">${badgeLabel}</span>
             <span>&bull;</span>
             <span>${d}</span>
           </div>
-          <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; max-height: 280px; overflow-y: auto; color: #334155; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap;">
+          <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; max-height: 260px; overflow-y: auto; color: #334155; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; margin-bottom: 16px;">
             ${formatNoticeContent(notice.content || notice.description || '')}
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #f5f3ff; border-radius: 12px; border: 1px solid #e9d5ff;">
+            <img src="${posterAvatar}" alt="${esc(posterName)}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #c4b5fd; flex-shrink: 0;" onerror="this.src='${avatarUrl}'">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #4c1d95;">Posted by ${esc(posterName)}</div>
+              ${posterRole ? `<div style="font-size: 0.78rem; color: #7c3aed; font-weight: 500;">${esc(posterRole)}</div>` : ''}
+            </div>
           </div>
         `;
         overlay.style.display = 'flex';
@@ -706,22 +755,28 @@
             <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Notice Content</label>
             <div style="border: 1px solid var(--border-color); border-radius: 16px; background: #f1f5f9; padding: 24px; min-height: 500px; display: flex; flex-direction: column;" id="editorWorkspace">
               <!-- Toolbar -->
-              <div style="display: flex; gap: 16px; background: white; padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; color: var(--text-muted); font-size: 0.95rem; flex-wrap: wrap; box-shadow: var(--shadow-sm); align-items: center; text-align: left;">
-                <span style="font-weight: 700; color: var(--text-dark); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-pen-to-square"></i> Editor Toolbar</span>
-                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
-                <span data-format="bold" class="editor-btn"><i class="fa-solid fa-bold" title="Bold"></i></span>
-                <span data-format="italic" class="editor-btn"><i class="fa-solid fa-italic" title="Italic"></i></span>
-                <span data-format="underline" class="editor-btn"><i class="fa-solid fa-underline" title="Underline"></i></span>
-                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
-                <span data-format="left" class="editor-btn"><i class="fa-solid fa-align-left" title="Align Left"></i></span>
-                <span data-format="center" class="editor-btn"><i class="fa-solid fa-align-center" title="Align Center"></i></span>
-                <span data-format="right" class="editor-btn"><i class="fa-solid fa-align-right" title="Align Right"></i></span>
-                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
-                <span data-format="list-ul" class="editor-btn"><i class="fa-solid fa-list-ul" title="Bullet List"></i></span>
-                <span data-format="list-ol" class="editor-btn"><i class="fa-solid fa-list-ol" title="Numbered List"></i></span>
-                <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
-                <span data-format="link" class="editor-btn"><i class="fa-solid fa-link" title="Insert Link"></i></span>
-                <span data-format="image" class="editor-btn"><i class="fa-solid fa-image" title="Insert Image"></i></span>
+              <div style="display: flex; gap: 16px; background: white; padding: 12px 20px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; color: var(--text-muted); font-size: 0.95rem; flex-wrap: wrap; box-shadow: var(--shadow-sm); align-items: center; text-align: left; justify-content: space-between;">
+                <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                  <span style="font-weight: 700; color: var(--text-dark); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-pen-to-square"></i> Editor Toolbar</span>
+                  <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                  <span data-format="bold" class="editor-btn"><i class="fa-solid fa-bold" title="Bold"></i></span>
+                  <span data-format="italic" class="editor-btn"><i class="fa-solid fa-italic" title="Italic"></i></span>
+                  <span data-format="underline" class="editor-btn"><i class="fa-solid fa-underline" title="Underline"></i></span>
+                  <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                  <span data-format="left" class="editor-btn"><i class="fa-solid fa-align-left" title="Align Left"></i></span>
+                  <span data-format="center" class="editor-btn"><i class="fa-solid fa-align-center" title="Align Center"></i></span>
+                  <span data-format="right" class="editor-btn"><i class="fa-solid fa-align-right" title="Align Right"></i></span>
+                  <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                  <span data-format="list-ul" class="editor-btn"><i class="fa-solid fa-list-ul" title="Bullet List"></i></span>
+                  <span data-format="list-ol" class="editor-btn"><i class="fa-solid fa-list-ol" title="Numbered List"></i></span>
+                  <span style="border-left: 1px solid var(--border-color); height: 16px;"></span>
+                  <span data-format="link" class="editor-btn"><i class="fa-solid fa-link" title="Insert Link"></i></span>
+                  <span data-format="image" class="editor-btn"><i class="fa-solid fa-image" title="Insert Image"></i></span>
+                </div>
+                <button type="button" id="noticeAiDraftBtn" style="display:flex; align-items:center; gap:7px; padding:8px 16px; border-radius:8px; border:1.5px solid #8b5cf6; background:#f5f3ff; color:#6d28d9; font-weight:700; font-size:0.83rem; cursor:pointer; transition:all 0.2s; white-space:nowrap;" onmouseenter="this.style.background='#6d28d9';this.style.color='white';" onmouseleave="this.style.background='#f5f3ff';this.style.color='#6d28d9';">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="noticeAiDraftBtnLabel">Draft with AI</span>
+                </button>
               </div>
               
               <!-- Paper Sheet -->
@@ -802,6 +857,51 @@
         editor.addEventListener(evt, updateToolbarState);
       });
     }
+
+    // AI Draft button for notice form
+    document.getElementById('noticeAiDraftBtn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('noticeAiDraftBtn');
+      const label = document.getElementById('noticeAiDraftBtnLabel');
+      const titleInput = document.querySelector('#modulePostForm input[name="title"]');
+      const editorEl = document.getElementById('editorContent');
+      const hiddenTA = document.querySelector('textarea[name="content"]');
+      const subject = titleInput?.value?.trim();
+
+      if (!subject) {
+        titleInput?.focus();
+        if (titleInput) { titleInput.style.borderColor = '#ef4444'; titleInput.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)'; }
+        setTimeout(() => { if (titleInput) { titleInput.style.borderColor = 'var(--border-color)'; titleInput.style.boxShadow = 'none'; } }, 1800);
+        return;
+      }
+
+      btn.disabled = true;
+      if (label) label.textContent = 'Drafting…';
+      btn.style.opacity = '0.7';
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const res = await fetch(`${apiBase}/api/ai/generate-notice`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ prompt: subject })
+        });
+        if (!res.ok) throw new Error('AI request failed');
+        const data = await res.json();
+        if (data.body && editorEl) {
+          editorEl.innerText = data.body;
+          if (hiddenTA) hiddenTA.value = editorEl.innerHTML;
+          // Brief glow animation on editor
+          editorEl.parentElement.style.borderColor = '#8b5cf6';
+          setTimeout(() => { editorEl.parentElement.style.borderColor = 'var(--border-color)'; }, 1500);
+        }
+      } catch (err) {
+        alert('AI drafting failed. Please write your notice manually.');
+      } finally {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        if (label) label.textContent = 'Draft with AI';
+      }
+    });
   }
 
   async function renderList(info) {
@@ -953,55 +1053,795 @@
     form.reset();
   }
 
-  async function renderComplaintResolution() {
-    content(`
-      <div class="section-card module-panel">
-        <div class="section-header"><h2><i class="fa-solid fa-check-circle"></i> Resolve Complaints</h2></div>
-        <div class="module-actions" style="justify-content:flex-start; margin-bottom:12px;">
-          <select id="priorityFilter" class="module-btn"><option value="All">All Priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select>
+  async function renderComplaintsPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    let contentHtml = '';
+
+    if (isPostMode) {
+      contentHtml = `
+        <style>
+          @keyframes ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(139,92,246,0); }
+          }
+          .ai-draft-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #8b5cf6; background: #f5f3ff;
+            color: #6d28d9; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center; letter-spacing: 0.01em;
+          }
+          .ai-draft-btn:hover:not(:disabled) {
+            background: #6d28d9; color: white;
+            box-shadow: 0 4px 16px rgba(109,40,217,0.25);
+            transform: translateY(-1px);
+          }
+          .ai-draft-btn:disabled {
+            opacity: 0.65; cursor: not-allowed;
+          }
+          .ai-draft-btn.loading { animation: ai-pulse 1.4s infinite; }
+        </style>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+          <!-- Left Column: Form to register a complaint -->
+          <div class="section-card" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-pen-to-square" style="color: var(--primary);"></i> Register New Complaint
+            </h3>
+            <form id="complaintPostForm" style="display: flex; flex-direction: column; gap: 18px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Subject</label>
+                <input type="text" name="title" id="complaintTitleInput" placeholder="Brief subject of the issue..." required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+
+              <button type="button" id="complaintAiDraftBtn" class="ai-draft-btn">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span id="complaintAiDraftBtnLabel">Draft with AI</span>
+              </button>
+
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Issue Details</span>
+                  <span id="complaintAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
+                </label>
+                <textarea name="description" id="complaintDescInput" rows="5" placeholder="Describe the issue in detail..." required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Attachment (Photo)</label>
+                <input type="file" name="image" accept="image/*" style="font-size: 0.85rem; color: #64748b;">
+              </div>
+
+              <button type="submit" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                <i class="fa-solid fa-paper-plane"></i> File Complaint
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Column: List -->
+          <div class="section-card" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+            <div id="complaintsListContainer" style="display: flex; flex-direction: column; gap: 16px; max-height: 600px; overflow-y: auto; padding-right: 4px;">
+              <div style="text-align: center; padding: 40px; color: #64748b;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                <div>Loading complaints...</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div id="resolveList" class="module-empty"><i class="fa-solid fa-spinner fa-spin"></i><span>Loading complaints...</span></div>
-      </div>`);
-    await loadResolveComplaints();
-    document.getElementById('priorityFilter').addEventListener('change', loadResolveComplaints);
+      `;
+    } else {
+
+      contentHtml = `
+        <style>
+          .complaints-grid-view {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            align-items: start;
+            padding-right: 4px;
+          }
+          @media (max-width: 900px) {
+            .complaints-grid-view {
+              grid-template-columns: 1fr;
+            }
+          }
+        </style>
+        <div id="complaintsListContainer" class="complaints-grid-view">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading complaints...</div>
+          </div>
+        </div>
+      `;
+    }
+
+    content(`
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="complaintBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Transparency Wall (Complaints)</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Public viewing, registration, and authority resolution in one unified flow.</p>
+          </div>
+        </div>
+        <div>
+          <select id="complaintsFilterDropdown" style="padding: 10px 18px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569; box-shadow: var(--shadow-sm); min-width: 180px;">
+            <!-- Role specific options loaded in JS -->
+          </select>
+        </div>
+      </div>
+      
+      ${contentHtml}
+    `);
+
+    document.getElementById('complaintBackBtn')?.addEventListener('click', goToDashboard);
+
+    // Setup filter dropdown
+    const dropdown = document.getElementById('complaintsFilterDropdown');
+    let options = `<option value="all">All Complaints</option>`;
+    if (userRole === 'student' || userRole === 'hosteler') {
+      options += `<option value="my">My Complaints</option>`;
+    } else if (userRole === 'teacher') {
+      options += `
+        <option value="my">My Complaints</option>
+        <option value="mentees">My Mentees</option>
+        <option value="resolved-by-me">Resolved by Me</option>
+        <option value="by-students">By Students</option>
+        <option value="by-teachers">By Teachers</option>
+      `;
+    } else if (userRole === 'hod') {
+      options += `
+        <option value="my">My Complaints</option>
+        <option value="dept">Department Complaints</option>
+        <option value="resolved-by-me">Resolved by Me</option>
+        <option value="by-students">By Students</option>
+        <option value="by-teachers">By Teachers</option>
+      `;
+    } else if (userRole === 'warden') {
+      options += `
+        <option value="my">My Complaints</option>
+        <option value="hostel">Hostel Complaints</option>
+        <option value="resolved-by-me">Resolved by Me</option>
+      `;
+    } else if (userRole === 'principal') {
+      options += `
+        <option value="my">My Complaints</option>
+        <option value="resolved-by-me">Resolved by Me</option>
+        <option value="by-students">By Students</option>
+        <option value="by-teachers">By Teachers</option>
+      `;
+    }
+    dropdown.innerHTML = options;
+
+    if (userRole === 'student' || userRole === 'hosteler') dropdown.value = 'my';
+    else if (userRole === 'teacher') dropdown.value = 'mentees';
+    else if (userRole === 'hod') dropdown.value = 'dept';
+    else if (userRole === 'warden') dropdown.value = 'hostel';
+    else dropdown.value = 'all';
+
+    dropdown.addEventListener('change', loadRedesignedComplaints);
+
+    // Handle Form Submit
+    document.getElementById('complaintPostForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const token = user.token || '';
+      const formData = new FormData(form);
+      if (user._id) formData.append('studentId', user._id);
+      
+      const res = await fetch(`${apiBase}/api/complaints`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      if (res.ok) {
+        alert('Complaint registered successfully.');
+        form.reset();
+        loadRedesignedComplaints();
+      } else {
+        alert('Registration failed.');
+      }
+    });
+    // AI Draft button for complaint form
+    document.getElementById('complaintAiDraftBtn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('complaintAiDraftBtn');
+      const label = document.getElementById('complaintAiDraftBtnLabel');
+      const titleEl = document.getElementById('complaintTitleInput');
+      const descEl = document.getElementById('complaintDescInput');
+      const aiTag = document.getElementById('complaintAiTag');
+      const subject = titleEl?.value?.trim();
+
+      if (!subject) {
+        titleEl?.focus();
+        titleEl && (titleEl.style.borderColor = '#ef4444');
+        setTimeout(() => { if (titleEl) titleEl.style.borderColor = '#cbd5e1'; }, 1800);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.add('loading');
+      if (label) label.textContent = 'Drafting…';
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const res = await fetch(`${apiBase}/api/ai/generate-complaint`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ prompt: subject })
+        });
+        if (!res.ok) throw new Error('AI request failed');
+        const data = await res.json();
+        if (descEl && data.description) {
+          descEl.value = data.description;
+          descEl.style.borderColor = '#8b5cf6';
+          setTimeout(() => { descEl.style.borderColor = '#cbd5e1'; }, 1500);
+        }
+        if (data.description && titleEl && !titleEl.value) titleEl.value = data.title || subject;
+        if (aiTag) aiTag.style.display = 'inline-flex';
+      } catch (err) {
+        alert('AI drafting failed. Please write your complaint manually.');
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        if (label) label.textContent = 'Draft with AI';
+      }
+    });
+
+    await loadRedesignedComplaints();
   }
 
-  async function loadResolveComplaints() {
-    const list = document.getElementById('resolveList');
-    const filter = document.getElementById('priorityFilter')?.value || 'All';
+  async function loadRedesignedComplaints() {
+    const list = document.getElementById('complaintsListContainer');
+    if (!list) return;
+    const filterVal = document.getElementById('complaintsFilterDropdown')?.value || 'all';
     const token = user.token || '';
+    const userRole = (user.role || 'guest').toLowerCase();
+
+    list.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+        <div>Loading complaints...</div>
+      </div>
+    `;
+
     try {
-      const res = await fetch(`${apiBase}/api/warden/complaints?t=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error('failed');
-      let complaints = await res.json();
-      if (filter !== 'All') complaints = complaints.filter(c => c.priority === filter);
-      list.outerHTML = `<div id="resolveList" class="module-grid">${complaints.map(c => `
-        <article class="module-card section-card">
-          <h3>${esc(c.title)}</h3>
-          <p>${esc(c.description || '')}</p>
-          <div class="module-meta"><span class="module-pill">${esc(c.priority || 'Priority')}</span><span>${esc(c.status || 'Pending')}</span></div>
-          ${c.status === 'Resolved' ? '<button class="module-btn" disabled>Resolved</button>' : `
-            <form class="resolveForm module-form" data-id="${c._id}">
-              <label>Resolution Proof<input type="file" name="resolutionImage" accept="image/*" required></label>
-              <button class="module-btn primary" type="submit"><i class="fa-solid fa-check"></i> Confirm Resolution</button>
-            </form>`}
-        </article>`).join('') || '<div class="module-empty">No complaints to resolve.</div>'}</div>`;
-      document.querySelectorAll('.resolveForm').forEach(form => form.addEventListener('submit', submitResolution));
+      // Fetch Filtered List
+      let url = `${apiBase}/api/complaints`;
+      if (filterVal === 'my') {
+        url = `${apiBase}/api/complaints/my`;
+      } else if (filterVal === 'mentees') {
+        url = `${apiBase}/api/complaints/mentees`;
+      } else if (filterVal === 'dept') {
+        url = `${apiBase}/api/hod/complaints`;
+      } else if (filterVal === 'hostel') {
+        url = `${apiBase}/api/warden/complaints`;
+      }
+
+      const resList = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      if (!resList.ok) throw new Error();
+      let listData = await resList.json();
+
+      // Apply local filters if needed
+      let filtered = [...listData];
+      if (filterVal === 'resolved-by-me') {
+        filtered = filtered.filter(c => c.resolvedBy && (c.resolvedBy._id === user._id || c.resolvedBy === user._id));
+      } else if (filterVal === 'by-students') {
+        filtered = filtered.filter(c => c.student && (!c.student.role || c.student.role === 'student' || c.student.role === 'hosteler' || c.student.rollNumber));
+      } else if (filterVal === 'by-teachers') {
+        filtered = filtered.filter(c => c.student && (c.student.role === 'teacher' || c.student.employeeId || (!c.student.rollNumber && c.student.department)));
+      }      if (filtered.length === 0) {
+        list.innerHTML = `<div class="module-empty" style="grid-column: 1 / -1;">No complaints found.</div>`;
+        return;
+      }
+
+      let html = filtered.map(c => renderComplaintCardHtml(c, userRole)).join('');
+      list.innerHTML = html;
+
+      // Event listeners for resolution buttons
+      list.querySelectorAll('.btn-resolve-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Avoid opening details modal
+          const id = btn.dataset.id;
+          const container = document.getElementById(`resolveFormContainer-${id}`);
+          if (container) {
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+          }
+        });
+      });
+
+      list.querySelectorAll('.btn-resolve-direct').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation(); // Avoid opening details modal
+          const id = btn.dataset.id;
+          const res = await fetch(`${apiBase}/api/principal/complaints/${id}/resolve`, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+          });
+          if (res.ok) {
+            alert('Resolved successfully.');
+            loadRedesignedComplaints();
+          } else {
+            alert('Failed to resolve.');
+          }
+        });
+      });
+
+      list.querySelectorAll('.inlineResolveForm').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const compId = form.dataset.id;
+          const formData = new FormData(form);
+          let resolveEndpoint = `/api/warden/complaints/${compId}/resolve`;
+          if (userRole === 'hod') {
+            resolveEndpoint = `/api/hod/complaints/${compId}/resolve`;
+          } else if (userRole === 'teacher') {
+            resolveEndpoint = `/api/teacher/complaints/${compId}/resolve`;
+          }
+
+          const res = await fetch(`${apiBase}${resolveEndpoint}`, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+          if (res.ok) {
+            alert('Complaint resolved successfully.');
+            loadRedesignedComplaints();
+          } else {
+            alert('Failed to resolve complaint.');
+          }
+        });
+      });
+
+      // Card click listener to view full details in modal
+      list.querySelectorAll('.complaint-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('button') || e.target.closest('img') || e.target.closest('input') || e.target.closest('form')) {
+            return;
+          }
+          const id = card.dataset.id;
+          const complaint = filtered.find(item => item._id === id);
+          if (complaint) {
+            showComplaintDetailsModal(complaint, userRole);
+          }
+        });
+      });
+
+      // Upvote buttons click handlers
+      list.querySelectorAll('.btn-complaint-upvote').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          await toggleComplaintUpvote(id, btn);
+        });
+      });
+
     } catch (error) {
-      list.textContent = 'Unable to load complaints. Please login as an authorized user.';
+      console.error(error);
+      list.innerHTML = `<div class="module-empty" style="color: red; grid-column: 1 / -1;">Failed to load complaints list.</div>`;
     }
   }
 
-  async function submitResolution(event) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const res = await fetch(`${apiBase}/api/warden/complaints/${form.dataset.id}/resolve`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${user.token || ''}` },
-      body: new FormData(form)
+  async function toggleComplaintUpvote(id, btnElement) {
+    const token = user.token || '';
+    if (!token) {
+      alert("Please login to upvote.");
+      return;
+    }
+
+    try {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+      const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+      const res = await fetch(`${BACKEND_URL}/api/complaints/${id}/upvote`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        // Update Count on card
+        const countSpan = document.getElementById(`count-${id}`);
+        if (countSpan) countSpan.innerText = data.upvotes;
+
+        // Update Count in modal if open
+        const modalCountSpan = document.getElementById(`modal-count-${id}`);
+        if (modalCountSpan) modalCountSpan.innerText = data.upvotes;
+
+        // Update card button style/color
+        const cardBtn = document.getElementById(`like-btn-${id}`) || (btnElement.classList.contains('btn-complaint-upvote') ? btnElement : null);
+        if (cardBtn) {
+          cardBtn.style.color = data.action === 'added' ? '#3b82f6' : '#64748b';
+        }
+
+        // Update modal button style/color
+        const modalBtn = document.querySelector(`.modalUpvoteBtn[data-id="${id}"]`) || (btnElement.classList.contains('modalUpvoteBtn') ? btnElement : null);
+        if (modalBtn) {
+          modalBtn.style.color = data.action === 'added' ? '#3b82f6' : '#64748b';
+        }
+      } else {
+        const err = await res.json();
+        alert(err.message || "Failed to upvote");
+      }
+    } catch (e) {
+      console.error('Upvote error:', e);
+    }
+  }
+
+  function showComplaintDetailsModal(c, userRole) {
+    const title = c.title || 'Untitled Complaint';
+    const desc = c.description || 'No description provided.';
+    const priority = c.priority || 'Medium';
+    const status = c.status || 'Submitted';
+    const category = c.category || 'General';
+    const date = new Date(c.createdAt || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const token = user.token || '';
+
+    // Raiser Info
+    let raiserName = 'Anonymous';
+    let raiserInfo = '';
+    if (c.student) {
+      const studentObj = typeof c.student === 'object' ? c.student : null;
+      const studentId = studentObj ? (studentObj._id || '') : String(c.student);
+      const isCurrentUser = user._id && (String(studentId) === String(user._id));
+      raiserName = (studentObj && studentObj.name) || (isCurrentUser ? (user.name || 'You') : 'Anonymous Student');
+      raiserInfo = (studentObj && studentObj.department) ? ` • ${studentObj.department}` : (isCurrentUser && user.department ? ` • ${user.department}` : '');
+      if (studentObj && studentObj.roomNumber) raiserInfo += ` (Room ${studentObj.roomNumber})`;
+    }
+    let raiserAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(raiserName)}&background=6b46c1&color=fff&rounded=true&bold=true`;
+    if (c.student && c.student.profilePicture) {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+      const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+      raiserAvatar = c.student.profilePicture.startsWith('http') ? c.student.profilePicture : `${BACKEND_URL}${c.student.profilePicture}`;
+    }
+
+    // Resolver Info
+    let resolverHtml = '';
+    if (status === 'Resolved') {
+      const resolverName = c.resolvedBy?.name || 'Authority';
+      const resolverRole = c.resolvedBy?.role ? ` (${label(c.resolvedBy.role)})` : '';
+      let resolverAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(resolverName)}&background=10b981&color=fff&rounded=true&bold=true`;
+      if (c.resolvedBy && c.resolvedBy.profilePicture) {
+        const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+        const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+        resolverAvatar = c.resolvedBy.profilePicture.startsWith('http') ? c.resolvedBy.profilePicture : `${BACKEND_URL}${c.resolvedBy.profilePicture}`;
+      }
+      resolverHtml = `
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+          <img src="${resolverAvatar}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #86efac; flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(resolverName)}&background=10b981&color=fff&rounded=true&bold=true';">
+          <div>
+            <div style="font-size: 0.75rem; color: #166534; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Resolution Authority</div>
+            <div style="font-size: 0.9rem; font-weight: 700; color: #14532d;">${esc(resolverName)}${resolverRole}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Badges Style
+    let priorityStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
+    if (priority === 'High') priorityStyle = 'background: #fffbeb; color: #92400e; border: 1px solid #fde68a;';
+    if (priority === 'Urgent') priorityStyle = 'background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3;';
+    if (priority === 'Low') priorityStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
+
+    let statusStyle = 'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+    if (status === 'Resolved') statusStyle = 'background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-weight: bold;';
+    else if (status === 'In Progress') statusStyle = 'background: #dbeafe; color: #1e4ed8; border: 1px solid #bfdbfe; font-weight: bold;';
+
+    // Full Images display
+    let imagesHtml = '';
+    const imgUrl = c.image ? (c.image.startsWith('http') ? c.image : `${apiBase}${c.image}`) : null;
+    const resolveImg = c.afterImage || c.resolutionImage;
+    const resolveImgUrl = resolveImg ? (resolveImg.startsWith('http') ? resolveImg : `${apiBase}${resolveImg}`) : null;
+
+    if (imgUrl || resolveImgUrl) {
+      imagesHtml += `<div style="display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap;">`;
+      if (imgUrl) {
+        imagesHtml += `
+          <div style="flex: 1; min-width: 200px;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase;">Issue Attachment</div>
+            <img src="${imgUrl}" onclick="window.open('${imgUrl}')" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer;" title="Click to view full image">
+          </div>
+        `;
+      }
+      if (resolveImgUrl) {
+        imagesHtml += `
+          <div style="flex: 1; min-width: 200px;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase;">Resolution Proof</div>
+            <img src="${resolveImgUrl}" onclick="window.open('${resolveImgUrl}')" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer;" title="Click to view full image">
+          </div>
+        `;
+      }
+      imagesHtml += `</div>`;
+    }
+
+    const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+    const isLiked = token && user._id && upvotedBy.includes(user._id);
+    const likeColor = isLiked ? '#3b82f6' : '#64748b';
+
+    // Modal structure
+    const modalId = `complaintModal-${c._id}`;
+    let modal = document.getElementById(modalId);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = modalId;
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+      modal.style.backdropFilter = 'blur(4px)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '9999';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <style>
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      </style>
+      <div style="background: white; border-radius: 20px; width: 90%; max-width: 580px; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); position: relative; animation: modalFadeIn 0.3s ease-out; font-family: 'Inter', sans-serif;">
+        <!-- Close Button -->
+        <button type="button" class="closeModalBtn" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0'; this.style.color='#0f172a';" onmouseleave="this.style.background='#f1f5f9'; this.style.color='#64748b';">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Badges row -->
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
+          <span style="${priorityStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">${priority} Priority</span>
+          <span style="${statusStyle} padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase;">${status}</span>
+          <span style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">${category}</span>
+          
+          <!-- UPVOTE BUTTON in Modal -->
+          <button type="button" class="modalUpvoteBtn" data-id="${c._id}" style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; font-weight: 700; color: ${likeColor}; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f1f5f9';">
+            <i class="fa-solid fa-thumbs-up"></i> <span id="modal-count-${c._id}">${c.upvotes || 0}</span> Upvotes
+          </button>
+        </div>
+
+        <!-- Title -->
+        <h3 style="margin: 0 0 12px 0; font-size: 1.4rem; font-weight: 800; color: #0f172a; font-family: 'Poppins', sans-serif; line-height: 1.3;">${esc(title)}</h3>
+
+        <!-- Raiser Info -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+          <img src="${raiserAvatar}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1; flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(raiserName)}&background=6b46c1&color=fff&rounded=true&bold=true';">
+          <div>
+            <div style="font-size: 0.9rem; font-weight: 700; color: #1e293b;">${esc(raiserName)}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">${esc(raiserInfo)} • ${date}</div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div style="font-size: 0.95rem; color: #334155; line-height: 1.6; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; font-family: 'Inter', sans-serif; white-space: pre-wrap; word-break: break-word;">${esc(desc)}</div>
+
+        <!-- Resolver Info -->
+        ${resolverHtml}
+
+        <!-- Images section -->
+        ${imagesHtml}
+      </div>
+    `;
+
+    // Modal Close logic
+    const closeModal = () => {
+      modal.remove();
+    };
+    modal.querySelector('.closeModalBtn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
     });
-    alert(res.ok ? 'Complaint resolved.' : 'Could not resolve complaint.');
-    if (res.ok) loadResolveComplaints();
+
+    // Upvote inside Modal
+    modal.querySelector('.modalUpvoteBtn').addEventListener('click', async () => {
+      await toggleComplaintUpvote(c._id, modal.querySelector('.modalUpvoteBtn'));
+    });
+  }
+
+  function renderComplaintCardHtml(c, userRole) {
+    const title = c.title || 'Untitled Complaint';
+    const desc = c.description || 'No description provided.';
+    const priority = c.priority || 'Medium';
+    const status = c.status || 'Submitted';
+    const date = new Date(c.createdAt || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    
+    // Raiser info
+    let raiserName = 'Anonymous';
+    let raiserInfo = '';
+    if (c.student) {
+      const studentObj = typeof c.student === 'object' ? c.student : null;
+      const studentId = studentObj ? (studentObj._id || '') : String(c.student);
+      const isCurrentUser = user._id && (String(studentId) === String(user._id));
+      raiserName = (studentObj && studentObj.name) || (isCurrentUser ? (user.name || 'You') : 'Anonymous Student');
+      raiserInfo = (studentObj && studentObj.department) ? ` • ${studentObj.department}` : (isCurrentUser && user.department ? ` • ${user.department}` : '');
+      if (studentObj && studentObj.roomNumber) raiserInfo += ` (Room ${studentObj.roomNumber})`;
+    }
+
+    let raiserAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(raiserName)}&background=6b46c1&color=fff&rounded=true&bold=true`;
+    if (c.student && c.student.profilePicture) {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+      const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+      raiserAvatar = c.student.profilePicture.startsWith('http') ? c.student.profilePicture : `${BACKEND_URL}${c.student.profilePicture}`;
+    }
+
+    // Resolver info
+    let resolverText = '';
+    let resolverName = '';
+    let resolverAvatar = '';
+    let resolverRole = '';
+    if (status === 'Resolved') {
+      resolverName = c.resolvedBy?.name || 'Authority';
+      resolverRole = c.resolvedBy?.role ? ` (${label(c.resolvedBy.role)})` : '';
+      resolverAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(resolverName)}&background=10b981&color=fff&rounded=true&bold=true`;
+      if (c.resolvedBy && c.resolvedBy.profilePicture) {
+        const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+        const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+        resolverAvatar = c.resolvedBy.profilePicture.startsWith('http') ? c.resolvedBy.profilePicture : `${BACKEND_URL}${c.resolvedBy.profilePicture}`;
+      }
+    }
+
+    // Badges
+    let priorityStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
+    if (priority === 'High') priorityStyle = 'background: #fffbeb; color: #92400e; border: 1px solid #fde68a;';
+    if (priority === 'Urgent') priorityStyle = 'background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3;';
+    if (priority === 'Low') priorityStyle = 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;';
+
+    let statusStyle = 'background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;';
+    if (status === 'Resolved') statusStyle = 'background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-weight: bold;';
+    else if (status === 'In Progress') statusStyle = 'background: #dbeafe; color: #1e4ed8; border: 1px solid #bfdbfe; font-weight: bold;';
+
+    // Clickable Image Placeholders (Square Thumbnails) in the side
+    let imagePlaceholdersHtml = '';
+    const imgUrl = c.image ? (c.image.startsWith('http') ? c.image : `${apiBase}${c.image}`) : null;
+    const resolveImg = c.afterImage || c.resolutionImage;
+    const resolveImgUrl = resolveImg ? (resolveImg.startsWith('http') ? resolveImg : `${apiBase}${resolveImg}`) : null;
+
+    if (imgUrl) {
+      imagePlaceholdersHtml += `
+        <div onclick="window.open('${imgUrl}')" style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s; flex-shrink: 0;" title="View Issue Photo" onmouseenter="this.style.borderColor='var(--primary)';" onmouseleave="this.style.borderColor='#cbd5e1';">
+          <img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      `;
+    }
+    if (resolveImgUrl) {
+      imagePlaceholdersHtml += `
+        <div onclick="window.open('${resolveImgUrl}')" style="width: 48px; height: 48px; border-radius: 6px; border: 1px solid #bbf7d0; background: #f0fdf4; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s; flex-shrink: 0;" title="View Resolution Proof" onmouseenter="this.style.borderColor='#10b981';" onmouseleave="this.style.borderColor='#bbf7d0';">
+          <img src="${resolveImgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      `;
+    }
+
+    // Resolve buttons and forms
+    let resolveBtnHtml = '';
+    let resolveFormContainerHtml = '';
+    const isAuthority = !['student', 'hosteler', 'guest'].includes(userRole);
+    if (isAuthority && status !== 'Resolved') {
+      if (userRole === 'principal') {
+        resolveBtnHtml = `
+          <button type="button" class="btn-resolve-direct" data-id="${c._id}" style="width: 100%; background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; padding: 4px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; box-sizing: border-box;" onmouseenter="this.style.background='#dbeafe';" onmouseleave="this.style.background='#eff6ff';">
+            <i class="fa-solid fa-check"></i> Resolve
+          </button>
+        `;
+      } else {
+        resolveBtnHtml = `
+          <button type="button" class="btn-resolve-toggle" data-id="${c._id}" style="width: 100%; background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; padding: 4px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; box-sizing: border-box;" onmouseenter="this.style.background='#dbeafe';" onmouseleave="this.style.background='#eff6ff';">
+            <i class="fa-solid fa-check-to-slot"></i> Resolve
+          </button>
+        `;
+        resolveFormContainerHtml = `
+          <div id="resolveFormContainer-${c._id}" style="display: none; margin-top: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box;">
+            <form class="inlineResolveForm" data-id="${c._id}" style="display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: #475569; display: block; margin-bottom: 2px;">Upload Resolution Proof</label>
+              <input type="file" name="resolutionImage" accept="image/*" required style="font-size: 0.75rem; color: #475569;">
+              <button type="submit" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; align-self: flex-start; margin-top: 4px;">
+                Confirm Resolution
+              </button>
+            </form>
+          </div>
+        `;
+      }
+    }
+
+    // Upvote logic configuration
+    const token = user.token || '';
+    const upvotedBy = Array.isArray(c.upvotedBy) ? c.upvotedBy : [];
+    const isLiked = token && user._id && upvotedBy.includes(user._id);
+    const likeColor = isLiked ? '#3b82f6' : '#64748b';
+
+    // Left Side Footer: Raiser & Resolver Info
+    let footerLeftHtml = `
+      <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: #475569; flex-shrink: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+        <img src="${raiserAvatar}" style="width: 18px; height: 18px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0; flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(raiserName)}&background=6b46c1&color=fff&rounded=true&bold=true';">
+        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">By: <strong style="color: #0f172a;">${esc(raiserName)}</strong>${esc(raiserInfo)}</span>
+      </span>
+    `;
+
+    if (status === 'Resolved') {
+      footerLeftHtml += `
+        <span style="color: #cbd5e1; flex-shrink: 0;">|</span>
+        <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: #166534; flex-shrink: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+          <img src="${resolverAvatar}" style="width: 18px; height: 18px; border-radius: 50%; object-fit: cover; border: 1px solid #bbf7d0; flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(resolverName)}&background=10b981&color=fff&rounded=true&bold=true';">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Resolved: <strong style="color: #14532d;">${esc(resolverName)}</strong></span>
+        </span>
+      `;
+    }
+
+    // Right Side Footer: Date & Upvote
+    let footerRightHtml = `
+      <span style="font-weight: 500; font-size: 0.72rem; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; color: #64748b;">
+        <i class="fa-regular fa-clock"></i>${date}
+      </span>
+      <span style="color: #cbd5e1; flex-shrink: 0;">|</span>
+      <button type="button" class="btn-complaint-upvote" id="like-btn-${c._id}" data-id="${c._id}" style="background: none; border: none; color: ${likeColor}; cursor: pointer; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; transition: all 0.2s; flex-shrink: 0; min-width: 0;" onmouseenter="this.style.background='#f1f5f9';" onmouseleave="this.style.background='none';">
+        <i class="fa-solid fa-thumbs-up"></i>
+        <span id="count-${c._id}">${c.upvotes || 0}</span>
+      </button>
+    `;
+
+    return `
+      <div class="complaint-card" data-id="${c._id}" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 12px 16px; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: all 0.3s; position: relative; min-height: 125px; justify-content: flex-start; align-items: stretch; margin-bottom: 16px; box-sizing: border-box; cursor: pointer;" onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0,0,0,0.04)'; this.style.borderColor='rgba(107, 70, 193, 0.2)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
+        <!-- Main card body row (flex row) -->
+        <div style="display: flex; flex-direction: row; gap: 16px; justify-content: space-between; align-items: stretch; width: 100%; flex: 1;">
+          
+          <!-- Left Column (takes remaining width) -->
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; min-width: 0;">
+            <!-- Content block -->
+            <div style="overflow: hidden; min-width: 0;">
+              <!-- Priority & Title in one line -->
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; overflow: hidden; min-width: 0;">
+                <span style="${priorityStyle} padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">${priority}</span>
+                <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a; font-family: 'Poppins', sans-serif; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-grow: 1; min-width: 0;">${esc(title)}</h4>
+              </div>
+              <!-- Description truncated to 2 lines -->
+              <p style="margin: 0; font-size: 0.88rem; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; font-family: 'Inter', sans-serif;" title="${esc(desc)}">${esc(desc)}</p>
+            </div>
+            
+            <!-- Unified Bottom Row Info (Split Left & Right) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.75rem; color: #64748b; border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 8px; width: 100%; min-width: 0; box-sizing: border-box;">
+              <!-- Left: Raiser & Resolver -->
+              <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; min-width: 0;">
+                ${footerLeftHtml}
+              </div>
+              <!-- Right: Date & Upvotes -->
+              <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                ${footerRightHtml}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Column (Status & Images & Action) -->
+          <div style="width: 140px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; flex-shrink: 0; border-left: 1px dashed #e2e8f0; padding-left: 12px; box-sizing: border-box;">
+            <!-- Status Badge -->
+            <span style="${statusStyle} padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 700; text-align: center; display: inline-block; width: 100%; box-sizing: border-box; flex-shrink: 0;">${status}</span>
+            
+            <!-- Image Placeholders row: larger side-by-side previews -->
+            <div style="display: flex; gap: 6px; margin-top: 4px; justify-content: center; width: 100%; flex-shrink: 0; flex-wrap: nowrap;">
+              ${imagePlaceholdersHtml}
+            </div>
+            
+            <!-- Action Button -->
+            <div style="width: 100%; margin-top: auto; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-end; flex-shrink: 0;">
+              ${resolveBtnHtml}
+            </div>
+          </div>
+
+        </div>
+        
+        <!-- Expanded resolution form container -->
+        ${resolveFormContainerHtml}
+      </div>
+    `;
   }
 
   async function renderLibrary() {
@@ -1064,14 +1904,153 @@
   }
 
   async function renderStudentDatabase() {
-    content(`<div class="section-card module-panel"><div class="section-header"><h2><i class="fa-solid fa-users"></i> Student Database</h2></div><div id="studentList" class="module-empty"><i class="fa-solid fa-spinner fa-spin"></i><span>Loading students...</span></div></div>`);
-    try {
-      const res = await fetch(`${apiBase}/api/teacher/all-students`, { headers: { Authorization: `Bearer ${user.token || ''}` } });
-      const students = res.ok ? await res.json() : [];
-      document.getElementById('studentList').outerHTML = table(students, ['name', 'rollNumber', 'department', 'year', 'batch', 'email']);
-    } catch {
-      document.getElementById('studentList').textContent = 'Unable to load student database.';
+    const userRole = (user.role || 'guest').toLowerCase();
+    content(`
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+        <button type="button" id="dbBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Campus Directory</h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Search and filter student and staff databases dynamically.</p>
+        </div>
+      </div>
+      
+      <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+          <select id="dbFilterDropdown" style="padding: 8px 16px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569;">
+            <!-- Options dynamically added -->
+          </select>
+          <div style="position: relative;">
+            <input type="text" id="dbSearchInput" placeholder="Search by name, roll, dept..." style="padding: 8px 16px 8px 36px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 220px;">
+            <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.85rem;"></i>
+          </div>
+        </div>
+        <div id="dbTableContainer">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading data...</div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('dbBackBtn')?.addEventListener('click', goToDashboard);
+
+    const dropdown = document.getElementById('dbFilterDropdown');
+    let options = '';
+    if (userRole === 'teacher') {
+      options += `
+        <option value="my-students">My Students</option>
+        <option value="my-mentees">My Mentees</option>
+      `;
+    } else if (userRole === 'warden') {
+      options += `<option value="hostel-residents">Hostel Residents</option>`;
+    } else if (userRole === 'hod') {
+      options += `
+        <option value="dept-students">Department Students</option>
+        <option value="dept-teachers">Department Teachers</option>
+      `;
+    } else if (userRole === 'principal' || userRole === 'dean') {
+      options += `
+        <option value="all-students">All Students</option>
+        <option value="all-teachers">All Teachers</option>
+        <option value="all-hods">HODs</option>
+        <option value="all-wardens">Wardens</option>
+      `;
     }
+    dropdown.innerHTML = options;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterParam = urlParams.get('filter');
+    if (filterParam && dropdown.querySelector(`option[value="${filterParam}"]`)) {
+      dropdown.value = filterParam;
+    }
+
+    let allDbData = [];
+
+    const loadDbData = async () => {
+      const filterVal = dropdown.value;
+      const token = user.token || '';
+      let endpoint = '';
+      
+      if (filterVal === 'my-students') endpoint = '/api/teacher/all-students';
+      else if (filterVal === 'my-mentees') endpoint = '/api/teacher/my-mentees';
+      else if (filterVal === 'hostel-residents') endpoint = '/api/warden/students';
+      else if (filterVal === 'dept-students') endpoint = '/api/hod/students';
+      else if (filterVal === 'dept-teachers') endpoint = '/api/hod/teachers';
+      else if (filterVal === 'all-students') endpoint = '/api/principal/students';
+      else if (filterVal === 'all-teachers') endpoint = '/api/principal/teachers';
+      else if (filterVal === 'all-hods') endpoint = '/api/principal/hods';
+      else if (filterVal === 'all-wardens') endpoint = '/api/principal/wardens';
+      
+      const tableContainer = document.getElementById('dbTableContainer');
+      if (tableContainer) {
+        tableContainer.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading data...</div>
+          </div>
+        `;
+      }
+
+      try {
+        const res = await fetch(`${apiBase}${endpoint}`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error();
+        allDbData = await res.json();
+        renderFilteredTable();
+      } catch (e) {
+        if (tableContainer) tableContainer.innerHTML = '<div class="module-empty">Failed to load data.</div>';
+      }
+    };
+
+    const renderFilteredTable = () => {
+      const q = document.getElementById('dbSearchInput')?.value.toLowerCase() || '';
+      const filterVal = dropdown.value;
+      
+      const filtered = allDbData.filter(item => {
+        return (
+          (item.name && item.name.toLowerCase().includes(q)) ||
+          (item.rollNumber && item.rollNumber.toLowerCase().includes(q)) ||
+          (item.employeeId && item.employeeId.toLowerCase().includes(q)) ||
+          (item.teacherId && item.teacherId.toLowerCase().includes(q)) ||
+          (item.department && item.department.toLowerCase().includes(q)) ||
+          (item.email && item.email.toLowerCase().includes(q))
+        );
+      });
+      
+      let columns = ['name', 'rollNumber', 'department', 'year', 'batch', 'email'];
+      if (filterVal.includes('teacher') || filterVal.includes('hod') || filterVal.includes('warden')) {
+        if (filterVal === 'hostel-residents') {
+          columns = ['name', 'rollNumber', 'department', 'roomNumber', 'email'];
+        } else if (filterVal === 'all-wardens') {
+          columns = ['name', 'employeeId', 'hostelName', 'email'];
+        } else {
+          columns = ['name', 'employeeId', 'department', 'email'];
+        }
+      }
+      
+      const mapped = filtered.map(item => {
+        return {
+          ...item,
+          employeeId: item.employeeId || item.teacherId || '--',
+          department: item.department || '--',
+          hostelName: item.hostelName || '--',
+          year: item.year || '--',
+          batch: item.batch || '--',
+          rollNumber: item.rollNumber || '--',
+          roomNumber: item.roomNumber || '--'
+        };
+      });
+      
+      const container = document.getElementById('dbTableContainer');
+      if (container) container.innerHTML = table(mapped, columns);
+    };
+
+    dropdown.addEventListener('change', loadDbData);
+    document.getElementById('dbSearchInput')?.addEventListener('input', renderFilteredTable);
+
+    await loadDbData();
   }
 
   function table(rows, columns) {

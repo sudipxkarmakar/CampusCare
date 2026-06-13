@@ -169,7 +169,7 @@ export const getMyContent = async (req, res) => {
                     ]
                 }
             ]
-        }).sort({ date: -1 });
+        }).sort({ date: -1 }).populate('postedBy', 'name designation role profilePicture');
 
         res.json({ assignments, notes, notices });
     } catch (error) {

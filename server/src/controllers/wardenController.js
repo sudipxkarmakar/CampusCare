@@ -143,8 +143,9 @@ const getHostelComplaints = async (req, res) => {
                 { category: 'Disciplinary' } // Disciplinary
             ]
         })
-            .populate('student', 'name roomNumber hostelName')
+            .populate('student', 'name roomNumber hostelName rollNumber department profilePicture')
             .populate('againstUser', 'name')
+            .populate('resolvedBy', 'name role profilePicture')
             .sort({ createdAt: -1 });
 
         res.json(complaints);

@@ -43,3 +43,17 @@ export const handleGenerateComplaint = async (req, res, next) => {
         next(error);
     }
 };
+
+export const handleGenerateNotice = async (req, res, next) => {
+    try {
+        const { prompt } = req.body;
+        if (!prompt || !String(prompt).trim()) {
+            return res.status(400).json({ error: 'Prompt is required' });
+        }
+
+        const draft = await aiService.generateNoticeDraft(prompt, req.user);
+        res.status(200).json(draft);
+    } catch (error) {
+        next(error);
+    }
+};

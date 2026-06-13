@@ -915,6 +915,24 @@ class CampusAgentService {
         };
     }
 
+    async generateNoticeDraft(prompt, user = null) {
+        const text = clean(prompt);
+        const posterName = user?.name || 'Administration';
+        const posterRole = user?.designation || user?.role || 'Faculty';
+        const fallbackBody = `This is to inform all concerned that ${text}. All students and staff members are requested to take note and act accordingly. For further details, please contact the administration office.`;
+        const body = await this.llmText([
+            {
+                role: 'system',
+                content: 'You are a college notice writer. Write a formal, professional notice body (not a title) for the campus notice board. Keep it 3-5 sentences. Use formal language suitable for students, faculty, and staff. Do not include a title or heading. Do not use markdown. Plain text only.'
+            },
+            {
+                role: 'user',
+                content: `Notice subject: ${text}\nPosted by: ${posterName} (${posterRole})\nWrite the body of the notice:`
+            }
+        ], fallbackBody);
+        return { body: clean(body, fallbackBody) };
+    }
+
     heuristicComplaintDraft(text) {
         const lower = text.toLowerCase();
         let category = 'Other';

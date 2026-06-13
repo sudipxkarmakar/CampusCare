@@ -1,6 +1,6 @@
 import express from 'express';
 import rateLimit from "express-rate-limit";
-import { handleChat, handleGenerateComplaint, handleGetStatus } from '../controllers/aiController.js';
+import { handleChat, handleGenerateComplaint, handleGenerateNotice, handleGetStatus } from '../controllers/aiController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -16,6 +16,7 @@ export const aiLimiter = rateLimit({
 // Protected routes
 router.post('/chat', protect, aiLimiter, handleChat);
 router.post('/generate-complaint', protect, aiLimiter, handleGenerateComplaint);
+router.post('/generate-notice', protect, aiLimiter, handleGenerateNotice);
 router.get('/status/:conversationId', protect, handleGetStatus);
 
 export default router;

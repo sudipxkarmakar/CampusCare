@@ -238,8 +238,9 @@ const getDepartmentComplaints = async (req, res) => {
                 { upliftedTo: 'HOD' } // Show all escalated to HOD level if needed, or filter by dept
             ]
         })
-            .populate('student', 'name rollNumber department')
+            .populate('student', 'name rollNumber department roomNumber profilePicture')
             .populate('againstUser', 'name designation department')
+            .populate('resolvedBy', 'name role profilePicture')
             .sort({ createdAt: -1 })
             .lean();
 

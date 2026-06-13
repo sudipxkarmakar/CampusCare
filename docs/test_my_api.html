@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <title>API Test</title>
+</head>
+<body>
+  <h2>Raw API Response for /api/complaints/my</h2>
+  <pre id="output">Loading...</pre>
+  <script>
+    async function test() {
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      const token = user ? user.token : '';
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname) || window.location.protocol === 'file:';
+      const BACKEND_URL = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+      
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/complaints/my`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        const data = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('output').textContent = 'Error: ' + err.message;
+      }
+    }
+    test();
+  </script>
+</body>
+</html>

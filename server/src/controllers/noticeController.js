@@ -68,6 +68,7 @@ export const getNotices = async (req, res) => {
         }
 
         const notices = await Notice.find(query)
+            .populate('postedBy', 'name designation role profilePicture')
             .sort({ date: -1 })
             .limit(50);
 

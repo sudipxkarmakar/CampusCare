@@ -30,14 +30,11 @@ const classifyComplaint = (text = '') => {
 
 export const fileComplaint = async (req, res) => {
     fs.appendFileSync('debug_output.txt', `\nHEADERS: ${req.headers['content-type']}\nBODY: ${JSON.stringify(req.body)}\nFILE: ${req.file ? req.file.originalname : 'none'}\n`);
-    const { title, description, studentId, againstUser } = req.body;
+    const { title, description, againstUser } = req.body;
+    const studentId = req.user._id;
 
     try {
         const analysis = classifyComplaint(`${title} ${description}`);
-
-        // --- MOCK MODE ---
-        // --- MOCK MODE REMOVED: ALWAYS SAVE TO DB ---
-
 
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
@@ -69,19 +66,15 @@ export const fileComplaint = async (req, res) => {
 // @desc    Get all complaints (Public Wall)
 // @route   GET /api/complaints
 export const getComplaints = async (req, res) => {
-    // --- MOCK MODE ---
-    // --- MOCK MODE REMOVED: ALWAYS FETCH FROM DB ---
-
-
     try {
-
         const filter = {};
         if (req.query.public === 'true') {
             filter.category = { $ne: 'Personal' };
         }
 
         const complaints = await Complaint.find(filter)
-            .populate('student', 'name department')
+            .populate('student', 'name department rollNumber roomNumber profilePicture')
+            .populate('resolvedBy', 'name role profilePicture')
             .sort({ createdAt: -1 })
             .lean();
 
@@ -173,8 +166,9 @@ export const getMenteeComplaints = async (req, res) => {
                 { againstUser: teacherId }
             ]
         })
-            .populate('student', 'name department roomNumber rollNumber')
+            .populate('student', 'name department roomNumber rollNumber profilePicture')
             .populate('againstUser', 'name designation')
+            .populate('resolvedBy', 'name role profilePicture')
             .sort({ createdAt: -1 });
 
         res.json(complaints);
@@ -270,7 +264,9 @@ export const upliftComplaint = async (req, res) => {
 export const getMyComplaints = async (req, res) => {
     try {
         const complaints = await Complaint.find({ student: req.user._id })
+            .populate('student', 'name department roomNumber rollNumber profilePicture')
             .populate('againstUser', 'name')
+            .populate('resolvedBy', 'name role profilePicture')
             .sort({ createdAt: -1 });
         res.json(complaints);
     } catch (error) {

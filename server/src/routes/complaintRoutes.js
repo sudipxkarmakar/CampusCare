@@ -5,7 +5,7 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', upload.single('image'), fileComplaint); // Ideally protected
+router.post('/', protect, upload.single('image'), fileComplaint);
 router.get('/', getComplaints);
 router.put('/:id/upvote', protect, upvoteComplaint);
 router.get('/mentees', protect, getMenteeComplaints);
