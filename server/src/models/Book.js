@@ -27,6 +27,9 @@ const bookSchema = new mongoose.Schema({
     },
     location: {
         type: String, // e.g., 'Shelf 5, Row 3'
+    },
+    pdfUrl: {
+        type: String,
     }
 }, { timestamps: true });
 

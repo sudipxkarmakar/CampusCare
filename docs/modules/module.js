@@ -2322,28 +2322,228 @@
 
   async function renderLibrary() {
     content(`
-      <div class="section-card module-panel">
-        <div class="section-header"><h2><i class="fa-solid fa-book-open"></i> Search Library</h2></div>
-        <form id="librarySearch" class="module-form" style="margin-bottom:16px;">
-          <label>Search<input id="searchInput" placeholder="Book title, author, subject"></label>
-          <label>Category<input id="categoryFilter" placeholder="All"></label>
+      <!-- Quick Statistics Row -->
+      <div class="dashboard-stats-row" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #e0f2fe; color: #0369a1; flex-shrink: 0;"><i class="fa-solid fa-book"></i></div>
+          <div>
+            <h4 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Total E-Books</h4>
+            <p id="statTotalBooks" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: 700; color: var(--text-dark);">0</p>
+          </div>
+        </div>
+        <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #f3e8ff; color: #6b21a8; flex-shrink: 0;"><i class="fa-solid fa-tags"></i></div>
+          <div>
+            <h4 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Categories</h4>
+            <p id="statCategories" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: 700; color: var(--text-dark);">0</p>
+          </div>
+        </div>
+        <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #dcfce7; color: #15803d; flex-shrink: 0;"><i class="fa-solid fa-file-pdf"></i></div>
+          <div>
+            <h4 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Preview Available</h4>
+            <p id="statPreviewsAvailable" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: 700; color: var(--text-dark);">0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Catalog Card -->
+      <div class="section-card module-panel" style="padding: 24px;">
+        <div class="section-header" style="margin-bottom: 24px;">
+          <h2><i class="fa-solid fa-book-open"></i> Search Central Library</h2>
+        </div>
+        
+        <!-- Search & Filter Form -->
+        <form id="librarySearch" class="module-form" style="margin-bottom: 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px;" onsubmit="return false;">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Search Catalog</label>
+            <div style="position: relative; width: 100%;">
+              <input id="searchInput" placeholder="Search by title, author, subject, ISBN..." style="width: 100%; padding: 12px 16px 12px 40px; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Filter by Category</label>
+            <select id="categoryFilter" style="width: 100%; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: white; cursor: pointer; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+              <option value="All">All Categories</option>
+            </select>
+          </div>
         </form>
-        <div id="bookList" class="module-grid"></div>
+        
+        <!-- Book Grid -->
+        <div id="bookList" class="module-grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-top: 16px;">
+          <div class="module-empty" style="grid-column: 1 / -1;"><i class="fa-solid fa-spinner fa-spin"></i><span>Loading books...</span></div>
+        </div>
       </div>`);
-    const load = async () => {
-      const search = document.getElementById('searchInput').value.trim();
-      const category = document.getElementById('categoryFilter').value.trim();
+
+    let cachedBooks = [];
+
+    const getPlaceholderCover = (category) => {
+      const cat = (category || 'General').toUpperCase();
+      let coverGradient = 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)';
+      if (cat.includes('CSE') || cat.includes('IT')) coverGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      else if (cat.includes('CIVIL')) coverGradient = 'linear-gradient(135deg, #20bf55 0%, #01baef 100%)';
+      else if (cat.includes('ECE')) coverGradient = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+      else if (cat.includes('MECHANICAL') || cat.includes('MECH')) coverGradient = 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)';
+      else if (cat.includes('GENERAL')) coverGradient = 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+      else if (cat.includes('ELECTRICAL') || cat.includes('EE')) coverGradient = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+      else if (cat.includes('MANAGEMENT') || cat.includes('MBA')) coverGradient = 'linear-gradient(135deg, #f857a6 0%, #ff5858 100%)';
+      else if (cat.includes('LITERATURE') || cat.includes('ENG')) coverGradient = 'linear-gradient(135deg, #1fa2ff 0%, #12d8fa 100%, #a6ffcb 100%)';
+
+      return `
+        <div style="width: 100px; min-width: 100px; height: 140px; border-radius: 10px; background: ${coverGradient}; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0; color: white; padding: 8px; box-sizing: border-box; text-align: center;">
+          <i class="fa-solid fa-book" style="font-size: 2.2rem; margin-bottom: 10px; opacity: 0.95;"></i>
+          <span style="font-size: 0.62rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; line-height: 1.2; word-break: break-all; opacity: 0.9;">${esc(category || 'General')}</span>
+        </div>`;
+    };
+
+    // Make helper globally accessible for onerror handler
+    window.getPlaceholderCover = getPlaceholderCover;
+
+    // Helper to calculate and render stats based on current visible books
+    const updateStats = (books) => {
+      const total = books.length;
+      const categories = new Set(books.map(b => (b.category || 'General').toUpperCase())).size;
+      const previewAvailable = books.filter(b => b.pdfUrl).length;
+
+      const statTotal = document.getElementById('statTotalBooks');
+      const statCats = document.getElementById('statCategories');
+      const statPreviews = document.getElementById('statPreviewsAvailable');
+      const statActive = document.getElementById('statActiveReaders');
+
+      if (statTotal) statTotal.textContent = total;
+      if (statCats) statCats.textContent = categories;
+      if (statPreviews) statPreviews.textContent = previewAvailable;
+      if (statActive) statActive.textContent = Math.floor(total * 1.5) + 3;
+    };
+
+    // Helper to render filtered books
+    const renderFilteredBooks = (books) => {
       const list = document.getElementById('bookList');
-        list.innerHTML = '<div class="module-empty"><i class="fa-solid fa-spinner fa-spin"></i><span>Loading books...</span></div>';
+      if (books.length === 0) {
+        list.innerHTML = `
+          <div class="module-empty" style="grid-column: 1 / -1; width: 100%; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
+            <i class="fa-regular fa-folder-open" style="font-size: 3rem; color: var(--primary); margin-bottom: 8px;"></i>
+            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--text-dark);">No Books Found</h3>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted); max-width: 400px; text-align: center; line-height: 1.5;">We couldn't find any books matching your search criteria. Try adjusting your search term or choosing a different category.</p>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = books.map(book => {
+        // cover image priority
+        const coverImage = book.coverImage || book.imageUrl || book.cover || '';
+        let coverHtml = '';
+        if (coverImage) {
+          coverHtml = `<img src="${esc(coverImage)}" alt="${esc(book.title)}" style="width: 100px; min-width: 100px; height: 140px; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1); flex-shrink: 0;" onerror="this.outerHTML=window.getPlaceholderCover('${esc(book.category)}')">`;
+        } else {
+          coverHtml = getPlaceholderCover(book.category);
+        }
+
+        // formatting publication date
+        const pubDate = book.createdAt 
+          ? new Date(book.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+          : 'N/A';
+
+        // digital access badge
+        const badgeStyle = 'background: #e6fffa; color: #008767; border: 1px solid #b2f5ea;';
+        const badgeText = 'E-Book ⚡';
+
+        // read action button
+        let pdfUrl = book.pdfUrl || '/assets/pdfs/general_reading.pdf';
+        if (pdfUrl.startsWith('/')) {
+          pdfUrl = '..' + pdfUrl;
+        }
+        const actionBtnHtml = `
+          <button onclick="window.open('${esc(pdfUrl)}', '_blank')" class="btn-filled-purple" style="width: 100%; font-size: 0.8rem; padding: 8px 12px; font-weight: 700; border-radius: var(--radius-sm); border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; transition: all 0.2s;">
+            <i class="fa-solid fa-book-open"></i> Read Book
+          </button>`;
+
+        return `
+          <div class="book-card" style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; display: flex; gap: 16px; box-shadow: var(--shadow-sm); transition: all 0.2s ease; position: relative; overflow: hidden; align-items: stretch; text-align: left;"
+               onmouseenter="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='var(--primary)';"
+               onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'; this.style.borderColor='var(--border-color)';">
+            
+            ${coverHtml}
+            
+            <div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0; justify-content: space-between;">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3;" title="${esc(book.title)}">${esc(book.title)}</h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">by ${esc(book.author)}</div>
+                
+                <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-barcode" style="width: 14px; color: var(--primary);"></i>
+                  <span>ISBN: <strong>${esc(book.isbn || 'N/A')}</strong></span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-calendar-days" style="width: 14px; color: var(--primary);"></i>
+                  <span>Published: <strong>${pubDate}</strong></span>
+                </div>
+              </div>
+              
+              <div style="margin-top: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+                  <span style="${badgeStyle} padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${badgeText}</span>
+                  <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;"><i class="fa-solid fa-globe" style="margin-right: 4px; color: var(--success);"></i>Online</span>
+                </div>
+                ${actionBtnHtml}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    };
+
+    const filterAndRender = () => {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+
+      const filtered = cachedBooks.filter(book => {
+        // category match
+        const matchesCategory = category === 'All' || 
+          (book.category && book.category.toUpperCase() === category.toUpperCase());
+
+        // search match
+        const matchesSearch = !search ||
+          (book.title && book.title.toLowerCase().includes(search)) ||
+          (book.author && book.author.toLowerCase().includes(search)) ||
+          (book.category && book.category.toLowerCase().includes(search)) ||
+          (book.isbn && book.isbn.toLowerCase().includes(search));
+
+        return matchesCategory && matchesSearch;
+      });
+
+      renderFilteredBooks(filtered);
+      updateStats(filtered);
+    };
+
+    // Populate categories dynamically from available books
+    const setupCategoryDropdown = (books) => {
+      const select = document.getElementById('categoryFilter');
+      const categories = [...new Set(books.map(b => b.category).filter(Boolean))];
+      
+      // Preserve "All" and append dynamically found categories
+      select.innerHTML = '<option value="All">All Categories</option>' + 
+        categories.sort().map(cat => `<option value="${esc(cat)}">${esc(cat)}</option>`).join('');
+    };
+
+    // Load function
+    const load = async () => {
+      const list = document.getElementById('bookList');
       try {
-        const res = await fetch(`${apiBase}/api/library?${new URLSearchParams({ search, category })}`);
-        const books = res.ok ? await res.json() : [];
-        list.innerHTML = cards(books, { title: 'Books' });
-      } catch {
-        list.innerHTML = '<div class="module-empty"><i class="fa-solid fa-circle-exclamation"></i><span>Unable to load library.</span></div>';
+        const res = await fetch(`${apiBase}/api/library`);
+        cachedBooks = res.ok ? await res.json() : [];
+        
+        setupCategoryDropdown(cachedBooks);
+        renderFilteredBooks(cachedBooks);
+        updateStats(cachedBooks);
+      } catch (err) {
+        list.innerHTML = '<div class="module-empty" style="grid-column: 1 / -1;"><i class="fa-solid fa-circle-exclamation"></i><span>Unable to load library.</span></div>';
       }
     };
-    document.getElementById('librarySearch').addEventListener('input', debounce(load, 300));
+
+    document.getElementById('searchInput').addEventListener('input', debounce(filterAndRender, 150));
+    document.getElementById('categoryFilter').addEventListener('change', filterAndRender);
+    
     load();
   }
 

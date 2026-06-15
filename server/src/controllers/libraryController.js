@@ -29,7 +29,11 @@ export const getBooks = async (req, res) => {
 
         // 2. Category Filter
         if (category && category !== 'All') {
-            query.category = category;
+            if (category.toUpperCase() === 'CSE' || category.toUpperCase() === 'CSE/IT') {
+                query.category = { $in: ['CSE', 'CSE/IT'] };
+            } else {
+                query.category = category;
+            }
         }
 
         // 3. Availability Filter
