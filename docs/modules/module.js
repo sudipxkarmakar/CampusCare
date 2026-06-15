@@ -78,7 +78,7 @@
     },
     library: {
       title: 'Library',
-      description: 'A single searchable library page for everyone. No separate role copies.',
+      description: 'A single searchable library page for everyone.',
       icon: 'fa-book-open',
       view: 'library.html'
     },
@@ -2321,7 +2321,20 @@
   }
 
   async function renderLibrary() {
+    const hero = document.getElementById('home');
+    if (hero) hero.style.display = 'none';
+
     content(`
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+        <button type="button" id="libraryBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Library</h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">A single searchable library page for everyone.</p>
+        </div>
+      </div>
+
       <!-- Quick Statistics Row -->
       <div class="dashboard-stats-row" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
         <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
@@ -2543,6 +2556,7 @@
 
     document.getElementById('searchInput').addEventListener('input', debounce(filterAndRender, 150));
     document.getElementById('categoryFilter').addEventListener('change', filterAndRender);
+    document.getElementById('libraryBackBtn')?.addEventListener('click', goToDashboard);
     
     load();
   }
