@@ -480,7 +480,7 @@ async function fetchNotices() {
         const noticeCountEl = document.getElementById('notice-count');
         if (noticeCountEl) {
             noticeCountEl.textContent = count;
-            noticeCountEl.style.display = count > 0 ? 'block' : 'none';
+            noticeCountEl.style.display = count > 0 ? 'flex' : 'none';
         }
 
         renderNotices('personal');
