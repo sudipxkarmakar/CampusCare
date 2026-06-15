@@ -2335,31 +2335,6 @@
         </div>
       </div>
 
-      <!-- Quick Statistics Row -->
-      <div class="dashboard-stats-row" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-        <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #e0f2fe; color: #0369a1; flex-shrink: 0;"><i class="fa-solid fa-book"></i></div>
-          <div>
-            <h4 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Total E-Books</h4>
-            <p id="statTotalBooks" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: 700; color: var(--text-dark);">0</p>
-          </div>
-        </div>
-        <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #f3e8ff; color: #6b21a8; flex-shrink: 0;"><i class="fa-solid fa-tags"></i></div>
-          <div>
-            <h4 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Categories</h4>
-            <p id="statCategories" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: 700; color: var(--text-dark);">0</p>
-          </div>
-        </div>
-        <div class="stat-card-new" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: white; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); box-sizing: border-box;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #dcfce7; color: #15803d; flex-shrink: 0;"><i class="fa-solid fa-file-pdf"></i></div>
-          <div>
-            <h4 style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Preview Available</h4>
-            <p id="statPreviewsAvailable" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: 700; color: var(--text-dark);">0</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Main Catalog Card -->
       <div class="section-card module-panel" style="padding: 24px;">
         <div class="section-header" style="margin-bottom: 24px;">
