@@ -87,21 +87,22 @@ export const getAssignments = async (req, res) => {
 
         const assignments = await Assignment.find(filter)
             .populate('teacher', 'name')
-            .sort({ deadline: 1 });
+            .sort({ createdAt: -1 });
 
         // Check for submissions by THIS student
         let assignmentsWithStatus = [];
-        if (req.user) {
+        if (req.user && req.user.role === 'student') {
             const submissions = await Submission.find({ student: req.user._id });
-            const submissionMap = new Set(submissions.map(s => s.assignment.toString()));
+            const submissionMap = new Map(submissions.map(s => [s.assignment.toString(), s]));
 
             assignmentsWithStatus = assignments.map(a => {
                 const doc = a.toObject();
-                doc.submitted = submissionMap.has(a._id.toString());
+                const sub = submissionMap.get(a._id.toString());
+                doc.submitted = !!sub;
+                doc.submission = sub || null;
                 return doc;
             });
         } else {
-            // Fallback if no user (should be protected usually)
             assignmentsWithStatus = assignments;
         }
 
@@ -116,15 +117,16 @@ export const submitAssignment = async (req, res) => {
         const assignmentId = req.params.id;
         const studentId = req.user._id;
 
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) {
+            return res.status(404).json({ message: 'Assignment not found' });
+        }
+
         // Check if already submitted
         const existingSubmission = await Submission.findOne({
             assignment: assignmentId,
             student: studentId
         });
-
-        if (existingSubmission) {
-            return res.status(400).json({ message: 'Assignment already submitted' });
-        }
 
         let submissionLink = '';
         if (req.file) {
@@ -132,7 +134,21 @@ export const submitAssignment = async (req, res) => {
         } else if (req.body.link) {
             submissionLink = req.body.link;
         } else {
-            return res.status(400).json({ message: 'Please upload a PDF file.' });
+            return res.status(400).json({ message: 'Please upload a file.' });
+        }
+
+        if (existingSubmission) {
+            // Check if deadline has passed
+            if (assignment.deadline && new Date() > new Date(assignment.deadline)) {
+                return res.status(400).json({ message: 'Deadline has passed. Resubmission is not permitted.' });
+            }
+            existingSubmission.link = submissionLink;
+            existingSubmission.submittedAt = Date.now();
+            existingSubmission.status = 'Pending';
+            existingSubmission.grade = undefined;
+            existingSubmission.feedback = undefined;
+            await existingSubmission.save();
+            return res.status(200).json(existingSubmission);
         }
 
         const submission = await Submission.create({
@@ -207,10 +223,10 @@ export const getAssignmentSubmissions = async (req, res) => {
 export const updateSubmissionStatus = async (req, res) => {
     try {
         const { id, subId } = req.params;
-        const { status } = req.body; // 'Approved' or 'Rejected'
+        const { status, grade, feedback } = req.body; // Allow grade and feedback
 
-        if (!['Approved', 'Rejected'].includes(status)) {
-            return res.status(400).json({ message: 'Invalid status. Use Approved or Rejected.' });
+        if (status && !['Approved', 'Rejected', 'Pending'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid status. Use Approved, Rejected, or Pending.' });
         }
 
         const assignment = await Assignment.findById(id);
@@ -223,10 +239,13 @@ export const updateSubmissionStatus = async (req, res) => {
         const submission = await Submission.findById(subId);
         if (!submission) return res.status(404).json({ message: 'Submission not found' });
 
-        submission.status = status;
+        if (status) submission.status = status;
+        if (grade !== undefined) submission.grade = grade;
+        if (feedback !== undefined) submission.feedback = feedback;
+        
         await submission.save();
 
-        res.json({ message: `Submission ${status}`, submission });
+        res.json({ message: `Submission updated successfully`, submission });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

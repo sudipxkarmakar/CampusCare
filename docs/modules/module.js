@@ -116,6 +116,12 @@
     const icon = `fa-solid ${info.icon}`;
     const links = Object.entries(info)
       .filter(([key, value]) => ['view', 'post', 'resolve'].includes(key) && value)
+      .filter(([key, value]) => {
+        const userRole = (user.role || 'Guest').toLowerCase();
+        const isStudent = userRole === 'student' || userRole === 'hosteler';
+        if (cfg.module === 'assignments' && isStudent && key === 'post') return false;
+        return true;
+      })
       .map(([key, value]) => `<a class="btn-dashboard ${cfg.mode === key ? 'active' : ''}" href="${value}"><i class="fa-solid ${key === 'post' ? 'fa-plus' : key === 'resolve' ? 'fa-check' : 'fa-eye'}"></i> ${label(key)}</a>`)
       .join('');
     
@@ -435,6 +441,14 @@
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderLeadersPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'assignments') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderAssignmentsPage(info);
       initSidebar();
       return;
     }
@@ -2318,6 +2332,1312 @@
         ${resolveFormContainerHtml}
       </div>
     `;
+  }
+
+  // ==========================================
+  // STUDENT & TEACHER ASSIGNMENTS IMPLEMENTATION
+  // ==========================================
+
+  function showToastNotification(title, message, iconClass = 'fa-file-invoice', borderLeftColor = 'var(--primary)', iconColor = 'var(--primary)', iconBg = 'var(--primary-light)', duration = 6000) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: white;
+        border-left: 5px solid ${borderLeftColor};
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        padding: 16px 20px;
+        border-radius: var(--radius-md);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    // Stack toasts vertically if multiple are open
+    const existingToasts = document.querySelectorAll('.cc-toast-notification');
+    const offset = existingToasts.length * 90;
+    toast.style.bottom = `${24 + offset}px`;
+    toast.classList.add('cc-toast-notification');
+
+    toast.innerHTML = `
+        <div style="background: ${iconBg}; color: ${iconColor}; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+            <i class="fa-solid ${iconClass}"></i>
+        </div>
+        <div style="flex: 1;">
+            <h5 style="margin: 0 0 2px 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">${esc(title)}</h5>
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height:1.4;">${message}</p>
+        </div>
+        <button style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-muted); margin-left: 8px;" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    if (!document.getElementById('toast-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animation-style';
+        style.textContent = `
+            @keyframes slideInUp {
+                from { transform: translateY(100px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.transition = 'opacity 0.5s, transform 0.5s';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+              toast.remove();
+              // Adjust positions of other toasts
+              const remainingToasts = document.querySelectorAll('.cc-toast-notification');
+              remainingToasts.forEach((t, i) => {
+                t.style.bottom = `${24 + (i * 90)}px`;
+              });
+            }, 500);
+        }
+    }, duration);
+  }
+
+  function checkAndShowSessionNotifications(assignments) {
+    if (sessionStorage.getItem('assignments_notified_this_session')) return;
+    sessionStorage.setItem('assignments_notified_this_session', 'true');
+
+    const now = new Date();
+    let unsubmittedCount = 0;
+    let dueTomorrowCount = 0;
+    let newlyGradedCount = 0;
+
+    assignments.forEach(a => {
+      const sub = a.submission;
+      if (sub) {
+        if (sub.status === 'Approved' || sub.status === 'Graded' || sub.grade !== undefined) {
+          newlyGradedCount++;
+        }
+      } else {
+        unsubmittedCount++;
+        if (a.deadline) {
+          const deadlineDate = new Date(a.deadline);
+          const diffTime = deadlineDate - now;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays >= 0 && diffDays <= 1.5) {
+            dueTomorrowCount++;
+          }
+        }
+      }
+    });
+
+    showToastNotification(
+      'Assignment Status',
+      `You have submitted <strong>${assignments.length - unsubmittedCount}</strong> out of <strong>${assignments.length}</strong> assignments.`,
+      'fa-file-invoice',
+      'var(--primary)',
+      'var(--primary)',
+      'var(--primary-light)'
+    );
+
+    if (dueTomorrowCount > 0) {
+      setTimeout(() => {
+        showToastNotification(
+          'Upcoming Deadline',
+          `⚠️ You have <strong>${dueTomorrowCount}</strong> assignment${dueTomorrowCount > 1 ? 's' : ''} due in the next 24 hours!`,
+          'fa-clock',
+          '#ea580c',
+          '#ea580c',
+          '#fff7ed'
+        );
+      }, 800);
+    }
+
+    if (newlyGradedCount > 0) {
+      setTimeout(() => {
+        showToastNotification(
+          'Graded Feedback',
+          `🎉 <strong>${newlyGradedCount}</strong> of your submissions have been graded. Open details to view marks and feedback!`,
+          'fa-graduation-cap',
+          '#16a34a',
+          '#16a34a',
+          '#f0fdf4'
+        );
+      }, 1600);
+    }
+  }
+
+  function validateFileInput(inputEl, errorEl) {
+    if (!inputEl || !inputEl.files || inputEl.files.length === 0) return false;
+    const file = inputEl.files[0];
+    
+    // File size limit (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      errorEl.textContent = '❌ File size exceeds 5MB limit. Please upload a smaller file.';
+      errorEl.style.display = 'block';
+      inputEl.value = ''; // Clear file selection
+      return false;
+    }
+
+    // Supported file types (PDF, DOC/DOCX, PPT/PPTX, ZIP, Images)
+    const allowedExtensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'zip', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExtension)) {
+      errorEl.textContent = '❌ Unsupported file type. Allowed: PDF, Word, PowerPoint, ZIP, or Images.';
+      errorEl.style.display = 'block';
+      inputEl.value = ''; // Clear file selection
+      return false;
+    }
+
+    errorEl.style.display = 'none';
+    errorEl.textContent = '';
+    return true;
+  }
+
+  async function renderAssignmentsPage(info) {
+    const userRole = (user.role || 'Guest').toLowerCase();
+    const isStudent = userRole === 'student' || userRole === 'hosteler';
+    const isTeacher = userRole === 'teacher' || userRole === 'hod';
+    
+    if (isStudent) {
+      renderStudentAssignments(info);
+    } else if (isTeacher) {
+      if (cfg.mode === 'post') {
+        renderTeacherPostForm(info);
+      } else {
+        renderTeacherAssignments(info);
+      }
+    } else {
+      content(`<div class="module-empty">Access Denied: Assignments module is only accessible for students, teachers, and HODs.</div>`);
+    }
+  }
+
+  async function renderStudentAssignments(info) {
+    content(`
+      <style>
+        .assign-filter-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr 1fr;
+          gap: 16px;
+          align-items: center;
+        }
+        @media (max-width: 768px) {
+          .assign-filter-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .assign-modal-overlay {
+          display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+          background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; 
+          backdrop-filter: blur(4px);
+        }
+        .assign-modal-content {
+          background: white; padding: 28px; border-radius: 16px; width: 90%; max-width: 600px; 
+          text-align: left; position: relative; box-shadow: var(--shadow-lg); display: flex; 
+          flex-direction: column; gap: 18px; max-height: 85vh; overflow-y: auto;
+        }
+      </style>
+      
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+        <button type="button" id="assignBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Assignments</h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">View and submit your academic tasks, and track feedback from teachers.</p>
+        </div>
+      </div>
+
+      <!-- Statistics Row -->
+      <div class="dashboard-stats-row" style="margin: 0 0 24px 0;">
+        <div class="stat-card-new">
+          <div class="icon-wrapper" style="background: #e0e7ff; color: #4f46e5;"><i class="fa-solid fa-list-check"></i></div>
+          <div class="stat-info">
+            <h4>Total</h4>
+            <p class="stat-value" id="stats-total">0</p>
+          </div>
+        </div>
+        <div class="stat-card-new">
+          <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;"><i class="fa-regular fa-clock"></i></div>
+          <div class="stat-info">
+            <h4>Pending</h4>
+            <p class="stat-value" id="stats-pending">0</p>
+          </div>
+        </div>
+        <div class="stat-card-new">
+          <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-info">
+            <h4>Submitted</h4>
+            <p class="stat-value" id="stats-submitted">0</p>
+          </div>
+        </div>
+        <div class="stat-card-new">
+          <div class="icon-wrapper" style="background: #fce7f3; color: #ec4899;"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div class="stat-info">
+            <h4>Graded</h4>
+            <p class="stat-value" id="stats-graded">0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Panel -->
+      <div class="section-card" style="padding: 20px; border-radius: 12px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+        <div class="assign-filter-grid">
+          <div style="position: relative;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+            <input type="text" id="assignSearchInput" placeholder="Search assignments by title or description..." style="width: 100%; padding: 10px 12px 10px 40px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
+          </div>
+          <div>
+            <select id="assignSubjectFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+              <option value="all">All Subjects</option>
+            </select>
+          </div>
+          <div>
+            <select id="assignStatusFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="submitted">Submitted</option>
+              <option value="late">Submitted Late</option>
+              <option value="graded">Graded</option>
+            </select>
+          </div>
+          <div>
+            <select id="assignDeadlineFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+              <option value="all">All Deadlines</option>
+              <option value="today">Due Today</option>
+              <option value="tomorrow">Due Tomorrow</option>
+              <option value="overdue">Overdue (Unsubmitted)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignment Grid -->
+      <div id="assignListContainer">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading assignments...</div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('assignBackBtn')?.addEventListener('click', goToDashboard);
+
+    let allAssignments = [];
+    
+    async function loadAssignmentsData() {
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const res = await fetch(`${apiBase}/api/assignments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.status === 401) {
+          localStorage.removeItem('user');
+          window.location.href = `${getRootPrefix()}index.html`;
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to fetch assignments');
+        allAssignments = await res.json();
+        allAssignments = allAssignments.filter(a => a.type !== 'note');
+
+        const subjects = [...new Set(allAssignments.map(a => a.subject).filter(Boolean))];
+        const subjectFilter = document.getElementById('assignSubjectFilter');
+        if (subjectFilter) {
+          subjectFilter.innerHTML = '<option value="all">All Subjects</option>' +
+            subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+        }
+
+        checkAndShowSessionNotifications(allAssignments);
+        renderFilteredAssignments();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('assignListContainer').innerHTML = `
+          <div class="module-empty" style="color: red;"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load assignments. Please check your connection.</div>
+        `;
+      }
+    }
+
+    function renderFilteredAssignments() {
+      const searchVal = document.getElementById('assignSearchInput')?.value.toLowerCase() || '';
+      const subjectVal = document.getElementById('assignSubjectFilter')?.value || 'all';
+      const statusVal = document.getElementById('assignStatusFilter')?.value || 'all';
+      const deadlineVal = document.getElementById('assignDeadlineFilter')?.value || 'all';
+
+      const now = new Date();
+
+      const filtered = allAssignments.filter(a => {
+        const titleMatch = (a.title || '').toLowerCase().includes(searchVal);
+        const descMatch = (a.description || '').toLowerCase().includes(searchVal);
+        if (searchVal && !titleMatch && !descMatch) return false;
+
+        if (subjectVal !== 'all' && a.subject !== subjectVal) return false;
+
+        const sub = a.submission;
+        const isSubmitted = !!sub;
+        const isGraded = isSubmitted && (sub.status === 'Approved' || sub.status === 'Graded' || sub.grade !== undefined);
+        const isLate = isSubmitted && a.deadline && (new Date(sub.submittedAt) > new Date(a.deadline));
+        
+        if (statusVal !== 'all') {
+          if (statusVal === 'pending' && isSubmitted) return false;
+          if (statusVal === 'submitted' && (!isSubmitted || isGraded)) return false;
+          if (statusVal === 'late' && !isLate) return false;
+          if (statusVal === 'graded' && !isGraded) return false;
+        }
+
+        const deadlineDate = a.deadline ? new Date(a.deadline) : null;
+        const diffTime = deadlineDate ? deadlineDate - now : 0;
+        const isPastDeadline = deadlineDate && diffTime < 0;
+        const isDueToday = deadlineDate && now.toDateString() === deadlineDate.toDateString();
+        
+        const tomorrow = new Date(now);
+        tomorrow.setDate(now.getDate() + 1);
+        const isDueTomorrow = deadlineDate && tomorrow.toDateString() === deadlineDate.toDateString();
+
+        if (deadlineVal !== 'all') {
+          if (deadlineVal === 'today' && !isDueToday) return false;
+          if (deadlineVal === 'tomorrow' && !isDueTomorrow) return false;
+          if (deadlineVal === 'overdue' && (isSubmitted || !isPastDeadline)) return false;
+        }
+
+        return true;
+      });
+
+      let totalCount = filtered.length;
+      let pendingCount = 0;
+      let submittedCount = 0;
+      let gradedCount = 0;
+
+      filtered.forEach(a => {
+        const sub = a.submission;
+        if (sub) {
+          submittedCount++;
+          if (sub.status === 'Approved' || sub.status === 'Graded' || sub.grade !== undefined) {
+            gradedCount++;
+          }
+        } else {
+          pendingCount++;
+        }
+      });
+
+      document.getElementById('stats-total').textContent = totalCount;
+      document.getElementById('stats-pending').textContent = pendingCount;
+      document.getElementById('stats-submitted').textContent = submittedCount;
+      document.getElementById('stats-graded').textContent = gradedCount;
+
+      const container = document.getElementById('assignListContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="module-empty"><i class="fa-regular fa-folder-open"></i><span>No assignments found matching filters.</span></div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="module-grid">
+          ${filtered.map(a => {
+            const sub = a.submission;
+            const isSubmitted = !!sub;
+            const isGraded = isSubmitted && (sub.status === 'Approved' || sub.status === 'Graded' || sub.grade !== undefined);
+            const isLate = isSubmitted && a.deadline && (new Date(sub.submittedAt) > new Date(a.deadline));
+
+            let statusBadge = '';
+            if (isGraded) {
+              statusBadge = `<span style="background: #faf5ff; color: #7c3aed; border: 1px solid #f3e8ff; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-solid fa-graduation-cap"></i> Graded</span>`;
+            } else if (isLate) {
+              statusBadge = `<span style="background: #fff7ed; color: #d97706; border: 1px solid #ffedd5; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-solid fa-clock"></i> Submitted Late</span>`;
+            } else if (isSubmitted) {
+              statusBadge = `<span style="background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Submitted</span>`;
+            } else {
+              statusBadge = `<span style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-regular fa-clock"></i> Pending</span>`;
+            }
+
+            let deadlineBadge = '';
+            const deadlineDate = a.deadline ? new Date(a.deadline) : null;
+            if (isSubmitted) {
+              deadlineBadge = ''; 
+            } else if (deadlineDate) {
+              const diffTime = deadlineDate - now;
+              const isPastDeadline = diffTime < 0;
+              const isDueToday = now.toDateString() === deadlineDate.toDateString();
+              
+              const tomorrow = new Date(now);
+              tomorrow.setDate(now.getDate() + 1);
+              const isDueTomorrow = tomorrow.toDateString() === deadlineDate.toDateString();
+
+              if (isPastDeadline) {
+                deadlineBadge = `<span style="background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Overdue</span>`;
+              } else if (isDueToday) {
+                deadlineBadge = `<span style="background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-regular fa-clock"></i> Due Today</span>`;
+              } else if (isDueTomorrow) {
+                deadlineBadge = `<span style="background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-regular fa-clock"></i> Due Tomorrow</span>`;
+              } else {
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                deadlineBadge = `<span style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;"><i class="fa-regular fa-calendar"></i> Due in ${diffDays}d</span>`;
+              }
+            }
+
+            const postedStr = a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : 'N/A';
+            const dueStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'No deadline';
+            const teacherName = a.teacher ? a.teacher.name : 'Faculty';
+
+            return `
+              <article class="module-card section-card" style="display: flex; flex-direction: column; justify-content: space-between; position: relative; min-height: 250px; padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: all 0.2s;" onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseleave="this.style.transform='none'; this.style.boxShadow='var(--shadow-sm)';">
+                <div style="position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                  ${statusBadge}
+                  ${deadlineBadge}
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-right: 120px;">
+                  <div style="width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; background: var(--primary-light); color: var(--primary); flex-shrink:0;">
+                    <i class="fa-solid fa-file-invoice"></i>
+                  </div>
+                  <div style="min-width: 0;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${esc(a.subject)}</div>
+                    <div style="font-size: 0.75rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">By ${esc(teacherName)}</div>
+                  </div>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; margin-bottom: 20px;">
+                  <h3 style="margin: 0 0 8px 0; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; line-height: 1.3;">${esc(a.title)}</h3>
+                  <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${esc(a.description || 'No description provided.')}</p>
+                </div>
+                
+                <div style="border-top: 1px solid #f1f5f9; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #64748b;">
+                  <div>
+                    <div><strong>Posted:</strong> ${postedStr}</div>
+                    <div style="margin-top: 2px;"><strong>Due:</strong> <span style="color: #475569; font-weight: 500;">${dueStr}</span></div>
+                  </div>
+                  <button class="btn-pill btn-outline-purple view-assign-details-btn" data-id="${a._id}" style="padding: 8px 18px; font-weight: 600; font-size: 0.82rem; border-radius: 20px; transition: all 0.2s;">Details</button>
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      container.querySelectorAll('.view-assign-details-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const assignObj = filtered.find(item => item._id === id);
+          if (assignObj) showStudentAssignmentDetailsModal(assignObj);
+        });
+      });
+    }
+
+    document.getElementById('assignSearchInput')?.addEventListener('input', renderFilteredAssignments);
+    document.getElementById('assignSubjectFilter')?.addEventListener('change', renderFilteredAssignments);
+    document.getElementById('assignStatusFilter')?.addEventListener('change', renderFilteredAssignments);
+    document.getElementById('assignDeadlineFilter')?.addEventListener('change', renderFilteredAssignments);
+
+    await loadAssignmentsData();
+  }
+
+  function showStudentAssignmentDetailsModal(a) {
+    const sub = a.submission;
+    const isSubmitted = !!sub;
+    const isGraded = isSubmitted && (sub.status === 'Approved' || sub.status === 'Graded' || sub.grade !== undefined);
+    const isPastDeadline = a.deadline && (new Date() > new Date(a.deadline));
+
+    const modal = document.createElement('div');
+    modal.className = 'assign-modal-overlay';
+    modal.id = 'assign-detail-modal';
+    
+    let attachmentHtml = '<p style="font-size: 0.9rem; color: #64748b; margin: 0;">No resource files attached.</p>';
+    if (a.link) {
+      let href = a.link;
+      if (a.link.startsWith('/')) {
+        href = apiBase + href;
+      }
+      const filename = a.link.split('/').pop() || 'Download Attachment';
+      attachmentHtml = `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <i class="fa-solid fa-paperclip" style="color: var(--primary); font-size: 1.1rem; flex-shrink: 0;"></i>
+            <span style="font-size: 0.9rem; font-weight: 500; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${esc(filename)}</span>
+          </div>
+          <a href="${href}" download target="_blank" class="btn-pill btn-outline-purple" style="font-size: 0.8rem; padding: 6px 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-download"></i> Download</a>
+        </div>
+      `;
+    }
+
+    let submissionAreaHtml = '';
+    
+    if (isSubmitted) {
+      let subHref = sub.link;
+      if (sub.link.startsWith('/')) {
+        subHref = apiBase + subHref;
+      }
+      const subFilename = sub.link.split('/').pop() || 'View Submission';
+      const submittedDateStr = new Date(sub.submittedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      let gradingHtml = '';
+      if (isGraded) {
+        gradingHtml = `
+          <div style="background: #faf5ff; border: 1.5px dashed #d8b4fe; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #7c3aed; font-size: 0.95rem;">
+              <i class="fa-solid fa-award"></i> Grade & Feedback
+            </div>
+            <div style="display: flex; gap: 12px; align-items: baseline;">
+              <span style="font-size: 0.85rem; color: #6b21a8; font-weight: 600;">Marks/Grade:</span>
+              <span style="font-size: 1.4rem; font-weight: 800; color: #581c87;">${esc(sub.grade)}</span>
+            </div>
+            ${sub.feedback ? `
+              <div style="font-size: 0.88rem; color: #581c87; line-height: 1.4; border-top: 1px solid #f3e8ff; padding-top: 8px; margin-top: 4px;">
+                <strong>Feedback:</strong> "${esc(sub.feedback)}"
+              </div>
+            ` : ''}
+          </div>
+        `;
+      } else {
+        gradingHtml = `
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 14px; color: #64748b; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-hourglass-half" style="color: #eab308;"></i> Awaiting teacher grading and feedback.
+          </div>
+        `;
+      }
+
+      let reuploadFormHtml = '';
+      if (!isPastDeadline) {
+        reuploadFormHtml = `
+          <div style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+            <button id="toggleResubmitBtn" class="btn-pill btn-outline-purple" style="font-weight: 600; width: 100%; justify-content: center; display: flex; padding: 10px 0;"><i class="fa-solid fa-arrows-rotate" style="margin-right: 8px;"></i> Resubmit Assignment</button>
+            <form id="resubmissionForm" style="display: none; flex-direction: column; gap: 12px; margin-top: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Select Replacement File (PDF, DOC/DOCX, PPT/PPTX, ZIP, Images - Max 5MB)</label>
+                <input type="file" id="resubFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,image/*" required style="font-size: 0.85rem; color: #64748b; padding: 8px; border: 1px dashed #cbd5e1; border-radius: 8px; width: 100%;">
+                <div id="resubFileError" style="color: #ef4444; font-size: 0.78rem; display: none; font-weight: 600;"></div>
+              </div>
+              <button type="submit" id="submitResubBtn" style="background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                <i class="fa-solid fa-upload"></i> Upload & Submit
+              </button>
+            </form>
+          </div>
+        `;
+      }
+
+      submissionAreaHtml = `
+        <div style="margin-top: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 18px;">
+          <h4 style="margin: 0 0 12px 0; font-size: 1rem; font-weight: 700; color: #1e1b4b;">Your Submission</h4>
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="min-width: 0;">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #166534; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-circle-check"></i> Submitted Successfully
+              </div>
+              <div style="font-size: 0.78rem; color: #14532d; margin-top: 4px;">Submitted: ${submittedDateStr}</div>
+              <div style="font-size: 0.8rem; color: #15803d; margin-top: 4px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                File: <a href="${subHref}" target="_blank" style="color: var(--primary); text-decoration: underline; font-weight: 600;">${esc(subFilename)}</a>
+              </div>
+            </div>
+            <a href="${subHref}" target="_blank" class="btn-pill" style="background: #16a34a; color: white; border: none; font-size: 0.8rem; padding: 8px 16px; text-decoration: none; font-weight: 600; border-radius: 8px; display: flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseenter="this.style.background='#15803d';" onmouseleave="this.style.background='#16a34a';">
+              <i class="fa-solid fa-eye"></i> View File
+            </a>
+          </div>
+          ${gradingHtml}
+          ${reuploadFormHtml}
+        </div>
+      `;
+    } else {
+      if (isPastDeadline) {
+        submissionAreaHtml = `
+          <div style="margin-top: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 18px;">
+            <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 12px; padding: 16px; color: #991b1b; text-align: center; font-size: 0.9rem; font-weight: 600; display: flex; flex-direction: column; gap: 6px; align-items: center;">
+              <i class="fa-solid fa-circle-xmark" style="font-size: 1.5rem; color: #dc2626;"></i>
+              <div>Submission Deadline Passed</div>
+              <p style="margin: 0; font-size: 0.8rem; font-weight: 500; color: #b91c1c;">You did not submit this assignment before the deadline and resubmission is closed.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        submissionAreaHtml = `
+          <div style="margin-top: 10px; border-top: 1.5px solid #f1f5f9; padding-top: 18px;">
+            <h4 style="margin: 0 0 12px 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b;">Submit Assignment</h4>
+            <form id="submissionForm" style="display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #475569;">Upload File (PDF, DOC/DOCX, PPT/PPTX, ZIP, Images - Max 5MB)</label>
+                <input type="file" id="submitFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,image/*" required style="font-size: 0.85rem; color: #64748b; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 8px; width: 100%;">
+                <div id="submitFileError" style="color: #ef4444; font-size: 0.78rem; display: none; font-weight: 600;"></div>
+              </div>
+              <button type="submit" id="submitFormBtn" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                <i class="fa-solid fa-paper-plane"></i> Submit Assignment
+              </button>
+            </form>
+          </div>
+        `;
+      }
+    }
+
+    const dueStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No deadline';
+    const teacherName = a.teacher ? a.teacher.name : 'Faculty';
+
+    modal.innerHTML = `
+      <div class="assign-modal-content">
+        <button id="closeAssignModal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; transition: color 0.2s;" onmouseenter="this.style.color='#1e1b4b';" onmouseleave="this.style.color='#64748b';">&times;</button>
+        
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 0.78rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${esc(a.subject)}</span>
+          <h3 style="margin: 0; font-size: 1.3rem; font-weight: 800; color: #1e1b4b; line-height: 1.3;">${esc(a.title)}</h3>
+          <div style="font-size: 0.82rem; color: #64748b; margin-top: 4px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+            <span>Posted by: <strong>${esc(teacherName)}</strong></span>
+            <span>•</span>
+            <span style="color: #ef4444; font-weight: 600;">Due: ${dueStr}</span>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid #f1f5f9; padding-top: 14px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; font-weight: 700; color: #475569;">Instructions</h4>
+          <p style="font-size: 0.9rem; color: #334155; line-height: 1.55; white-space: pre-line; margin: 0;">${esc(a.description || 'No instructions provided.')}</p>
+        </div>
+
+        <div style="margin-top: 4px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 0.95rem; font-weight: 700; color: #475569;">Attached Resources</h4>
+          ${attachmentHtml}
+        </div>
+
+        ${submissionAreaHtml}
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('closeAssignModal')?.addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+
+    const subForm = document.getElementById('submissionForm');
+    const submitFileInput = document.getElementById('submitFile');
+    const submitErrorDiv = document.getElementById('submitFileError');
+
+    if (submitFileInput) {
+      submitFileInput.addEventListener('change', () => {
+        validateFileInput(submitFileInput, submitErrorDiv);
+      });
+    }
+
+    if (subForm) {
+      subForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateFileInput(submitFileInput, submitErrorDiv)) return;
+
+        const submitBtn = document.getElementById('submitFormBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const formData = new FormData();
+          formData.append('file', submitFileInput.files[0]);
+
+          const res = await fetch(`${apiBase}/api/assignments/${a._id}/submit`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+
+          if (res.ok) {
+            alert('Assignment submitted successfully!');
+            modal.remove();
+            renderStudentAssignments(null);
+          } else {
+            const errData = await res.json();
+            alert(errData.message || 'Failed to submit assignment.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Assignment';
+          }
+        } catch (err) {
+          console.error(err);
+          alert('An error occurred during submission.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Assignment';
+        }
+      });
+    }
+
+    const toggleBtn = document.getElementById('toggleResubmitBtn');
+    const resubForm = document.getElementById('resubmissionForm');
+    const resubFileInput = document.getElementById('resubFile');
+    const resubErrorDiv = document.getElementById('resubFileError');
+
+    if (toggleBtn && resubForm) {
+      toggleBtn.addEventListener('click', () => {
+        resubForm.style.display = resubForm.style.display === 'none' ? 'flex' : 'none';
+        toggleBtn.style.display = 'none';
+      });
+    }
+
+    if (resubFileInput) {
+      resubFileInput.addEventListener('change', () => {
+        validateFileInput(resubFileInput, resubErrorDiv);
+      });
+    }
+
+    if (resubForm) {
+      resubForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateFileInput(resubFileInput, resubErrorDiv)) return;
+
+        const submitBtn = document.getElementById('submitResubBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Resubmitting...';
+
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const formData = new FormData();
+          formData.append('file', resubFileInput.files[0]);
+
+          const res = await fetch(`${apiBase}/api/assignments/${a._id}/submit`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+
+          if (res.ok) {
+            alert('Assignment updated successfully!');
+            modal.remove();
+            renderStudentAssignments(null);
+          } else {
+            const errData = await res.json();
+            alert(errData.message || 'Failed to resubmit assignment.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload & Submit';
+          }
+        } catch (err) {
+          console.error(err);
+          alert('An error occurred during resubmission.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload & Submit';
+        }
+      });
+    }
+  }
+
+  async function renderTeacherAssignments(info) {
+    content(`
+      <style>
+        .assign-modal-overlay {
+          display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+          background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; 
+          backdrop-filter: blur(4px);
+        }
+        .assign-modal-content {
+          background: white; padding: 28px; border-radius: 16px; width: 95%; max-width: 800px; 
+          text-align: left; position: relative; box-shadow: var(--shadow-lg); display: flex; 
+          flex-direction: column; gap: 18px; max-height: 85vh; overflow-y: auto;
+        }
+      </style>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="assignBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">My Created Assignments</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">View assignments you have created, track student progress, and grade submissions.</p>
+          </div>
+        </div>
+        <div>
+          <a class="btn-dashboard" href="post.html" style="background: var(--primary); color: white; border-radius: 10px; font-weight: 600; text-decoration: none; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+            <i class="fa-solid fa-plus"></i> Post Assignment
+          </a>
+        </div>
+      </div>
+
+      <!-- Assignments Table Card -->
+      <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <div id="teacherAssignmentsContainer">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading assignments...</div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('assignBackBtn')?.addEventListener('click', goToDashboard);
+
+    async function loadTeacherCreatedAssignments() {
+      const container = document.getElementById('teacherAssignmentsContainer');
+      const token = user.token || localStorage.getItem('token') || '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/assignments/created`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem('user');
+          window.location.href = `${getRootPrefix()}index.html`;
+          return;
+        }
+        if (!res.ok) throw new Error();
+        let assignments = await res.json();
+        assignments = assignments.filter(a => a.type !== 'note');
+
+        if (assignments.length === 0) {
+          container.innerHTML = `
+            <div class="module-empty">
+              <i class="fa-regular fa-folder-open"></i>
+              <span>No assignments created yet. Click "+ Post Assignment" to make one.</span>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="module-table-wrap">
+            <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid #f1f5f9; text-align: left;">
+                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Assignment Details</th>
+                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Class Target</th>
+                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Due Date</th>
+                  <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${assignments.map(a => {
+                  const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                  const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
+                  
+                  return `
+                    <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
+                      <td style="padding: 16px; min-width: 200px;">
+                        <div style="font-weight: 700; color: #1e1b4b; font-size: 0.98rem; margin-bottom: 4px;">${esc(a.title)}</div>
+                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase;">${esc(a.subject)}</div>
+                      </td>
+                      <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${targetStr}</td>
+                      <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${deadlineStr}</td>
+                      <td style="padding: 16px; text-align: right;">
+                        <button class="btn-pill view-submissions-btn" data-id="${a._id}" data-title="${esc(a.title)}" style="background: var(--primary); color: white; font-weight: 600; font-size: 0.82rem; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                          <i class="fa-solid fa-list-check"></i> Submissions
+                        </button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        container.querySelectorAll('.view-submissions-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const title = btn.dataset.title;
+            openTeacherSubmissionsModal(id, title);
+          });
+        });
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="module-empty" style="color: red;">Failed to load assignments list.</div>`;
+      }
+    }
+
+    await loadTeacherCreatedAssignments();
+  }
+
+  async function openTeacherSubmissionsModal(assignmentId, title) {
+    const modal = document.createElement('div');
+    modal.className = 'assign-modal-overlay';
+    modal.id = 'submissions-list-modal';
+
+    modal.innerHTML = `
+      <div class="assign-modal-content">
+        <button id="closeSubmissionsModal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; transition: color 0.2s;" onmouseenter="this.style.color='#1e1b4b';" onmouseleave="this.style.color='#64748b';">&times;</button>
+        
+        <div>
+          <h3 style="margin: 0 0 4px 0; font-size: 1.25rem; font-weight: 800; color: #1e1b4b; line-height: 1.3;">Submissions</h3>
+          <p style="margin: 0; font-size: 0.85rem; color: var(--primary); font-weight: 600;">For Assignment: ${esc(title)}</p>
+        </div>
+
+        <div id="submissionsTableContainer" style="margin-top: 10px; overflow-y: auto; max-height: 60vh;">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading submissions...</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('closeSubmissionsModal')?.addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+
+    async function loadSubmissions() {
+      const container = document.getElementById('submissionsTableContainer');
+      const token = user.token || localStorage.getItem('token') || '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/assignments/${assignmentId}/submissions`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error();
+        const submissions = await res.json();
+
+        if (submissions.length === 0) {
+          container.innerHTML = `
+            <div class="module-empty" style="padding: 40px 20px;">
+              <i class="fa-regular fa-folder-open"></i>
+              <span>No submissions received yet for this assignment.</span>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="module-table-wrap">
+            <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid #f1f5f9; text-align: left;">
+                  <th style="padding: 10px 12px; color: #475569; font-weight: 600; font-size: 0.85rem;">Student</th>
+                  <th style="padding: 10px 12px; color: #475569; font-weight: 600; font-size: 0.85rem;">Roll Number</th>
+                  <th style="padding: 10px 12px; color: #475569; font-weight: 600; font-size: 0.85rem;">Submitted At</th>
+                  <th style="padding: 10px 12px; color: #475569; font-weight: 600; font-size: 0.85rem;">File Link</th>
+                  <th style="padding: 10px 12px; color: #475569; font-weight: 600; font-size: 0.85rem; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${submissions.map(sub => {
+                  const studentName = sub.student ? sub.student.name : 'Unknown';
+                  const rollNo = sub.student ? sub.student.rollNumber : 'N/A';
+                  const submittedDate = sub.submittedAt ? new Date(sub.submittedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                  
+                  let subHref = sub.link;
+                  if (sub.link.startsWith('/')) {
+                    subHref = apiBase + subHref;
+                  }
+
+                  const isSubGraded = sub.status === 'Approved' || sub.status === 'Graded' || sub.grade !== undefined;
+
+                  return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td style="padding: 12px 10px; font-weight: 600; color: #1e1b4b; font-size: 0.88rem;">${esc(studentName)}</td>
+                      <td style="padding: 12px 10px; color: #475569; font-size: 0.85rem;">${esc(rollNo)}</td>
+                      <td style="padding: 12px 10px; color: #64748b; font-size: 0.8rem;">${submittedDate}</td>
+                      <td style="padding: 12px 10px; font-size: 0.85rem;">
+                        <a href="${subHref}" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                          <i class="fa-solid fa-file-pdf"></i> View File
+                        </a>
+                      </td>
+                      <td style="padding: 12px 10px; text-align: right;">
+                        <button class="btn-pill open-grade-panel-btn" data-sub-id="${sub._id}" style="background: none; border: 1px solid #cbd5e1; color: #475569; font-weight: 600; font-size: 0.78rem; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)';" onmouseleave="this.style.borderColor='#cbd5e1'; this.style.color='#475569';">
+                          ${isSubGraded ? 'Edit Grade' : 'Grade'}
+                        </button>
+                      </td>
+                    </tr>
+                    <tr id="grade-panel-row-${sub._id}" style="display: none; background: #f8fafc;">
+                      <td colspan="5" style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9;">
+                        <form class="grade-submission-form" data-sub-id="${sub._id}">
+                          <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 16px; align-items: flex-end;">
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                              <label style="font-size: 0.78rem; font-weight: 700; color: #475569;">Marks / Grade</label>
+                              <input type="text" class="grade-input" value="${esc(sub.grade || '')}" required placeholder="e.g. 95/100, A+" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-size: 0.85rem;">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                              <label style="font-size: 0.78rem; font-weight: 700; color: #475569;">Teacher Feedback</label>
+                              <input type="text" class="feedback-input" value="${esc(sub.feedback || '')}" placeholder="Write constructive feedback..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-size: 0.85rem;">
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                              <button type="submit" style="background: #16a34a; color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; flex: 1;" onmouseenter="this.style.background='#15803d';" onmouseleave="this.style.background='#16a34a';">Save</button>
+                              <button type="button" class="cancel-grade-btn" data-sub-id="${sub._id}" style="background: none; border: 1px solid #cbd5e1; color: #475569; padding: 9px 12px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='none';">Cancel</button>
+                            </div>
+                          </div>
+                        </form>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        container.querySelectorAll('.open-grade-panel-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const subId = btn.dataset.subId;
+            const panelRow = document.getElementById(`grade-panel-row-${subId}`);
+            if (panelRow) {
+              panelRow.style.display = panelRow.style.display === 'none' ? 'table-row' : 'none';
+            }
+          });
+        });
+
+        container.querySelectorAll('.cancel-grade-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const subId = btn.dataset.subId;
+            const panelRow = document.getElementById(`grade-panel-row-${subId}`);
+            if (panelRow) panelRow.style.display = 'none';
+          });
+        });
+
+        container.querySelectorAll('.grade-submission-form').forEach(form => {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const subId = form.dataset.subId;
+            const grade = form.querySelector('.grade-input').value;
+            const feedback = form.querySelector('.feedback-input').value;
+
+            try {
+              const resUpdate = await fetch(`${apiBase}/api/assignments/${assignmentId}/submissions/${subId}/status`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  status: 'Approved',
+                  grade,
+                  feedback
+                })
+              });
+
+              if (resUpdate.ok) {
+                alert('Submission graded successfully!');
+                loadSubmissions();
+              } else {
+                const errData = await resUpdate.json();
+                alert(errData.message || 'Failed to submit grade.');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('Error occurred during grading.');
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="module-empty" style="color: red;">Failed to load submissions list.</div>`;
+      }
+    }
+
+    await loadSubmissions();
+  }
+
+  function renderTeacherPostForm(info) {
+    content(`
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+        <button type="button" id="assignBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Post New Assignment</h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Create and target assignments to specific departments, classes, and batches.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
+        <div class="section-card" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+          <form id="createAssignmentForm" style="display: flex; flex-direction: column; gap: 18px;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Assignment Title</label>
+              <input type="text" id="assignTitle" placeholder="e.g. Chapter 1 Homework" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Subject</label>
+                <select id="assignSubject" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: white; cursor: pointer;">
+                  <option value="">Select Subject</option>
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Department</label>
+                <select id="assignDept" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: white; cursor: pointer;">
+                  <option value="">Select Dept</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Target Year</label>
+                <select id="assignYear" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: white; cursor: pointer;">
+                  <option value="">Select Year</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Target Batch</label>
+                <select id="assignBatch" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: white; cursor: pointer;">
+                  <option value="">Select Batch</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Submission Deadline</label>
+              <input type="datetime-local" id="assignDeadline" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Instructions / Description</label>
+              <textarea id="assignDesc" rows="6" placeholder="Describe the assignment questions, resources, guidelines, and rules..." required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Resource Attachment (PDF, Word, PPT, ZIP, Image - Max 5MB)</label>
+              <input type="file" id="assignFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,image/*" style="font-size: 0.85rem; color: #64748b; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 8px;">
+              <div id="assignFileError" style="color: #ef4444; font-size: 0.78rem; display: none; font-weight: 600;"></div>
+            </div>
+
+            <button type="submit" id="createFormSubmitBtn" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+              <i class="fa-solid fa-paper-plane"></i> Publish Assignment
+            </button>
+          </form>
+        </div>
+
+        <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
+          <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Assignment Guidelines
+          </h4>
+          <p style="font-size: 0.85rem; color: #475569; line-height: 1.5; margin: 0;">
+            Publishing an assignment pushes it directly to the dashboard notification stream of targeted students.
+          </p>
+          <ul style="font-size: 0.82rem; color: #64748b; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+            <li>Smart targets guarantee only students in the selected Department, Year, and Batch see the task.</li>
+            <li>Accepts attachments up to 5MB, allowing worksheets, rubrics, or references.</li>
+            <li>Students can update submissions until the deadline hits.</li>
+            <li>Status statistics automatically compute submissions and grades in real-time.</li>
+          </ul>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('assignBackBtn')?.addEventListener('click', goToDashboard);
+
+    const enforcedSubjects = user.enforcedSubjects || [];
+    
+    const deptSelect = document.getElementById('assignDept');
+    if (user.department) {
+      deptSelect.innerHTML = `<option value="${user.department}">${user.department}</option>`;
+    } else {
+      deptSelect.innerHTML = `<option value="">No Department</option>`;
+    }
+
+    const subjectSelect = document.getElementById('assignSubject');
+    if (enforcedSubjects.length > 0) {
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
+        enforcedSubjects.map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
+      
+      subjectSelect.addEventListener('change', (e) => {
+        const selectedSubjectName = e.target.value;
+        const subjectData = enforcedSubjects.find(s => s.name === selectedSubjectName);
+
+        const yearSelect = document.getElementById('assignYear');
+        const batchSelect = document.getElementById('assignBatch');
+
+        if (!subjectData) {
+          yearSelect.value = "";
+          yearSelect.disabled = false;
+          batchSelect.innerHTML = '<option value="">Select Batch</option>';
+          return;
+        }
+
+        if (subjectData.year) {
+          yearSelect.value = subjectData.year;
+          yearSelect.disabled = true; 
+        }
+
+        if (subjectData.allowedBatches && subjectData.allowedBatches.length > 0) {
+          batchSelect.innerHTML = '<option value="">Select Batch</option>' +
+            subjectData.allowedBatches.map(b => `<option value="${b}">Batch ${b}</option>`).join('');
+          
+          if (subjectData.allowedBatches.length === 1) {
+            batchSelect.value = subjectData.allowedBatches[0];
+          }
+        } else {
+          batchSelect.innerHTML = '<option value="">No Batches Assigned</option>';
+        }
+      });
+    } else if ((user.teachingSubjects && user.teachingSubjects.length > 0) || (user.expertise && user.expertise.length > 0)) {
+      const subjects = (user.teachingSubjects && user.teachingSubjects.length > 0) ? user.teachingSubjects : user.expertise;
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
+        subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+      
+      const batchSelect = document.getElementById('assignBatch');
+      batchSelect.innerHTML = `
+        <option value="">Select Batch</option>
+        <option value="1">Batch 1</option>
+        <option value="2">Batch 2</option>
+        <option value="3">Batch 3</option>
+        <option value="All">All Batches</option>
+      `;
+    }
+
+    const fileInput = document.getElementById('assignFile');
+    const fileError = document.getElementById('assignFileError');
+    if (fileInput) {
+      fileInput.addEventListener('change', () => {
+        validateFileInput(fileInput, fileError);
+      });
+    }
+
+    const form = document.getElementById('createAssignmentForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (fileInput.files.length > 0 && !validateFileInput(fileInput, fileError)) return;
+
+      const submitBtn = document.getElementById('createFormSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+
+      const yearSelect = document.getElementById('assignYear');
+      const yearVal = yearSelect.value;
+      const deptVal = deptSelect.value;
+      const subjectVal = subjectSelect.value;
+      const batchVal = document.getElementById('assignBatch').value;
+      const deadlineVal = document.getElementById('assignDeadline').value;
+      const descVal = document.getElementById('assignDesc').value;
+      const titleVal = document.getElementById('assignTitle').value;
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const formData = new FormData();
+        formData.append('title', titleVal);
+        formData.append('subject', subjectVal);
+        formData.append('department', deptVal);
+        formData.append('year', yearVal);
+        formData.append('batch', batchVal);
+        formData.append('deadline', deadlineVal);
+        formData.append('description', descVal);
+        
+        if (fileInput.files.length > 0) {
+          formData.append('file', fileInput.files[0]);
+        }
+
+        const res = await fetch(`${apiBase}/api/assignments`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Assignment published successfully!');
+          window.location.href = 'view.html';
+        } else {
+          const errData = await res.json();
+          alert(errData.message || 'Failed to publish assignment.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Assignment';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Server error during publication.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Assignment';
+      }
+    });
   }
 
   async function renderLibrary() {

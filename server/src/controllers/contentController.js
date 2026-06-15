@@ -131,11 +131,13 @@ export const getMyContent = async (req, res) => {
             .populate('teacher', 'name email');
 
         const submissions = await Submission.find({ student: req.user._id });
-        const submissionMap = new Set(submissions.map(s => s.assignment.toString()));
+        const submissionMap = new Map(submissions.map(s => [s.assignment.toString(), s]));
 
         const assignments = assignmentsData.map(a => {
             const doc = a.toObject();
-            doc.submitted = submissionMap.has(a._id.toString());
+            const sub = submissionMap.get(a._id.toString());
+            doc.submitted = !!sub;
+            doc.submission = sub || null;
             return doc;
         });
 
