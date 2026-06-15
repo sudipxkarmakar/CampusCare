@@ -147,9 +147,11 @@ function renderStudentList(container, students, batchKey) {
 
     // Header with Bulk Assign Button
     html += `
-    <div style="margin-bottom:10px; display:flex; justify-content:center;">
+    <div style="margin-bottom:12px; display:flex; justify-content:center;">
         <button onclick="openBatchAssignModal('${batchKey}')" 
-            style="background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:6px; font-size:0.8rem; cursor:pointer;">
+            style="background: var(--primary); color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;"
+            onmouseenter="this.style.background='#5530a6';"
+            onmouseleave="this.style.background='var(--primary)';">
             <i class="fa-solid fa-users-gear"></i> Assign Mentor to Batch
         </button>
     </div>
@@ -166,16 +168,18 @@ function renderStudentList(container, students, batchKey) {
         const isAssigned = s.mentorName ? true : false;
 
         return `
-        <div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:white; padding:12px; margin-bottom:10px; border-radius:12px; border:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; transition: transform 0.2s, box-shadow 0.2s;" onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-sm)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
             <div>
-                <div style="font-weight:600; font-size:0.9rem; color:#334155;">${s.name}</div>
-                <div style="font-size:0.8rem; color:#64748b;">${s.rollNumber}</div>
-                <div style="font-size:0.75rem; color:${isAssigned ? '#166534' : '#ef4444'}; margin-top:2px;">
+                <div style="font-weight:600; font-size:0.9rem; color:var(--text-dark);">${s.name}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">${s.rollNumber}</div>
+                <div style="font-size:0.75rem; color:${isAssigned ? 'var(--success)' : 'var(--danger)'}; font-weight: 600; margin-top:4px; display: flex; align-items: center; gap: 4px;">
                     <i class="fa-solid fa-user-tie"></i> ${mentorName}
                 </div>
             </div>
             <button onclick="openAssignModal('${s._id}', '${s.name}')" 
-                style="background:#eff6ff; color:#3b82f6; border:none; width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                style="background: var(--primary-light); color: var(--primary); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                onmouseenter="this.style.background='var(--primary)'; this.style.color='white';"
+                onmouseleave="this.style.background='var(--primary-light)'; this.style.color='var(--primary)';"
                 title="Assign Mentor">
                 <i class="fa-solid fa-chalkboard-user"></i>
             </button>
@@ -194,6 +198,7 @@ function openAssignModal(studentId, studentName) {
     renderTeacherList();
 }
 
+// Open batch modal
 function openBatchAssignModal(batchKey) {
     currentBatchKey = batchKey;
     currentStudentId = null; // Clear student context
@@ -208,12 +213,14 @@ function renderTeacherList(search = '') {
 
     listDiv.innerHTML = filtered.map(t => `
         <div onclick="assignMentor('${t._id}')" 
-             style="padding:10px; border-bottom:1px solid #f1f5f9; cursor:pointer; hover:background:#f8fafc; display:flex; justify-content:space-between;">
+             style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; border-radius: 8px;"
+             onmouseenter="this.style.backgroundColor='var(--primary-light)';" 
+             onmouseleave="this.style.backgroundColor='transparent';">
              <div>
-                <div style="font-weight:500;">${t.name}</div>
-                <div style="font-size:0.8rem; color:#64748b;">${t.designation || 'Faculty'}</div>
+                <div style="font-weight: 600; color: var(--text-dark);">${t.name}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">${t.designation || 'Faculty'}</div>
              </div>
-             <i class="fa-solid fa-chevron-right" style="color:#cbd5e1;"></i>
+             <i class="fa-solid fa-chevron-right" style="color: var(--primary);"></i>
         </div>
     `).join('');
 

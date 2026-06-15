@@ -191,13 +191,15 @@ function createSubjectCard(subject) {
 
     const renderBatchSlot = (batchName, teacher) => {
         const teacherName = teacher ? teacher.name : 'Not Assigned';
-        const color = teacher ? '#3b82f6' : '#94a3b8';
+        const color = teacher ? 'var(--primary)' : 'var(--text-muted)';
         const icon = teacher ? '<i class="fa-solid fa-chalkboard-user"></i>' : '<i class="fa-regular fa-user"></i>';
         const btnTitle = teacher ? "Change Teacher" : "Assign Teacher";
 
         let actionButtons = `
             <button class="add-teacher-btn" data-id="${subject._id}" data-name="${subject.name}" data-batch="${batchName}"
-                style="background:white; border:1px solid #e2e8f0; color:#475569; width:28px; height:28px; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                style="background: var(--primary-light); border: 1px solid var(--border-color); color: var(--primary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                onmouseenter="this.style.background='var(--primary)'; this.style.color='white';"
+                onmouseleave="this.style.background='var(--primary-light)'; this.style.color='var(--primary)';"
                 title="${btnTitle}">
                 <i class="fa-solid fa-pen" style="font-size:0.7rem;"></i>
             </button>
@@ -206,7 +208,9 @@ function createSubjectCard(subject) {
         if (teacher) {
             actionButtons += `
                 <button onclick="unassignTeacher('${subject._id}', '${batchName}')"
-                    style="margin-left:5px; background:white; border:1px solid #fee2e2; color:#ef4444; width:28px; height:28px; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                    style="margin-left:5px; background: var(--danger-light); border: 1px solid var(--border-color); color: var(--danger); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+                    onmouseenter="this.style.background='var(--danger)'; this.style.color='white';"
+                    onmouseleave="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';"
                     title="Unassign Teacher">
                     <i class="fa-solid fa-trash-can" style="font-size:0.7rem;"></i>
                 </button>
@@ -214,10 +218,10 @@ function createSubjectCard(subject) {
         }
 
         return `
-            <div style="margin-top:8px; padding:8px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+            <div style="margin-top:8px; padding:8px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size:0.75rem; color:#64748b; font-weight:600; text-transform:uppercase;">${batchName}</div>
-                    <div style="font-size:0.85rem; color:${color}; font-weight:500;">
+                    <div style="font-size:0.75rem; color: var(--text-muted); font-weight:600; text-transform:uppercase;">${batchName}</div>
+                    <div style="font-size:0.85rem; color:${color}; font-weight:600;">
                         ${icon} ${teacherName}
                     </div>
                 </div>
@@ -323,7 +327,9 @@ async function loadTeacherExpertise(filterSubjectName = null) {
             const btn = document.createElement('button');
             btn.textContent = 'Assign';
             btn.className = 'assign-action-btn';
-            btn.style.cssText = "background:#3b82f6; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer;";
+            btn.style.cssText = "background: var(--primary); color: white; border: none; padding: 6px 16px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s;";
+            btn.onmouseenter = () => btn.style.background = '#5530a6';
+            btn.onmouseleave = () => btn.style.background = 'var(--primary)';
 
             btn.onclick = () => assignTeacherToCurrentSubject(t._id);
 

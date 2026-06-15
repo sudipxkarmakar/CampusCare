@@ -135,10 +135,29 @@
           <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
             CampusCare <span style="font-size: 0.8rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">HOD</span>
           </h1>
+          <div class="search-bar"
+            style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: var(--radius-full); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-search" style="color: var(--text-muted)"></i>
+            <input type="text" placeholder="Search..."
+              style="border: none; background: transparent; outline: none; font-family: 'Inter', sans-serif; font-size: 0.95rem; width: 200px;" />
+          </div>
         </div>
         
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
-          <a href="index.html" class="btn-dashboard"><i class="fa-solid fa-house-chimney"></i> Dashboard</a>
+          <span class="date-display"
+            style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-regular fa-calendar"></i> 15 May, 2026
+          </span>
+
+          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal"
+            data-modal-id="ai-modal">
+            <i class="fa-solid fa-robot"></i> Assistant
+          </button>
+
+          <button id="sosBtn" class="btn-pill btn-outline-red" data-action="toggleModal" data-modal-id="sos-modal">
+            <i class="fa-solid fa-bell-concierge"></i> SOS
+          </button>
+
           <!-- USER PROFILE -->
           <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" aria-label="Toggle Profile Menu" aria-expanded="false" aria-haspopup="menu" style="display: flex; cursor: pointer; position: relative">
             <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=HOD&background=random" alt="Profile" />
@@ -155,7 +174,7 @@
               <div id="userDetails" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
                 <!-- dynamically injected from js -->
               </div>
-              <button style="background: var(--danger); color: white; border: none; padding: 0.6rem; width: 100%; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
+              <button onclick="logout()" style="background: var(--danger); color: white; border: none; padding: 0.6rem; width: 100%; border-radius: var(--radius-md); cursor: pointer; font-weight: 500;">
                   <i class="fa-solid fa-right-from-bracket"></i> Logout
               </button>
             </div>
@@ -164,10 +183,21 @@
       </header>
 
       <!-- HERO -->
-      <section class="hero-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-        <div class="hero-content" style="max-width: 100%;">
-          <h1 style="font-size: 2rem; margin-bottom: 8px; color: white;">Mentor Assignment</h1>
-          <p style="font-size: 1rem; opacity: 0.9; margin: 0;">Assign Mentees to Faculty</p>
+      <section class="hero-card module-hero-card" style="padding: 40px; display:flex; justify-content:space-between; align-items:center; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); margin-bottom: 32px;">
+        <div class="hero-content" style="max-width: 60%; z-index: 2;">
+          <h1 style="font-size: 2.2rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 16px;">
+            <a href="index.html" style="background: var(--primary-light); border: 1px solid var(--border-color); font-size: 1.1rem; color: var(--primary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; text-decoration: none;" onmouseenter="this.style.background='var(--border-color)';" onmouseleave="this.style.background='var(--primary-light)';">
+              <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            Mentor Assignment
+          </h1>
+          <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0;">
+            Assign Mentees to Faculty
+          </p>
+        </div>
+        <div class="hero-image" style="z-index: 1;">
+          <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
+            onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
         </div>
       </section>
 
@@ -245,8 +275,72 @@
       </div>
   </div>
 
+  <!-- SOS MODAL -->
+  <div id="sos-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="sos-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-triangle-exclamation"
+        style="font-size: 3.5rem; color: var(--danger); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">EMERGENCY SOS</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Select your emergency type to alert nearest help immediately.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <a href="tel:100"
+          style="background: var(--text-dark); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; grid-column: 1 / -1; transition: background 0.2s;">
+          <i class="fa-solid fa-shield-halved"></i> Call Campus Security
+        </a>
+        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+          style="background: var(--warning); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-kit-medical" style="font-size:1.8rem;"></i> First Aid
+        </button>
+        <button
+          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
+          style="background: var(--danger); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-droplet" style="font-size:1.8rem;"></i> Need Blood
+        </button>
+        <a href="tel:101"
+          style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; display:flex; justify-content:center; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-truck-medical"></i> Ambulance
+        </a>
+        <button onclick="alert('Panic Signal Sent with Location!')"
+          style="background: var(--text-muted); color: white; padding: 12px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">
+          Other / Panic
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI ASSISTANT MODAL -->
+  <div id="ai-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="ai-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-robot" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 700;">Campus AI Assistant</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Ask anything about routine, department scheduling or campus facilities.</p>
+
+      <div id="ai-chat-history"
+        style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid var(--border-color); padding: 15px; border-radius: var(--radius-md); background: var(--bg-color); display:none;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="ai-input" placeholder="Ask anything..."
+          style="flex: 1; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none;">
+        <button onclick="askAI()" class="btn-filled-purple" style="padding: 0 20px;"><i
+            class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
 
   <script src="../assets/js/landing.js"></script>
+  <script src="../assets/js/ai.js"></script>
   <script src="../assets/js/hod_mentors.js?v=2"></script>
 </body>
 </html>

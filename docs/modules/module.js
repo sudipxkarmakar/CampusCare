@@ -246,7 +246,8 @@
       avatarSrc += `?t=${new Date().getTime()}`;
     }
 
-    const displayName = (user.name || user.fullName || 'User').split(' ')[0];
+    const nameParts = (user.name || user.fullName || 'User').split(' ');
+    const displayName = nameParts[0] + (['dr.', 'dr', 'prof.', 'prof', 'mr.', 'mr', 'mrs.', 'mrs', 'ms.', 'ms'].includes(nameParts[0].toLowerCase()) && nameParts.length > 1 ? ' ' + nameParts[1] : '');
 
     let profileSectionHtml = '';
     if (user.token) {
@@ -1548,6 +1549,129 @@
     const mode = cfg.mode || 'view';
     const isPostMode = mode === 'post';
 
+    if ((userRole === 'hod' || userRole === 'warden') && !document.getElementById('complaints-custom-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'complaints-custom-styles';
+      styleEl.innerHTML = `
+        .complaints-grid-view {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+          align-items: stretch;
+          padding-right: 4px;
+        }
+        @media (min-width: 1200px) {
+          .complaints-grid-view {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+          }
+        }
+        
+        .complaint-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.015);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          cursor: pointer;
+          box-sizing: border-box;
+          margin-bottom: 4px;
+          height: 100%;
+        }
+        .complaint-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(107, 70, 193, 0.08);
+          border-color: rgba(107, 70, 193, 0.25);
+        }
+        
+        .complaint-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          flex-shrink: 0;
+        }
+        .complaint-title-area {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+          flex: 1;
+        }
+        .complaint-title {
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0f172a;
+          font-family: 'Poppins', sans-serif;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        
+        .complaint-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          flex-grow: 1;
+        }
+        .complaint-desc {
+          margin: 0;
+          font-size: 0.9rem;
+          color: #475569;
+          line-height: 1.5;
+          font-family: 'Inter', sans-serif;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          white-space: normal;
+        }
+        .complaint-images {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 4px;
+        }
+        
+        .complaint-card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+          border-top: 1px solid #f1f5f9;
+          padding-top: 12px;
+          margin-top: auto;
+          width: 100%;
+          flex-wrap: wrap;
+          flex-shrink: 0;
+        }
+        .complaint-footer-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+          flex-wrap: wrap;
+          font-size: 0.8rem;
+        }
+        .complaint-footer-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-left: auto;
+          font-size: 0.8rem;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
     let contentHtml = '';
 
     if (isPostMode) {
@@ -1623,8 +1747,7 @@
         </div>
       `;
     } else {
-
-      contentHtml = `
+      let styleTagHtml = (userRole === 'hod' || userRole === 'warden') ? '' : `
         <style>
           .complaints-grid-view {
             display: grid;
@@ -1639,6 +1762,10 @@
             }
           }
         </style>
+      `;
+
+      contentHtml = `
+        ${styleTagHtml}
         <div id="complaintsListContainer" class="complaints-grid-view">
           <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
@@ -2278,6 +2405,127 @@
         <span id="count-${c._id}">${c.upvotes || 0}</span>
       </button>
     `;
+
+    if (userRole === 'hod' || userRole === 'warden') {
+      const priorityStyleRedesigned = priority === 'High' ? 'background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5;' :
+                                   priority === 'Urgent' ? 'background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2;' :
+                                   priority === 'Low' ? 'background: #f0fdf4; color: #047857; border: 1px solid #d1fae5;' :
+                                   'background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe;';
+
+      const statusStyleRedesigned = status === 'Resolved' ? 'background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-weight: bold;' :
+                                 status === 'In Progress' ? 'background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; font-weight: bold;' :
+                                 'background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;';
+
+      // Clickable Image Placeholders (Square Thumbnails) in the side
+      let imagePlaceholdersRedesignedHtml = '';
+      if (imgUrl) {
+        imagePlaceholdersRedesignedHtml += `
+          <div onclick="window.open('${imgUrl}')" style="width: 52px; height: 52px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s; flex-shrink: 0;" title="View Issue Photo" onmouseenter="this.style.borderColor='var(--primary)';" onmouseleave="this.style.borderColor='#cbd5e1';">
+            <img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        `;
+      }
+      if (resolveImgUrl) {
+        imagePlaceholdersRedesignedHtml += `
+          <div onclick="window.open('${resolveImgUrl}')" style="width: 52px; height: 52px; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s; flex-shrink: 0;" title="View Resolution Proof" onmouseenter="this.style.borderColor='#10b981';" onmouseleave="this.style.borderColor='#bbf7d0';">
+            <img src="${resolveImgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        `;
+      }
+
+      // Resolve buttons and forms
+      let resolveBtnRedesignedHtml = '';
+      let resolveFormContainerRedesignedHtml = '';
+      if (isAuthority && status !== 'Resolved') {
+        if (userRole === 'principal') {
+          resolveBtnRedesignedHtml = `
+            <button type="button" class="btn-resolve-direct" data-id="${c._id}" style="background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-sizing: border-box;" onmouseenter="this.style.background='#dbeafe';" onmouseleave="this.style.background='#eff6ff';">
+              <i class="fa-solid fa-check"></i> Resolve
+            </button>
+          `;
+        } else {
+          resolveBtnRedesignedHtml = `
+            <button type="button" class="btn-resolve-toggle" data-id="${c._id}" style="background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-sizing: border-box;" onmouseenter="this.style.background='#dbeafe';" onmouseleave="this.style.background='#eff6ff';">
+              <i class="fa-solid fa-check-to-slot"></i> Resolve
+            </button>
+          `;
+          resolveFormContainerRedesignedHtml = `
+            <div id="resolveFormContainer-${c._id}" style="display: none; margin-top: 12px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 12px; width: 100%; box-sizing: border-box;">
+              <form class="inlineResolveForm" data-id="${c._id}" style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 2px;">Upload Resolution Proof</label>
+                <input type="file" name="resolutionImage" accept="image/*" required style="font-size: 0.8rem; color: #475569;">
+                <button type="submit" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; align-self: flex-start; margin-top: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                  Confirm Resolution
+                </button>
+              </form>
+            </div>
+          `;
+        }
+      }
+
+      // Left Side Footer: Raiser & Resolver Info
+      let footerLeftRedesignedHtml = `
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #475569; flex-shrink: 0; min-width: 0;">
+          <img src="${raiserAvatar}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(raiserName)}&background=6b46c1&color=fff&rounded=true&bold=true';">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">By: <strong style="color: #0f172a;">${esc(raiserName)}</strong>${esc(raiserInfo)}</span>
+        </span>
+      `;
+
+      if (status === 'Resolved') {
+        footerLeftRedesignedHtml += `
+          <span style="color: #e2e8f0; flex-shrink: 0;">|</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #166534; flex-shrink: 0; min-width: 0;">
+            <img src="${resolverAvatar}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(resolverName)}&background=10b981&color=fff&rounded=true&bold=true';">
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Resolved: <strong style="color: #14532d;">${esc(resolverName)}</strong></span>
+          </span>
+        `;
+      }
+
+      // Right Side Footer: Date & Upvote
+      let footerRightRedesignedHtml = `
+        <span style="font-weight: 500; font-size: 0.78rem; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; color: #64748b;">
+          <i class="fa-regular fa-clock"></i>${date}
+        </span>
+        <span style="color: #e2e8f0; flex-shrink: 0;">|</span>
+        <button type="button" class="btn-complaint-upvote" id="like-btn-${c._id}" data-id="${c._id}" style="background: none; border: none; color: ${likeColor}; cursor: pointer; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; flex-shrink: 0;" onmouseenter="this.style.background='#f1f5f9';" onmouseleave="this.style.background='none';">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span id="count-${c._id}">${c.upvotes || 0}</span>
+        </button>
+      `;
+
+      return `
+        <div class="complaint-card" data-id="${c._id}">
+          <!-- Top Row: Title, Priority, Status badge -->
+          <div class="complaint-card-header">
+            <div class="complaint-title-area">
+              <span style="${priorityStyleRedesigned} padding: 4px 10px; border-radius: 8px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">${priority}</span>
+              <h4 class="complaint-title" title="${esc(title)}">${esc(title)}</h4>
+            </div>
+            <span style="${statusStyleRedesigned} padding: 4px 10px; border-radius: 8px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 700; text-align: center; display: inline-block; flex-shrink: 0; box-sizing: border-box;">${status}</span>
+          </div>
+          
+          <!-- Middle Row: Description & Image attachments -->
+          <div class="complaint-card-body">
+            <p class="complaint-desc" title="${esc(desc)}">${esc(desc)}</p>
+            ${imagePlaceholdersRedesignedHtml ? `<div class="complaint-images">${imagePlaceholdersRedesignedHtml}</div>` : ''}
+          </div>
+          
+          <!-- Bottom Row: Raiser, Resolver & Date, Upvotes, Actions -->
+          <div class="complaint-card-footer">
+            <div class="complaint-footer-left">
+              ${footerLeftRedesignedHtml}
+            </div>
+            <div class="complaint-footer-right">
+              ${footerRightRedesignedHtml}
+              ${resolveBtnRedesignedHtml}
+            </div>
+          </div>
+          
+          <!-- Inline Resolution Form (if toggled) -->
+          ${resolveFormContainerRedesignedHtml}
+        </div>
+      `;
+    }
 
     return `
       <div class="complaint-card" data-id="${c._id}" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 12px 16px; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: all 0.3s; position: relative; min-height: 125px; justify-content: flex-start; align-items: stretch; margin-bottom: 16px; box-sizing: border-box; cursor: pointer;" onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0,0,0,0.04)'; this.style.borderColor='rgba(107, 70, 193, 0.2)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
@@ -4201,13 +4449,266 @@
   }
 
   async function renderGatePassApproval() {
-    content(`<div class="section-card module-panel"><div class="section-header"><h2><i class="fa-solid fa-stamp"></i> Approve Gate Pass / Leave</h2></div><div id="leaveList" class="module-empty"><i class="fa-solid fa-spinner fa-spin"></i><span>Loading leave requests...</span></div></div>`);
+    content(`
+      <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <div class="section-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px;">
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+            <i class="fa-solid fa-stamp" style="color: var(--primary); margin-right: 8px;"></i> Approve Gate Pass / Leave
+          </h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Review, approve, or reject student leave and gate-pass applications.</p>
+        </div>
+        <div id="leaveTableContainer">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading leave requests...</div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    // Add reject modal to body if it doesn't already exist
+    if (!document.getElementById('gatePassRejectModal')) {
+      const modalHtml = `
+        <div id="gatePassRejectModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+          <div class="modal-content" style="background: white; padding: 2rem; border-radius: var(--radius-md); width: 90%; max-width: 450px; text-align: left; position: relative; box-shadow: var(--shadow-lg);">
+            <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">Reject Leave Request</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Please specify a reason for rejecting this leave request. This will be visible to the student.</p>
+            <textarea id="gatePassRejectRemark" placeholder="Enter reason here..." style="width: 100%; height: 100px; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: inherit; font-size: 0.9rem; margin-bottom: 20px; outline: none; resize: none;"></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+              <button onclick="window.closeLeaveRejectModal()" class="module-btn" style="background: #f1f5f9; color: var(--text-dark); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Cancel</button>
+              <button onclick="window.confirmLeaveReject()" class="module-btn" style="background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Reject Request</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    const userRole = (user.role || '').toLowerCase();
+    const token = user.token || localStorage.getItem('token') || '';
+    const endpoint = userRole === 'hod' ? '/api/hod/leaves' : '/api/warden/leaves';
+
+    let currentRejectId = null;
+
+    window.openLeaveRejectModal = function(id) {
+      currentRejectId = id;
+      const modal = document.getElementById('gatePassRejectModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        const textarea = document.getElementById('gatePassRejectRemark');
+        if (textarea) textarea.value = '';
+      }
+    };
+
+    window.closeLeaveRejectModal = function() {
+      currentRejectId = null;
+      const modal = document.getElementById('gatePassRejectModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    };
+
+    window.confirmLeaveReject = async function() {
+      const remark = document.getElementById('gatePassRejectRemark')?.value.trim();
+      if (!remark) {
+        alert('Please provide a rejection reason.');
+        return;
+      }
+      if (currentRejectId) {
+        await window.processLeaveAction(currentRejectId, 'reject', remark);
+        window.closeLeaveRejectModal();
+      }
+    };
+
+    window.processLeaveAction = async function(id, action, remark = '', confirmTitle = '') {
+      if (action === 'approve') {
+        const msg = confirmTitle || 'Approve this leave request?';
+        if (!confirm(msg)) return;
+      }
+      
+      const actionEndpoint = userRole === 'hod' 
+        ? `${apiBase}/api/hod/leaves/${id}/action`
+        : `${apiBase}/api/warden/leaves/${id}/action`;
+
+      try {
+        const res = await fetch(actionEndpoint, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action, remark })
+        });
+        
+        if (res.ok) {
+          alert(action === 'approve' ? 'Successfully approved' : 'Successfully rejected');
+          renderGatePassApproval(); // Reload the list
+        } else {
+          const err = await res.json();
+          alert(err.message || 'Operation failed');
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Server Error');
+      }
+    };
+
     try {
-      const res = await fetch(`${apiBase}/api/warden/leaves`, { headers: { Authorization: `Bearer ${user.token || ''}` } });
+      const res = await fetch(`${apiBase}${endpoint}`, { headers: { Authorization: `Bearer ${token}` } });
       const leaves = res.ok ? await res.json() : [];
-      document.getElementById('leaveList').outerHTML = table(leaves, ['studentName', 'fromDate', 'toDate', 'reason', 'status']);
+
+      const container = document.getElementById('leaveTableContainer');
+      if (!container) return;
+
+      if (leaves.length === 0) {
+        container.innerHTML = `
+          <div class="module-empty" style="padding: 40px 20px;">
+            <i class="fa-regular fa-folder-open"></i>
+            <span>No pending leaves found.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const tbodyHtml = leaves.map(leave => {
+        const studentName = leave.student?.name || 'Unknown';
+        const rollNo = leave.student?.rollNumber || 'N/A';
+        const roomNo = leave.student?.roomNumber || 'N/A';
+        const hostelName = leave.student?.hostelName || '';
+        const dept = leave.student?.department || '';
+        
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=random`;
+        
+        const fromDate = leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '--';
+        const toDate = leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '--';
+        
+        const type = leave.type || 'Gate Pass';
+        const reason = leave.reason || '--';
+        
+        const hodStatus = leave.hodStatus || 'Pending';
+        const wardenStatus = leave.wardenStatus || 'Pending';
+
+        let hodBadgeHtml = '';
+        if (hodStatus === 'Approved') {
+          hodBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+        } else if (hodStatus === 'Rejected') {
+          hodBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+        } else {
+          hodBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+        }
+        if (leave.hodRemark) {
+          hodBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.hodRemark)}"</div>`;
+        }
+
+        let wardenBadgeHtml = '';
+        if (wardenStatus === 'Approved') {
+          wardenBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Issued</span>`;
+        } else if (wardenStatus === 'Rejected') {
+          wardenBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+        } else {
+          wardenBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+        }
+        if (leave.wardenRemark) {
+          wardenBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.wardenRemark)}"</div>`;
+        }
+
+        let actionHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">Action Completed</span>';
+        if (userRole === 'hod') {
+          if (hodStatus === 'Pending') {
+            actionHtml = `
+              <div style="display: flex; gap: 8px;">
+                <button onclick="window.processLeaveAction('${leave._id}', 'approve')" class="module-btn" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid fa-check"></i> Approve</button>
+                <button onclick="window.openLeaveRejectModal('${leave._id}')" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#ef4444'; this.style.color='white';" onmouseleave="this.style.background='#fee2e2'; this.style.color='#ef4444';"><i class="fa-solid fa-xmark"></i> Reject</button>
+              </div>
+            `;
+          }
+        } else if (userRole === 'warden') {
+          if (wardenStatus === 'Pending') {
+            let btnStyle = 'background: var(--success);';
+            let btnText = 'Issue Pass';
+            let btnIcon = 'fa-stamp';
+            let btnTitle = 'Issue Gate Pass for this student?';
+            if (hodStatus !== 'Approved') {
+              btnStyle = 'background: var(--warning);';
+              btnText = 'Issue Pass (Direct)';
+              btnIcon = 'fa-bolt';
+              btnTitle = 'HOD has not approved yet. Directly issue Gate Pass?';
+            }
+            actionHtml = `
+              <div style="display: flex; gap: 8px;">
+                <button onclick="window.processLeaveAction('${leave._id}', 'approve', '', '${btnTitle}')" class="module-btn" style="${btnStyle} color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid ${btnIcon}"></i> ${btnText}</button>
+                <button onclick="window.openLeaveRejectModal('${leave._id}')" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#ef4444'; this.style.color='white';" onmouseleave="this.style.background='#fee2e2'; this.style.color='#ef4444';"><i class="fa-solid fa-xmark"></i> Reject</button>
+              </div>
+            `;
+          }
+        }
+
+        let typeBadgeColor = 'background: #e0f2fe; color: #0369a1;'; // Night Out / Blue
+        if (type === 'Home Visit') {
+          typeBadgeColor = 'background: #ede9fe; color: #7c3aed;'; // Purple
+        } else if (type === 'Medical') {
+          typeBadgeColor = 'background: #fee2e2; color: #b91c1c;'; // Red
+        }
+
+        return `
+          <tr style="border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+            <td style="padding: 14px 12px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="${avatarUrl}" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #e2e8f0;">
+                <div>
+                  <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark);">${esc(studentName)}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
+                    ${esc(rollNo)} | Room ${esc(roomNo)} | ${esc(hostelName)} | ${esc(dept)}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 14px 12px;">
+              <span style="${typeBadgeColor} padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700;">${esc(type)}</span>
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.82rem; color: var(--text-dark); font-weight: 500;">
+              <div>${fromDate}</div>
+              <div style="color: var(--text-muted); font-size: 0.75rem;">to ${toDate}</div>
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.82rem; color: var(--text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${esc(reason)}">
+              ${esc(reason)}
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.85rem;">
+              ${hodBadgeHtml}
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.85rem;">
+              ${wardenBadgeHtml}
+            </td>
+            <td style="padding: 14px 12px; text-align: left;">
+              ${actionHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="module-table-wrap" style="margin-top: 10px; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; background: white;">
+          <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Student Details</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Type</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Duration</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Reason</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">HOD Status</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Warden Status</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tbodyHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
     } catch {
-      document.getElementById('leaveList').textContent = 'Unable to load gate-pass approvals.';
+      const container = document.getElementById('leaveTableContainer');
+      if (container) container.innerHTML = '<div class="module-empty">Unable to load gate-pass approvals.</div>';
     }
   }
 
@@ -4368,7 +4869,56 @@
 
   function content(html) {
     const el = document.getElementById('moduleContent');
-    el.innerHTML = html;
+    const userRole = (user.role || '').toLowerCase();
+    
+    if (userRole === 'hod') {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      const hasBackButton = temp.querySelector('[id*="BackBtn"]') || temp.querySelector('[class*="back-btn"]') || temp.querySelector('.hod-dynamic-back-btn');
+      
+      if (!hasBackButton) {
+        const header = temp.querySelector('.section-header') || temp.querySelector('h2');
+        if (header) {
+          const backBtnHtml = `
+            <button type="button" class="hod-dynamic-back-btn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; margin-right: 12px; vertical-align: middle; flex-shrink: 0;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          `;
+          
+          const titleH2 = header.querySelector('h2') || (header.tagName === 'H2' ? header : null);
+          if (titleH2) {
+            titleH2.style.display = 'inline-flex';
+            titleH2.style.alignItems = 'center';
+            titleH2.insertAdjacentHTML('afterbegin', backBtnHtml);
+          } else {
+            header.insertAdjacentHTML('afterbegin', backBtnHtml);
+          }
+        } else {
+          const backRowHtml = `
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+              <button type="button" class="hod-dynamic-back-btn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+              <span style="font-size: 0.95rem; font-weight: 600; color: #64748b; cursor: pointer;">Back to Dashboard</span>
+            </div>
+          `;
+          temp.insertAdjacentHTML('afterbegin', backRowHtml);
+        }
+      }
+      
+      el.innerHTML = temp.innerHTML;
+      
+      el.querySelectorAll('.hod-dynamic-back-btn').forEach(btn => {
+        btn.addEventListener('click', goToDashboard);
+        const span = btn.nextElementSibling;
+        if (span && span.tagName === 'SPAN' && span.textContent === 'Back to Dashboard') {
+          span.addEventListener('click', goToDashboard);
+        }
+      });
+    } else {
+      el.innerHTML = html;
+    }
     return el;
   }
 
