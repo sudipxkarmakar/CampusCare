@@ -10,7 +10,7 @@ import Submission from '../models/Submission.js';
 // @route   POST /api/assignments
 // @access  Teacher/HOD
 export const createAssignment = async (req, res) => {
-    const { type, title, description, link, subject, batch, section, deadline, year } = req.body; // Remove 'department' from destructuring
+    const { type, title, description, link, subject, department, batch, section, deadline, year } = req.body;
 
     try {
         // Validate Teacher
@@ -34,7 +34,7 @@ export const createAssignment = async (req, res) => {
             link: resourceLink,
             subject,
             teacher: req.user._id,
-            department: teacher.department, // Use Teacher's Department
+            department: department || teacher.department, // Use submitted Department, fallback to Teacher's Department
             year,
             batch,
             section,
@@ -169,12 +169,9 @@ export const submitAssignment = async (req, res) => {
 // @access  Teacher
 export const getTeacherAssignments = async (req, res) => {
     try {
-        const teacher = await User.findById(req.user._id);
-
-        // Only show assignments where Teacher is creator AND Department matches (Strict View)
+        // Only show assignments where Teacher is creator
         const assignments = await Assignment.find({
-            teacher: req.user._id,
-            department: teacher.department
+            teacher: req.user._id
         })
             .sort({ createdAt: -1 })
             .lean(); // Convert to POJO to attach property
@@ -270,6 +267,20 @@ export const deleteAssignment = async (req, res) => {
         await assignment.deleteOne(); // or findByIdAndDelete
 
         res.json({ message: 'Resource deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get unique assignment metadata (subjects, departments, batches) for dropdown population
+// @route   GET /api/assignments/metadata
+// @access  Teacher
+export const getAssignmentMetadata = async (req, res) => {
+    try {
+        const subjects = await Assignment.distinct('subject');
+        const departments = await Assignment.distinct('department');
+        const batches = await Assignment.distinct('batch');
+        res.json({ subjects, departments, batches });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createAssignment, getAssignments, submitAssignment, getTeacherAssignments, getAssignmentSubmissions, deleteAssignment, updateSubmissionStatus } from '../controllers/assignmentController.js';
+import { createAssignment, getAssignments, submitAssignment, getTeacherAssignments, getAssignmentSubmissions, deleteAssignment, updateSubmissionStatus, getAssignmentMetadata } from '../controllers/assignmentController.js';
 
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -56,6 +56,7 @@ const router = express.Router();
 
 router.post('/', protect, upload.single('file'), createAssignment);
 router.get('/', protect, getAssignments);
+router.get('/metadata', protect, getAssignmentMetadata);
 router.get('/created', protect, getTeacherAssignments);
 router.get('/:id/submissions', protect, getAssignmentSubmissions);
 router.patch('/:id/submissions/:subId/status', protect, updateSubmissionStatus); // New route

@@ -148,7 +148,7 @@
       navMenuHtml = `
         <li><a href="${rootPrefix}teacher/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
         <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> My Classes</a></li>
-        <li><a href="${rootPrefix}modules/assignments/post.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
+        <li><a href="${rootPrefix}modules/assignments/view.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
         <li><a href="${rootPrefix}modules/documents/post.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-arrow-up"></i> Notes</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=my-mentees') ? 'active' : ''}"><i class="fa-solid fa-users"></i> Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=my-mentees" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=my-mentees') ? 'active' : ''}"><i class="fa-solid fa-hands-holding-child"></i> Mentees</a></li>
@@ -3421,14 +3421,95 @@
   }
 
   function renderTeacherPostForm(info) {
+    // Normalization Functions
+    function normalizeDepartment(val) {
+      if (!val) return '';
+      const trimmed = val.trim();
+      const lower = trimmed.toLowerCase();
+      if (lower === 'cse' || lower === 'computer science' || lower === 'computer science engineering' || lower === 'computer science & engineering') {
+        return 'CSE';
+      }
+      if (lower === 'it' || lower === 'information technology') {
+        return 'IT';
+      }
+      if (lower === 'ece' || lower === 'electronics' || lower === 'electronics & communication' || lower === 'electronics & communication engineering') {
+        return 'ECE';
+      }
+      if (lower === 'me' || lower === 'mechanical' || lower === 'mechanical engineering') {
+        return 'ME';
+      }
+      if (lower === 'ce' || lower === 'civil' || lower === 'civil engineering') {
+        return 'CE';
+      }
+      if (lower === 'civil' || lower === 'civil engineering') {
+        return 'Civil Engineering';
+      }
+      if (lower === 'mechanical' || lower === 'mechanical engineering') {
+        return 'Mechanical Engineering';
+      }
+      if (lower === 'electrical' || lower === 'ee' || lower === 'electrical engineering') {
+        return 'Electrical Engineering';
+      }
+      if (lower === 'mba') {
+        return 'MBA';
+      }
+      if (lower === 'pharmacy') {
+        return 'Pharmacy';
+      }
+      if (lower === 'architecture') {
+        return 'Architecture';
+      }
+      // Capitalize words
+      return trimmed.split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    }
+
+    function normalizeSubject(val) {
+      if (!val) return '';
+      const trimmed = val.trim();
+      const lower = trimmed.toLowerCase();
+      
+      const smallWords = ['and', 'of', 'to', 'in', 'for', 'with', 'on', 'at', 'by', 'a', 'an', 'the', 'or', 'but'];
+      const acronyms = ['dbms', 'ai', 'ml', 'os', 'cn', 'dsa', 'toc', 'coa', 'oop', 'oops'];
+      
+      return trimmed.split(/\s+/).map((word, idx) => {
+        const wordLower = word.toLowerCase();
+        if (acronyms.includes(wordLower)) {
+          return word.toUpperCase();
+        }
+        if (smallWords.includes(wordLower) && idx > 0) {
+          return wordLower;
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join(' ');
+    }
+
+    function normalizeBatch(val) {
+      if (!val) return '';
+      const trimmed = val.trim();
+      const lower = trimmed.toLowerCase();
+      if (lower === 'all') return 'All';
+      if (lower === '1') return 'Batch 1';
+      if (lower === '2') return 'Batch 2';
+      if (/^batch\s*1$/i.test(trimmed)) return 'Batch 1';
+      if (/^batch\s*2$/i.test(trimmed)) return 'Batch 2';
+      return trimmed.split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    }
+
     content(`
-      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
-        <button type="button" id="assignBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
-          <i class="fa-solid fa-arrow-left"></i>
-        </button>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="assignBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Post New Assignment</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Create and target assignments to specific departments, classes, and batches.</p>
+          </div>
+        </div>
         <div>
-          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Post New Assignment</h2>
-          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Create and target assignments to specific departments, classes, and batches.</p>
+          <a class="btn-dashboard" href="view.html" style="background: var(--primary); color: white; border-radius: 10px; font-weight: 600; text-decoration: none; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+            <i class="fa-solid fa-eye"></i> View Assignments
+          </a>
         </div>
       </div>
 
@@ -3446,12 +3527,14 @@
                 <select id="assignSubject" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: white; cursor: pointer;">
                   <option value="">Select Subject</option>
                 </select>
+                <div id="assignSubjectCustomContainer" style="display: flex; flex-direction: column;"></div>
               </div>
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Department</label>
                 <select id="assignDept" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: white; cursor: pointer;">
                   <option value="">Select Dept</option>
                 </select>
+                <div id="assignDeptCustomContainer" style="display: flex; flex-direction: column;"></div>
               </div>
             </div>
 
@@ -3490,6 +3573,8 @@
               <div id="assignFileError" style="color: #ef4444; font-size: 0.78rem; display: none; font-weight: 600;"></div>
             </div>
 
+
+
             <button type="submit" id="createFormSubmitBtn" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
               <i class="fa-solid fa-paper-plane"></i> Publish Assignment
             </button>
@@ -3515,64 +3600,295 @@
 
     document.getElementById('assignBackBtn')?.addEventListener('click', goToDashboard);
 
-    const enforcedSubjects = user.enforcedSubjects || [];
-    
-    const deptSelect = document.getElementById('assignDept');
-    if (user.department) {
-      deptSelect.innerHTML = `<option value="${user.department}">${user.department}</option>`;
-    } else {
-      deptSelect.innerHTML = `<option value="">No Department</option>`;
-    }
+    let metadata = { subjects: [], departments: [], batches: [] };
 
-    const subjectSelect = document.getElementById('assignSubject');
-    if (enforcedSubjects.length > 0) {
-      subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
-        enforcedSubjects.map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
+    // Helper function to setup dynamic custom input injection
+    function setupDynamicCustomInput(selectId, containerId, inputId, placeholder) {
+      const selectEl = document.getElementById(selectId);
+      const containerEl = document.getElementById(containerId);
+      if (!selectEl || !containerEl) return;
       
-      subjectSelect.addEventListener('change', (e) => {
-        const selectedSubjectName = e.target.value;
-        const subjectData = enforcedSubjects.find(s => s.name === selectedSubjectName);
-
-        const yearSelect = document.getElementById('assignYear');
-        const batchSelect = document.getElementById('assignBatch');
-
-        if (!subjectData) {
-          yearSelect.value = "";
-          yearSelect.disabled = false;
-          batchSelect.innerHTML = '<option value="">Select Batch</option>';
-          return;
-        }
-
-        if (subjectData.year) {
-          yearSelect.value = subjectData.year;
-          yearSelect.disabled = true; 
-        }
-
-        if (subjectData.allowedBatches && subjectData.allowedBatches.length > 0) {
-          batchSelect.innerHTML = '<option value="">Select Batch</option>' +
-            subjectData.allowedBatches.map(b => `<option value="${b}">Batch ${b}</option>`).join('');
-          
-          if (subjectData.allowedBatches.length === 1) {
-            batchSelect.value = subjectData.allowedBatches[0];
+      selectEl.addEventListener('change', () => {
+        if (selectEl.value === '__other__') {
+          containerEl.innerHTML = `
+            <input type="text" id="${inputId}" placeholder="${placeholder}" required style="margin-top: 8px; padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; width: 100%; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
+          `;
+          const inputEl = document.getElementById(inputId);
+          if (inputEl) {
+            inputEl.focus();
           }
         } else {
-          batchSelect.innerHTML = '<option value="">No Batches Assigned</option>';
+          containerEl.innerHTML = '';
         }
       });
-    } else if ((user.teachingSubjects && user.teachingSubjects.length > 0) || (user.expertise && user.expertise.length > 0)) {
-      const subjects = (user.teachingSubjects && user.teachingSubjects.length > 0) ? user.teachingSubjects : user.expertise;
-      subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
-        subjects.map(sub => `<option value="${sub}">${sub}</option>`).join('');
-      
-      const batchSelect = document.getElementById('assignBatch');
-      batchSelect.innerHTML = `
-        <option value="">Select Batch</option>
-        <option value="1">Batch 1</option>
-        <option value="2">Batch 2</option>
-        <option value="3">Batch 3</option>
-        <option value="All">All Batches</option>
-      `;
     }
+
+    setupDynamicCustomInput('assignSubject', 'assignSubjectCustomContainer', 'assignSubjectCustom', 'Enter custom subject...');
+    setupDynamicCustomInput('assignDept', 'assignDeptCustomContainer', 'assignDeptCustom', 'Enter custom department...');
+
+    const enforcedSubjects = user.enforcedSubjects || [];
+    const teachingSubjects = user.teachingSubjects || [];
+    const expertise = user.expertise || [];
+    
+    // Build a unified list of assigned subjects
+    const assignedSubjects = [];
+    enforcedSubjects.forEach(s => {
+      if (!assignedSubjects.some(as => as.name === s.name)) {
+        assignedSubjects.push({
+          name: s.name,
+          year: s.year,
+          department: s.department,
+          allowedBatches: s.allowedBatches
+        });
+      }
+    });
+    teachingSubjects.forEach(s => {
+      const sName = typeof s === 'string' ? s : (s && s.name ? s.name : '');
+      if (sName && !assignedSubjects.some(as => as.name === sName)) {
+        assignedSubjects.push({
+          name: sName,
+          year: s && s.year ? s.year : undefined,
+          department: s && s.department ? s.department : undefined,
+          allowedBatches: s && s.allowedBatches ? s.allowedBatches : undefined
+        });
+      }
+    });
+    expertise.forEach(s => {
+      const sName = typeof s === 'string' ? s : (s && s.name ? s.name : '');
+      if (sName && !assignedSubjects.some(as => as.name === sName)) {
+        assignedSubjects.push({
+          name: sName,
+          year: s && s.year ? s.year : undefined,
+          department: s && s.department ? s.department : undefined,
+          allowedBatches: s && s.allowedBatches ? s.allowedBatches : undefined
+        });
+      }
+    });
+
+    const hasAssignedSubjects = assignedSubjects.length > 0;
+
+    const deptSelect = document.getElementById('assignDept');
+    const subjectSelect = document.getElementById('assignSubject');
+    const yearSelect = document.getElementById('assignYear');
+    const batchSelect = document.getElementById('assignBatch');
+
+    // Helper to extract normalized value from select or custom text input, with predefined-normalizer matching
+    function getNormalizedValue(selectId, customInputId, normalizer) {
+      const selectEl = document.getElementById(selectId);
+      const customEl = document.getElementById(customInputId);
+      let rawVal = '';
+      if (selectEl.value === '__other__' && customEl) {
+        rawVal = customEl.value;
+      } else {
+        rawVal = selectEl.value;
+      }
+      
+      const normalized = normalizer ? normalizer(rawVal) : rawVal.trim();
+      
+      // If we typed a custom value, check if it matches any predefined option after normalization
+      if (selectEl.value === '__other__') {
+        for (let i = 0; i < selectEl.options.length; i++) {
+          const optVal = selectEl.options[i].value;
+          if (optVal && optVal !== '__other__') {
+            const optNorm = normalizer ? normalizer(optVal) : optVal.trim();
+            if (optNorm.toLowerCase() === normalized.toLowerCase()) {
+              return optVal; // Normalize to exact predefined option string
+            }
+          }
+        }
+      }
+      return normalized;
+    }
+
+    function populateDepartments(metaDepts) {
+      if (user.department) {
+        const deptNorm = normalizeDepartment(user.department);
+        deptSelect.innerHTML = `<option value="${deptNorm}">${deptNorm}</option>`;
+        deptSelect.value = deptNorm;
+        deptSelect.disabled = true;
+        return;
+      }
+
+      const defaultDepts = ['CSE', 'IT', 'ECE', 'ME', 'CE', 'Civil Engineering', 'Mechanical Engineering', 'Electrical Engineering', 'MBA', 'Pharmacy', 'Architecture'];
+      const deptsSet = new Set();
+      defaultDepts.forEach(d => deptsSet.add(normalizeDepartment(d)));
+      if (metaDepts && metaDepts.length > 0) {
+        metaDepts.forEach(d => deptsSet.add(normalizeDepartment(d)));
+      }
+      
+      let html = '<option value="">Select Dept</option>';
+      deptsSet.forEach(d => {
+        html += `<option value="${d}">${d}</option>`;
+      });
+      html += '<option value="__other__">Other (Enter custom value)...</option>';
+      deptSelect.innerHTML = html;
+      deptSelect.disabled = false;
+    }
+
+    function populateSubjects(metaSubjects) {
+      const subjectsSet = new Set();
+      let html = '<option value="">Select Subject</option>';
+      
+      if (hasAssignedSubjects) {
+        assignedSubjects.forEach(s => {
+          html += `<option value="${s.name}">${s.name}</option>`;
+        });
+      } else {
+        const teachSubs = (user.teachingSubjects && user.teachingSubjects.length > 0) ? user.teachingSubjects : (user.expertise || []);
+        teachSubs.forEach(s => {
+          const sName = typeof s === 'string' ? s : (s && s.name ? s.name : '');
+          if (sName) {
+            html += `<option value="${sName}">${sName}</option>`;
+            subjectsSet.add(normalizeSubject(sName));
+          }
+        });
+        
+        if (metaSubjects && metaSubjects.length > 0) {
+          metaSubjects.forEach(s => {
+            const norm = normalizeSubject(s);
+            if (!subjectsSet.has(norm)) {
+              html += `<option value="${s}">${s}</option>`;
+              subjectsSet.add(norm);
+            }
+          });
+        }
+        
+        html += '<option value="__other__">Other (Enter custom value)...</option>';
+      }
+      subjectSelect.innerHTML = html;
+    }
+
+    function populateBatches() {
+      const defaultBatches = ['Batch 1', 'Batch 2'];
+      let html = '<option value="">Select Batch</option>';
+      defaultBatches.forEach(b => {
+        html += `<option value="${b}">${b}</option>`;
+      });
+      batchSelect.innerHTML = html;
+    }
+
+    subjectSelect.addEventListener('change', (e) => {
+      const selectedSubjectName = e.target.value;
+      const subjectData = assignedSubjects.find(s => s.name === selectedSubjectName);
+
+      const customYearContainer = document.getElementById('assignYearCustomContainer');
+      const customDeptContainer = document.getElementById('assignDeptCustomContainer');
+      const customBatchContainer = document.getElementById('assignBatchCustomContainer');
+
+      // Clear custom containers by default
+      if (customYearContainer) customYearContainer.innerHTML = '';
+      if (customDeptContainer) customDeptContainer.innerHTML = '';
+      if (customBatchContainer) customBatchContainer.innerHTML = '';
+
+      if (!subjectData) {
+        if (hasAssignedSubjects) {
+          // If teacher has assigned subjects, keep targeting options disabled until a subject is chosen
+          deptSelect.innerHTML = '<option value="">Select Subject First</option>';
+          deptSelect.disabled = true;
+          yearSelect.innerHTML = '<option value="">Select Subject First</option>';
+          yearSelect.disabled = true;
+          batchSelect.innerHTML = '<option value="">Select Subject First</option>';
+          batchSelect.disabled = true;
+        } else {
+          // Normal fallback flow
+          deptSelect.disabled = false;
+          populateDepartments(metadata.departments);
+
+          yearSelect.disabled = false;
+          let yearHtml = '<option value="">Select Year</option>' +
+            ['1st Year', '2nd Year', '3rd Year', '4th Year'].map(y => `<option value="${y}">${y}</option>`).join('');
+          yearSelect.innerHTML = yearHtml;
+          yearSelect.value = "";
+
+          batchSelect.disabled = false;
+          populateBatches();
+        }
+        return;
+      }
+
+      // Predefined Department Rule
+      const predefinedDept = subjectData.department || user.department;
+      if (predefinedDept) {
+        deptSelect.innerHTML = `<option value="${predefinedDept}">${predefinedDept}</option>`;
+        deptSelect.value = predefinedDept;
+        deptSelect.disabled = true;
+      } else {
+        deptSelect.disabled = false;
+        populateDepartments(metadata.departments);
+      }
+
+      // Predefined Year Rule
+      const predefinedYear = subjectData.year;
+      if (predefinedYear) {
+        yearSelect.innerHTML = `<option value="${predefinedYear}">${predefinedYear}</option>`;
+        yearSelect.value = predefinedYear;
+        yearSelect.disabled = true;
+      } else {
+        yearSelect.disabled = false;
+        let yearHtml = '<option value="">Select Year</option>' +
+          ['1st Year', '2nd Year', '3rd Year', '4th Year'].map(y => `<option value="${y}">${y}</option>`).join('');
+        yearSelect.innerHTML = yearHtml;
+        yearSelect.value = "";
+      }
+
+      // Predefined Batch Rule
+      const predefinedBatches = subjectData.allowedBatches;
+      if (predefinedBatches && predefinedBatches.length > 0) {
+        batchSelect.innerHTML = predefinedBatches.map(b => {
+          const norm = normalizeBatch(b);
+          return `<option value="${norm}">${norm}</option>`;
+        }).join('');
+        if (predefinedBatches.length === 1) {
+          batchSelect.value = normalizeBatch(predefinedBatches[0]);
+          batchSelect.disabled = true;
+        } else {
+          batchSelect.innerHTML = '<option value="">Select Batch</option>' + batchSelect.innerHTML;
+          batchSelect.value = "";
+          batchSelect.disabled = false;
+        }
+      } else {
+        batchSelect.disabled = false;
+        populateBatches();
+      }
+    });
+
+    // Initial population with empty metadata
+    if (hasAssignedSubjects) {
+      deptSelect.innerHTML = '<option value="">Select Subject First</option>';
+      deptSelect.disabled = true;
+      yearSelect.innerHTML = '<option value="">Select Subject First</option>';
+      yearSelect.disabled = true;
+      batchSelect.innerHTML = '<option value="">Select Subject First</option>';
+      batchSelect.disabled = true;
+    } else {
+      populateDepartments([]);
+      populateBatches();
+    }
+    populateSubjects([]);
+
+    // Fetch and enrich choices with persisted custom values
+    (async () => {
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const resMeta = await fetch(`${apiBase}/api/assignments/metadata`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (resMeta.ok) {
+          const meta = await resMeta.json();
+          metadata = meta;
+          
+          if (hasAssignedSubjects) {
+            populateSubjects(meta.subjects);
+          } else {
+            populateDepartments(meta.departments);
+            populateSubjects(meta.subjects);
+            populateBatches();
+          }
+        }
+      } catch (err) {
+        console.error('Error loading metadata:', err);
+      }
+    })();
 
     const fileInput = document.getElementById('assignFile');
     const fileError = document.getElementById('assignFileError');
@@ -3589,17 +3905,24 @@
       if (fileInput.files.length > 0 && !validateFileInput(fileInput, fileError)) return;
 
       const submitBtn = document.getElementById('createFormSubmitBtn');
+
+      const titleVal = document.getElementById('assignTitle').value.trim();
+      const subjectVal = getNormalizedValue('assignSubject', 'assignSubjectCustom', normalizeSubject);
+      const deptVal = getNormalizedValue('assignDept', 'assignDeptCustom', normalizeDepartment);
+      const yearVal = getNormalizedValue('assignYear', 'assignYearCustom', null);
+      const batchVal = getNormalizedValue('assignBatch', 'assignBatchCustom', normalizeBatch);
+      const deadlineVal = document.getElementById('assignDeadline').value;
+      const descVal = document.getElementById('assignDesc').value.trim();
+
+      if (!titleVal) { alert('Title is required.'); return; }
+      if (!subjectVal) { alert('Subject is required.'); return; }
+      if (!deptVal) { alert('Department is required.'); return; }
+      if (!yearVal) { alert('Target Year is required.'); return; }
+      if (!batchVal) { alert('Target Batch is required.'); return; }
+      if (!deadlineVal) { alert('Submission Deadline is required.'); return; }
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
-
-      const yearSelect = document.getElementById('assignYear');
-      const yearVal = yearSelect.value;
-      const deptVal = deptSelect.value;
-      const subjectVal = subjectSelect.value;
-      const batchVal = document.getElementById('assignBatch').value;
-      const deadlineVal = document.getElementById('assignDeadline').value;
-      const descVal = document.getElementById('assignDesc').value;
-      const titleVal = document.getElementById('assignTitle').value;
 
       try {
         const token = user.token || localStorage.getItem('token') || '';
