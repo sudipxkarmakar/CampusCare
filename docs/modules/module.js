@@ -3481,14 +3481,72 @@
   async function renderStudentAssignments(info) {
     content(`
       <style>
-        .assign-filter-grid {
+        .assign-header-layout {
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 24px;
+          margin-bottom: 24px;
+          align-items: stretch;
+        }
+        .assign-stats-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 16px;
+        }
+        .assign-stats-grid .stat-card-new {
+          margin: 0 !important;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px 16px !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 12px !important;
+          border-radius: 12px !important;
+        }
+        .assign-stats-grid .stat-card-new .icon-wrapper {
+          width: 40px !important;
+          height: 40px !important;
+          border-radius: 10px !important;
+          font-size: 1.1rem !important;
+          flex-shrink: 0 !important;
+        }
+        .assign-stats-grid .stat-card-new h4 {
+          font-size: 0.8rem !important;
+          margin: 0 !important;
+        }
+        .assign-stats-grid .stat-card-new .stat-value {
+          font-size: 1.3rem !important;
+          margin: 2px 0 0 0 !important;
+          line-height: 1.1 !important;
+        }
+        .assign-filters-card {
+          padding: 20px;
+          border-radius: 12px;
+          background: white;
+          border: 1px solid var(--border-color);
+          box-shadow: var(--shadow-sm);
+          box-sizing: border-box;
+          display: flex;
           align-items: center;
         }
-        @media (max-width: 768px) {
-          .assign-filter-grid {
+        .assign-filter-grid-2x2 {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 16px;
+          width: 100%;
+          align-items: center;
+        }
+        @media (max-width: 1024px) {
+          .assign-header-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 550px) {
+          .assign-stats-grid {
+            grid-template-columns: 1fr;
+          }
+          .assign-filter-grid-2x2 {
             grid-template-columns: 1fr;
           }
         }
@@ -3514,66 +3572,69 @@
         </div>
       </div>
 
-      <!-- Statistics Row -->
-      <div class="dashboard-stats-row" style="margin: 0 0 24px 0;">
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #e0e7ff; color: #4f46e5;"><i class="fa-solid fa-list-check"></i></div>
-          <div class="stat-info">
-            <h4>Total</h4>
-            <p class="stat-value" id="stats-total">0</p>
+      <!-- Header Layout (Stats on Left, Filters on Right) -->
+      <div class="assign-header-layout">
+        <!-- Left Side: Statistics (2x2 Grid) -->
+        <div class="assign-stats-grid">
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #e0e7ff; color: #4f46e5;"><i class="fa-solid fa-list-check"></i></div>
+            <div class="stat-info">
+              <h4>Total</h4>
+              <p class="stat-value" id="stats-total">0</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;"><i class="fa-regular fa-clock"></i></div>
+            <div class="stat-info">
+              <h4>Pending</h4>
+              <p class="stat-value" id="stats-pending">0</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+              <h4>Submitted</h4>
+              <p class="stat-value" id="stats-submitted">0</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #fce7f3; color: #ec4899;"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="stat-info">
+              <h4>Graded</h4>
+              <p class="stat-value" id="stats-graded">0</p>
+            </div>
           </div>
         </div>
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;"><i class="fa-regular fa-clock"></i></div>
-          <div class="stat-info">
-            <h4>Pending</h4>
-            <p class="stat-value" id="stats-pending">0</p>
-          </div>
-        </div>
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
-          <div class="stat-info">
-            <h4>Submitted</h4>
-            <p class="stat-value" id="stats-submitted">0</p>
-          </div>
-        </div>
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #fce7f3; color: #ec4899;"><i class="fa-solid fa-graduation-cap"></i></div>
-          <div class="stat-info">
-            <h4>Graded</h4>
-            <p class="stat-value" id="stats-graded">0</p>
-          </div>
-        </div>
-      </div>
 
-      <!-- Filters Panel -->
-      <div class="section-card" style="padding: 20px; border-radius: 12px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
-        <div class="assign-filter-grid">
-          <div style="position: relative;">
-            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
-            <input type="text" id="assignSearchInput" placeholder="Search assignments by title or description..." style="width: 100%; padding: 10px 12px 10px 40px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
-          </div>
-          <div>
-            <select id="assignSubjectFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
-              <option value="all">All Subjects</option>
-            </select>
-          </div>
-          <div>
-            <select id="assignStatusFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="submitted">Submitted</option>
-              <option value="late">Submitted Late</option>
-              <option value="graded">Graded</option>
-            </select>
-          </div>
-          <div>
-            <select id="assignDeadlineFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
-              <option value="all">All Deadlines</option>
-              <option value="today">Due Today</option>
-              <option value="tomorrow">Due Tomorrow</option>
-              <option value="overdue">Overdue (Unsubmitted)</option>
-            </select>
+        <!-- Right Side: Filters (2x2 Grid) -->
+        <div class="assign-filters-card">
+          <div class="assign-filter-grid-2x2">
+            <div style="position: relative;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+              <input type="text" id="assignSearchInput" placeholder="Search assignments by title or description..." style="width: 100%; padding: 10px 12px 10px 40px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s; box-sizing: border-box;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
+            </div>
+            <div>
+              <select id="assignSubjectFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500; box-sizing: border-box;">
+                <option value="all">All Subjects</option>
+              </select>
+            </div>
+            <div>
+              <select id="assignStatusFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500; box-sizing: border-box;">
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="submitted">Submitted</option>
+                <option value="late">Submitted Late</option>
+                <option value="graded">Graded</option>
+              </select>
+            </div>
+            <div>
+              <select id="assignDeadlineFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500; box-sizing: border-box;">
+                <option value="all">All Deadlines</option>
+                <option value="today">Due Today</option>
+                <option value="tomorrow">Due Tomorrow</option>
+                <option value="overdue">Overdue (Unsubmitted)</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
