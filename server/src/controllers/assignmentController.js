@@ -176,10 +176,26 @@ export const getTeacherAssignments = async (req, res) => {
             .sort({ createdAt: -1 })
             .lean(); // Convert to POJO to attach property
 
-        // Append submission counts
+        // Append submission counts and total students
         const assignmentsWithCount = await Promise.all(assignments.map(async (assign) => {
             const count = await Submission.countDocuments({ assignment: assign._id });
-            return { ...assign, submissionCount: count };
+
+            // Calculate total students in the targeted class
+            const studentFilter = {
+                role: { $in: ['student', 'hosteler'] }
+            };
+            if (assign.department) {
+                studentFilter.department = assign.department;
+            }
+            if (assign.year) {
+                studentFilter.year = assign.year;
+            }
+            if (assign.batch && assign.batch !== 'All') {
+                studentFilter.batch = assign.batch;
+            }
+            const totalStudents = await User.countDocuments(studentFilter);
+
+            return { ...assign, submissionCount: count, totalStudents };
         }));
 
         res.json(assignmentsWithCount);

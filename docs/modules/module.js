@@ -4278,9 +4278,10 @@
                     const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
                     const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
                     const subCount = a.submissionCount || 0;
+                    const totalStudents = a.totalStudents || 0;
                     const subBadge = subCount > 0 
-                      ? `<span style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-file-arrow-up"></i> ${subCount} ${subCount === 1 ? 'Submission' : 'Submissions'}</span>`
-                      : `<span style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-regular fa-file"></i> 0 Submissions</span>`;
+                      ? `<span style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-file-arrow-up"></i> ${subCount}/${totalStudents}</span>`
+                      : `<span style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-regular fa-file"></i> 0/${totalStudents}</span>`;
                     
                     return `
                       <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
