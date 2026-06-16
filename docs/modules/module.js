@@ -183,6 +183,8 @@
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
         <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Post Alumni</a></li>
         <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Alumni Excellence</a></li>
+        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
+        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
@@ -195,6 +197,8 @@
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-list-check"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Global Notices</a></li>
         <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Central Library</a></li>
+        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
+        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
       `;
     } else {
       portalText = 'Guest Portal';
@@ -2081,14 +2085,21 @@
           }
         </style>
 
-        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
-          <button type="button" id="leaderBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
-            <i class="fa-solid fa-arrow-left"></i>
-          </button>
-          <div>
-            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Academic Leaders</h2>
-            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Visionary leaders directing Asansol Engineering College's academic progress.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <button type="button" id="leaderBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Academic Leaders</h2>
+              <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Visionary leaders directing Asansol Engineering College's academic progress.</p>
+            </div>
           </div>
+          ${isAuthority ? `
+            <a href="post.html" style="background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: var(--shadow-sm);" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+              <i class="fa-solid fa-plus"></i> Add Leader
+            </a>
+          ` : ''}
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
