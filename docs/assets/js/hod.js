@@ -21,6 +21,7 @@ async function loadDashboardStats() {
     }
 
     try {
+        // Fetch dashboard summary
         const response = await fetch(`${API_URL}/dashboard`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -38,35 +39,142 @@ async function loadDashboardStats() {
 
         const data = await response.json();
 
-        // Populate DOM
-        document.getElementById('deptNameDisplay').innerText = `Dept of ${data.department}`;
-        document.getElementById('studentCountVal').innerText = data.studentCount;
-        document.getElementById('teacherCountVal').innerText = data.teacherCount;
+        // Populate HOD department name
+        const deptDisplay = document.getElementById('deptNameDisplay');
+        if (deptDisplay) {
+            deptDisplay.innerText = `Dept of ${data.department || user.department || 'N/A'}`;
+        }
+
+        // Student & Teacher counts
+        const studentCountVal = document.getElementById('studentCountVal');
+        if (studentCountVal) studentCountVal.innerText = data.studentCount;
+        
+        const insightStudentCount = document.getElementById('insight-student-count');
+        if (insightStudentCount) insightStudentCount.innerText = data.studentCount;
+
+        const teacherCountVal = document.getElementById('teacherCountVal');
+        if (teacherCountVal) teacherCountVal.innerText = data.teacherCount;
+        
+        const insightTeacherCount = document.getElementById('insight-teacher-count');
+        if (insightTeacherCount) insightTeacherCount.innerText = data.teacherCount;
+
+        // Leave Requests Stats
+        const leaveCountVal = document.getElementById('leaveCountVal');
+        if (leaveCountVal) leaveCountVal.innerText = data.pendingLeaves || 0;
 
         const leaveBadge = document.getElementById('leaveCountBadge');
         if (leaveBadge) {
-            leaveBadge.innerText = data.pendingLeaves;
+            leaveBadge.innerText = data.pendingLeaves || 0;
             if (data.pendingLeaves > 0) leaveBadge.style.display = 'flex';
             else leaveBadge.style.display = 'none';
         }
 
+        // Fetch complaints to count pending complaints
+        try {
+            const compRes = await fetch(`${API_URL}/complaints`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (compRes.ok) {
+                const complaints = await compRes.json();
+                const pendingComplaints = complaints.filter(c => c.status !== 'Resolved').length;
+                const complaintsCountVal = document.getElementById('complaintsCountVal');
+                if (complaintsCountVal) {
+                    complaintsCountVal.innerText = pendingComplaints;
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching complaints:', e);
+        }
+
+        // Fetch and render student preview list
+        try {
+            const studRes = await fetch(`${API_URL}/students`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (studRes.ok) {
+                const students = await studRes.json();
+                renderStudentPreview(students);
+            }
+        } catch (e) {
+            console.error('Error fetching students list:', e);
+        }
+
     } catch (error) {
         console.error(error);
-        if (document.getElementById('deptNameDisplay'))
-            document.getElementById('deptNameDisplay').innerText = 'Error loading stats';
+        const deptDisplay = document.getElementById('deptNameDisplay');
+        if (deptDisplay) deptDisplay.innerText = 'Error loading stats';
     }
 }
 
+function renderStudentPreview(students) {
+    const tbody = document.getElementById('students-table-body');
+    if (!tbody) return;
+
+    if (!students || students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No students registered in this department yet.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    // Show top 5 students
+    students.slice(0, 5).forEach(student => {
+        const cgpa = student.cgpa ? parseFloat(student.cgpa).toFixed(2) : '--';
+        const attendance = student.attendance ? `${student.attendance}%` : '--';
+        const name = student.name || 'Student';
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+        
+        let performanceBadge = `<span style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; color: var(--text-dark);">${cgpa} CGPA</span>`;
+        if (student.cgpa) {
+            const cgpaVal = parseFloat(student.cgpa);
+            if (cgpaVal >= 3.5) {
+                performanceBadge = `<span style="background: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">A (${cgpa})</span>`;
+            } else if (cgpaVal >= 3.0) {
+                performanceBadge = `<span style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">B (${cgpa})</span>`;
+            } else if (cgpaVal >= 2.5) {
+                performanceBadge = `<span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">C (${cgpa})</span>`;
+            }
+        }
+
+        html += `
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <img src="${avatarUrl}" style="width: 32px; height: 32px; border-radius: 50%;">
+                        <div>
+                            <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">${name}</span>
+                            <span style="display:block; font-size:0.75rem; color: var(--text-muted);">${student.rollNumber || ''}</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="font-size: 0.85rem; color: var(--text-muted);">${student.year || 'N/A'}</td>
+                <td>${performanceBadge}</td>
+                <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">${attendance}</td>
+                <td style="text-align: right;">
+                    <a href="../modules/student-database/view.html" style="color: var(--primary); text-decoration: none;"><i class="fa-solid fa-eye" style="cursor: pointer;"></i></a>
+                </td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+}
+
 function setupProfile() {
-    // Reuse specific profile logic or import if modular, 
-    // but distinct files usually mean copy-paste or shared `utils.js`. 
-    // `landing.js` handles some, but `toggleProfileMenu` is often inline or global.
     const userStr = localStorage.getItem('user');
     if (userStr) {
         const user = JSON.parse(userStr);
         document.getElementById('userProfile').style.display = 'flex';
         document.getElementById('userName').innerText = `Hello, ${user.name}`;
+        
+        const greetingName = document.getElementById('hod-name');
+        if (greetingName) greetingName.innerText = user.name;
+        
         document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
     }
 }
+
 

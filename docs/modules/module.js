@@ -181,6 +181,8 @@
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
+        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Post Alumni</a></li>
+        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Alumni Excellence</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
@@ -200,8 +202,8 @@
         <li><a href="${rootPrefix}index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
         <li><a href="${rootPrefix}index.html#complaint-wall" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Transparency Wall</a></li>
         <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-calendar-days"></i> News & Events</a></li>
-        <li><a href="${rootPrefix}index.html#faculty" class="nav-item"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
-        <li><a href="${rootPrefix}index.html#alumni-section" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' ? 'active' : ''}"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Alumni Excellence</a></li>
       `;
     }
 
@@ -246,7 +248,8 @@
       avatarSrc += `?t=${new Date().getTime()}`;
     }
 
-    const displayName = (user.name || user.fullName || 'User').split(' ')[0];
+    const nameParts = (user.name || user.fullName || 'User').split(' ');
+    const displayName = nameParts[0] + (['dr.', 'dr', 'prof.', 'prof', 'mr.', 'mr', 'mrs.', 'mrs', 'ms.', 'ms'].includes(nameParts[0].toLowerCase()) && nameParts.length > 1 ? ' ' + nameParts[1] : '');
 
     let profileSectionHtml = '';
     if (user.token) {
@@ -428,6 +431,12 @@
       if (event.target.id === 'module-modal-overlay') closeModuleModal();
     });
     document.getElementById('userProfile')?.addEventListener('click', toggleProfileMenu);
+    document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        localStorage.removeItem('user');
+        window.location.href = `${getRootPrefix()}index.html`;
+      });
+    });
 
     if (cfg.module === 'complaints') {
       const hero = document.getElementById('home');
@@ -441,6 +450,14 @@
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderLeadersPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'alumni') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderAlumniPage(info);
       initSidebar();
       return;
     }
@@ -1075,6 +1092,704 @@
     form.reset();
   }
 
+  async function renderAlumniPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const isAuthority = ['principal', 'admin', 'dean', 'hod'].includes(userRole);
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    const formatExternalLink = (url) => {
+      if (!url) return '';
+      const trimmed = url.trim();
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return `https://${trimmed}`;
+    };
+
+    // Hide the Post link from non-authorities
+    setTimeout(() => {
+      if (!isAuthority) {
+        document.querySelectorAll('.module-actions a[href*="post.html"]').forEach(el => el.style.display = 'none');
+      }
+    }, 50);
+
+    if (isPostMode && !isAuthority) {
+      content(`
+        <div class="section-card module-panel" style="text-align: center; padding: 40px; color: var(--danger);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+          <h3>Access Denied</h3>
+          <p>Only HODs and administrators can post Alumni Excellence profiles.</p>
+        </div>
+      `);
+      return;
+    }
+
+    if (isPostMode) {
+      content(`
+        <style>
+          @keyframes alumni-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(217,119,6,0); }
+          }
+          .alumni-ai-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #d97706; background: #fffbeb;
+            color: #b45309; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center;
+          }
+          .alumni-ai-btn:hover:not(:disabled) {
+            background: #d97706; color: white;
+            box-shadow: 0 4px 16px rgba(217,119,6,0.25);
+            transform: translateY(-1px);
+          }
+          .alumni-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .alumni-ai-btn.loading { animation: alumni-ai-pulse 1.4s infinite; }
+          #alumniPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+          }
+          @media (max-width: 1100px) {
+            #alumniPostLayout { grid-template-columns: 1fr; }
+          }
+          .alumni-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .alumni-post-row-item:hover {
+            border-color: #fde68a; background: #fffbeb;
+            box-shadow: 0 4px 12px rgba(217,119,6,0.08);
+          }
+          .alumni-post-row-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #fef3c7; flex-shrink: 0;
+          }
+          .alumni-post-row-actions {
+            display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; align-self: center;
+          }
+          .alumni-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .alumni-row-btn.edit { background: #ede9fe; color: #6d28d9; }
+          .alumni-row-btn.edit:hover { background: #6d28d9; color: white; }
+          .alumni-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .alumni-row-btn.del:hover { background: #ef4444; color: white; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="alumniBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Alumni Excellence</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage alumni profiles — add new entries or edit existing ones.</p>
+          </div>
+        </div>
+
+        <div id="alumniPostLayout">
+
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 id="alumniFormTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-graduation-cap" style="color: #d97706;"></i> Add Alumni Profile
+            </h3>
+            <form id="alumniPostForm" style="display: flex; flex-direction: column; gap: 16px;">
+              <input type="hidden" id="alumniEditId" value="">
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Full Name</label>
+                  <input type="text" name="name" id="aName" placeholder="e.g. Ahmad Raza" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Graduation Year</label>
+                  <input type="number" name="graduationYear" id="aYear" placeholder="e.g. 2020" min="1980" max="2030" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Degree</label>
+                  <select name="degree" id="aDegree" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; background: white;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                    <option value="">Select Degree</option>
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="M.Tech">M.Tech</option>
+                    <option value="MCA">MCA</option>
+                    <option value="MBA">MBA</option>
+                    <option value="Ph.D">Ph.D</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Department</label>
+                  <input type="text" name="department" id="aDept" placeholder="e.g. CSE, ECE" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Current Company</label>
+                  <input type="text" name="currentCompany" id="aCompany" placeholder="e.g. Google, Infosys" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Job Title</label>
+                  <input type="text" name="jobTitle" id="aJob" placeholder="e.g. Software Engineer" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">LinkedIn Profile URL</label>
+                <input type="url" name="linkedinProfile" id="aLinkedin" placeholder="https://linkedin.com/in/..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Inspiring Quote / Story</span>
+                  <span id="alumniAiTag" style="display:none; font-size:0.72rem; color:#b45309; font-weight:600; background:#fffbeb; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                </label>
+                <button type="button" id="alumniAiDraftBtn" class="alumni-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="alumniAiDraftBtnLabel">Draft Quote with AI</span>
+                </button>
+                <textarea name="about" id="alumniAboutInput" rows="3" placeholder="A short inspiring quote or achievement story..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; font-family: inherit;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 4px;">
+                <button type="submit" id="alumniSubmitBtn" style="flex: 1; background: #d97706; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#b45309';" onmouseleave="this.style.background='#d97706';">
+                  <i class="fa-solid fa-paper-plane"></i> <span id="alumniSubmitLabel">Publish Profile</span>
+                </button>
+                <button type="button" id="alumniCancelEditBtn" style="display:none; padding: 11px 14px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT: Alumnis List -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-users" style="color: #d97706;"></i> Alumnis
+                  <span id="alumniCountBadge" style="font-size: 0.72rem; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" style="font-size: 0.82rem; font-weight: 600; color: #d97706; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #fde68a; background: #fffbeb; transition: all 0.2s;" onmouseenter="this.style.background='#fef3c7';" onmouseleave="this.style.background='#fffbeb';">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="alumniPostSidelist" style="max-height: 480px; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading alumni...
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `);
+
+      document.getElementById('alumniBackBtn')?.addEventListener('click', goToDashboard);
+
+      // Track all loaded alumni for edit pre-fill
+      let allAlumniData = [];
+      let isEditMode = false;
+
+      // Check for query parameter 'edit'
+      const urlParams = new URLSearchParams(window.location.search);
+      const editIdParam = urlParams.get('edit');
+
+      // Load existing alumni into the right panel
+      const loadPostSidelist = async () => {
+        const sidelist = document.getElementById('alumniPostSidelist');
+        const countBadge = document.getElementById('alumniCountBadge');
+        if (!sidelist) return;
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/alumni`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allAlumniData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allAlumniData.length;
+          renderSidelist();
+
+          // If edit parameter was provided in the URL, trigger edit prefill
+          if (editIdParam) {
+            const editBtn = sidelist.querySelector(`.alumni-row-btn.edit[data-id="${editIdParam}"]`);
+            if (editBtn) {
+              editBtn.click();
+            }
+          }
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load alumni profiles.</div>`;
+        }
+      };
+
+      const renderSidelist = () => {
+        const sidelist = document.getElementById('alumniPostSidelist');
+        if (!sidelist) return;
+        if (!allAlumniData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No alumni profiles yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allAlumniData.map(item => {
+          const name = item.name || item.user?.name || 'Alumni';
+          const avatarSrc = item.image
+            ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true&size=44`;
+
+          let detailsText = '';
+          if (item.degree && item.department) {
+            detailsText = `${esc(item.degree)} (${esc(item.department)})`;
+          } else if (item.degree) {
+            detailsText = esc(item.degree);
+          } else if (item.department) {
+            detailsText = esc(item.department);
+          }
+          const gradText = item.graduationYear ? `Class of ${item.graduationYear}` : '';
+          const metaLine = [detailsText, gradText].filter(Boolean).join(' · ');
+
+          let jobCompanyText = '';
+          if (item.jobTitle && item.currentCompany) {
+            jobCompanyText = `${esc(item.jobTitle)} at <strong>${esc(item.currentCompany)}</strong>`;
+          } else if (item.jobTitle) {
+            jobCompanyText = esc(item.jobTitle);
+          } else if (item.currentCompany) {
+            jobCompanyText = `Works at <strong>${esc(item.currentCompany)}</strong>`;
+          }
+
+          return `
+            <div class="alumni-post-row-item" data-id="${item._id}">
+              <img class="alumni-post-row-avatar" src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true&size=44';" alt="${esc(name)}">
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:0.92rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(name)}</div>
+                ${metaLine ? `<div style="font-size:0.78rem; color:#b45309; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${metaLine}</div>` : ''}
+                ${jobCompanyText ? `
+                  <div style="font-size:0.8rem; color:#475569; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <i class="fa-solid fa-briefcase" style="font-size:0.75rem; color:#d97706; margin-right:4px;"></i>${jobCompanyText}
+                  </div>` : ''}
+              </div>
+              <div class="alumni-post-row-actions">
+                <button type="button" class="alumni-row-btn edit" data-id="${item._id}" title="Edit">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button type="button" class="alumni-row-btn del" data-id="${item._id}" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>`;
+        }).join('');
+
+        // Edit button handlers
+        sidelist.querySelectorAll('.alumni-row-btn.edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const item = allAlumniData.find(a => a._id === id);
+            if (!item) return;
+            isEditMode = true;
+            document.getElementById('alumniEditId').value = id;
+            document.getElementById('aName').value = item.name || item.user?.name || '';
+            document.getElementById('aYear').value = item.graduationYear || '';
+            document.getElementById('aDegree').value = item.degree || '';
+            document.getElementById('aDept').value = item.department || '';
+            document.getElementById('aCompany').value = item.currentCompany || '';
+            document.getElementById('aJob').value = item.jobTitle || '';
+            document.getElementById('aLinkedin').value = item.linkedinProfile || '';
+            document.getElementById('alumniAboutInput').value = item.about || '';
+            document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-pen" style="color:#6d28d9;"></i> Edit Alumni Profile';
+            document.getElementById('alumniSubmitLabel').textContent = 'Save Changes';
+            document.getElementById('alumniSubmitBtn').style.background = '#6d28d9';
+            document.getElementById('alumniSubmitBtn').onmouseenter = () => document.getElementById('alumniSubmitBtn').style.background = '#4c1d95';
+            document.getElementById('alumniSubmitBtn').onmouseleave = () => document.getElementById('alumniSubmitBtn').style.background = '#6d28d9';
+            document.getElementById('alumniCancelEditBtn').style.display = 'block';
+            document.getElementById('alumniPostForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Highlight edited row
+            document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
+            const row = sidelist.querySelector(`.alumni-post-row-item[data-id="${id}"]`);
+            if (row) row.style.background = '#ede9fe';
+          });
+        });
+
+        // Delete button handlers
+        sidelist.querySelectorAll('.alumni-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allAlumniData.find(a => a._id === id);
+            const name = item?.name || item?.user?.name || 'this alumni';
+            if (!confirm(`Remove ${name} from Alumni Excellence?`)) return;
+            try {
+              const token = user.token || localStorage.getItem('token') || '';
+              const res = await fetch(`${apiBase}/api/alumni/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (res.ok) { loadPostSidelist(); }
+              else alert('Failed to remove alumni profile.');
+            } catch { alert('Deletion failed.'); }
+          });
+        });
+      };
+
+      // Cancel edit
+      document.getElementById('alumniCancelEditBtn')?.addEventListener('click', () => {
+        isEditMode = false;
+        document.getElementById('alumniEditId').value = '';
+        document.getElementById('alumniPostForm').reset();
+        document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-graduation-cap" style="color:#d97706;"></i> Add Alumni Profile';
+        document.getElementById('alumniSubmitLabel').textContent = 'Publish Profile';
+        document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+        document.getElementById('alumniSubmitBtn').onmouseenter = () => document.getElementById('alumniSubmitBtn').style.background = '#b45309';
+        document.getElementById('alumniSubmitBtn').onmouseleave = () => document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+        document.getElementById('alumniCancelEditBtn').style.display = 'none';
+        document.getElementById('alumniAiTag').style.display = 'none';
+        document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
+      });
+
+      // AI Draft Quote
+      document.getElementById('alumniAiDraftBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('alumniAiDraftBtn');
+        const label = document.getElementById('alumniAiDraftBtnLabel');
+        const aboutInput = document.getElementById('alumniAboutInput');
+        const aiTag = document.getElementById('alumniAiTag');
+        const nameVal = document.getElementById('aName')?.value?.trim();
+        const companyVal = document.getElementById('aCompany')?.value?.trim();
+        const jobVal = document.getElementById('aJob')?.value?.trim();
+
+        let promptContext = 'an outstanding alumni';
+        if (nameVal) promptContext = nameVal;
+        if (jobVal && companyVal) promptContext += `, who is a ${jobVal} at ${companyVal}`;
+        else if (companyVal) promptContext += `, working at ${companyVal}`;
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        if (label) label.textContent = 'Generating quote…';
+
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/ai/generate-leader-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: `Write a short inspiring quote from ${promptContext} for their college alumni profile. Make it motivational for current students. Max 2 sentences.` })
+          });
+          if (!res.ok) throw new Error('AI failed');
+          const data = await res.json();
+          if (aboutInput && data.message) {
+            aboutInput.value = data.message;
+            aboutInput.style.borderColor = '#d97706';
+            setTimeout(() => { aboutInput.style.borderColor = '#cbd5e1'; }, 1500);
+          }
+          if (aiTag) aiTag.style.display = 'inline-flex';
+        } catch (err) {
+          alert('AI drafting failed. Please write the quote manually.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          if (label) label.textContent = 'Draft Quote with AI';
+        }
+      });
+
+      // Submit Form (Add or Edit)
+      document.getElementById('alumniPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const token = user.token || localStorage.getItem('token') || '';
+        const editId = document.getElementById('alumniEditId').value;
+
+        const payload = {
+          name: document.getElementById('aName').value,
+          graduationYear: parseInt(document.getElementById('aYear').value) || null,
+          degree: document.getElementById('aDegree').value,
+          department: document.getElementById('aDept').value,
+          currentCompany: document.getElementById('aCompany').value,
+          jobTitle: document.getElementById('aJob').value,
+          linkedinProfile: document.getElementById('aLinkedin').value,
+          about: document.getElementById('alumniAboutInput').value,
+        };
+
+        const isEdit = !!editId;
+        try {
+          const res = await fetch(
+            isEdit ? `${apiBase}/api/alumni/${editId}` : `${apiBase}/api/alumni`,
+            {
+              method: isEdit ? 'PUT' : 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify(payload)
+            }
+          );
+          if (res.ok) {
+            // Reset to add mode
+            isEditMode = false;
+            document.getElementById('alumniEditId').value = '';
+            form.reset();
+            document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-graduation-cap" style="color:#d97706;"></i> Add Alumni Profile';
+            document.getElementById('alumniSubmitLabel').textContent = 'Publish Profile';
+            document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+            document.getElementById('alumniCancelEditBtn').style.display = 'none';
+            document.getElementById('alumniAiTag').style.display = 'none';
+            loadPostSidelist(); // Refresh right panel
+          } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.message || `Failed to ${isEdit ? 'update' : 'publish'}. Please ensure the server is running.`);
+          }
+        } catch (error) {
+          alert('Submission failed. Check network or server connection.');
+        }
+      });
+
+      loadPostSidelist();
+
+    } else {
+      // --- VIEW MODE ---
+      content(`
+        <style>
+          #alumniGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin-top: 10px;
+          }
+          .alumni-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 220px;
+            box-sizing: border-box;
+          }
+          .alumni-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(217,119,6,0.1);
+            border-color: rgba(217,119,6,0.25);
+          }
+          .alumni-avatar-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fef3c7;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+          }
+          .alumni-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .alumni-card-edit-btn:hover { background: #6d28d9 !important; color: white !important; transform: scale(1.1); }
+          .alumni-card-delete-btn:hover { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
+          .alumni-linkedin-btn:hover {
+            background: #bae6fd !important;
+            color: #0369a1 !important;
+            box-shadow: 0 4px 12px rgba(3,105,161,0.15) !important;
+            transform: translateY(-1px);
+          }
+          .alumni-year-badge {
+            display: inline-block; padding: 2px 10px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            background: #fffbeb; color: #b45309; border: 1px solid #fde68a;
+          }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="alumniViewBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Alumni Excellence</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Inspiring alumni stories, placements, awards, and institutional pride.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="alumniDeptFilter" style="padding: 10px 18px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569; box-shadow: var(--shadow-sm);">
+              <option value="all">All Departments</option>
+              <option value="cse">CSE</option>
+              <option value="ece">ECE</option>
+              <option value="mechanical">Mechanical</option>
+              <option value="civil">Civil</option>
+              <option value="it">IT</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div style="position: relative;">
+            <input type="text" id="alumniSearchInput" placeholder="Search by name, company, role..." style="padding: 10px 18px 10px 38px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 260px; background: white; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+          </div>
+        </div>
+
+        <div id="alumniGrid">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading alumni profiles...</div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('alumniViewBackBtn')?.addEventListener('click', goToDashboard);
+
+      let loadedAlumni = [];
+
+      const loadAlumni = async () => {
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/alumni`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          loadedAlumni = Array.isArray(data) ? data : [];
+          renderFilteredAlumni();
+        } catch (error) {
+          const grid = document.getElementById('alumniGrid');
+          if (grid) grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #ef4444; grid-column: 1 / -1;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+              <div style="font-size: 1rem; font-weight: 600;">Unable to load alumni profiles.</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Please ensure the server is running.</div>
+            </div>`;
+        }
+      };
+
+      const renderFilteredAlumni = () => {
+        const grid = document.getElementById('alumniGrid');
+        if (!grid) return;
+
+        const deptFilter = document.getElementById('alumniDeptFilter')?.value || 'all';
+        const searchVal = document.getElementById('alumniSearchInput')?.value?.toLowerCase() || '';
+
+        let filtered = [...loadedAlumni];
+
+        if (deptFilter !== 'all') {
+          filtered = filtered.filter(item => {
+            const dept = (item.department || '').toLowerCase();
+            return dept.includes(deptFilter);
+          });
+        }
+
+        if (searchVal) {
+          filtered = filtered.filter(item => {
+            const name = (item.name || item.user?.name || '').toLowerCase();
+            const company = (item.currentCompany || '').toLowerCase();
+            const job = (item.jobTitle || '').toLowerCase();
+            const dept = (item.department || '').toLowerCase();
+            const about = (item.about || '').toLowerCase();
+            return name.includes(searchVal) || company.includes(searchVal) || job.includes(searchVal) || dept.includes(searchVal) || about.includes(searchVal);
+          });
+        }
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+              <div style="font-size: 1.05rem; font-weight: 600;">No alumni profiles found</div>
+              <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">Try a different filter or search term.</div>
+            </div>`;
+          return;
+        }
+
+        const actionButtonsFn = (id) => isAuthority ? `
+          <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
+            <button type="button" class="alumni-card-edit-btn" data-id="${id}" title="Edit Profile" style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button type="button" class="alumni-card-delete-btn" data-id="${id}" title="Remove Profile" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>` : '';
+
+        grid.innerHTML = filtered.map(item => {
+          const name = item.name || item.user?.name || 'Alumni';
+          const avatarSrc = item.image
+            ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true`;
+
+          const linkedinBtnHtml = item.linkedinProfile ? `
+            <div style="margin-top: 4px;">
+              <a href="${formatExternalLink(item.linkedinProfile)}" target="_blank" rel="noopener" class="alumni-linkedin-btn" style="display: inline-flex; align-items: center; gap: 8px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 8px 16px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 0.82rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(3,105,161,0.04); width: 100%; justify-content: center; box-sizing: border-box;">
+                <i class="fa-brands fa-linkedin" style="font-size: 1.05rem; color: #0a66c2;"></i>
+                Connect on LinkedIn
+              </a>
+            </div>` : '';
+
+          return `
+            <div class="alumni-card">
+              ${actionButtonsFn(item._id)}
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="alumni-avatar-wrap">
+                  <img src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true';" alt="${esc(name)}">
+                </div>
+                <div style="overflow: hidden; min-width: 0;">
+                  <span class="alumni-year-badge">${item.graduationYear || 'Alumni'}</span>
+                  <h3 style="margin: 4px 0 0 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(name)}</h3>
+                  <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748b; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(item.degree || '')}${item.department ? ` · ${esc(item.department)}` : ''}</p>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: #475569; background: #fffbeb; padding: 12px; border-radius: 12px; border: 1px solid #fde68a;">
+                ${item.jobTitle ? `<div><i class="fa-solid fa-briefcase" style="width: 18px; color: #d97706;"></i> <strong>${esc(item.jobTitle)}</strong></div>` : ''}
+                ${item.currentCompany ? `<div><i class="fa-solid fa-building" style="width: 18px; color: #d97706;"></i> ${esc(item.currentCompany)}</div>` : ''}
+              </div>
+
+              ${linkedinBtnHtml}
+
+              ${item.about ? `
+                <div style="font-size: 0.85rem; color: #475569; font-style: italic; line-height: 1.5; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: flex; gap: 6px; margin-top: auto;">
+                  <i class="fa-solid fa-quote-left" style="color: #fbbf24; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"></i>
+                  <span>"${esc(item.about)}"</span>
+                </div>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        if (isAuthority) {
+          grid.querySelectorAll('.alumni-card-delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              if (confirm('Are you sure you want to remove this alumni profile?')) {
+                try {
+                  const token = user.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${apiBase}/api/alumni/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (res.ok) { alert('Alumni profile removed.'); loadAlumni(); }
+                  else alert('Failed to remove alumni profile.');
+                } catch { alert('Deletion failed.'); }
+              }
+            });
+          });
+
+          grid.querySelectorAll('.alumni-card-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              window.location.href = `post.html?edit=${id}`;
+            });
+          });
+        }
+      };
+
+      document.getElementById('alumniDeptFilter')?.addEventListener('change', renderFilteredAlumni);
+      document.getElementById('alumniSearchInput')?.addEventListener('input', renderFilteredAlumni);
+
+      loadAlumni();
+    }
+  }
+
   async function renderLeadersPage(info) {
     const userRole = (user.role || 'guest').toLowerCase();
     const isAuthority = ['principal', 'admin', 'dean', 'hod', 'teacher'].includes(userRole);
@@ -1548,6 +2263,129 @@
     const mode = cfg.mode || 'view';
     const isPostMode = mode === 'post';
 
+    if ((userRole === 'hod' || userRole === 'warden') && !document.getElementById('complaints-custom-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'complaints-custom-styles';
+      styleEl.innerHTML = `
+        .complaints-grid-view {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+          align-items: stretch;
+          padding-right: 4px;
+        }
+        @media (min-width: 1200px) {
+          .complaints-grid-view {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+          }
+        }
+        
+        .complaint-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.015);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          cursor: pointer;
+          box-sizing: border-box;
+          margin-bottom: 4px;
+          height: 100%;
+        }
+        .complaint-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(107, 70, 193, 0.08);
+          border-color: rgba(107, 70, 193, 0.25);
+        }
+        
+        .complaint-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          flex-shrink: 0;
+        }
+        .complaint-title-area {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+          flex: 1;
+        }
+        .complaint-title {
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0f172a;
+          font-family: 'Poppins', sans-serif;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        
+        .complaint-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          flex-grow: 1;
+        }
+        .complaint-desc {
+          margin: 0;
+          font-size: 0.9rem;
+          color: #475569;
+          line-height: 1.5;
+          font-family: 'Inter', sans-serif;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          white-space: normal;
+        }
+        .complaint-images {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 4px;
+        }
+        
+        .complaint-card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+          border-top: 1px solid #f1f5f9;
+          padding-top: 12px;
+          margin-top: auto;
+          width: 100%;
+          flex-wrap: wrap;
+          flex-shrink: 0;
+        }
+        .complaint-footer-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+          flex-wrap: wrap;
+          font-size: 0.8rem;
+        }
+        .complaint-footer-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-left: auto;
+          font-size: 0.8rem;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
     let contentHtml = '';
 
     if (isPostMode) {
@@ -1623,8 +2461,7 @@
         </div>
       `;
     } else {
-
-      contentHtml = `
+      let styleTagHtml = (userRole === 'hod' || userRole === 'warden') ? '' : `
         <style>
           .complaints-grid-view {
             display: grid;
@@ -1639,6 +2476,10 @@
             }
           }
         </style>
+      `;
+
+      contentHtml = `
+        ${styleTagHtml}
         <div id="complaintsListContainer" class="complaints-grid-view">
           <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
@@ -2278,6 +3119,127 @@
         <span id="count-${c._id}">${c.upvotes || 0}</span>
       </button>
     `;
+
+    if (userRole === 'hod' || userRole === 'warden') {
+      const priorityStyleRedesigned = priority === 'High' ? 'background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5;' :
+                                   priority === 'Urgent' ? 'background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2;' :
+                                   priority === 'Low' ? 'background: #f0fdf4; color: #047857; border: 1px solid #d1fae5;' :
+                                   'background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe;';
+
+      const statusStyleRedesigned = status === 'Resolved' ? 'background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-weight: bold;' :
+                                 status === 'In Progress' ? 'background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; font-weight: bold;' :
+                                 'background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;';
+
+      // Clickable Image Placeholders (Square Thumbnails) in the side
+      let imagePlaceholdersRedesignedHtml = '';
+      if (imgUrl) {
+        imagePlaceholdersRedesignedHtml += `
+          <div onclick="window.open('${imgUrl}')" style="width: 52px; height: 52px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s; flex-shrink: 0;" title="View Issue Photo" onmouseenter="this.style.borderColor='var(--primary)';" onmouseleave="this.style.borderColor='#cbd5e1';">
+            <img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        `;
+      }
+      if (resolveImgUrl) {
+        imagePlaceholdersRedesignedHtml += `
+          <div onclick="window.open('${resolveImgUrl}')" style="width: 52px; height: 52px; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.2s; flex-shrink: 0;" title="View Resolution Proof" onmouseenter="this.style.borderColor='#10b981';" onmouseleave="this.style.borderColor='#bbf7d0';">
+            <img src="${resolveImgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        `;
+      }
+
+      // Resolve buttons and forms
+      let resolveBtnRedesignedHtml = '';
+      let resolveFormContainerRedesignedHtml = '';
+      if (isAuthority && status !== 'Resolved') {
+        if (userRole === 'principal') {
+          resolveBtnRedesignedHtml = `
+            <button type="button" class="btn-resolve-direct" data-id="${c._id}" style="background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-sizing: border-box;" onmouseenter="this.style.background='#dbeafe';" onmouseleave="this.style.background='#eff6ff';">
+              <i class="fa-solid fa-check"></i> Resolve
+            </button>
+          `;
+        } else {
+          resolveBtnRedesignedHtml = `
+            <button type="button" class="btn-resolve-toggle" data-id="${c._id}" style="background: #eff6ff; color: #1e4ed8; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; box-sizing: border-box;" onmouseenter="this.style.background='#dbeafe';" onmouseleave="this.style.background='#eff6ff';">
+              <i class="fa-solid fa-check-to-slot"></i> Resolve
+            </button>
+          `;
+          resolveFormContainerRedesignedHtml = `
+            <div id="resolveFormContainer-${c._id}" style="display: none; margin-top: 12px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 12px; width: 100%; box-sizing: border-box;">
+              <form class="inlineResolveForm" data-id="${c._id}" style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 2px;">Upload Resolution Proof</label>
+                <input type="file" name="resolutionImage" accept="image/*" required style="font-size: 0.8rem; color: #475569;">
+                <button type="submit" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; align-self: flex-start; margin-top: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                  Confirm Resolution
+                </button>
+              </form>
+            </div>
+          `;
+        }
+      }
+
+      // Left Side Footer: Raiser & Resolver Info
+      let footerLeftRedesignedHtml = `
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #475569; flex-shrink: 0; min-width: 0;">
+          <img src="${raiserAvatar}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(raiserName)}&background=6b46c1&color=fff&rounded=true&bold=true';">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">By: <strong style="color: #0f172a;">${esc(raiserName)}</strong>${esc(raiserInfo)}</span>
+        </span>
+      `;
+
+      if (status === 'Resolved') {
+        footerLeftRedesignedHtml += `
+          <span style="color: #e2e8f0; flex-shrink: 0;">|</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #166534; flex-shrink: 0; min-width: 0;">
+            <img src="${resolverAvatar}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(resolverName)}&background=10b981&color=fff&rounded=true&bold=true';">
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Resolved: <strong style="color: #14532d;">${esc(resolverName)}</strong></span>
+          </span>
+        `;
+      }
+
+      // Right Side Footer: Date & Upvote
+      let footerRightRedesignedHtml = `
+        <span style="font-weight: 500; font-size: 0.78rem; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; color: #64748b;">
+          <i class="fa-regular fa-clock"></i>${date}
+        </span>
+        <span style="color: #e2e8f0; flex-shrink: 0;">|</span>
+        <button type="button" class="btn-complaint-upvote" id="like-btn-${c._id}" data-id="${c._id}" style="background: none; border: none; color: ${likeColor}; cursor: pointer; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; flex-shrink: 0;" onmouseenter="this.style.background='#f1f5f9';" onmouseleave="this.style.background='none';">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span id="count-${c._id}">${c.upvotes || 0}</span>
+        </button>
+      `;
+
+      return `
+        <div class="complaint-card" data-id="${c._id}">
+          <!-- Top Row: Title, Priority, Status badge -->
+          <div class="complaint-card-header">
+            <div class="complaint-title-area">
+              <span style="${priorityStyleRedesigned} padding: 4px 10px; border-radius: 8px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">${priority}</span>
+              <h4 class="complaint-title" title="${esc(title)}">${esc(title)}</h4>
+            </div>
+            <span style="${statusStyleRedesigned} padding: 4px 10px; border-radius: 8px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 700; text-align: center; display: inline-block; flex-shrink: 0; box-sizing: border-box;">${status}</span>
+          </div>
+          
+          <!-- Middle Row: Description & Image attachments -->
+          <div class="complaint-card-body">
+            <p class="complaint-desc" title="${esc(desc)}">${esc(desc)}</p>
+            ${imagePlaceholdersRedesignedHtml ? `<div class="complaint-images">${imagePlaceholdersRedesignedHtml}</div>` : ''}
+          </div>
+          
+          <!-- Bottom Row: Raiser, Resolver & Date, Upvotes, Actions -->
+          <div class="complaint-card-footer">
+            <div class="complaint-footer-left">
+              ${footerLeftRedesignedHtml}
+            </div>
+            <div class="complaint-footer-right">
+              ${footerRightRedesignedHtml}
+              ${resolveBtnRedesignedHtml}
+            </div>
+          </div>
+          
+          <!-- Inline Resolution Form (if toggled) -->
+          ${resolveFormContainerRedesignedHtml}
+        </div>
+      `;
+    }
 
     return `
       <div class="complaint-card" data-id="${c._id}" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 12px 16px; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: all 0.3s; position: relative; min-height: 125px; justify-content: flex-start; align-items: stretch; margin-bottom: 16px; box-sizing: border-box; cursor: pointer;" onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 30px rgba(0,0,0,0.04)'; this.style.borderColor='rgba(107, 70, 193, 0.2)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.02)'; this.style.borderColor='#e2e8f0';">
@@ -4428,13 +5390,266 @@
   }
 
   async function renderGatePassApproval() {
-    content(`<div class="section-card module-panel"><div class="section-header"><h2><i class="fa-solid fa-stamp"></i> Approve Gate Pass / Leave</h2></div><div id="leaveList" class="module-empty"><i class="fa-solid fa-spinner fa-spin"></i><span>Loading leave requests...</span></div></div>`);
+    content(`
+      <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <div class="section-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px;">
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+            <i class="fa-solid fa-stamp" style="color: var(--primary); margin-right: 8px;"></i> Approve Gate Pass / Leave
+          </h2>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Review, approve, or reject student leave and gate-pass applications.</p>
+        </div>
+        <div id="leaveTableContainer">
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading leave requests...</div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    // Add reject modal to body if it doesn't already exist
+    if (!document.getElementById('gatePassRejectModal')) {
+      const modalHtml = `
+        <div id="gatePassRejectModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+          <div class="modal-content" style="background: white; padding: 2rem; border-radius: var(--radius-md); width: 90%; max-width: 450px; text-align: left; position: relative; box-shadow: var(--shadow-lg);">
+            <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">Reject Leave Request</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Please specify a reason for rejecting this leave request. This will be visible to the student.</p>
+            <textarea id="gatePassRejectRemark" placeholder="Enter reason here..." style="width: 100%; height: 100px; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: inherit; font-size: 0.9rem; margin-bottom: 20px; outline: none; resize: none;"></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+              <button onclick="window.closeLeaveRejectModal()" class="module-btn" style="background: #f1f5f9; color: var(--text-dark); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Cancel</button>
+              <button onclick="window.confirmLeaveReject()" class="module-btn" style="background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Reject Request</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    const userRole = (user.role || '').toLowerCase();
+    const token = user.token || localStorage.getItem('token') || '';
+    const endpoint = userRole === 'hod' ? '/api/hod/leaves' : '/api/warden/leaves';
+
+    let currentRejectId = null;
+
+    window.openLeaveRejectModal = function(id) {
+      currentRejectId = id;
+      const modal = document.getElementById('gatePassRejectModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        const textarea = document.getElementById('gatePassRejectRemark');
+        if (textarea) textarea.value = '';
+      }
+    };
+
+    window.closeLeaveRejectModal = function() {
+      currentRejectId = null;
+      const modal = document.getElementById('gatePassRejectModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    };
+
+    window.confirmLeaveReject = async function() {
+      const remark = document.getElementById('gatePassRejectRemark')?.value.trim();
+      if (!remark) {
+        alert('Please provide a rejection reason.');
+        return;
+      }
+      if (currentRejectId) {
+        await window.processLeaveAction(currentRejectId, 'reject', remark);
+        window.closeLeaveRejectModal();
+      }
+    };
+
+    window.processLeaveAction = async function(id, action, remark = '', confirmTitle = '') {
+      if (action === 'approve') {
+        const msg = confirmTitle || 'Approve this leave request?';
+        if (!confirm(msg)) return;
+      }
+      
+      const actionEndpoint = userRole === 'hod' 
+        ? `${apiBase}/api/hod/leaves/${id}/action`
+        : `${apiBase}/api/warden/leaves/${id}/action`;
+
+      try {
+        const res = await fetch(actionEndpoint, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action, remark })
+        });
+        
+        if (res.ok) {
+          alert(action === 'approve' ? 'Successfully approved' : 'Successfully rejected');
+          renderGatePassApproval(); // Reload the list
+        } else {
+          const err = await res.json();
+          alert(err.message || 'Operation failed');
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Server Error');
+      }
+    };
+
     try {
-      const res = await fetch(`${apiBase}/api/warden/leaves`, { headers: { Authorization: `Bearer ${user.token || ''}` } });
+      const res = await fetch(`${apiBase}${endpoint}`, { headers: { Authorization: `Bearer ${token}` } });
       const leaves = res.ok ? await res.json() : [];
-      document.getElementById('leaveList').outerHTML = table(leaves, ['studentName', 'fromDate', 'toDate', 'reason', 'status']);
+
+      const container = document.getElementById('leaveTableContainer');
+      if (!container) return;
+
+      if (leaves.length === 0) {
+        container.innerHTML = `
+          <div class="module-empty" style="padding: 40px 20px;">
+            <i class="fa-regular fa-folder-open"></i>
+            <span>No pending leaves found.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const tbodyHtml = leaves.map(leave => {
+        const studentName = leave.student?.name || 'Unknown';
+        const rollNo = leave.student?.rollNumber || 'N/A';
+        const roomNo = leave.student?.roomNumber || 'N/A';
+        const hostelName = leave.student?.hostelName || '';
+        const dept = leave.student?.department || '';
+        
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=random`;
+        
+        const fromDate = leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '--';
+        const toDate = leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '--';
+        
+        const type = leave.type || 'Gate Pass';
+        const reason = leave.reason || '--';
+        
+        const hodStatus = leave.hodStatus || 'Pending';
+        const wardenStatus = leave.wardenStatus || 'Pending';
+
+        let hodBadgeHtml = '';
+        if (hodStatus === 'Approved') {
+          hodBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+        } else if (hodStatus === 'Rejected') {
+          hodBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+        } else {
+          hodBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+        }
+        if (leave.hodRemark) {
+          hodBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.hodRemark)}"</div>`;
+        }
+
+        let wardenBadgeHtml = '';
+        if (wardenStatus === 'Approved') {
+          wardenBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Issued</span>`;
+        } else if (wardenStatus === 'Rejected') {
+          wardenBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+        } else {
+          wardenBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+        }
+        if (leave.wardenRemark) {
+          wardenBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.wardenRemark)}"</div>`;
+        }
+
+        let actionHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">Action Completed</span>';
+        if (userRole === 'hod') {
+          if (hodStatus === 'Pending') {
+            actionHtml = `
+              <div style="display: flex; gap: 8px;">
+                <button onclick="window.processLeaveAction('${leave._id}', 'approve')" class="module-btn" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid fa-check"></i> Approve</button>
+                <button onclick="window.openLeaveRejectModal('${leave._id}')" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#ef4444'; this.style.color='white';" onmouseleave="this.style.background='#fee2e2'; this.style.color='#ef4444';"><i class="fa-solid fa-xmark"></i> Reject</button>
+              </div>
+            `;
+          }
+        } else if (userRole === 'warden') {
+          if (wardenStatus === 'Pending') {
+            let btnStyle = 'background: var(--success);';
+            let btnText = 'Issue Pass';
+            let btnIcon = 'fa-stamp';
+            let btnTitle = 'Issue Gate Pass for this student?';
+            if (hodStatus !== 'Approved') {
+              btnStyle = 'background: var(--warning);';
+              btnText = 'Issue Pass (Direct)';
+              btnIcon = 'fa-bolt';
+              btnTitle = 'HOD has not approved yet. Directly issue Gate Pass?';
+            }
+            actionHtml = `
+              <div style="display: flex; gap: 8px;">
+                <button onclick="window.processLeaveAction('${leave._id}', 'approve', '', '${btnTitle}')" class="module-btn" style="${btnStyle} color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid ${btnIcon}"></i> ${btnText}</button>
+                <button onclick="window.openLeaveRejectModal('${leave._id}')" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#ef4444'; this.style.color='white';" onmouseleave="this.style.background='#fee2e2'; this.style.color='#ef4444';"><i class="fa-solid fa-xmark"></i> Reject</button>
+              </div>
+            `;
+          }
+        }
+
+        let typeBadgeColor = 'background: #e0f2fe; color: #0369a1;'; // Night Out / Blue
+        if (type === 'Home Visit') {
+          typeBadgeColor = 'background: #ede9fe; color: #7c3aed;'; // Purple
+        } else if (type === 'Medical') {
+          typeBadgeColor = 'background: #fee2e2; color: #b91c1c;'; // Red
+        }
+
+        return `
+          <tr style="border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
+            <td style="padding: 14px 12px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="${avatarUrl}" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #e2e8f0;">
+                <div>
+                  <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark);">${esc(studentName)}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
+                    ${esc(rollNo)} | Room ${esc(roomNo)} | ${esc(hostelName)} | ${esc(dept)}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 14px 12px;">
+              <span style="${typeBadgeColor} padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700;">${esc(type)}</span>
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.82rem; color: var(--text-dark); font-weight: 500;">
+              <div>${fromDate}</div>
+              <div style="color: var(--text-muted); font-size: 0.75rem;">to ${toDate}</div>
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.82rem; color: var(--text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${esc(reason)}">
+              ${esc(reason)}
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.85rem;">
+              ${hodBadgeHtml}
+            </td>
+            <td style="padding: 14px 12px; font-size: 0.85rem;">
+              ${wardenBadgeHtml}
+            </td>
+            <td style="padding: 14px 12px; text-align: left;">
+              ${actionHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="module-table-wrap" style="margin-top: 10px; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; background: white;">
+          <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Student Details</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Type</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Duration</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Reason</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">HOD Status</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Warden Status</th>
+                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tbodyHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
     } catch {
-      document.getElementById('leaveList').textContent = 'Unable to load gate-pass approvals.';
+      const container = document.getElementById('leaveTableContainer');
+      if (container) container.innerHTML = '<div class="module-empty">Unable to load gate-pass approvals.</div>';
     }
   }
 
@@ -4595,7 +5810,56 @@
 
   function content(html) {
     const el = document.getElementById('moduleContent');
-    el.innerHTML = html;
+    const userRole = (user.role || '').toLowerCase();
+    
+    if (userRole === 'hod') {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      const hasBackButton = temp.querySelector('[id*="BackBtn"]') || temp.querySelector('[class*="back-btn"]') || temp.querySelector('.hod-dynamic-back-btn');
+      
+      if (!hasBackButton) {
+        const header = temp.querySelector('.section-header') || temp.querySelector('h2');
+        if (header) {
+          const backBtnHtml = `
+            <button type="button" class="hod-dynamic-back-btn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; margin-right: 12px; vertical-align: middle; flex-shrink: 0;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          `;
+          
+          const titleH2 = header.querySelector('h2') || (header.tagName === 'H2' ? header : null);
+          if (titleH2) {
+            titleH2.style.display = 'inline-flex';
+            titleH2.style.alignItems = 'center';
+            titleH2.insertAdjacentHTML('afterbegin', backBtnHtml);
+          } else {
+            header.insertAdjacentHTML('afterbegin', backBtnHtml);
+          }
+        } else {
+          const backRowHtml = `
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+              <button type="button" class="hod-dynamic-back-btn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+              <span style="font-size: 0.95rem; font-weight: 600; color: #64748b; cursor: pointer;">Back to Dashboard</span>
+            </div>
+          `;
+          temp.insertAdjacentHTML('afterbegin', backRowHtml);
+        }
+      }
+      
+      el.innerHTML = temp.innerHTML;
+      
+      el.querySelectorAll('.hod-dynamic-back-btn').forEach(btn => {
+        btn.addEventListener('click', goToDashboard);
+        const span = btn.nextElementSibling;
+        if (span && span.tagName === 'SPAN' && span.textContent === 'Back to Dashboard') {
+          span.addEventListener('click', goToDashboard);
+        }
+      });
+    } else {
+      el.innerHTML = html;
+    }
     return el;
   }
 

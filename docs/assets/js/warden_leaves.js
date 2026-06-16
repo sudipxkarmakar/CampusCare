@@ -79,17 +79,25 @@ async function loadLeaves() {
                     approveBtnText = 'Issue Pass (Direct)';
                     approveBtnIcon = 'fa-bolt'; // Bolt icon for instant action
                     approveBtnAction = 'Directly issue Gate Pass? (HOD has not approved yet)';
-                    btnStyle = 'background:#f59e0b;'; // Amber/Orange
+                    btnStyle = 'background: var(--warning);'; // Amber/Orange
+                } else {
+                    btnStyle = 'background: var(--success);'; // Green
                 }
 
                 actionHtml = `
                     <div style="display:flex; gap:10px;">
                         <button onclick="approveLeave('${leave._id}', '${approveBtnAction}')" 
-                            style="${btnStyle} color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;" title="Issue Gate Pass">
+                            style="${btnStyle} color:white; border:none; padding:6px 14px; border-radius:8px; cursor:pointer; font-weight:600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;" 
+                            onmouseenter="this.style.background='${hStatus !== 'Approved' ? '#d97706' : '#059669'}';" 
+                            onmouseleave="this.style.background='${hStatus !== 'Approved' ? 'var(--warning)' : 'var(--success)'}';"
+                            title="Issue Gate Pass">
                             <i class="fa-solid ${approveBtnIcon}"></i> ${approveBtnText}
                         </button>
                         <button onclick="openRejectModal('${leave._id}')" 
-                            style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
+                            style="background: var(--danger-light); border: 1px solid var(--border-color); color: var(--danger); padding: 6px 14px; border-radius:8px; cursor:pointer; font-weight:600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;"
+                            onmouseenter="this.style.background='var(--danger)'; this.style.color='white';" 
+                            onmouseleave="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';"
+                            title="Reject Leave Request">
                             <i class="fa-solid fa-xmark"></i> Reject
                         </button>
                     </div>

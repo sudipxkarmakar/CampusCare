@@ -65,6 +65,47 @@
           font-size: 0.75rem;
           font-weight: 700;
       }
+
+      /* Compact Module styling */
+      .module-card-compact {
+          background: var(--bg-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-md);
+          padding: 1rem 0.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          text-decoration: none;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+          position: relative;
+      }
+      
+      .module-card-compact:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-sm);
+          border-color: var(--primary-light);
+      }
+      
+      .module-icon-compact {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem;
+      }
+      
+      .module-title-compact {
+          font-family: 'Poppins', sans-serif;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text-dark);
+          margin-bottom: 0;
+          line-height: 1.2;
+      }
   </style>
 </head>
 
@@ -115,9 +156,29 @@
           <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
             CampusCare <span style="font-size: 0.8rem; background: var(--success); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">Warden</span>
           </h1>
+          <div class="search-bar"
+            style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: var(--radius-full); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-search" style="color: var(--text-muted)"></i>
+            <input type="text" placeholder="Search..."
+              style="border: none; background: transparent; outline: none; font-family: 'Inter', sans-serif; font-size: 0.95rem; width: 200px;" />
+          </div>
         </div>
 
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
+          <span class="date-display"
+            style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-regular fa-calendar"></i> 15 May, 2026
+          </span>
+
+          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal"
+            data-modal-id="ai-modal">
+            <i class="fa-solid fa-robot"></i> Assistant
+          </button>
+
+          <button id="sosBtn" class="btn-pill btn-outline-red" data-action="toggleModal" data-modal-id="sos-modal">
+            <i class="fa-solid fa-bell-concierge"></i> SOS
+          </button>
+
           <!-- USER PROFILE -->
           <div id="userProfile" class="user-profile" data-action="toggleProfileMenu"
             style="display: flex; cursor: pointer; position: relative">
@@ -145,100 +206,265 @@
         </div>
       </header>
 
-      <!-- HERO -->
-      <section class="hero-card" style="padding: 30px 40px; margin-bottom: 32px; border-radius: 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-        <div class="hero-content" style="max-width: 100%;">
-          <h1 style="font-size: 2.2rem; margin-bottom: 8px; color: white;">Hostel Administration</h1>
-          <p style="font-size: 1.1rem; opacity: 0.9; margin: 0;">Ensure Resident Welfare & Discipline</p>
+      <!-- HERO BANNER -->
+      <section class="hero-card" id="home"
+        style="padding: 40px; display:flex; justify-content:space-between; align-items:center; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); margin-bottom: 32px;">
+        <div class="hero-content" style="max-width: 60%; z-index: 2;">
+          <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span>☀️</span> Good morning, <span id="warden-name" style="color: var(--success); font-weight: 800;">Warden</span>!
+          </h1>
+          <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
+            Here's what's happening in your hostel's welfare and discipline world.
+          </p>
+        </div>
+        <div class="hero-image" style="z-index: 1;">
+          <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
+            onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
         </div>
       </section>
 
-      <!-- DASHBOARD GRID -->
-      <div class="triple-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <!-- TWO COLUMNS LAYOUT -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Section (Span 2) -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 32px;">
           
-          <!-- SECTION 1: LEAVE & GATE PASS -->
-          <section class="section-card">
-              <h2 style="font-size: 1.2rem; color: var(--text-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-                  <i class="fa-solid fa-stamp" style="color: var(--warning);"></i> Approvals
-              </h2>
-              
-              <div style="display: flex; flex-direction: column; gap: 1rem;">
-                  <a href="../modules/gate-pass/approve.html" class="module-card">
-                      <div id="leaveCountBadge" class="badge-count" style="display: none;">0</div>
-                      <div class="module-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
-                          <i class="fa-solid fa-file-signature"></i>
-                      </div>
-                      <div class="module-title">Gate Pass / Leaves</div>
-                      <div class="module-desc">Review & Final Approval</div>
-                  </a>
+          <!-- Stat Cards Row -->
+          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <a href="../modules/gate-pass/approve.html" class="stat-card-new" style="text-decoration: none; position: relative;">
+              <div id="leaveCountBadge" class="badge-count" style="display:none; top: 15px; right: 15px; background: var(--danger); color: white; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; line-height: 1; box-sizing: border-box; position: absolute;">0</div>
+              <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;">
+                <i class="fa-solid fa-file-signature"></i>
               </div>
+              <div class="stat-info">
+                <h4>Leave Approvals</h4>
+                <p class="stat-value" id="leaveCountVal">0</p>
+              </div>
+            </a>
+            
+            <a href="../modules/complaints/resolve.html" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: #fee2e2; color: #ef4444;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Complaints</h4>
+                <p class="stat-value" id="complaintsCountVal">0</p>
+              </div>
+            </a>
+            
+            <a href="../modules/student-database/view.html" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Residents</h4>
+                <p class="stat-value" id="hostelerCountVal">0</p>
+              </div>
+            </a>
+            
+            <a href="../modules/mess-menu/post.html" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;">
+                <i class="fa-solid fa-utensils"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Mess Menu</h4>
+                <p class="stat-value" style="font-size: 1.1rem; line-height: 1.4; font-weight: 700; margin-top: 4px;">Update</p>
+              </div>
+            </a>
+          </div>
+
+          <!-- Services Grid -->
+          <section class="section-card">
+            <div class="section-header">
+              <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-bolt" style="color: var(--success);"></i> Hostel Services & Actions</h2>
+            </div>
+            <div class="my-modules-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px;">
+              <a href="../modules/gate-pass/approve.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(245, 158, 11, 0.1); color:var(--warning)"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="module-title-compact">Leave Approvals</div>
+              </a>
+              <a href="../modules/complaints/resolve.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(239, 68, 68, 0.1); color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="module-title-compact">Complaints</div>
+              </a>
+              <a href="../modules/mess-menu/post.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(59, 130, 246, 0.1); color:var(--primary)"><i class="fa-solid fa-utensils"></i></div>
+                <div class="module-title-compact">Mess Menu</div>
+              </a>
+              <a href="../modules/notices/post.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(139, 92, 246, 0.1); color:var(--secondary)"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="module-title-compact">Notices</div>
+              </a>
+              <a href="../modules/library.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:var(--success)"><i class="fa-solid fa-book-open"></i></div>
+                <div class="module-title-compact">Library</div>
+              </a>
+            </div>
           </section>
 
-          <!-- SECTION 2: HOSTEL SERVICES -->
+          <!-- Residents Table Preview -->
           <section class="section-card">
-              <h2 style="font-size: 1.2rem; color: var(--text-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-                  <i class="fa-solid fa-concierge-bell" style="color: var(--primary);"></i> Services
-              </h2>
-              
-              <div class="triple-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                  <a href="../modules/mess-menu/post.html" class="module-card" style="padding: 1rem;">
-                      <div class="module-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
-                          <i class="fa-solid fa-utensils"></i>
-                      </div>
-                      <div class="module-title" style="font-size: 0.95rem;">Mess Menu</div>
-                      <div class="module-desc" style="font-size: 0.75rem;">View & Update</div>
-                  </a>
-
-                  <a href="../modules/complaints/resolve.html" class="module-card" style="padding: 1rem;">
-                      <div class="module-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
-                          <i class="fa-solid fa-triangle-exclamation"></i>
-                      </div>
-                      <div class="module-title" style="font-size: 0.95rem;">Complaints</div>
-                      <div class="module-desc" style="font-size: 0.75rem;">Resolve Issues</div>
-                  </a>
-
-                  <a href="../modules/notices/post.html" class="module-card" style="padding: 1rem;">
-                      <div class="module-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--secondary); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
-                          <i class="fa-solid fa-bullhorn"></i>
-                      </div>
-                      <div class="module-title" style="font-size: 0.95rem;">Notices</div>
-                      <div class="module-desc" style="font-size: 0.75rem;">Post Updates</div>
-                  </a>
-
-                  <a href="../modules/library.html" class="module-card" style="padding: 1rem;">
-                      <div class="module-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 48px; height: 48px; font-size: 1.2rem; margin-bottom: 0.5rem;">
-                          <i class="fa-solid fa-book-open"></i>
-                      </div>
-                      <div class="module-title" style="font-size: 0.95rem;">Library</div>
-                      <div class="module-desc" style="font-size: 0.75rem;">Search Books</div>
-                  </a>
-              </div>
+            <div class="section-header">
+              <h2><i class="fa-solid fa-users" style="color: var(--success);"></i> Hostel Residents</h2>
+              <a href="../modules/student-database/view.html" class="btn-view-all">View All</a>
+            </div>
+            <div style="overflow-x: auto; margin-top: 16px;">
+              <table class="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Resident Name</th>
+                    <th>Room</th>
+                    <th>Batch</th>
+                    <th>Attendance</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="residents-table-body">
+                  <!-- Dynamically populated by JS -->
+                </tbody>
+              </table>
+            </div>
           </section>
 
-          <!-- SECTION 3: HOSTEL INSIGHTS -->
+        </div>
+
+        <!-- Right Section (Span 1) -->
+        <div style="display: flex; flex-direction: column; gap: 32px;">
+          
+          <!-- Hostel Layout/Insight Card -->
           <section class="section-card">
-              <h2 style="font-size: 1.2rem; color: var(--text-dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-                  <i class="fa-solid fa-building-user" style="color: var(--success);"></i> Hostel Layout
-              </h2>
-              
-              <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100% - 3rem);">
-                  <div style="font-size: 3.5rem; font-weight: 800; color: var(--success); line-height: 1;" id="hostelerCountVal">0</div>
-                  <div style="color: var(--text-muted); font-weight: 500; margin-top: 0.5rem; margin-bottom: 1.5rem;">Active Residents</div>
-                  
-                  <a href="../modules/student-database/view.html" class="btn-outline-purple" style="width: 100%; border-color: var(--success); color: var(--success);">
-                      <i class="fa-solid fa-users" style="margin-right: 8px;"></i> View Resident List
-                  </a>
-              </div>
+            <h2 style="font-size: 1.25rem; color: var(--text-dark); display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-building-user" style="color: var(--success);"></i> Hostel Insights
+            </h2>
+            
+            <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 16px;">
+                <div style="font-size: 3.5rem; font-weight: 800; color: var(--success); line-height: 1;" id="insight-hosteler-count">0</div>
+                <div style="color: var(--text-muted); font-weight: 500; margin-top: 0.5rem; margin-bottom: 1.5rem;">Active Residents</div>
+                
+                <a href="../modules/student-database/view.html" class="btn-outline-purple" style="width: 100%; border-color: var(--success); color: var(--success); text-align: center; text-decoration: none;">
+                    <i class="fa-solid fa-users" style="margin-right: 8px;"></i> View Resident List
+                </a>
+            </div>
           </section>
+
+          <!-- Recent Complaints -->
+          <section class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Recent Complaints</h2>
+              <a href="../modules/complaints/resolve.html" class="btn-view-all">View All</a>
+            </div>
+            <div id="recent-complaints-list" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              <!-- Dynamically populated or static markup -->
+              <div class="notice-item" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                <div style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                  <i class="fa-solid fa-ban"></i>
+                </div>
+                <div class="notice-info" style="flex: 1;">
+                  <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark);">Water leakage in Block B</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Resident (Room 204)</p>
+                </div>
+                <span style="background: #ffedd5; color: #ea580c; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">Open</span>
+              </div>
+              <div class="notice-item" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                <div style="background: #ede9fe; color: #7c3aed; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                  <i class="fa-solid fa-wifi"></i>
+                </div>
+                <div class="notice-info" style="flex: 1;">
+                  <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark);">Wifi Issues Block A</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Resident (Room 105)</p>
+                </div>
+                <span style="background: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">In Review</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- AI Assistant Banner inside Right Column -->
+          <div style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px;">
+            <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;" onerror="this.style.display='none'">
+            <div style="flex: 1;">
+              <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
+              <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help with hostel occupancy or leave analytics?</p>
+              <button onclick="toggleModal('ai-modal')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                Chat Now <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
 
       </div>
 
     </main>
   </div>
 
+  <!-- MODALS -->
+
+  <!-- SOS MODAL -->
+  <div id="sos-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="sos-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-triangle-exclamation"
+        style="font-size: 3.5rem; color: var(--danger); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">EMERGENCY SOS</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Select your emergency type to alert nearest help immediately.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <a href="tel:100"
+          style="background: var(--text-dark); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; grid-column: 1 / -1; transition: background 0.2s;">
+          <i class="fa-solid fa-shield-halved"></i> Call Campus Security
+        </a>
+        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+          style="background: var(--warning); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-kit-medical" style="font-size:1.8rem;"></i> First Aid
+        </button>
+        <button
+          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
+          style="background: var(--danger); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-droplet" style="font-size:1.8rem;"></i> Need Blood
+        </button>
+        <a href="tel:101"
+          style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; display:flex; justify-content:center; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-truck-medical"></i> Ambulance
+        </a>
+        <button onclick="alert('Panic Signal Sent with Location!')"
+          style="background: var(--text-muted); color: white; padding: 12px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">
+          Other / Panic
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI ASSISTANT MODAL -->
+  <div id="ai-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="ai-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-robot" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 700;">Campus AI Assistant</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Ask anything about routine, hostel administration, mess menus, or campus facilities.</p>
+
+      <div id="ai-chat-history"
+        style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid var(--border-color); padding: 15px; border-radius: var(--radius-md); background: var(--bg-color); display:none;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="ai-input" placeholder="Ask anything..."
+          style="flex: 1; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none;">
+        <button onclick="askAI()" class="btn-filled-purple" style="padding: 0 20px;"><i
+            class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
   <script src="../assets/js/landing.js"></script>
+  <script src="../assets/js/ai.js"></script>
   <script src="../assets/js/warden.js"></script>
-
 </body>
-
 </html>

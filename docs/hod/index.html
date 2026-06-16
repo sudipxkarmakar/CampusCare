@@ -41,6 +41,47 @@
           font-weight: 500;
           text-transform: uppercase;
       }
+
+      /* Compact Module styling */
+      .module-card-compact {
+          background: var(--bg-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-md);
+          padding: 1rem 0.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          text-decoration: none;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+          position: relative;
+      }
+      
+      .module-card-compact:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--shadow-sm);
+          border-color: var(--primary-light);
+      }
+      
+      .module-icon-compact {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem;
+      }
+      
+      .module-title-compact {
+          font-family: 'Poppins', sans-serif;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text-dark);
+          margin-bottom: 0;
+          line-height: 1.2;
+      }
   </style>
 </head>
 
@@ -70,6 +111,7 @@
         <li><a href="../modules/notices/post.html" class="nav-item"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
         <li><a href="../modules/leaders/post.html" class="nav-item"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
         <li><a href="../modules/leaders/view.html" class="nav-item"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
+        <li><a href="../modules/alumni/post.html" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Post Alumni Excellence</a></li>
       </ul>
 
       <div class="sidebar-bottom" style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 4px !important;">
@@ -85,21 +127,45 @@
       <header class="top-navbar">
         <div class="nav-left" style="display: flex; align-items: center; gap: 32px">
           <h1 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: var(--text-dark);">
-            CampusCare <span style="font-size: 0.8rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">HOD</span>
+            CampusCare <span
+              style="font-size: 0.8rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">HOD</span>
           </h1>
+          <div class="search-bar"
+            style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: var(--radius-full); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-search" style="color: var(--text-muted)"></i>
+            <input type="text" placeholder="Search..."
+              style="border: none; background: transparent; outline: none; font-family: 'Inter', sans-serif; font-size: 0.95rem; width: 200px;" />
+          </div>
         </div>
-        
+
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px">
+          <span class="date-display"
+            style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-regular fa-calendar"></i> 15 May, 2026
+          </span>
+
+          <button id="assistantBtn" class="btn-pill btn-outline-purple" data-action="toggleModal"
+            data-modal-id="ai-modal">
+            <i class="fa-solid fa-robot"></i> Assistant
+          </button>
+
+          <button id="sosBtn" class="btn-pill btn-outline-red" data-action="toggleModal" data-modal-id="sos-modal">
+            <i class="fa-solid fa-bell-concierge"></i> SOS
+          </button>
+
           <!-- USER PROFILE -->
-          <div id="userProfile" class="user-profile" data-action="toggleProfileMenu" style="display: flex; cursor: pointer; position: relative">
-            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=HOD&background=random" alt="Profile" />
+          <div id="userProfile" class="user-profile" data-action="toggleProfileMenu"
+            style="display: flex; cursor: pointer; position: relative">
+            <img id="userAvatar" class="user-avatar" src="https://ui-avatars.com/api/?name=HOD&background=random"
+              alt="Profile" />
             <div style="display: flex; flex-direction: column;">
-                <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, HOD</span>
-                <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted);">Head of Department</span>
+              <span id="userName" class="user-name" style="cursor: pointer; margin-bottom: 2px;">Hi, HOD</span>
+              <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted);">Head of Department</span>
             </div>
-            
+
             <!-- DROPDOWN MENU -->
-            <div id="profileMenu" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
+            <div id="profileMenu"
+              style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; border: 1px solid var(--border-color); animation: fadeIn 0.2s ease; min-width: 250px;">
               <p style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">
                 Account Details
               </p>
@@ -114,104 +180,289 @@
         </div>
       </header>
 
-      <!-- HERO -->
-      <section class="hero-card" style="padding: 30px 40px; margin-bottom: 32px; border-radius: 24px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white;">
-        <div class="hero-content" style="max-width: 100%;">
-          <h1 style="font-size: 2rem; margin-bottom: 8px; color: white;">Department Control</h1>
-          <p style="font-size: 1rem; opacity: 0.9; margin: 0;">Academic Planning & Supervision</p>
+      <!-- HERO BANNER -->
+      <section class="hero-card" id="home"
+        style="padding: 40px; display:flex; justify-content:space-between; align-items:center; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); margin-bottom: 32px;">
+        <div class="hero-content" style="max-width: 60%; z-index: 2;">
+          <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span>☀️</span> Good morning, <span id="hod-name" style="color: var(--primary); font-weight: 800;">HOD</span>!
+          </h1>
+          <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
+            Here's what's happening in your department's academic world.
+          </p>
+        </div>
+        <div class="hero-image" style="z-index: 1;">
+          <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
+            onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
         </div>
       </section>
 
-      <!-- THREE COLUMNS -->
-      <div class="triple-grid" style="grid-template-columns: 1fr 1fr 1fr; align-items: start;">
+      <!-- TWO COLUMNS LAYOUT -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
         
-        <!-- SECTION 1: APPROVALS & REQUESTS -->
-        <section class="section-card">
-            <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
-                <i class="fa-solid fa-check-double" style="color: var(--danger);"></i> Approvals
-            </h3>
+        <!-- Left Section (Span 2) -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 32px;">
+          
+          <!-- Stat Cards Row -->
+          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <a href="../modules/gate-pass/approve.html" class="stat-card-new" style="text-decoration: none; position: relative;">
+              <div id="leaveCountBadge" class="badge-count" style="display:none; top: 15px; right: 15px; background: var(--danger); color: white; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; line-height: 1; box-sizing: border-box; position: absolute;">0</div>
+              <div class="icon-wrapper" style="background: #fee2e2; color: #ef4444;">
+                <i class="fa-solid fa-file-signature"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Leave Requests</h4>
+                <p class="stat-value" id="leaveCountVal">0</p>
+              </div>
+            </a>
             
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <a href="../modules/gate-pass/approve.html" class="dashboard-stat-box" style="position: relative;">
-                    <div style="position:absolute; top:10px; right:15px; background: var(--danger); color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.75rem;" id="leaveCountBadge">0</div>
-                    <i class="fa-solid fa-file-signature" style="font-size: 2rem; color: var(--danger); margin-bottom: 10px;"></i>
-                    <div style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Leave Requests</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Review & Forward</div>
-                </a>
+            <a href="../modules/complaints/resolve.html" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;">
+                <i class="fa-solid fa-gavel"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Complaints</h4>
+                <p class="stat-value" id="complaintsCountVal">0</p>
+              </div>
+            </a>
+            
+            <a href="../modules/student-database/view.html" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;">
+                <i class="fa-solid fa-user-graduate"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Students</h4>
+                <p class="stat-value" id="studentCountVal">0</p>
+              </div>
+            </a>
+            
+            <a href="../modules/student-database/view.html?filter=dept-teachers" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;">
+                <i class="fa-solid fa-person-chalkboard"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Teachers</h4>
+                <p class="stat-value" id="teacherCountVal">0</p>
+              </div>
+            </a>
+          </div>
 
-                <a href="../modules/complaints/resolve.html" class="dashboard-stat-box">
-                    <i class="fa-solid fa-gavel" style="font-size: 2rem; color: var(--danger); margin-bottom: 10px;"></i>
-                    <div style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Dept Complaints</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Uplifted Issues</div>
-                </a>
+          <!-- Quick Access Cards -->
+          <section class="section-card">
+            <div class="section-header">
+              <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-bolt" style="color: var(--primary);"></i> Academic Management & Actions</h2>
             </div>
-        </section>
-
-        <!-- SECTION 2: ACADEMIC PLANNING -->
-        <section class="section-card">
-            <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
-                <i class="fa-solid fa-sitemap" style="color: var(--primary);"></i> Academic Planning
-            </h3>
-            
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <a href="subject_allocation.html" class="dashboard-stat-box">
-                    <i class="fa-solid fa-book-open-reader" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <div style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Subject Allocation</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Assign Teachers</div>
-                </a>
-
-                <a href="../modules/routine/post.html" class="dashboard-stat-box">
-                    <i class="fa-solid fa-calendar-week" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <div style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Routine Management</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Create/Edit Timetable</div>
-                </a>
-
-                <a href="mentor_allocation.html" class="dashboard-stat-box">
-                    <i class="fa-solid fa-chalkboard-user" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                    <div style="font-size: 1.1rem; color: var(--text-dark); font-weight: 600;">Mentor Assignment</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Assign Batches</div>
-                </a>
+            <div class="my-modules-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px;">
+              <a href="../modules/gate-pass/approve.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(239, 68, 68, 0.1); color:var(--danger)"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="module-title-compact">Leave Requests</div>
+              </a>
+              <a href="../modules/complaints/resolve.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(245, 158, 11, 0.1); color:var(--warning)"><i class="fa-solid fa-gavel"></i></div>
+                <div class="module-title-compact">Dept Complaints</div>
+              </a>
+              <a href="subject_allocation.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(79, 70, 229, 0.1); color:var(--primary)"><i class="fa-solid fa-book-open-reader"></i></div>
+                <div class="module-title-compact">Subject Allocation</div>
+              </a>
+              <a href="../modules/routine/post.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(168, 85, 247, 0.1); color:var(--secondary)"><i class="fa-solid fa-calendar-week"></i></div>
+                <div class="module-title-compact">Routine Mgmt</div>
+              </a>
+              <a href="mentor_allocation.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:var(--success)"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <div class="module-title-compact">Mentor Assignment</div>
+              </a>
+              <a href="../modules/student-database/view.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(14, 165, 233, 0.1); color:#0ea5e9"><i class="fa-solid fa-user-graduate"></i></div>
+                <div class="module-title-compact">Students</div>
+              </a>
+              <a href="../modules/student-database/view.html?filter=dept-teachers" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(37, 99, 235, 0.1); color:#2563eb"><i class="fa-solid fa-person-chalkboard"></i></div>
+                <div class="module-title-compact">Teachers</div>
+              </a>
+              <a href="../modules/notices/post.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(236, 72, 153, 0.1); color:#ec4899"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="module-title-compact">Post Notice</div>
+              </a>
+              <a href="../modules/alumni/post.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(217, 119, 6, 0.1); color:#d97706"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="module-title-compact">Post Alumni</div>
+              </a>
             </div>
-        </section>
+          </section>
 
-        <!-- SECTION 3: DEPARTMENT STATS -->
-        <section class="section-card">
-            <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
-                <i class="fa-solid fa-chart-pie" style="color: var(--success);"></i> Insight
-            </h3>
-            
-            <h4 id="deptNameDisplay" style="text-align: center; color: var(--primary); margin-bottom: 1.5rem; font-size: 1.2rem;">Loading...</h4>
-            
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <a href="../modules/student-database/view.html" class="dashboard-stat-box" style="border-color: rgba(14, 165, 233, 0.3);">
-                    <div id="studentCountVal" class="stat-val" style="color: #0ea5e9;">0</div>
-                    <div class="stat-label">Students</div>
-                </a>
-
-                <a href="../modules/student-database/view.html?filter=dept-teachers" class="dashboard-stat-box" style="border-color: rgba(16, 185, 129, 0.3);">
-                    <div id="teacherCountVal" class="stat-val" style="color: #10b981;">0</div>
-                    <div class="stat-label">Teachers</div>
-                </a>
-                
-                <a href="../modules/notices/post.html" class="btn-filled-purple" style="text-align: center; margin-top: 10px;">
-                    <i class="fa-solid fa-bullhorn" style="margin-right: 8px;"></i> Post Dept Notice
-                </a>
-                <a href="../modules/leaders/post.html" class="btn-filled-purple" style="text-align: center; margin-top: 8px; background: linear-gradient(135deg, #7c3aed, #4f46e5);">
-                    <i class="fa-solid fa-user-crown" style="margin-right: 8px;"></i> Add Academic Leader
-                </a>
-                <a href="../modules/leaders/view.html" style="text-align: center; margin-top: 4px; display: block; font-size: 0.8rem; color: var(--primary); font-weight: 600; text-decoration: none;">
-                    <i class="fa-solid fa-eye" style="margin-right: 4px;"></i> View All Leaders
-                </a>
+          <!-- Department Students Table Preview -->
+          <section class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-users-rectangle" style="color: var(--primary);"></i> Department Students</h2>
+              <a href="../modules/student-database/view.html" class="btn-view-all">View All</a>
             </div>
-        </section>
+            <div style="overflow-x: auto; margin-top: 16px;">
+              <table class="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Year</th>
+                    <th>Performance</th>
+                    <th>Attendance</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="students-table-body">
+                  <!-- Dynamically populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Right Section (Span 1) -->
+        <div style="display: flex; flex-direction: column; gap: 32px;">
+          
+          <!-- Department Insight Card -->
+          <section class="section-card" id="dept-insight-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="section-header" style="margin-bottom: 0;">
+              <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Department Insight</h2>
+            </div>
+            <h4 id="deptNameDisplay" style="text-align: center; color: var(--primary); margin: 8px 0; font-size: 1.25rem; font-weight: 700;">Loading...</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--primary);"></span>
+                  Active Students
+                </span>
+                <strong id="insight-student-count" style="font-size: 1rem; color: var(--text-dark);">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);"></span>
+                  Active Faculty
+                </span>
+                <strong id="insight-teacher-count" style="font-size: 1rem; color: var(--text-dark);">0</strong>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+              <a href="../modules/leaders/post.html" class="btn-filled-purple" style="text-align: center; justify-content: center; width: 100%;">
+                  <i class="fa-solid fa-user-crown" style="margin-right: 8px;"></i> Add Academic Leader
+              </a>
+              <a href="../modules/leaders/view.html" style="text-align: center; margin-top: 4px; display: block; font-size: 0.85rem; color: var(--primary); font-weight: 600; text-decoration: none;">
+                  <i class="fa-solid fa-eye" style="margin-right: 4px;"></i> View All Leaders
+              </a>
+            </div>
+          </section>
+
+          <!-- Academic Leaders Snapshot -->
+          <section class="section-card">
+            <div class="section-header">
+              <h2><i class="fa-solid fa-crown" style="color: var(--secondary);"></i> Academic Leaders</h2>
+            </div>
+            <div id="academic-leaders-preview" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
+                <img src="https://ui-avatars.com/api/?name=Dr.+Roy&background=6b46c1&color=fff" style="width:40px; height:40px; border-radius:50%;">
+                <div>
+                  <h4 style="margin:0; font-size:0.9rem; color:var(--text-dark);">Dr. Roy</h4>
+                  <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">Principal</p>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
+                <img src="https://ui-avatars.com/api/?name=Prof.+Sen&background=10b981&color=fff" style="width:40px; height:40px; border-radius:50%;">
+                <div>
+                  <h4 style="margin:0; font-size:0.9rem; color:var(--text-dark);">Prof. Sen</h4>
+                  <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">Dean Academics</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- AI Assistant Banner inside Right Column -->
+          <div style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px;">
+            <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;" onerror="this.style.display='none'">
+            <div style="flex: 1;">
+              <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
+              <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help with department scheduling or student performance?</p>
+              <button onclick="toggleModal('ai-modal')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                Chat Now <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
 
       </div>
 
     </main>
   </div>
 
+  <!-- MODALS -->
+
+  <!-- SOS MODAL -->
+  <div id="sos-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="sos-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-triangle-exclamation"
+        style="font-size: 3.5rem; color: var(--danger); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">EMERGENCY SOS</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Select your emergency type to alert nearest help immediately.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <a href="tel:100"
+          style="background: var(--text-dark); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; grid-column: 1 / -1; transition: background 0.2s;">
+          <i class="fa-solid fa-shield-halved"></i> Call Campus Security
+        </a>
+        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+          style="background: var(--warning); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-kit-medical" style="font-size:1.8rem;"></i> First Aid
+        </button>
+        <button
+          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
+          style="background: var(--danger); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-droplet" style="font-size:1.8rem;"></i> Need Blood
+        </button>
+        <a href="tel:101"
+          style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; display:flex; justify-content:center; align-items:center; gap:8px; transition: background 0.2s;">
+          <i class="fa-solid fa-truck-medical"></i> Ambulance
+        </a>
+        <button onclick="alert('Panic Signal Sent with Location!')"
+          style="background: var(--text-muted); color: white; padding: 12px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">
+          Other / Panic
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI ASSISTANT MODAL -->
+  <div id="ai-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 450px; text-align: center; position: relative; box-shadow: var(--shadow-lg);">
+      <button data-action="toggleModal" data-modal-id="ai-modal"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-robot" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h2 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 700;">Campus AI Assistant</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Ask anything about routine, department scheduling or campus facilities.</p>
+
+      <div id="ai-chat-history"
+        style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 1rem; border: 1px solid var(--border-color); padding: 15px; border-radius: var(--radius-md); background: var(--bg-color); display:none;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="ai-input" placeholder="Ask anything..."
+          style="flex: 1; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none;">
+        <button onclick="askAI()" class="btn-filled-purple" style="padding: 0 20px;"><i
+            class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
 
   <script src="../assets/js/landing.js"></script>
+  <script src="../assets/js/ai.js"></script>
   <script src="../assets/js/hod.js"></script>
 </body>
 </html>
