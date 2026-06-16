@@ -3144,7 +3144,13 @@
       </div>
 
       <!-- Assignments Table Card -->
-      <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+      <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+        <div id="teacherAssignSubjectFilterContainer" style="display: none; align-items: center; gap: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 16px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: #475569; white-space: nowrap;">Filter by Subject:</label>
+          <select id="teacherAssignSubjectFilter" style="max-width: 280px; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.85rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+            <option value="all">All Subjects</option>
+          </select>
+        </div>
         <div id="teacherAssignmentsContainer">
           <div style="text-align: center; padding: 40px; color: #64748b;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
@@ -3184,50 +3190,90 @@
           return;
         }
 
-        container.innerHTML = `
-          <div class="module-table-wrap">
-            <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr style="border-bottom: 2px solid #f1f5f9; text-align: left;">
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Assignment Details</th>
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Class Target</th>
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Due Date</th>
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: right;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${assignments.map(a => {
-                  const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
-                  const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
-                  
-                  return `
-                    <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
-                      <td style="padding: 16px; min-width: 200px;">
-                        <div style="font-weight: 700; color: #1e1b4b; font-size: 0.98rem; margin-bottom: 4px;">${esc(a.title)}</div>
-                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase;">${esc(a.subject)}</div>
-                      </td>
-                      <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${targetStr}</td>
-                      <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${deadlineStr}</td>
-                      <td style="padding: 16px; text-align: right;">
-                        <button class="btn-pill view-submissions-btn" data-id="${a._id}" data-title="${esc(a.title)}" style="background: var(--primary); color: white; font-weight: 600; font-size: 0.82rem; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
-                          <i class="fa-solid fa-list-check"></i> Submissions
-                        </button>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
+        const uniqueSubjects = [...new Set(assignments.map(a => a.subject))].filter(Boolean);
+        const filterContainer = document.getElementById('teacherAssignSubjectFilterContainer');
+        const filterSelect = document.getElementById('teacherAssignSubjectFilter');
 
-        container.querySelectorAll('.view-submissions-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            const title = btn.dataset.title;
-            openTeacherSubmissionsModal(id, title);
+        if (uniqueSubjects.length > 1 && filterContainer && filterSelect) {
+          const currentVal = filterSelect.value || 'all';
+          filterSelect.innerHTML = '<option value="all">All Subjects</option>' +
+            uniqueSubjects.map(sub => `<option value="${esc(sub)}">${esc(sub)}</option>`).join('');
+          filterSelect.value = currentVal;
+          filterContainer.style.display = 'flex';
+
+          if (!filterSelect.dataset.listenerBound) {
+            filterSelect.addEventListener('change', () => {
+              renderTableList(filterSelect.value);
+            });
+            filterSelect.dataset.listenerBound = 'true';
+          }
+        } else if (filterContainer) {
+          filterContainer.style.display = 'none';
+        }
+
+        function renderTableList(subjectFilter = 'all') {
+          let listToShow = assignments;
+          if (subjectFilter !== 'all') {
+            listToShow = assignments.filter(a => a.subject === subjectFilter);
+          }
+
+          if (listToShow.length === 0) {
+            container.innerHTML = `
+              <div class="module-empty">
+                <i class="fa-regular fa-folder-open"></i>
+                <span>No assignments matching "${esc(subjectFilter)}".</span>
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = `
+            <div class="module-table-wrap">
+              <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid #f1f5f9; text-align: left;">
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Assignment Details</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Class Target</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Due Date</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${listToShow.map(a => {
+                    const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                    const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
+                    
+                    return `
+                      <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
+                        <td style="padding: 16px; min-width: 200px;">
+                          <div style="font-weight: 700; color: #1e1b4b; font-size: 0.98rem; margin-bottom: 4px;">${esc(a.title)}</div>
+                          <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase;">${esc(a.subject)}</div>
+                        </td>
+                        <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${targetStr}</td>
+                        <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${deadlineStr}</td>
+                        <td style="padding: 16px; text-align: right;">
+                          <button class="btn-pill view-submissions-btn" data-id="${a._id}" data-title="${esc(a.title)}" style="background: var(--primary); color: white; font-weight: 600; font-size: 0.82rem; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                            <i class="fa-solid fa-list-check"></i> Submissions
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+
+          container.querySelectorAll('.view-submissions-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = btn.dataset.id;
+              const title = btn.dataset.title;
+              openTeacherSubmissionsModal(id, title);
+            });
           });
-        });
+        }
+
+        renderTableList(filterSelect ? filterSelect.value : 'all');
 
       } catch (err) {
         console.error(err);
@@ -3506,11 +3552,6 @@
             <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Create and target assignments to specific departments, classes, and batches.</p>
           </div>
         </div>
-        <div>
-          <a class="btn-dashboard" href="view.html" style="background: var(--primary); color: white; border-radius: 10px; font-weight: 600; text-decoration: none; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
-            <i class="fa-solid fa-eye"></i> View Assignments
-          </a>
-        </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
@@ -3581,19 +3622,30 @@
           </form>
         </div>
 
-        <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
-          <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Assignment Guidelines
-          </h4>
-          <p style="font-size: 0.85rem; color: #475569; line-height: 1.5; margin: 0;">
-            Publishing an assignment pushes it directly to the dashboard notification stream of targeted students.
-          </p>
-          <ul style="font-size: 0.82rem; color: #64748b; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
-            <li>Smart targets guarantee only students in the selected Department, Year, and Batch see the task.</li>
-            <li>Accepts attachments up to 5MB, allowing worksheets, rubrics, or references.</li>
-            <li>Students can update submissions until the deadline hits.</li>
-            <li>Status statistics automatically compute submissions and grades in real-time.</li>
-          </ul>
+        <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 4px;">
+            <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Previous Assignments
+            </h4>
+            <a href="view.html" style="font-size: 0.82rem; font-weight: 600; color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.color='#55309d';" onmouseleave="this.style.color='var(--primary)';">
+              View All <i class="fa-solid fa-arrow-right-long"></i>
+            </a>
+          </div>
+
+          <!-- Dynamic Subject Filter Dropdown -->
+          <div id="prevAssignSubjectFilterContainer" style="display: none; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; margin-bottom: 4px;">
+            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Filter by Subject:</label>
+            <select id="prevAssignSubjectFilter" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.82rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+              <option value="all">All Subjects</option>
+            </select>
+          </div>
+
+          <div id="previousAssignmentsContainer" style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="text-align: center; padding: 30px; color: #64748b;">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+              <div>Loading previous assignments...</div>
+            </div>
+          </div>
         </div>
       </div>
     `);
@@ -3961,6 +4013,181 @@
         submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Assignment';
       }
     });
+
+    async function loadPreviousAssignmentsShortList() {
+      const container = document.getElementById('previousAssignmentsContainer');
+      if (!container) return;
+      const token = user.token || localStorage.getItem('token') || '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/assignments/created`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error();
+        let assignments = await res.json();
+        assignments = assignments.filter(a => a.type !== 'note');
+
+        if (assignments.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px 10px; color: #64748b; font-size: 0.9rem;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 8px; color: #cbd5e1; display: block;"></i>
+              <span>No assignments posted yet. Create your first assignment.</span>
+            </div>
+          `;
+          return;
+        }
+
+        const now = new Date();
+
+        // Compute status for each assignment
+        assignments.forEach(a => {
+          const deadlineDate = a.deadline ? new Date(a.deadline) : null;
+          let status = 'Expired';
+          if (deadlineDate) {
+            const diff = deadlineDate.getTime() - now.getTime();
+            if (diff < 0) {
+              status = 'Expired';
+            } else if (diff <= 7 * 24 * 60 * 60 * 1000) { // 7 days
+              status = 'Active';
+            } else {
+              status = 'Upcoming';
+            }
+          } else {
+            status = 'Active';
+          }
+          a.computedStatus = status;
+        });
+
+        // Sort assignments:
+        // 1. Active assignments (nearest deadline first)
+        // 2. Upcoming assignments (nearest deadline first)
+        // 3. Expired assignments (most recently expired first)
+        assignments.sort((a, b) => {
+          const statusOrder = { 'Active': 1, 'Upcoming': 2, 'Expired': 3 };
+          const orderA = statusOrder[a.computedStatus];
+          const orderB = statusOrder[b.computedStatus];
+
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+
+          const dateA = a.deadline ? new Date(a.deadline) : new Date(0);
+          const dateB = b.deadline ? new Date(b.deadline) : new Date(0);
+
+          if (a.computedStatus === 'Expired') {
+            return dateB - dateA;
+          } else {
+            return dateA - dateB;
+          }
+        });
+
+        // Populate Dynamic Subject Filter
+        const uniqueSubjects = [...new Set(assignments.map(a => a.subject))].filter(Boolean);
+        const filterContainer = document.getElementById('prevAssignSubjectFilterContainer');
+        const filterSelect = document.getElementById('prevAssignSubjectFilter');
+        
+        if (uniqueSubjects.length > 1 && filterContainer && filterSelect) {
+          const currentVal = filterSelect.value || 'all';
+          filterSelect.innerHTML = '<option value="all">All Subjects</option>' + 
+            uniqueSubjects.map(sub => `<option value="${esc(sub)}">${esc(sub)}</option>`).join('');
+          filterSelect.value = currentVal;
+          filterContainer.style.display = 'block';
+
+          if (!filterSelect.dataset.listenerBound) {
+            filterSelect.addEventListener('change', () => {
+              renderList(filterSelect.value);
+            });
+            filterSelect.dataset.listenerBound = 'true';
+          }
+        } else if (filterContainer) {
+          filterContainer.style.display = 'none';
+        }
+
+        // Render function
+        function renderList(subjectFilter = 'all') {
+          let listToShow = assignments;
+          if (subjectFilter !== 'all') {
+            listToShow = assignments.filter(a => a.subject === subjectFilter);
+          }
+
+          const slicedList = listToShow.slice(0, 5);
+
+          if (slicedList.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 20px; color: #64748b; font-size: 0.85rem;">
+                No assignments matching "${esc(subjectFilter)}".
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = slicedList.map(a => {
+            const deadlineDate = a.deadline ? new Date(a.deadline) : null;
+            const deadlineStr = deadlineDate ? deadlineDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+            const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
+            const submissionCount = a.submissionCount || 0;
+
+            let statusBadge = '';
+            if (a.computedStatus === 'Active') {
+              statusBadge = `<span style="font-size: 0.72rem; font-weight: 700; background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 12px; border: 1px solid #a7f3d0;">Active</span>`;
+            } else if (a.computedStatus === 'Upcoming') {
+              statusBadge = `<span style="font-size: 0.72rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; padding: 2px 8px; border-radius: 12px; border: 1px solid #bfdbfe;">Upcoming</span>`;
+            } else {
+              statusBadge = `<span style="font-size: 0.72rem; font-weight: 700; background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 12px; border: 1px solid #fecaca;">Expired</span>`;
+            }
+
+            return `
+              <div class="previous-assignment-item" data-id="${a._id}" data-title="${esc(a.title)}" style="padding: 14px; border: 1px solid #f1f5f9; border-radius: 12px; background: #fafafa; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s; cursor: pointer;" onmouseenter="this.style.borderColor='var(--primary)'; this.style.background='#faf5ff'; this.style.boxShadow='var(--shadow-sm)';" onmouseleave="this.style.borderColor='#f1f5f9'; this.style.background='#fafafa'; this.style.boxShadow='none';">
+                <!-- Title & Subject Row -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                  <div style="font-weight: 700; color: #1e1b4b; font-size: 0.88rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                    ${esc(a.title)}
+                  </div>
+                  <span style="font-size: 0.7rem; font-weight: 700; background: var(--primary); color: white; padding: 2px 8px; border-radius: 8px; white-space: nowrap; text-transform: uppercase;">
+                    ${esc(a.subject)}
+                  </span>
+                </div>
+                
+                <!-- Class/Target & Submission Count Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #475569;">
+                  <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 500;">
+                    <i class="fa-solid fa-graduation-cap" style="color: #64748b;"></i> ${targetStr}
+                  </span>
+                  <span style="color: #059669; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; background: #ecfdf5; padding: 2px 6px; border-radius: 8px;">
+                    <i class="fa-solid fa-file-circle-check"></i> ${submissionCount} Submissions
+                  </span>
+                </div>
+                
+                <!-- Due Date & Status Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; font-size: 0.78rem;">
+                  <span style="color: #64748b; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="fa-regular fa-clock"></i> Due: ${deadlineStr}
+                  </span>
+                  ${statusBadge}
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          container.querySelectorAll('.previous-assignment-item').forEach(card => {
+            card.addEventListener('click', () => {
+              const id = card.dataset.id;
+              const title = card.dataset.title;
+              openTeacherSubmissionsModal(id, title);
+            });
+          });
+        }
+
+        renderList(filterSelect ? filterSelect.value : 'all');
+
+      } catch (err) {
+        console.error('Error loading short list:', err);
+        container.innerHTML = `<div style="text-align: center; padding: 20px; color: #ef4444; font-size: 0.85rem;">Failed to load assignments list.</div>`;
+      }
+    }
+
+    loadPreviousAssignmentsShortList();
   }
 
   async function renderLibrary() {
