@@ -68,19 +68,19 @@ async function loadDashboardStats() {
             console.error('Error fetching complaints:', e);
         }
 
-        // Fetch and render residents list preview
+        // Fetch and render leaves list preview
         try {
-            const studRes = await fetch(`${API_URL}/students`, {
+            const leavesRes = await fetch(`${API_URL}/leaves`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
             });
-            if (studRes.ok) {
-                const hostelers = await studRes.json();
-                renderResidentsPreview(hostelers);
+            if (leavesRes.ok) {
+                const leaves = await leavesRes.json();
+                renderLeavesTrackingPreview(leaves);
             }
         } catch (e) {
-            console.error('Error fetching hostelers list:', e);
+            console.error('Error fetching leaves list:', e);
         }
 
     } catch (error) {
@@ -90,42 +90,60 @@ async function loadDashboardStats() {
     }
 }
 
-function renderResidentsPreview(hostelers) {
-    const tbody = document.getElementById('residents-table-body');
+function renderLeavesTrackingPreview(leaves) {
+    const tbody = document.getElementById('leaves-tracking-table-body');
     if (!tbody) return;
 
-    if (!hostelers || hostelers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No residents registered in this hostel yet.</td></tr>`;
+    if (!leaves || leaves.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No leave applications found.</td></tr>`;
         return;
     }
 
     let html = '';
-    // Show top 5 hostelers
-    hostelers.slice(0, 5).forEach(student => {
-        const name = student.name || 'Resident';
-        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
-        const room = student.roomNumber ? `Room ${student.roomNumber}` : 'N/A';
-        const batch = student.batch || student.year || 'N/A';
-        const email = student.email || '';
+    // Show top 5 recent leaves
+    leaves.slice(0, 5).forEach(leave => {
+        const studentName = leave.student?.name || 'Resident';
+        const email = leave.student?.email || '';
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=random`;
         
+        const leaveType = leave.type || 'Leave';
+        const startDate = new Date(leave.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        const endDate = new Date(leave.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        const duration = `${startDate} - ${endDate}`;
+
+        // HOD Status
+        let hStatus = leave.hodStatus || 'Pending';
+        let hodBg = 'background: #fee2e2; color: #ef4444;';
+        if (hStatus === 'Approved') hodBg = 'background: #d1fae5; color: #10b981;';
+        else if (hStatus === 'Rejected') hodBg = 'background: #fee2e2; color: #ef4444;';
+
+        // Warden Status
+        let wStatus = leave.wardenStatus || 'Pending';
+        let wardenBg = 'background: #fee2e2; color: #ef4444;';
+        if (wStatus === 'Approved') wardenBg = 'background: #d1fae5; color: #10b981;';
+        else if (wStatus === 'Rejected') wardenBg = 'background: #fee2e2; color: #ef4444;';
+
         html += `
             <tr>
                 <td>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <img src="${avatarUrl}" style="width: 32px; height: 32px; border-radius: 50%;">
                         <div>
-                            <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">${name}</span>
+                            <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">${studentName}</span>
                             <span style="display:block; font-size:0.75rem; color: var(--text-muted);">${email}</span>
                         </div>
                     </div>
                 </td>
-                <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">${room}</td>
-                <td style="font-size: 0.85rem; color: var(--text-muted);">${batch}</td>
+                <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">${leaveType}</td>
+                <td style="font-size: 0.85rem; color: var(--text-muted);">${duration}</td>
                 <td>
-                    <span style="background: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">Active</span>
+                    <span style="${hodBg} padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">${hStatus}</span>
+                </td>
+                <td>
+                    <span style="${wardenBg} padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">${wStatus}</span>
                 </td>
                 <td style="text-align: right;">
-                    <a href="../modules/student-database/view.html" style="color: var(--success); text-decoration: none;"><i class="fa-solid fa-eye" style="cursor: pointer;"></i></a>
+                    <a href="../modules/gate-pass/approve.html" style="color: var(--success); text-decoration: none;"><i class="fa-solid fa-stamp" style="cursor: pointer;"></i></a>
                 </td>
             </tr>
         `;
