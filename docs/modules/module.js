@@ -181,6 +181,8 @@
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
+        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Post Alumni</a></li>
+        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Alumni Excellence</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
@@ -200,8 +202,8 @@
         <li><a href="${rootPrefix}index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
         <li><a href="${rootPrefix}index.html#complaint-wall" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Transparency Wall</a></li>
         <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-calendar-days"></i> News & Events</a></li>
-        <li><a href="${rootPrefix}index.html#faculty" class="nav-item"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
-        <li><a href="${rootPrefix}index.html#alumni-section" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' ? 'active' : ''}"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Alumni Excellence</a></li>
       `;
     }
 
@@ -429,6 +431,12 @@
       if (event.target.id === 'module-modal-overlay') closeModuleModal();
     });
     document.getElementById('userProfile')?.addEventListener('click', toggleProfileMenu);
+    document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        localStorage.removeItem('user');
+        window.location.href = `${getRootPrefix()}index.html`;
+      });
+    });
 
     if (cfg.module === 'complaints') {
       const hero = document.getElementById('home');
@@ -442,6 +450,14 @@
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderLeadersPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'alumni') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderAlumniPage(info);
       initSidebar();
       return;
     }
@@ -1074,6 +1090,704 @@
     }
     alert('Submitted successfully.');
     form.reset();
+  }
+
+  async function renderAlumniPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const isAuthority = ['principal', 'admin', 'dean', 'hod'].includes(userRole);
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    const formatExternalLink = (url) => {
+      if (!url) return '';
+      const trimmed = url.trim();
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return `https://${trimmed}`;
+    };
+
+    // Hide the Post link from non-authorities
+    setTimeout(() => {
+      if (!isAuthority) {
+        document.querySelectorAll('.module-actions a[href*="post.html"]').forEach(el => el.style.display = 'none');
+      }
+    }, 50);
+
+    if (isPostMode && !isAuthority) {
+      content(`
+        <div class="section-card module-panel" style="text-align: center; padding: 40px; color: var(--danger);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+          <h3>Access Denied</h3>
+          <p>Only HODs and administrators can post Alumni Excellence profiles.</p>
+        </div>
+      `);
+      return;
+    }
+
+    if (isPostMode) {
+      content(`
+        <style>
+          @keyframes alumni-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(217,119,6,0); }
+          }
+          .alumni-ai-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #d97706; background: #fffbeb;
+            color: #b45309; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center;
+          }
+          .alumni-ai-btn:hover:not(:disabled) {
+            background: #d97706; color: white;
+            box-shadow: 0 4px 16px rgba(217,119,6,0.25);
+            transform: translateY(-1px);
+          }
+          .alumni-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .alumni-ai-btn.loading { animation: alumni-ai-pulse 1.4s infinite; }
+          #alumniPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+          }
+          @media (max-width: 1100px) {
+            #alumniPostLayout { grid-template-columns: 1fr; }
+          }
+          .alumni-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .alumni-post-row-item:hover {
+            border-color: #fde68a; background: #fffbeb;
+            box-shadow: 0 4px 12px rgba(217,119,6,0.08);
+          }
+          .alumni-post-row-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #fef3c7; flex-shrink: 0;
+          }
+          .alumni-post-row-actions {
+            display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; align-self: center;
+          }
+          .alumni-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .alumni-row-btn.edit { background: #ede9fe; color: #6d28d9; }
+          .alumni-row-btn.edit:hover { background: #6d28d9; color: white; }
+          .alumni-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .alumni-row-btn.del:hover { background: #ef4444; color: white; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="alumniBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Alumni Excellence</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage alumni profiles — add new entries or edit existing ones.</p>
+          </div>
+        </div>
+
+        <div id="alumniPostLayout">
+
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 id="alumniFormTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-graduation-cap" style="color: #d97706;"></i> Add Alumni Profile
+            </h3>
+            <form id="alumniPostForm" style="display: flex; flex-direction: column; gap: 16px;">
+              <input type="hidden" id="alumniEditId" value="">
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Full Name</label>
+                  <input type="text" name="name" id="aName" placeholder="e.g. Ahmad Raza" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Graduation Year</label>
+                  <input type="number" name="graduationYear" id="aYear" placeholder="e.g. 2020" min="1980" max="2030" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Degree</label>
+                  <select name="degree" id="aDegree" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; background: white;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                    <option value="">Select Degree</option>
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="M.Tech">M.Tech</option>
+                    <option value="MCA">MCA</option>
+                    <option value="MBA">MBA</option>
+                    <option value="Ph.D">Ph.D</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Department</label>
+                  <input type="text" name="department" id="aDept" placeholder="e.g. CSE, ECE" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Current Company</label>
+                  <input type="text" name="currentCompany" id="aCompany" placeholder="e.g. Google, Infosys" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Job Title</label>
+                  <input type="text" name="jobTitle" id="aJob" placeholder="e.g. Software Engineer" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">LinkedIn Profile URL</label>
+                <input type="url" name="linkedinProfile" id="aLinkedin" placeholder="https://linkedin.com/in/..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Inspiring Quote / Story</span>
+                  <span id="alumniAiTag" style="display:none; font-size:0.72rem; color:#b45309; font-weight:600; background:#fffbeb; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                </label>
+                <button type="button" id="alumniAiDraftBtn" class="alumni-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="alumniAiDraftBtnLabel">Draft Quote with AI</span>
+                </button>
+                <textarea name="about" id="alumniAboutInput" rows="3" placeholder="A short inspiring quote or achievement story..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; font-family: inherit;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 4px;">
+                <button type="submit" id="alumniSubmitBtn" style="flex: 1; background: #d97706; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#b45309';" onmouseleave="this.style.background='#d97706';">
+                  <i class="fa-solid fa-paper-plane"></i> <span id="alumniSubmitLabel">Publish Profile</span>
+                </button>
+                <button type="button" id="alumniCancelEditBtn" style="display:none; padding: 11px 14px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT: Alumnis List -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-users" style="color: #d97706;"></i> Alumnis
+                  <span id="alumniCountBadge" style="font-size: 0.72rem; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" style="font-size: 0.82rem; font-weight: 600; color: #d97706; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #fde68a; background: #fffbeb; transition: all 0.2s;" onmouseenter="this.style.background='#fef3c7';" onmouseleave="this.style.background='#fffbeb';">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="alumniPostSidelist" style="max-height: 480px; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading alumni...
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `);
+
+      document.getElementById('alumniBackBtn')?.addEventListener('click', goToDashboard);
+
+      // Track all loaded alumni for edit pre-fill
+      let allAlumniData = [];
+      let isEditMode = false;
+
+      // Check for query parameter 'edit'
+      const urlParams = new URLSearchParams(window.location.search);
+      const editIdParam = urlParams.get('edit');
+
+      // Load existing alumni into the right panel
+      const loadPostSidelist = async () => {
+        const sidelist = document.getElementById('alumniPostSidelist');
+        const countBadge = document.getElementById('alumniCountBadge');
+        if (!sidelist) return;
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/alumni`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allAlumniData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allAlumniData.length;
+          renderSidelist();
+
+          // If edit parameter was provided in the URL, trigger edit prefill
+          if (editIdParam) {
+            const editBtn = sidelist.querySelector(`.alumni-row-btn.edit[data-id="${editIdParam}"]`);
+            if (editBtn) {
+              editBtn.click();
+            }
+          }
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load alumni profiles.</div>`;
+        }
+      };
+
+      const renderSidelist = () => {
+        const sidelist = document.getElementById('alumniPostSidelist');
+        if (!sidelist) return;
+        if (!allAlumniData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No alumni profiles yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allAlumniData.map(item => {
+          const name = item.name || item.user?.name || 'Alumni';
+          const avatarSrc = item.image
+            ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true&size=44`;
+
+          let detailsText = '';
+          if (item.degree && item.department) {
+            detailsText = `${esc(item.degree)} (${esc(item.department)})`;
+          } else if (item.degree) {
+            detailsText = esc(item.degree);
+          } else if (item.department) {
+            detailsText = esc(item.department);
+          }
+          const gradText = item.graduationYear ? `Class of ${item.graduationYear}` : '';
+          const metaLine = [detailsText, gradText].filter(Boolean).join(' · ');
+
+          let jobCompanyText = '';
+          if (item.jobTitle && item.currentCompany) {
+            jobCompanyText = `${esc(item.jobTitle)} at <strong>${esc(item.currentCompany)}</strong>`;
+          } else if (item.jobTitle) {
+            jobCompanyText = esc(item.jobTitle);
+          } else if (item.currentCompany) {
+            jobCompanyText = `Works at <strong>${esc(item.currentCompany)}</strong>`;
+          }
+
+          return `
+            <div class="alumni-post-row-item" data-id="${item._id}">
+              <img class="alumni-post-row-avatar" src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true&size=44';" alt="${esc(name)}">
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:0.92rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(name)}</div>
+                ${metaLine ? `<div style="font-size:0.78rem; color:#b45309; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${metaLine}</div>` : ''}
+                ${jobCompanyText ? `
+                  <div style="font-size:0.8rem; color:#475569; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <i class="fa-solid fa-briefcase" style="font-size:0.75rem; color:#d97706; margin-right:4px;"></i>${jobCompanyText}
+                  </div>` : ''}
+              </div>
+              <div class="alumni-post-row-actions">
+                <button type="button" class="alumni-row-btn edit" data-id="${item._id}" title="Edit">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button type="button" class="alumni-row-btn del" data-id="${item._id}" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>`;
+        }).join('');
+
+        // Edit button handlers
+        sidelist.querySelectorAll('.alumni-row-btn.edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const item = allAlumniData.find(a => a._id === id);
+            if (!item) return;
+            isEditMode = true;
+            document.getElementById('alumniEditId').value = id;
+            document.getElementById('aName').value = item.name || item.user?.name || '';
+            document.getElementById('aYear').value = item.graduationYear || '';
+            document.getElementById('aDegree').value = item.degree || '';
+            document.getElementById('aDept').value = item.department || '';
+            document.getElementById('aCompany').value = item.currentCompany || '';
+            document.getElementById('aJob').value = item.jobTitle || '';
+            document.getElementById('aLinkedin').value = item.linkedinProfile || '';
+            document.getElementById('alumniAboutInput').value = item.about || '';
+            document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-pen" style="color:#6d28d9;"></i> Edit Alumni Profile';
+            document.getElementById('alumniSubmitLabel').textContent = 'Save Changes';
+            document.getElementById('alumniSubmitBtn').style.background = '#6d28d9';
+            document.getElementById('alumniSubmitBtn').onmouseenter = () => document.getElementById('alumniSubmitBtn').style.background = '#4c1d95';
+            document.getElementById('alumniSubmitBtn').onmouseleave = () => document.getElementById('alumniSubmitBtn').style.background = '#6d28d9';
+            document.getElementById('alumniCancelEditBtn').style.display = 'block';
+            document.getElementById('alumniPostForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Highlight edited row
+            document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
+            const row = sidelist.querySelector(`.alumni-post-row-item[data-id="${id}"]`);
+            if (row) row.style.background = '#ede9fe';
+          });
+        });
+
+        // Delete button handlers
+        sidelist.querySelectorAll('.alumni-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allAlumniData.find(a => a._id === id);
+            const name = item?.name || item?.user?.name || 'this alumni';
+            if (!confirm(`Remove ${name} from Alumni Excellence?`)) return;
+            try {
+              const token = user.token || localStorage.getItem('token') || '';
+              const res = await fetch(`${apiBase}/api/alumni/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (res.ok) { loadPostSidelist(); }
+              else alert('Failed to remove alumni profile.');
+            } catch { alert('Deletion failed.'); }
+          });
+        });
+      };
+
+      // Cancel edit
+      document.getElementById('alumniCancelEditBtn')?.addEventListener('click', () => {
+        isEditMode = false;
+        document.getElementById('alumniEditId').value = '';
+        document.getElementById('alumniPostForm').reset();
+        document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-graduation-cap" style="color:#d97706;"></i> Add Alumni Profile';
+        document.getElementById('alumniSubmitLabel').textContent = 'Publish Profile';
+        document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+        document.getElementById('alumniSubmitBtn').onmouseenter = () => document.getElementById('alumniSubmitBtn').style.background = '#b45309';
+        document.getElementById('alumniSubmitBtn').onmouseleave = () => document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+        document.getElementById('alumniCancelEditBtn').style.display = 'none';
+        document.getElementById('alumniAiTag').style.display = 'none';
+        document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
+      });
+
+      // AI Draft Quote
+      document.getElementById('alumniAiDraftBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('alumniAiDraftBtn');
+        const label = document.getElementById('alumniAiDraftBtnLabel');
+        const aboutInput = document.getElementById('alumniAboutInput');
+        const aiTag = document.getElementById('alumniAiTag');
+        const nameVal = document.getElementById('aName')?.value?.trim();
+        const companyVal = document.getElementById('aCompany')?.value?.trim();
+        const jobVal = document.getElementById('aJob')?.value?.trim();
+
+        let promptContext = 'an outstanding alumni';
+        if (nameVal) promptContext = nameVal;
+        if (jobVal && companyVal) promptContext += `, who is a ${jobVal} at ${companyVal}`;
+        else if (companyVal) promptContext += `, working at ${companyVal}`;
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        if (label) label.textContent = 'Generating quote…';
+
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/ai/generate-leader-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: `Write a short inspiring quote from ${promptContext} for their college alumni profile. Make it motivational for current students. Max 2 sentences.` })
+          });
+          if (!res.ok) throw new Error('AI failed');
+          const data = await res.json();
+          if (aboutInput && data.message) {
+            aboutInput.value = data.message;
+            aboutInput.style.borderColor = '#d97706';
+            setTimeout(() => { aboutInput.style.borderColor = '#cbd5e1'; }, 1500);
+          }
+          if (aiTag) aiTag.style.display = 'inline-flex';
+        } catch (err) {
+          alert('AI drafting failed. Please write the quote manually.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          if (label) label.textContent = 'Draft Quote with AI';
+        }
+      });
+
+      // Submit Form (Add or Edit)
+      document.getElementById('alumniPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const token = user.token || localStorage.getItem('token') || '';
+        const editId = document.getElementById('alumniEditId').value;
+
+        const payload = {
+          name: document.getElementById('aName').value,
+          graduationYear: parseInt(document.getElementById('aYear').value) || null,
+          degree: document.getElementById('aDegree').value,
+          department: document.getElementById('aDept').value,
+          currentCompany: document.getElementById('aCompany').value,
+          jobTitle: document.getElementById('aJob').value,
+          linkedinProfile: document.getElementById('aLinkedin').value,
+          about: document.getElementById('alumniAboutInput').value,
+        };
+
+        const isEdit = !!editId;
+        try {
+          const res = await fetch(
+            isEdit ? `${apiBase}/api/alumni/${editId}` : `${apiBase}/api/alumni`,
+            {
+              method: isEdit ? 'PUT' : 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify(payload)
+            }
+          );
+          if (res.ok) {
+            // Reset to add mode
+            isEditMode = false;
+            document.getElementById('alumniEditId').value = '';
+            form.reset();
+            document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-graduation-cap" style="color:#d97706;"></i> Add Alumni Profile';
+            document.getElementById('alumniSubmitLabel').textContent = 'Publish Profile';
+            document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+            document.getElementById('alumniCancelEditBtn').style.display = 'none';
+            document.getElementById('alumniAiTag').style.display = 'none';
+            loadPostSidelist(); // Refresh right panel
+          } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.message || `Failed to ${isEdit ? 'update' : 'publish'}. Please ensure the server is running.`);
+          }
+        } catch (error) {
+          alert('Submission failed. Check network or server connection.');
+        }
+      });
+
+      loadPostSidelist();
+
+    } else {
+      // --- VIEW MODE ---
+      content(`
+        <style>
+          #alumniGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin-top: 10px;
+          }
+          .alumni-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 220px;
+            box-sizing: border-box;
+          }
+          .alumni-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(217,119,6,0.1);
+            border-color: rgba(217,119,6,0.25);
+          }
+          .alumni-avatar-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fef3c7;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+          }
+          .alumni-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .alumni-card-edit-btn:hover { background: #6d28d9 !important; color: white !important; transform: scale(1.1); }
+          .alumni-card-delete-btn:hover { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
+          .alumni-linkedin-btn:hover {
+            background: #bae6fd !important;
+            color: #0369a1 !important;
+            box-shadow: 0 4px 12px rgba(3,105,161,0.15) !important;
+            transform: translateY(-1px);
+          }
+          .alumni-year-badge {
+            display: inline-block; padding: 2px 10px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            background: #fffbeb; color: #b45309; border: 1px solid #fde68a;
+          }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="alumniViewBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Alumni Excellence</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Inspiring alumni stories, placements, awards, and institutional pride.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="alumniDeptFilter" style="padding: 10px 18px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569; box-shadow: var(--shadow-sm);">
+              <option value="all">All Departments</option>
+              <option value="cse">CSE</option>
+              <option value="ece">ECE</option>
+              <option value="mechanical">Mechanical</option>
+              <option value="civil">Civil</option>
+              <option value="it">IT</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div style="position: relative;">
+            <input type="text" id="alumniSearchInput" placeholder="Search by name, company, role..." style="padding: 10px 18px 10px 38px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 260px; background: white; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+          </div>
+        </div>
+
+        <div id="alumniGrid">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading alumni profiles...</div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('alumniViewBackBtn')?.addEventListener('click', goToDashboard);
+
+      let loadedAlumni = [];
+
+      const loadAlumni = async () => {
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/alumni`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          loadedAlumni = Array.isArray(data) ? data : [];
+          renderFilteredAlumni();
+        } catch (error) {
+          const grid = document.getElementById('alumniGrid');
+          if (grid) grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #ef4444; grid-column: 1 / -1;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+              <div style="font-size: 1rem; font-weight: 600;">Unable to load alumni profiles.</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Please ensure the server is running.</div>
+            </div>`;
+        }
+      };
+
+      const renderFilteredAlumni = () => {
+        const grid = document.getElementById('alumniGrid');
+        if (!grid) return;
+
+        const deptFilter = document.getElementById('alumniDeptFilter')?.value || 'all';
+        const searchVal = document.getElementById('alumniSearchInput')?.value?.toLowerCase() || '';
+
+        let filtered = [...loadedAlumni];
+
+        if (deptFilter !== 'all') {
+          filtered = filtered.filter(item => {
+            const dept = (item.department || '').toLowerCase();
+            return dept.includes(deptFilter);
+          });
+        }
+
+        if (searchVal) {
+          filtered = filtered.filter(item => {
+            const name = (item.name || item.user?.name || '').toLowerCase();
+            const company = (item.currentCompany || '').toLowerCase();
+            const job = (item.jobTitle || '').toLowerCase();
+            const dept = (item.department || '').toLowerCase();
+            const about = (item.about || '').toLowerCase();
+            return name.includes(searchVal) || company.includes(searchVal) || job.includes(searchVal) || dept.includes(searchVal) || about.includes(searchVal);
+          });
+        }
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+              <div style="font-size: 1.05rem; font-weight: 600;">No alumni profiles found</div>
+              <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">Try a different filter or search term.</div>
+            </div>`;
+          return;
+        }
+
+        const actionButtonsFn = (id) => isAuthority ? `
+          <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
+            <button type="button" class="alumni-card-edit-btn" data-id="${id}" title="Edit Profile" style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button type="button" class="alumni-card-delete-btn" data-id="${id}" title="Remove Profile" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>` : '';
+
+        grid.innerHTML = filtered.map(item => {
+          const name = item.name || item.user?.name || 'Alumni';
+          const avatarSrc = item.image
+            ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true`;
+
+          const linkedinBtnHtml = item.linkedinProfile ? `
+            <div style="margin-top: 4px;">
+              <a href="${formatExternalLink(item.linkedinProfile)}" target="_blank" rel="noopener" class="alumni-linkedin-btn" style="display: inline-flex; align-items: center; gap: 8px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 8px 16px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 0.82rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(3,105,161,0.04); width: 100%; justify-content: center; box-sizing: border-box;">
+                <i class="fa-brands fa-linkedin" style="font-size: 1.05rem; color: #0a66c2;"></i>
+                Connect on LinkedIn
+              </a>
+            </div>` : '';
+
+          return `
+            <div class="alumni-card">
+              ${actionButtonsFn(item._id)}
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="alumni-avatar-wrap">
+                  <img src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true';" alt="${esc(name)}">
+                </div>
+                <div style="overflow: hidden; min-width: 0;">
+                  <span class="alumni-year-badge">${item.graduationYear || 'Alumni'}</span>
+                  <h3 style="margin: 4px 0 0 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(name)}</h3>
+                  <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748b; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(item.degree || '')}${item.department ? ` · ${esc(item.department)}` : ''}</p>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: #475569; background: #fffbeb; padding: 12px; border-radius: 12px; border: 1px solid #fde68a;">
+                ${item.jobTitle ? `<div><i class="fa-solid fa-briefcase" style="width: 18px; color: #d97706;"></i> <strong>${esc(item.jobTitle)}</strong></div>` : ''}
+                ${item.currentCompany ? `<div><i class="fa-solid fa-building" style="width: 18px; color: #d97706;"></i> ${esc(item.currentCompany)}</div>` : ''}
+              </div>
+
+              ${linkedinBtnHtml}
+
+              ${item.about ? `
+                <div style="font-size: 0.85rem; color: #475569; font-style: italic; line-height: 1.5; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: flex; gap: 6px; margin-top: auto;">
+                  <i class="fa-solid fa-quote-left" style="color: #fbbf24; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"></i>
+                  <span>"${esc(item.about)}"</span>
+                </div>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        if (isAuthority) {
+          grid.querySelectorAll('.alumni-card-delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              if (confirm('Are you sure you want to remove this alumni profile?')) {
+                try {
+                  const token = user.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${apiBase}/api/alumni/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (res.ok) { alert('Alumni profile removed.'); loadAlumni(); }
+                  else alert('Failed to remove alumni profile.');
+                } catch { alert('Deletion failed.'); }
+              }
+            });
+          });
+
+          grid.querySelectorAll('.alumni-card-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              window.location.href = `post.html?edit=${id}`;
+            });
+          });
+        }
+      };
+
+      document.getElementById('alumniDeptFilter')?.addEventListener('change', renderFilteredAlumni);
+      document.getElementById('alumniSearchInput')?.addEventListener('input', renderFilteredAlumni);
+
+      loadAlumni();
+    }
   }
 
   async function renderLeadersPage(info) {
@@ -2767,14 +3481,72 @@
   async function renderStudentAssignments(info) {
     content(`
       <style>
-        .assign-filter-grid {
+        .assign-header-layout {
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 24px;
+          margin-bottom: 24px;
+          align-items: stretch;
+        }
+        .assign-stats-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 16px;
+        }
+        .assign-stats-grid .stat-card-new {
+          margin: 0 !important;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px 16px !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          gap: 12px !important;
+          border-radius: 12px !important;
+        }
+        .assign-stats-grid .stat-card-new .icon-wrapper {
+          width: 40px !important;
+          height: 40px !important;
+          border-radius: 10px !important;
+          font-size: 1.1rem !important;
+          flex-shrink: 0 !important;
+        }
+        .assign-stats-grid .stat-card-new h4 {
+          font-size: 0.8rem !important;
+          margin: 0 !important;
+        }
+        .assign-stats-grid .stat-card-new .stat-value {
+          font-size: 1.3rem !important;
+          margin: 2px 0 0 0 !important;
+          line-height: 1.1 !important;
+        }
+        .assign-filters-card {
+          padding: 20px;
+          border-radius: 12px;
+          background: white;
+          border: 1px solid var(--border-color);
+          box-shadow: var(--shadow-sm);
+          box-sizing: border-box;
+          display: flex;
           align-items: center;
         }
-        @media (max-width: 768px) {
-          .assign-filter-grid {
+        .assign-filter-grid-2x2 {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 16px;
+          width: 100%;
+          align-items: center;
+        }
+        @media (max-width: 1024px) {
+          .assign-header-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 550px) {
+          .assign-stats-grid {
+            grid-template-columns: 1fr;
+          }
+          .assign-filter-grid-2x2 {
             grid-template-columns: 1fr;
           }
         }
@@ -2800,66 +3572,69 @@
         </div>
       </div>
 
-      <!-- Statistics Row -->
-      <div class="dashboard-stats-row" style="margin: 0 0 24px 0;">
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #e0e7ff; color: #4f46e5;"><i class="fa-solid fa-list-check"></i></div>
-          <div class="stat-info">
-            <h4>Total</h4>
-            <p class="stat-value" id="stats-total">0</p>
+      <!-- Header Layout (Stats on Left, Filters on Right) -->
+      <div class="assign-header-layout">
+        <!-- Left Side: Statistics (2x2 Grid) -->
+        <div class="assign-stats-grid">
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #e0e7ff; color: #4f46e5;"><i class="fa-solid fa-list-check"></i></div>
+            <div class="stat-info">
+              <h4>Total</h4>
+              <p class="stat-value" id="stats-total">0</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;"><i class="fa-regular fa-clock"></i></div>
+            <div class="stat-info">
+              <h4>Pending</h4>
+              <p class="stat-value" id="stats-pending">0</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+              <h4>Submitted</h4>
+              <p class="stat-value" id="stats-submitted">0</p>
+            </div>
+          </div>
+          <div class="stat-card-new">
+            <div class="icon-wrapper" style="background: #fce7f3; color: #ec4899;"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="stat-info">
+              <h4>Graded</h4>
+              <p class="stat-value" id="stats-graded">0</p>
+            </div>
           </div>
         </div>
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #fef3c7; color: #f59e0b;"><i class="fa-regular fa-clock"></i></div>
-          <div class="stat-info">
-            <h4>Pending</h4>
-            <p class="stat-value" id="stats-pending">0</p>
-          </div>
-        </div>
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #d1fae5; color: #10b981;"><i class="fa-solid fa-circle-check"></i></div>
-          <div class="stat-info">
-            <h4>Submitted</h4>
-            <p class="stat-value" id="stats-submitted">0</p>
-          </div>
-        </div>
-        <div class="stat-card-new">
-          <div class="icon-wrapper" style="background: #fce7f3; color: #ec4899;"><i class="fa-solid fa-graduation-cap"></i></div>
-          <div class="stat-info">
-            <h4>Graded</h4>
-            <p class="stat-value" id="stats-graded">0</p>
-          </div>
-        </div>
-      </div>
 
-      <!-- Filters Panel -->
-      <div class="section-card" style="padding: 20px; border-radius: 12px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
-        <div class="assign-filter-grid">
-          <div style="position: relative;">
-            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
-            <input type="text" id="assignSearchInput" placeholder="Search assignments by title or description..." style="width: 100%; padding: 10px 12px 10px 40px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
-          </div>
-          <div>
-            <select id="assignSubjectFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
-              <option value="all">All Subjects</option>
-            </select>
-          </div>
-          <div>
-            <select id="assignStatusFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="submitted">Submitted</option>
-              <option value="late">Submitted Late</option>
-              <option value="graded">Graded</option>
-            </select>
-          </div>
-          <div>
-            <select id="assignDeadlineFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
-              <option value="all">All Deadlines</option>
-              <option value="today">Due Today</option>
-              <option value="tomorrow">Due Tomorrow</option>
-              <option value="overdue">Overdue (Unsubmitted)</option>
-            </select>
+        <!-- Right Side: Filters (2x2 Grid) -->
+        <div class="assign-filters-card">
+          <div class="assign-filter-grid-2x2">
+            <div style="position: relative;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+              <input type="text" id="assignSearchInput" placeholder="Search assignments by title or description..." style="width: 100%; padding: 10px 12px 10px 40px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s; box-sizing: border-box;" onfocus="this.style.borderColor='var(--primary)';" onblur="this.style.borderColor='#cbd5e1';">
+            </div>
+            <div>
+              <select id="assignSubjectFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500; box-sizing: border-box;">
+                <option value="all">All Subjects</option>
+              </select>
+            </div>
+            <div>
+              <select id="assignStatusFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500; box-sizing: border-box;">
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="submitted">Submitted</option>
+                <option value="late">Submitted Late</option>
+                <option value="graded">Graded</option>
+              </select>
+            </div>
+            <div>
+              <select id="assignDeadlineFilter" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white; cursor: pointer; color: #475569; font-weight: 500; box-sizing: border-box;">
+                <option value="all">All Deadlines</option>
+                <option value="today">Due Today</option>
+                <option value="tomorrow">Due Tomorrow</option>
+                <option value="overdue">Overdue (Unsubmitted)</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -3392,7 +4167,13 @@
       </div>
 
       <!-- Assignments Table Card -->
-      <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+      <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 20px;">
+        <div id="teacherAssignSubjectFilterContainer" style="display: none; align-items: center; gap: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 16px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: #475569; white-space: nowrap;">Filter by Subject:</label>
+          <select id="teacherAssignSubjectFilter" style="max-width: 280px; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.85rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+            <option value="all">All Subjects</option>
+          </select>
+        </div>
         <div id="teacherAssignmentsContainer">
           <div style="text-align: center; padding: 40px; color: #64748b;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
@@ -3432,50 +4213,96 @@
           return;
         }
 
-        container.innerHTML = `
-          <div class="module-table-wrap">
-            <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr style="border-bottom: 2px solid #f1f5f9; text-align: left;">
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Assignment Details</th>
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Class Target</th>
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Due Date</th>
-                  <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: right;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${assignments.map(a => {
-                  const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
-                  const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
-                  
-                  return `
-                    <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
-                      <td style="padding: 16px; min-width: 200px;">
-                        <div style="font-weight: 700; color: #1e1b4b; font-size: 0.98rem; margin-bottom: 4px;">${esc(a.title)}</div>
-                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase;">${esc(a.subject)}</div>
-                      </td>
-                      <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${targetStr}</td>
-                      <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${deadlineStr}</td>
-                      <td style="padding: 16px; text-align: right;">
-                        <button class="btn-pill view-submissions-btn" data-id="${a._id}" data-title="${esc(a.title)}" style="background: var(--primary); color: white; font-weight: 600; font-size: 0.82rem; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
-                          <i class="fa-solid fa-list-check"></i> Submissions
-                        </button>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
+        const uniqueSubjects = [...new Set(assignments.map(a => a.subject))].filter(Boolean);
+        const filterContainer = document.getElementById('teacherAssignSubjectFilterContainer');
+        const filterSelect = document.getElementById('teacherAssignSubjectFilter');
 
-        container.querySelectorAll('.view-submissions-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            const title = btn.dataset.title;
-            openTeacherSubmissionsModal(id, title);
+        if (uniqueSubjects.length > 1 && filterContainer && filterSelect) {
+          const currentVal = filterSelect.value || 'all';
+          filterSelect.innerHTML = '<option value="all">All Subjects</option>' +
+            uniqueSubjects.map(sub => `<option value="${esc(sub)}">${esc(sub)}</option>`).join('');
+          filterSelect.value = currentVal;
+          filterContainer.style.display = 'flex';
+
+          if (!filterSelect.dataset.listenerBound) {
+            filterSelect.addEventListener('change', () => {
+              renderTableList(filterSelect.value);
+            });
+            filterSelect.dataset.listenerBound = 'true';
+          }
+        } else if (filterContainer) {
+          filterContainer.style.display = 'none';
+        }
+
+        function renderTableList(subjectFilter = 'all') {
+          let listToShow = assignments;
+          if (subjectFilter !== 'all') {
+            listToShow = assignments.filter(a => a.subject === subjectFilter);
+          }
+
+          if (listToShow.length === 0) {
+            container.innerHTML = `
+              <div class="module-empty">
+                <i class="fa-regular fa-folder-open"></i>
+                <span>No assignments matching "${esc(subjectFilter)}".</span>
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = `
+            <div class="module-table-wrap">
+              <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid #f1f5f9; text-align: left;">
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Assignment Details</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Class Target</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Due Date</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: center;">Submissions</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: center;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${listToShow.map(a => {
+                    const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                    const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
+                    const subCount = a.submissionCount || 0;
+                    const subBadge = subCount > 0 
+                      ? `<span style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-file-arrow-up"></i> ${subCount} ${subCount === 1 ? 'Submission' : 'Submissions'}</span>`
+                      : `<span style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-regular fa-file"></i> 0 Submissions</span>`;
+                    
+                    return `
+                      <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
+                        <td style="padding: 16px; min-width: 200px;">
+                          <div style="font-weight: 700; color: #1e1b4b; font-size: 0.98rem; margin-bottom: 4px;">${esc(a.title)}</div>
+                          <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase;">${esc(a.subject)}</div>
+                        </td>
+                        <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${targetStr}</td>
+                        <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${deadlineStr}</td>
+                        <td style="padding: 16px; color: #475569; font-size: 0.9rem; text-align: center;">${subBadge}</td>
+                        <td style="padding: 16px; text-align: center;">
+                          <button class="btn-pill view-submissions-btn" data-id="${a._id}" data-title="${esc(a.title)}" style="background: var(--primary); color: white; font-weight: 600; font-size: 0.82rem; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
+                            <i class="fa-solid fa-list-check"></i> Submissions
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+
+          container.querySelectorAll('.view-submissions-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const id = btn.dataset.id;
+              const title = btn.dataset.title;
+              openTeacherSubmissionsModal(id, title);
+            });
           });
-        });
+        }
+
+        renderTableList(filterSelect ? filterSelect.value : 'all');
 
       } catch (err) {
         console.error(err);
@@ -3754,11 +4581,6 @@
             <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Create and target assignments to specific departments, classes, and batches.</p>
           </div>
         </div>
-        <div>
-          <a class="btn-dashboard" href="view.html" style="background: var(--primary); color: white; border-radius: 10px; font-weight: 600; text-decoration: none; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
-            <i class="fa-solid fa-eye"></i> View Assignments
-          </a>
-        </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
@@ -3829,19 +4651,30 @@
           </form>
         </div>
 
-        <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
-          <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Assignment Guidelines
-          </h4>
-          <p style="font-size: 0.85rem; color: #475569; line-height: 1.5; margin: 0;">
-            Publishing an assignment pushes it directly to the dashboard notification stream of targeted students.
-          </p>
-          <ul style="font-size: 0.82rem; color: #64748b; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
-            <li>Smart targets guarantee only students in the selected Department, Year, and Batch see the task.</li>
-            <li>Accepts attachments up to 5MB, allowing worksheets, rubrics, or references.</li>
-            <li>Students can update submissions until the deadline hits.</li>
-            <li>Status statistics automatically compute submissions and grades in real-time.</li>
-          </ul>
+        <div class="section-card" style="padding: 24px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 4px;">
+            <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Previous Assignments
+            </h4>
+            <a href="view.html" style="font-size: 0.82rem; font-weight: 600; color: var(--primary); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.color='#55309d';" onmouseleave="this.style.color='var(--primary)';">
+              View All <i class="fa-solid fa-arrow-right-long"></i>
+            </a>
+          </div>
+
+          <!-- Dynamic Subject Filter Dropdown -->
+          <div id="prevAssignSubjectFilterContainer" style="display: none; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; margin-bottom: 4px;">
+            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Filter by Subject:</label>
+            <select id="prevAssignSubjectFilter" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.82rem; background: white; cursor: pointer; color: #475569; font-weight: 500;">
+              <option value="all">All Subjects</option>
+            </select>
+          </div>
+
+          <div id="previousAssignmentsContainer" style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="text-align: center; padding: 30px; color: #64748b;">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+              <div>Loading previous assignments...</div>
+            </div>
+          </div>
         </div>
       </div>
     `);
@@ -4209,6 +5042,181 @@
         submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish Assignment';
       }
     });
+
+    async function loadPreviousAssignmentsShortList() {
+      const container = document.getElementById('previousAssignmentsContainer');
+      if (!container) return;
+      const token = user.token || localStorage.getItem('token') || '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/assignments/created`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error();
+        let assignments = await res.json();
+        assignments = assignments.filter(a => a.type !== 'note');
+
+        if (assignments.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px 10px; color: #64748b; font-size: 0.9rem;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 8px; color: #cbd5e1; display: block;"></i>
+              <span>No assignments posted yet. Create your first assignment.</span>
+            </div>
+          `;
+          return;
+        }
+
+        const now = new Date();
+
+        // Compute status for each assignment
+        assignments.forEach(a => {
+          const deadlineDate = a.deadline ? new Date(a.deadline) : null;
+          let status = 'Expired';
+          if (deadlineDate) {
+            const diff = deadlineDate.getTime() - now.getTime();
+            if (diff < 0) {
+              status = 'Expired';
+            } else if (diff <= 7 * 24 * 60 * 60 * 1000) { // 7 days
+              status = 'Active';
+            } else {
+              status = 'Upcoming';
+            }
+          } else {
+            status = 'Active';
+          }
+          a.computedStatus = status;
+        });
+
+        // Sort assignments:
+        // 1. Active assignments (nearest deadline first)
+        // 2. Upcoming assignments (nearest deadline first)
+        // 3. Expired assignments (most recently expired first)
+        assignments.sort((a, b) => {
+          const statusOrder = { 'Active': 1, 'Upcoming': 2, 'Expired': 3 };
+          const orderA = statusOrder[a.computedStatus];
+          const orderB = statusOrder[b.computedStatus];
+
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+
+          const dateA = a.deadline ? new Date(a.deadline) : new Date(0);
+          const dateB = b.deadline ? new Date(b.deadline) : new Date(0);
+
+          if (a.computedStatus === 'Expired') {
+            return dateB - dateA;
+          } else {
+            return dateA - dateB;
+          }
+        });
+
+        // Populate Dynamic Subject Filter
+        const uniqueSubjects = [...new Set(assignments.map(a => a.subject))].filter(Boolean);
+        const filterContainer = document.getElementById('prevAssignSubjectFilterContainer');
+        const filterSelect = document.getElementById('prevAssignSubjectFilter');
+        
+        if (uniqueSubjects.length > 1 && filterContainer && filterSelect) {
+          const currentVal = filterSelect.value || 'all';
+          filterSelect.innerHTML = '<option value="all">All Subjects</option>' + 
+            uniqueSubjects.map(sub => `<option value="${esc(sub)}">${esc(sub)}</option>`).join('');
+          filterSelect.value = currentVal;
+          filterContainer.style.display = 'block';
+
+          if (!filterSelect.dataset.listenerBound) {
+            filterSelect.addEventListener('change', () => {
+              renderList(filterSelect.value);
+            });
+            filterSelect.dataset.listenerBound = 'true';
+          }
+        } else if (filterContainer) {
+          filterContainer.style.display = 'none';
+        }
+
+        // Render function
+        function renderList(subjectFilter = 'all') {
+          let listToShow = assignments;
+          if (subjectFilter !== 'all') {
+            listToShow = assignments.filter(a => a.subject === subjectFilter);
+          }
+
+          const slicedList = listToShow.slice(0, 5);
+
+          if (slicedList.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 20px; color: #64748b; font-size: 0.85rem;">
+                No assignments matching "${esc(subjectFilter)}".
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = slicedList.map(a => {
+            const deadlineDate = a.deadline ? new Date(a.deadline) : null;
+            const deadlineStr = deadlineDate ? deadlineDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+            const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
+            const submissionCount = a.submissionCount || 0;
+
+            let statusBadge = '';
+            if (a.computedStatus === 'Active') {
+              statusBadge = `<span style="font-size: 0.72rem; font-weight: 700; background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 12px; border: 1px solid #a7f3d0;">Active</span>`;
+            } else if (a.computedStatus === 'Upcoming') {
+              statusBadge = `<span style="font-size: 0.72rem; font-weight: 700; background: #eff6ff; color: #1d4ed8; padding: 2px 8px; border-radius: 12px; border: 1px solid #bfdbfe;">Upcoming</span>`;
+            } else {
+              statusBadge = `<span style="font-size: 0.72rem; font-weight: 700; background: #fee2e2; color: #b91c1c; padding: 2px 8px; border-radius: 12px; border: 1px solid #fecaca;">Expired</span>`;
+            }
+
+            return `
+              <div class="previous-assignment-item" data-id="${a._id}" data-title="${esc(a.title)}" style="padding: 14px; border: 1px solid #f1f5f9; border-radius: 12px; background: #fafafa; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s; cursor: pointer;" onmouseenter="this.style.borderColor='var(--primary)'; this.style.background='#faf5ff'; this.style.boxShadow='var(--shadow-sm)';" onmouseleave="this.style.borderColor='#f1f5f9'; this.style.background='#fafafa'; this.style.boxShadow='none';">
+                <!-- Title & Subject Row -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                  <div style="font-weight: 700; color: #1e1b4b; font-size: 0.88rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                    ${esc(a.title)}
+                  </div>
+                  <span style="font-size: 0.7rem; font-weight: 700; background: var(--primary); color: white; padding: 2px 8px; border-radius: 8px; white-space: nowrap; text-transform: uppercase;">
+                    ${esc(a.subject)}
+                  </span>
+                </div>
+                
+                <!-- Class/Target & Submission Count Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #475569;">
+                  <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 500;">
+                    <i class="fa-solid fa-graduation-cap" style="color: #64748b;"></i> ${targetStr}
+                  </span>
+                  <span style="color: #059669; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; background: #ecfdf5; padding: 2px 6px; border-radius: 8px;">
+                    <i class="fa-solid fa-file-circle-check"></i> ${submissionCount} Submissions
+                  </span>
+                </div>
+                
+                <!-- Due Date & Status Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; font-size: 0.78rem;">
+                  <span style="color: #64748b; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="fa-regular fa-clock"></i> Due: ${deadlineStr}
+                  </span>
+                  ${statusBadge}
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          container.querySelectorAll('.previous-assignment-item').forEach(card => {
+            card.addEventListener('click', () => {
+              const id = card.dataset.id;
+              const title = card.dataset.title;
+              openTeacherSubmissionsModal(id, title);
+            });
+          });
+        }
+
+        renderList(filterSelect ? filterSelect.value : 'all');
+
+      } catch (err) {
+        console.error('Error loading short list:', err);
+        container.innerHTML = `<div style="text-align: center; padding: 20px; color: #ef4444; font-size: 0.85rem;">Failed to load assignments list.</div>`;
+      }
+    }
+
+    loadPreviousAssignmentsShortList();
   }
 
   async function renderLibrary() {
