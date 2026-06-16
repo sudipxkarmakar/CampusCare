@@ -181,6 +181,8 @@
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
+        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Post Alumni</a></li>
+        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Alumni Excellence</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
@@ -200,8 +202,8 @@
         <li><a href="${rootPrefix}index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
         <li><a href="${rootPrefix}index.html#complaint-wall" class="nav-item"><i class="fa-solid fa-shield-halved"></i> Transparency Wall</a></li>
         <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-calendar-days"></i> News & Events</a></li>
-        <li><a href="${rootPrefix}index.html#faculty" class="nav-item"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
-        <li><a href="${rootPrefix}index.html#alumni-section" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' ? 'active' : ''}"><i class="fa-solid fa-user-group"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Alumni Excellence</a></li>
       `;
     }
 
@@ -429,6 +431,12 @@
       if (event.target.id === 'module-modal-overlay') closeModuleModal();
     });
     document.getElementById('userProfile')?.addEventListener('click', toggleProfileMenu);
+    document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        localStorage.removeItem('user');
+        window.location.href = `${getRootPrefix()}index.html`;
+      });
+    });
 
     if (cfg.module === 'complaints') {
       const hero = document.getElementById('home');
@@ -442,6 +450,14 @@
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderLeadersPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'alumni') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderAlumniPage(info);
       initSidebar();
       return;
     }
@@ -1074,6 +1090,704 @@
     }
     alert('Submitted successfully.');
     form.reset();
+  }
+
+  async function renderAlumniPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const isAuthority = ['principal', 'admin', 'dean', 'hod'].includes(userRole);
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    const formatExternalLink = (url) => {
+      if (!url) return '';
+      const trimmed = url.trim();
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return `https://${trimmed}`;
+    };
+
+    // Hide the Post link from non-authorities
+    setTimeout(() => {
+      if (!isAuthority) {
+        document.querySelectorAll('.module-actions a[href*="post.html"]').forEach(el => el.style.display = 'none');
+      }
+    }, 50);
+
+    if (isPostMode && !isAuthority) {
+      content(`
+        <div class="section-card module-panel" style="text-align: center; padding: 40px; color: var(--danger);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+          <h3>Access Denied</h3>
+          <p>Only HODs and administrators can post Alumni Excellence profiles.</p>
+        </div>
+      `);
+      return;
+    }
+
+    if (isPostMode) {
+      content(`
+        <style>
+          @keyframes alumni-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(217,119,6,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(217,119,6,0); }
+          }
+          .alumni-ai-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #d97706; background: #fffbeb;
+            color: #b45309; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center;
+          }
+          .alumni-ai-btn:hover:not(:disabled) {
+            background: #d97706; color: white;
+            box-shadow: 0 4px 16px rgba(217,119,6,0.25);
+            transform: translateY(-1px);
+          }
+          .alumni-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .alumni-ai-btn.loading { animation: alumni-ai-pulse 1.4s infinite; }
+          #alumniPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+          }
+          @media (max-width: 1100px) {
+            #alumniPostLayout { grid-template-columns: 1fr; }
+          }
+          .alumni-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .alumni-post-row-item:hover {
+            border-color: #fde68a; background: #fffbeb;
+            box-shadow: 0 4px 12px rgba(217,119,6,0.08);
+          }
+          .alumni-post-row-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #fef3c7; flex-shrink: 0;
+          }
+          .alumni-post-row-actions {
+            display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; align-self: center;
+          }
+          .alumni-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .alumni-row-btn.edit { background: #ede9fe; color: #6d28d9; }
+          .alumni-row-btn.edit:hover { background: #6d28d9; color: white; }
+          .alumni-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .alumni-row-btn.del:hover { background: #ef4444; color: white; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="alumniBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Alumni Excellence</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage alumni profiles — add new entries or edit existing ones.</p>
+          </div>
+        </div>
+
+        <div id="alumniPostLayout">
+
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 id="alumniFormTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-graduation-cap" style="color: #d97706;"></i> Add Alumni Profile
+            </h3>
+            <form id="alumniPostForm" style="display: flex; flex-direction: column; gap: 16px;">
+              <input type="hidden" id="alumniEditId" value="">
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Full Name</label>
+                  <input type="text" name="name" id="aName" placeholder="e.g. Ahmad Raza" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Graduation Year</label>
+                  <input type="number" name="graduationYear" id="aYear" placeholder="e.g. 2020" min="1980" max="2030" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Degree</label>
+                  <select name="degree" id="aDegree" required style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; background: white;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                    <option value="">Select Degree</option>
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="M.Tech">M.Tech</option>
+                    <option value="MCA">MCA</option>
+                    <option value="MBA">MBA</option>
+                    <option value="Ph.D">Ph.D</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Department</label>
+                  <input type="text" name="department" id="aDept" placeholder="e.g. CSE, ECE" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Current Company</label>
+                  <input type="text" name="currentCompany" id="aCompany" placeholder="e.g. Google, Infosys" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Job Title</label>
+                  <input type="text" name="jobTitle" id="aJob" placeholder="e.g. Software Engineer" style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">LinkedIn Profile URL</label>
+                <input type="url" name="linkedinProfile" id="aLinkedin" placeholder="https://linkedin.com/in/..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Inspiring Quote / Story</span>
+                  <span id="alumniAiTag" style="display:none; font-size:0.72rem; color:#b45309; font-weight:600; background:#fffbeb; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                </label>
+                <button type="button" id="alumniAiDraftBtn" class="alumni-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="alumniAiDraftBtnLabel">Draft Quote with AI</span>
+                </button>
+                <textarea name="about" id="alumniAboutInput" rows="3" placeholder="A short inspiring quote or achievement story..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; font-family: inherit;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 4px;">
+                <button type="submit" id="alumniSubmitBtn" style="flex: 1; background: #d97706; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#b45309';" onmouseleave="this.style.background='#d97706';">
+                  <i class="fa-solid fa-paper-plane"></i> <span id="alumniSubmitLabel">Publish Profile</span>
+                </button>
+                <button type="button" id="alumniCancelEditBtn" style="display:none; padding: 11px 14px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT: Alumnis List -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-users" style="color: #d97706;"></i> Alumnis
+                  <span id="alumniCountBadge" style="font-size: 0.72rem; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" style="font-size: 0.82rem; font-weight: 600; color: #d97706; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #fde68a; background: #fffbeb; transition: all 0.2s;" onmouseenter="this.style.background='#fef3c7';" onmouseleave="this.style.background='#fffbeb';">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="alumniPostSidelist" style="max-height: 480px; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading alumni...
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `);
+
+      document.getElementById('alumniBackBtn')?.addEventListener('click', goToDashboard);
+
+      // Track all loaded alumni for edit pre-fill
+      let allAlumniData = [];
+      let isEditMode = false;
+
+      // Check for query parameter 'edit'
+      const urlParams = new URLSearchParams(window.location.search);
+      const editIdParam = urlParams.get('edit');
+
+      // Load existing alumni into the right panel
+      const loadPostSidelist = async () => {
+        const sidelist = document.getElementById('alumniPostSidelist');
+        const countBadge = document.getElementById('alumniCountBadge');
+        if (!sidelist) return;
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/alumni`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allAlumniData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allAlumniData.length;
+          renderSidelist();
+
+          // If edit parameter was provided in the URL, trigger edit prefill
+          if (editIdParam) {
+            const editBtn = sidelist.querySelector(`.alumni-row-btn.edit[data-id="${editIdParam}"]`);
+            if (editBtn) {
+              editBtn.click();
+            }
+          }
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load alumni profiles.</div>`;
+        }
+      };
+
+      const renderSidelist = () => {
+        const sidelist = document.getElementById('alumniPostSidelist');
+        if (!sidelist) return;
+        if (!allAlumniData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No alumni profiles yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allAlumniData.map(item => {
+          const name = item.name || item.user?.name || 'Alumni';
+          const avatarSrc = item.image
+            ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true&size=44`;
+
+          let detailsText = '';
+          if (item.degree && item.department) {
+            detailsText = `${esc(item.degree)} (${esc(item.department)})`;
+          } else if (item.degree) {
+            detailsText = esc(item.degree);
+          } else if (item.department) {
+            detailsText = esc(item.department);
+          }
+          const gradText = item.graduationYear ? `Class of ${item.graduationYear}` : '';
+          const metaLine = [detailsText, gradText].filter(Boolean).join(' · ');
+
+          let jobCompanyText = '';
+          if (item.jobTitle && item.currentCompany) {
+            jobCompanyText = `${esc(item.jobTitle)} at <strong>${esc(item.currentCompany)}</strong>`;
+          } else if (item.jobTitle) {
+            jobCompanyText = esc(item.jobTitle);
+          } else if (item.currentCompany) {
+            jobCompanyText = `Works at <strong>${esc(item.currentCompany)}</strong>`;
+          }
+
+          return `
+            <div class="alumni-post-row-item" data-id="${item._id}">
+              <img class="alumni-post-row-avatar" src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true&size=44';" alt="${esc(name)}">
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:0.92rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(name)}</div>
+                ${metaLine ? `<div style="font-size:0.78rem; color:#b45309; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${metaLine}</div>` : ''}
+                ${jobCompanyText ? `
+                  <div style="font-size:0.8rem; color:#475569; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <i class="fa-solid fa-briefcase" style="font-size:0.75rem; color:#d97706; margin-right:4px;"></i>${jobCompanyText}
+                  </div>` : ''}
+              </div>
+              <div class="alumni-post-row-actions">
+                <button type="button" class="alumni-row-btn edit" data-id="${item._id}" title="Edit">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button type="button" class="alumni-row-btn del" data-id="${item._id}" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>`;
+        }).join('');
+
+        // Edit button handlers
+        sidelist.querySelectorAll('.alumni-row-btn.edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const item = allAlumniData.find(a => a._id === id);
+            if (!item) return;
+            isEditMode = true;
+            document.getElementById('alumniEditId').value = id;
+            document.getElementById('aName').value = item.name || item.user?.name || '';
+            document.getElementById('aYear').value = item.graduationYear || '';
+            document.getElementById('aDegree').value = item.degree || '';
+            document.getElementById('aDept').value = item.department || '';
+            document.getElementById('aCompany').value = item.currentCompany || '';
+            document.getElementById('aJob').value = item.jobTitle || '';
+            document.getElementById('aLinkedin').value = item.linkedinProfile || '';
+            document.getElementById('alumniAboutInput').value = item.about || '';
+            document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-pen" style="color:#6d28d9;"></i> Edit Alumni Profile';
+            document.getElementById('alumniSubmitLabel').textContent = 'Save Changes';
+            document.getElementById('alumniSubmitBtn').style.background = '#6d28d9';
+            document.getElementById('alumniSubmitBtn').onmouseenter = () => document.getElementById('alumniSubmitBtn').style.background = '#4c1d95';
+            document.getElementById('alumniSubmitBtn').onmouseleave = () => document.getElementById('alumniSubmitBtn').style.background = '#6d28d9';
+            document.getElementById('alumniCancelEditBtn').style.display = 'block';
+            document.getElementById('alumniPostForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Highlight edited row
+            document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
+            const row = sidelist.querySelector(`.alumni-post-row-item[data-id="${id}"]`);
+            if (row) row.style.background = '#ede9fe';
+          });
+        });
+
+        // Delete button handlers
+        sidelist.querySelectorAll('.alumni-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allAlumniData.find(a => a._id === id);
+            const name = item?.name || item?.user?.name || 'this alumni';
+            if (!confirm(`Remove ${name} from Alumni Excellence?`)) return;
+            try {
+              const token = user.token || localStorage.getItem('token') || '';
+              const res = await fetch(`${apiBase}/api/alumni/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (res.ok) { loadPostSidelist(); }
+              else alert('Failed to remove alumni profile.');
+            } catch { alert('Deletion failed.'); }
+          });
+        });
+      };
+
+      // Cancel edit
+      document.getElementById('alumniCancelEditBtn')?.addEventListener('click', () => {
+        isEditMode = false;
+        document.getElementById('alumniEditId').value = '';
+        document.getElementById('alumniPostForm').reset();
+        document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-graduation-cap" style="color:#d97706;"></i> Add Alumni Profile';
+        document.getElementById('alumniSubmitLabel').textContent = 'Publish Profile';
+        document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+        document.getElementById('alumniSubmitBtn').onmouseenter = () => document.getElementById('alumniSubmitBtn').style.background = '#b45309';
+        document.getElementById('alumniSubmitBtn').onmouseleave = () => document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+        document.getElementById('alumniCancelEditBtn').style.display = 'none';
+        document.getElementById('alumniAiTag').style.display = 'none';
+        document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
+      });
+
+      // AI Draft Quote
+      document.getElementById('alumniAiDraftBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('alumniAiDraftBtn');
+        const label = document.getElementById('alumniAiDraftBtnLabel');
+        const aboutInput = document.getElementById('alumniAboutInput');
+        const aiTag = document.getElementById('alumniAiTag');
+        const nameVal = document.getElementById('aName')?.value?.trim();
+        const companyVal = document.getElementById('aCompany')?.value?.trim();
+        const jobVal = document.getElementById('aJob')?.value?.trim();
+
+        let promptContext = 'an outstanding alumni';
+        if (nameVal) promptContext = nameVal;
+        if (jobVal && companyVal) promptContext += `, who is a ${jobVal} at ${companyVal}`;
+        else if (companyVal) promptContext += `, working at ${companyVal}`;
+
+        btn.disabled = true;
+        btn.classList.add('loading');
+        if (label) label.textContent = 'Generating quote…';
+
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/ai/generate-leader-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: `Write a short inspiring quote from ${promptContext} for their college alumni profile. Make it motivational for current students. Max 2 sentences.` })
+          });
+          if (!res.ok) throw new Error('AI failed');
+          const data = await res.json();
+          if (aboutInput && data.message) {
+            aboutInput.value = data.message;
+            aboutInput.style.borderColor = '#d97706';
+            setTimeout(() => { aboutInput.style.borderColor = '#cbd5e1'; }, 1500);
+          }
+          if (aiTag) aiTag.style.display = 'inline-flex';
+        } catch (err) {
+          alert('AI drafting failed. Please write the quote manually.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          if (label) label.textContent = 'Draft Quote with AI';
+        }
+      });
+
+      // Submit Form (Add or Edit)
+      document.getElementById('alumniPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const token = user.token || localStorage.getItem('token') || '';
+        const editId = document.getElementById('alumniEditId').value;
+
+        const payload = {
+          name: document.getElementById('aName').value,
+          graduationYear: parseInt(document.getElementById('aYear').value) || null,
+          degree: document.getElementById('aDegree').value,
+          department: document.getElementById('aDept').value,
+          currentCompany: document.getElementById('aCompany').value,
+          jobTitle: document.getElementById('aJob').value,
+          linkedinProfile: document.getElementById('aLinkedin').value,
+          about: document.getElementById('alumniAboutInput').value,
+        };
+
+        const isEdit = !!editId;
+        try {
+          const res = await fetch(
+            isEdit ? `${apiBase}/api/alumni/${editId}` : `${apiBase}/api/alumni`,
+            {
+              method: isEdit ? 'PUT' : 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify(payload)
+            }
+          );
+          if (res.ok) {
+            // Reset to add mode
+            isEditMode = false;
+            document.getElementById('alumniEditId').value = '';
+            form.reset();
+            document.getElementById('alumniFormTitle').innerHTML = '<i class="fa-solid fa-graduation-cap" style="color:#d97706;"></i> Add Alumni Profile';
+            document.getElementById('alumniSubmitLabel').textContent = 'Publish Profile';
+            document.getElementById('alumniSubmitBtn').style.background = '#d97706';
+            document.getElementById('alumniCancelEditBtn').style.display = 'none';
+            document.getElementById('alumniAiTag').style.display = 'none';
+            loadPostSidelist(); // Refresh right panel
+          } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.message || `Failed to ${isEdit ? 'update' : 'publish'}. Please ensure the server is running.`);
+          }
+        } catch (error) {
+          alert('Submission failed. Check network or server connection.');
+        }
+      });
+
+      loadPostSidelist();
+
+    } else {
+      // --- VIEW MODE ---
+      content(`
+        <style>
+          #alumniGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin-top: 10px;
+          }
+          .alumni-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 220px;
+            box-sizing: border-box;
+          }
+          .alumni-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(217,119,6,0.1);
+            border-color: rgba(217,119,6,0.25);
+          }
+          .alumni-avatar-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fef3c7;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+          }
+          .alumni-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .alumni-card-edit-btn:hover { background: #6d28d9 !important; color: white !important; transform: scale(1.1); }
+          .alumni-card-delete-btn:hover { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
+          .alumni-linkedin-btn:hover {
+            background: #bae6fd !important;
+            color: #0369a1 !important;
+            box-shadow: 0 4px 12px rgba(3,105,161,0.15) !important;
+            transform: translateY(-1px);
+          }
+          .alumni-year-badge {
+            display: inline-block; padding: 2px 10px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            background: #fffbeb; color: #b45309; border: 1px solid #fde68a;
+          }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="alumniViewBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Alumni Excellence</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Inspiring alumni stories, placements, awards, and institutional pride.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="alumniDeptFilter" style="padding: 10px 18px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569; box-shadow: var(--shadow-sm);">
+              <option value="all">All Departments</option>
+              <option value="cse">CSE</option>
+              <option value="ece">ECE</option>
+              <option value="mechanical">Mechanical</option>
+              <option value="civil">Civil</option>
+              <option value="it">IT</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div style="position: relative;">
+            <input type="text" id="alumniSearchInput" placeholder="Search by name, company, role..." style="padding: 10px 18px 10px 38px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 260px; background: white; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+          </div>
+        </div>
+
+        <div id="alumniGrid">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading alumni profiles...</div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('alumniViewBackBtn')?.addEventListener('click', goToDashboard);
+
+      let loadedAlumni = [];
+
+      const loadAlumni = async () => {
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/alumni`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          loadedAlumni = Array.isArray(data) ? data : [];
+          renderFilteredAlumni();
+        } catch (error) {
+          const grid = document.getElementById('alumniGrid');
+          if (grid) grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #ef4444; grid-column: 1 / -1;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+              <div style="font-size: 1rem; font-weight: 600;">Unable to load alumni profiles.</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Please ensure the server is running.</div>
+            </div>`;
+        }
+      };
+
+      const renderFilteredAlumni = () => {
+        const grid = document.getElementById('alumniGrid');
+        if (!grid) return;
+
+        const deptFilter = document.getElementById('alumniDeptFilter')?.value || 'all';
+        const searchVal = document.getElementById('alumniSearchInput')?.value?.toLowerCase() || '';
+
+        let filtered = [...loadedAlumni];
+
+        if (deptFilter !== 'all') {
+          filtered = filtered.filter(item => {
+            const dept = (item.department || '').toLowerCase();
+            return dept.includes(deptFilter);
+          });
+        }
+
+        if (searchVal) {
+          filtered = filtered.filter(item => {
+            const name = (item.name || item.user?.name || '').toLowerCase();
+            const company = (item.currentCompany || '').toLowerCase();
+            const job = (item.jobTitle || '').toLowerCase();
+            const dept = (item.department || '').toLowerCase();
+            const about = (item.about || '').toLowerCase();
+            return name.includes(searchVal) || company.includes(searchVal) || job.includes(searchVal) || dept.includes(searchVal) || about.includes(searchVal);
+          });
+        }
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+              <div style="font-size: 1.05rem; font-weight: 600;">No alumni profiles found</div>
+              <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">Try a different filter or search term.</div>
+            </div>`;
+          return;
+        }
+
+        const actionButtonsFn = (id) => isAuthority ? `
+          <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
+            <button type="button" class="alumni-card-edit-btn" data-id="${id}" title="Edit Profile" style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button type="button" class="alumni-card-delete-btn" data-id="${id}" title="Remove Profile" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>` : '';
+
+        grid.innerHTML = filtered.map(item => {
+          const name = item.name || item.user?.name || 'Alumni';
+          const avatarSrc = item.image
+            ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true`;
+
+          const linkedinBtnHtml = item.linkedinProfile ? `
+            <div style="margin-top: 4px;">
+              <a href="${formatExternalLink(item.linkedinProfile)}" target="_blank" rel="noopener" class="alumni-linkedin-btn" style="display: inline-flex; align-items: center; gap: 8px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 8px 16px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 0.82rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(3,105,161,0.04); width: 100%; justify-content: center; box-sizing: border-box;">
+                <i class="fa-brands fa-linkedin" style="font-size: 1.05rem; color: #0a66c2;"></i>
+                Connect on LinkedIn
+              </a>
+            </div>` : '';
+
+          return `
+            <div class="alumni-card">
+              ${actionButtonsFn(item._id)}
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div class="alumni-avatar-wrap">
+                  <img src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=d97706&color=fff&rounded=true&bold=true';" alt="${esc(name)}">
+                </div>
+                <div style="overflow: hidden; min-width: 0;">
+                  <span class="alumni-year-badge">${item.graduationYear || 'Alumni'}</span>
+                  <h3 style="margin: 4px 0 0 0; font-size: 1.1rem; font-weight: 700; color: #1e1b4b; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(name)}</h3>
+                  <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748b; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${esc(item.degree || '')}${item.department ? ` · ${esc(item.department)}` : ''}</p>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: #475569; background: #fffbeb; padding: 12px; border-radius: 12px; border: 1px solid #fde68a;">
+                ${item.jobTitle ? `<div><i class="fa-solid fa-briefcase" style="width: 18px; color: #d97706;"></i> <strong>${esc(item.jobTitle)}</strong></div>` : ''}
+                ${item.currentCompany ? `<div><i class="fa-solid fa-building" style="width: 18px; color: #d97706;"></i> ${esc(item.currentCompany)}</div>` : ''}
+              </div>
+
+              ${linkedinBtnHtml}
+
+              ${item.about ? `
+                <div style="font-size: 0.85rem; color: #475569; font-style: italic; line-height: 1.5; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: flex; gap: 6px; margin-top: auto;">
+                  <i class="fa-solid fa-quote-left" style="color: #fbbf24; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;"></i>
+                  <span>"${esc(item.about)}"</span>
+                </div>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        if (isAuthority) {
+          grid.querySelectorAll('.alumni-card-delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              if (confirm('Are you sure you want to remove this alumni profile?')) {
+                try {
+                  const token = user.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${apiBase}/api/alumni/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (res.ok) { alert('Alumni profile removed.'); loadAlumni(); }
+                  else alert('Failed to remove alumni profile.');
+                } catch { alert('Deletion failed.'); }
+              }
+            });
+          });
+
+          grid.querySelectorAll('.alumni-card-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              window.location.href = `post.html?edit=${id}`;
+            });
+          });
+        }
+      };
+
+      document.getElementById('alumniDeptFilter')?.addEventListener('change', renderFilteredAlumni);
+      document.getElementById('alumniSearchInput')?.addEventListener('input', renderFilteredAlumni);
+
+      loadAlumni();
+    }
   }
 
   async function renderLeadersPage(info) {
