@@ -4258,13 +4258,18 @@
                     <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Assignment Details</th>
                     <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Class Target</th>
                     <th style="padding: 12px 16px; color: #475569; font-weight: 600;">Due Date</th>
-                    <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: right;">Actions</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: center;">Submissions</th>
+                    <th style="padding: 12px 16px; color: #475569; font-weight: 600; text-align: center;">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${listToShow.map(a => {
                     const deadlineStr = a.deadline ? new Date(a.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
                     const targetStr = `${esc(a.department)} - ${esc(a.year)} (Batch ${esc(a.batch)})`;
+                    const subCount = a.submissionCount || 0;
+                    const subBadge = subCount > 0 
+                      ? `<span style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-file-arrow-up"></i> ${subCount} ${subCount === 1 ? 'Submission' : 'Submissions'}</span>`
+                      : `<span style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-regular fa-file"></i> 0 Submissions</span>`;
                     
                     return `
                       <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseenter="this.style.background='#f8fafc';" onmouseleave="this.style.background='none';">
@@ -4274,7 +4279,8 @@
                         </td>
                         <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${targetStr}</td>
                         <td style="padding: 16px; color: #475569; font-size: 0.9rem;">${deadlineStr}</td>
-                        <td style="padding: 16px; text-align: right;">
+                        <td style="padding: 16px; color: #475569; font-size: 0.9rem; text-align: center;">${subBadge}</td>
+                        <td style="padding: 16px; text-align: center;">
                           <button class="btn-pill view-submissions-btn" data-id="${a._id}" data-title="${esc(a.title)}" style="background: var(--primary); color: white; font-weight: 600; font-size: 0.82rem; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
                             <i class="fa-solid fa-list-check"></i> Submissions
                           </button>
