@@ -343,72 +343,21 @@
         <!-- Right Section (Span 1) -->
         <div style="display: flex; flex-direction: column; gap: 32px;">
           
-          <!-- Department Insight Card -->
-          <section class="section-card" id="dept-insight-card" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- HOD's Today's Schedule -->
+          <section class="section-card" id="hod-schedule-widget" style="display: flex; flex-direction: column; gap: 16px;">
             <div class="section-header" style="margin-bottom: 0;">
-              <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Department Insight</h2>
+              <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i> Today's Schedule
+              </h2>
+              <a href="../modules/routine/post.html" class="btn-view-all" style="font-size: 0.85rem;">Manage Routine</a>
             </div>
-            <h4 id="deptNameDisplay" style="text-align: center; color: var(--primary); margin: 8px 0; font-size: 1.25rem; font-weight: 700;">Loading...</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px;">
-                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--primary);"></span>
-                  Active Students
-                </span>
-                <strong id="insight-student-count" style="font-size: 1rem; color: var(--text-dark);">0</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 8px;">
-                  <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary);"></span>
-                  Active Faculty
-                </span>
-                <strong id="insight-teacher-count" style="font-size: 1rem; color: var(--text-dark);">0</strong>
-              </div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
-              <a href="../modules/leaders/post.html" class="btn-filled-purple" style="text-align: center; justify-content: center; width: 100%;">
-                  <i class="fa-solid fa-user-crown" style="margin-right: 8px;"></i> Add Academic Leader
-              </a>
-              <a href="../modules/leaders/view.html" style="text-align: center; margin-top: 4px; display: block; font-size: 0.85rem; color: var(--primary); font-weight: 600; text-decoration: none;">
-                  <i class="fa-solid fa-eye" style="margin-right: 4px;"></i> View All Leaders
-              </a>
-            </div>
-          </section>
-
-          <!-- Academic Leaders Snapshot -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-crown" style="color: var(--secondary);"></i> Academic Leaders</h2>
-            </div>
-            <div id="academic-leaders-preview" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
-              <div style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
-                <img src="https://ui-avatars.com/api/?name=Dr.+Roy&background=6b46c1&color=fff" style="width:40px; height:40px; border-radius:50%;">
-                <div>
-                  <h4 style="margin:0; font-size:0.9rem; color:var(--text-dark);">Dr. Roy</h4>
-                  <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">Principal</p>
-                </div>
-              </div>
-              <div style="display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
-                <img src="https://ui-avatars.com/api/?name=Prof.+Sen&background=10b981&color=fff" style="width:40px; height:40px; border-radius:50%;">
-                <div>
-                  <h4 style="margin:0; font-size:0.9rem; color:var(--text-dark);">Prof. Sen</h4>
-                  <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">Dean Academics</p>
-                </div>
+            
+            <div id="todays-schedule-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+              <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 24px 0;">
+                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading your schedule...
               </div>
             </div>
           </section>
-
-          <!-- AI Assistant Banner inside Right Column -->
-          <div style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px;">
-            <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;" onerror="this.style.display='none'">
-            <div style="flex: 1;">
-              <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
-              <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help with department scheduling or student performance?</p>
-              <button onclick="toggleModal('ai-modal')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                Chat Now <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
-          </div>
 
         </div>
 
@@ -489,7 +438,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Allow other scripts to set up token
-        setTimeout(loadRecentComplaintsPreview, 500);
+        setTimeout(() => {
+            loadRecentComplaintsPreview();
+            loadHODSchedulePreview();
+        }, 500);
     });
 
     async function loadRecentComplaintsPreview() {
@@ -584,6 +536,91 @@
             `;
         });
         container.innerHTML = html;
+    }
+
+    async function loadHODSchedulePreview() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const fetchUrl = `${API_BASE}/api/routine/teacher?teacherId=${user._id}`;
+
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (res.ok) {
+                const routineData = await res.json();
+                renderHODScheduleList(routineData);
+            } else {
+                throw new Error('Response not ok');
+            }
+        } catch (e) {
+            console.error('Error loading schedule:', e);
+            document.getElementById('todays-schedule-list').innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 16px 0;">
+                    Failed to load schedule from database.
+                </div>
+            `;
+        }
+    }
+
+    function renderHODScheduleList(routineData) {
+        const listEl = document.getElementById('todays-schedule-list');
+        if (!listEl) return;
+
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const today = days[new Date().getDay()];
+        const todaysClasses = routineData.filter(r => r.day === today);
+
+        if (todaysClasses.length === 0) {
+            listEl.innerHTML = `
+                <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.9rem; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    No classes scheduled for today! 🎉
+                </div>
+            `;
+            return;
+        }
+
+        const parseStartTime = (slot) => {
+            const startStr = slot.split(' - ')[0]; 
+            const [hStr, mStr] = startStr.split(':');
+            let h = parseInt(hStr);
+            const m = parseInt(mStr);
+            if (h >= 1 && h <= 6) h += 12;
+            return h * 60 + m;
+        };
+
+        todaysClasses.sort((a, b) => parseStartTime(a.timeSlot) - parseStartTime(b.timeSlot));
+
+        let html = '';
+        todaysClasses.forEach((c, i) => {
+            const subjectName = c.subject ? c.subject.name : (c.subjectName || 'Subject');
+            const room = c.room || 'TBA';
+            const slot = c.timeSlot.split(' - ')[0]; // Show start time
+            
+            const bgColors = ['rgba(107, 70, 193, 0.1)', 'rgba(16, 185, 129, 0.1)', 'rgba(14, 165, 233, 0.1)', 'rgba(245, 158, 11, 0.1)'];
+            const textColors = ['var(--primary)', 'var(--success)', '#0ea5e9', 'var(--warning)'];
+            const bg = bgColors[i % bgColors.length];
+            const textC = textColors[i % textColors.length];
+
+            html += `
+            <div class="list-item-compact" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; transition: all 0.2s;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; width: 70px; display: flex; align-items: center; gap: 4px;">
+                    <i class="fa-regular fa-clock" style="color: var(--text-muted)"></i> ${slot}
+                </div>
+                <div style="flex: 1; padding: 0 16px; min-width: 0;">
+                    <h4 style="font-size: 0.9rem; margin: 0; color: var(--text-dark); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${subjectName}</h4>
+                </div>
+                <span style="background: ${bg}; color: ${textC}; padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; flex-shrink: 0;">Room ${room}</span>
+            </div>`;
+        });
+        
+        listEl.innerHTML = html;
     }
   </script>
 </body>
