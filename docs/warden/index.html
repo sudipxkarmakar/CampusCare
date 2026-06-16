@@ -206,22 +206,44 @@
         </div>
       </header>
 
-      <!-- HERO BANNER -->
-      <section class="hero-card" id="home"
-        style="padding: 40px; display:flex; justify-content:space-between; align-items:center; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); margin-bottom: 32px;">
-        <div class="hero-content" style="max-width: 60%; z-index: 2;">
-          <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <span>☀️</span> Good morning, <span id="warden-name" style="color: var(--success); font-weight: 800;">Warden</span>!
-          </h1>
-          <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
-            Here's what's happening in your hostel's welfare and discipline world.
-          </p>
+      <!-- TOP ROW (2:1 Ratio): Hero Banner + Recent Complaints -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Column: Hero (Span 2) -->
+        <div style="grid-column: span 2; display: flex;">
+          <section class="hero-card" id="home"
+            style="padding: 30px 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+            <div class="hero-content" style="max-width: 65%; z-index: 2;">
+              <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span>☀️</span> Good morning, <span id="warden-name" style="color: var(--success); font-weight: 800;">Warden</span>!
+              </h1>
+              <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
+                Here's what's happening in your hostel's welfare and discipline world.
+              </p>
+            </div>
+            <div class="hero-image" style="position: static !important; max-width: 140px; flex-shrink: 0; z-index: 1;">
+              <img src="../assets/images/guest_illustration.png" alt="Mascot" style="height: 150px !important; width: auto !important; max-height: none !important; filter: drop-shadow(-5px 5px 10px rgba(0,0,0,0.1));"
+                onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
+            </div>
+          </section>
         </div>
-        <div class="hero-image" style="z-index: 1;">
-          <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
-            onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
-        </div>
-      </section>
+
+        <!-- Right Column: Recent Complaints (Span 1) -->
+        <section class="section-card" style="grid-column: span 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Recent Complaints
+            </h2>
+            <a href="../modules/complaints/resolve.html" class="btn-view-all" style="font-size: 0.8rem;">View All</a>
+          </div>
+          <div id="recent-complaints-list-top" style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading complaints...
+            </div>
+          </div>
+        </section>
+
+      </div>
 
       <!-- TWO COLUMNS LAYOUT -->
       <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
@@ -466,5 +488,105 @@
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/ai.js"></script>
   <script src="../assets/js/warden.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Allow other scripts to set up token
+        setTimeout(loadRecentComplaintsPreview, 500);
+    });
+
+    async function loadRecentComplaintsPreview() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const rolePath = window.location.pathname.includes('/warden/') ? 'warden' : 'hod';
+        const fetchUrl = `${API_BASE}/api/${rolePath}/complaints`;
+
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (res.ok) {
+                const complaints = await res.json();
+                renderRecentComplaintsList(complaints);
+            } else {
+                throw new Error('Response not ok');
+            }
+        } catch (e) {
+            console.error('Error loading complaints preview:', e);
+            document.getElementById('recent-complaints-list-top').innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+                    Failed to load live complaints.
+                </div>
+            `;
+        }
+    }
+
+    function renderRecentComplaintsList(complaints) {
+        const container = document.getElementById('recent-complaints-list-top');
+        if (!container) return;
+
+        // Sort by createdAt descending, filter out Resolved ones
+        const activeComplaints = complaints.filter(c => c.status !== 'Resolved');
+        const sorted = activeComplaints.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const recent = sorted.slice(0, 2); // Show top 2 recent active complaints
+
+        if (recent.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 16px 0;">
+                    No pending complaints.
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        recent.forEach(c => {
+            let iconHtml = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            let bgStyle = 'background: rgba(239, 68, 68, 0.1); color: var(--danger);';
+            const titleLower = c.title ? c.title.toLowerCase() : '';
+            const descLower = c.description ? c.description.toLowerCase() : '';
+            
+            if (titleLower.includes('water') || descLower.includes('water') || titleLower.includes('leak') || descLower.includes('leak')) {
+                iconHtml = '<i class="fa-solid fa-droplet"></i>';
+                bgStyle = 'background: rgba(14, 165, 233, 0.1); color: #0ea5e9;';
+            } else if (titleLower.includes('wifi') || descLower.includes('wifi') || titleLower.includes('internet') || descLower.includes('internet')) {
+                iconHtml = '<i class="fa-solid fa-wifi"></i>';
+                bgStyle = 'background: rgba(139, 92, 246, 0.1); color: var(--secondary);';
+            } else if (titleLower.includes('food') || descLower.includes('food') || titleLower.includes('mess') || descLower.includes('mess')) {
+                iconHtml = '<i class="fa-solid fa-utensils"></i>';
+                bgStyle = 'background: rgba(245, 158, 11, 0.1); color: var(--warning);';
+            }
+
+            let statusBg = 'background: #fee2e2; color: #ef4444;';
+            if (c.status === 'In Progress' || c.status === 'Under Progress' || c.status === 'Escalated') {
+                statusBg = 'background: #e0f2fe; color: #0284c7;';
+            } else if (c.status === 'Resolved') {
+                statusBg = 'background: #d1fae5; color: #10b981;';
+            }
+
+            const studentName = c.student && typeof c.student === 'object' ? (c.student.name || 'Student') : 'Resident';
+            const subtitle = c.roomNumber ? `By: ${studentName} (Room ${c.roomNumber})` : `By: ${studentName}`;
+
+            html += `
+                <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); transition: all 0.2s;">
+                    <div style="${bgStyle} width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                        ${iconHtml}
+                    </div>
+                    <div class="complaint-info" style="flex: 1; min-width: 0;">
+                        <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${c.title || ''}">${c.title || ''}</h4>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${subtitle}</p>
+                    </div>
+                    <span style="${statusBg} padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; flex-shrink: 0;">${c.status || 'Open'}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+  </script>
 </body>
 </html>
