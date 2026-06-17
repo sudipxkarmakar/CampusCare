@@ -221,24 +221,24 @@
                 Here's what's happening in your hostel's welfare and discipline world.
               </p>
             </div>
-            <div class="hero-image" style="position: static !important; max-width: 140px; flex-shrink: 0; z-index: 1;">
-              <img src="../assets/images/guest_illustration.png" alt="Mascot" style="height: 150px !important; width: auto !important; max-height: none !important; filter: drop-shadow(-5px 5px 10px rgba(0,0,0,0.1));"
+            <div class="hero-image" style="z-index: 1;">
+              <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
                 onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
             </div>
           </section>
         </div>
 
-        <!-- Right Column: Recent Complaints (Span 1) -->
+        <!-- Right Column: Mess Menu (Span 1) -->
         <section class="section-card" style="grid-column: span 1; display: flex; flex-direction: column; justify-content: space-between;">
           <div class="section-header" style="margin-bottom: 12px;">
             <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Recent Complaints
+              <i class="fa-solid fa-utensils" style="color: var(--primary);"></i> Mess Menu
             </h2>
-            <a href="../modules/complaints/resolve.html" class="btn-view-all" style="font-size: 0.8rem;">View All</a>
+            <a href="../modules/mess-menu/post.html" class="btn-view-all" style="font-size: 0.8rem;">View All</a>
           </div>
-          <div id="recent-complaints-list-top" style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center;">
+          <div id="today-mess-menu-top" style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
-              Loading complaints...
+              Loading menu...
             </div>
           </div>
         </section>
@@ -324,24 +324,25 @@
             </div>
           </section>
 
-          <!-- Residents Table Preview -->
+          <!-- Leave Application Tracking Preview -->
           <section class="section-card">
             <div class="section-header">
-              <h2><i class="fa-solid fa-users" style="color: var(--success);"></i> Hostel Residents</h2>
-              <a href="../modules/student-database/view.html" class="btn-view-all">View All</a>
+              <h2><i class="fa-solid fa-file-signature" style="color: var(--success);"></i> Leave Application Tracking</h2>
+              <a href="../modules/gate-pass/approve.html" class="btn-view-all">View All</a>
             </div>
             <div style="overflow-x: auto; margin-top: 16px;">
               <table class="dashboard-table">
                 <thead>
                   <tr>
                     <th>Resident Name</th>
-                    <th>Room</th>
-                    <th>Batch</th>
-                    <th>Attendance</th>
+                    <th>Leave Type</th>
+                    <th>Duration</th>
+                    <th>HOD Status</th>
+                    <th>Warden Status</th>
                     <th style="text-align: right;">Action</th>
                   </tr>
                 </thead>
-                <tbody id="residents-table-body">
+                <tbody id="leaves-tracking-table-body">
                   <!-- Dynamically populated by JS -->
                 </tbody>
               </table>
@@ -353,21 +354,7 @@
         <!-- Right Section (Span 1) -->
         <div style="display: flex; flex-direction: column; gap: 32px;">
           
-          <!-- Hostel Layout/Insight Card -->
-          <section class="section-card">
-            <h2 style="font-size: 1.25rem; color: var(--text-dark); display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-building-user" style="color: var(--success);"></i> Hostel Insights
-            </h2>
-            
-            <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 16px;">
-                <div style="font-size: 3.5rem; font-weight: 800; color: var(--success); line-height: 1;" id="insight-hosteler-count">0</div>
-                <div style="color: var(--text-muted); font-weight: 500; margin-top: 0.5rem; margin-bottom: 1.5rem;">Active Residents</div>
-                
-                <a href="../modules/student-database/view.html" class="btn-outline-purple" style="width: 100%; border-color: var(--success); color: var(--success); text-align: center; text-decoration: none;">
-                    <i class="fa-solid fa-users" style="margin-right: 8px;"></i> View Resident List
-                </a>
-            </div>
-          </section>
+
 
           <!-- Recent Complaints -->
           <section class="section-card">
@@ -376,41 +363,13 @@
               <a href="../modules/complaints/resolve.html" class="btn-view-all">View All</a>
             </div>
             <div id="recent-complaints-list" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <!-- Dynamically populated or static markup -->
-              <div class="notice-item" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <div style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-ban"></i>
-                </div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark);">Water leakage in Block B</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Resident (Room 204)</p>
-                </div>
-                <span style="background: #ffedd5; color: #ea580c; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">Open</span>
-              </div>
-              <div class="notice-item" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <div style="background: #ede9fe; color: #7c3aed; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-wifi"></i>
-                </div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark);">Wifi Issues Block A</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Resident (Room 105)</p>
-                </div>
-                <span style="background: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">In Review</span>
+              <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+                Loading complaints...
               </div>
             </div>
           </section>
 
-          <!-- AI Assistant Banner inside Right Column -->
-          <div style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px;">
-            <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;" onerror="this.style.display='none'">
-            <div style="flex: 1;">
-              <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
-              <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help with hostel occupancy or leave analytics?</p>
-              <button onclick="toggleModal('ai-modal')" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                Chat Now <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            </div>
-          </div>
+
 
         </div>
 
@@ -491,8 +450,88 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Allow other scripts to set up token
-        setTimeout(loadRecentComplaintsPreview, 500);
+        setTimeout(() => {
+            loadTodayMessMenu();
+            loadRecentComplaintsPreview();
+        }, 500);
     });
+
+    async function loadTodayMessMenu() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const fetchUrl = `${API_BASE}/api/warden/mess`;
+
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (res.ok) {
+                const menu = await res.json();
+                renderTodayMessMenu(menu);
+            } else {
+                throw new Error('Response not ok');
+            }
+        } catch (e) {
+            console.error('Error loading mess menu preview:', e);
+            const container = document.getElementById('today-mess-menu-top');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+                        Failed to load mess menu.
+                    </div>
+                `;
+            }
+        }
+    }
+
+    function renderTodayMessMenu(menu) {
+        const container = document.getElementById('today-mess-menu-top');
+        if (!container) return;
+
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const today = daysOfWeek[new Date().getDay()];
+
+        const todayData = menu.find(m => m.day === today);
+
+        if (!todayData || (!todayData.breakfast && !todayData.lunch && !todayData.snacks && !todayData.dinner)) {
+            container.innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 16px 0;">
+                    No menu set for today (${today}).
+                </div>
+            `;
+            return;
+        }
+
+        const meals = [
+            { name: 'Breakfast', icon: 'fa-mug-hot', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)', value: todayData.breakfast },
+            { name: 'Lunch', icon: 'fa-bowl-food', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)', value: todayData.lunch },
+            { name: 'Dinner', icon: 'fa-plate-wheat', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)', value: todayData.dinner }
+        ];
+
+        let html = '';
+        meals.forEach(m => {
+            const valText = m.value ? m.value : 'Not set';
+            html += `
+                <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); transition: all 0.2s;">
+                    <div style="background: ${m.bg}; color: ${m.color}; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                        <i class="fa-solid ${m.icon}"></i>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <h4 style="font-size: 0.75rem; margin: 0 0 2px 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${m.name}</h4>
+                        <p style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${valText}">${valText}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
 
     async function loadRecentComplaintsPreview() {
         const userStr = localStorage.getItem('user');
@@ -518,16 +557,19 @@
             }
         } catch (e) {
             console.error('Error loading complaints preview:', e);
-            document.getElementById('recent-complaints-list-top').innerHTML = `
-                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
-                    Failed to load live complaints.
-                </div>
-            `;
+            const container = document.getElementById('recent-complaints-list');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+                        Failed to load live complaints.
+                    </div>
+                `;
+            }
         }
     }
 
     function renderRecentComplaintsList(complaints) {
-        const container = document.getElementById('recent-complaints-list-top');
+        const container = document.getElementById('recent-complaints-list');
         if (!container) return;
 
         // Sort by createdAt descending, filter out Resolved ones
