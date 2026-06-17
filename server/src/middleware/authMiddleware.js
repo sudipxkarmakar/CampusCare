@@ -31,6 +31,24 @@ export const protect = async (req, res, next) => {
     }
 };
 
+// Optional: sets req.user if a valid token is present, but never blocks the request
+export const optionalProtect = async (req, res, next) => {
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        try {
+            const token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = await User.findById(decoded.id).select('-password');
+        } catch (_) {
+            req.user = null;
+        }
+    }
+    next();
+};
+
+
 export const admin = (req, res, next) => {
     if (req.user && (req.user.role === 'admin' || req.user.role === 'dean')) {
         next();

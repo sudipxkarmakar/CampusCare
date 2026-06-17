@@ -181,10 +181,9 @@
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
-        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Post Alumni</a></li>
-        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Alumni Excellence</a></li>
-        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
-        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/achievements/post.html" class="nav-item ${cfg.module === 'achievements' ? 'active' : ''}"><i class="fa-solid fa-trophy"></i> Achievements</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
@@ -197,7 +196,7 @@
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-list-check"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Global Notices</a></li>
         <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Central Library</a></li>
-        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
+        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> Add Academic Leader</a></li>
         <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
       `;
     } else {
@@ -320,7 +319,7 @@
           <aside class="sidebar">
             <a href="${rootPrefix}index.html" class="logo-container">
               <img
-                src="${rootPrefix}assets/images/hero-illustration.png"
+                src="${rootPrefix}assets/images/logo.png"
                 alt="Logo"
                 class="logo-icon"
                 onerror="this.src='https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'"
@@ -470,6 +469,14 @@
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderAssignmentsPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'achievements') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderAchievementsPage(info);
       initSidebar();
       return;
     }
@@ -1288,7 +1295,7 @@
                   View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
                 </a>
               </div>
-              <div id="alumniPostSidelist" style="max-height: 480px; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+              <div id="alumniPostSidelist" style="max-height: none; overflow-y: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
                 <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
                   <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
                   Loading alumni...
@@ -1343,7 +1350,7 @@
           sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No alumni profiles yet.</div>`;
           return;
         }
-        sidelist.innerHTML = allAlumniData.map(item => {
+        sidelist.innerHTML = allAlumniData.slice(0, 5).map(item => {
           const name = item.name || item.user?.name || 'Alumni';
           const avatarSrc = item.image
             ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
@@ -1794,6 +1801,644 @@
     }
   }
 
+  async function renderAchievementsPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const isAuthority = ['principal', 'admin', 'dean', 'hod'].includes(userRole);
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    setTimeout(() => {
+      if (!isAuthority) {
+        document.querySelectorAll('.module-actions a[href*="post.html"]').forEach(el => el.style.display = 'none');
+      }
+    }, 50);
+
+    if (isPostMode && !isAuthority) {
+      content(`
+        <div class="section-card module-panel" style="text-align: center; padding: 40px; color: var(--danger);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+          <h3>Access Denied</h3>
+          <p>Only HODs and administrators can post achievements.</p>
+        </div>
+      `);
+      return;
+    }
+
+    if (isPostMode) {
+      content(`
+        <style>
+          @keyframes achiev-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+          }
+          .achiev-ai-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #10b981; background: #ecfdf5;
+            color: #065f46; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center;
+          }
+          .achiev-ai-btn:hover:not(:disabled) {
+            background: #10b981; color: white;
+            box-shadow: 0 4px 16px rgba(16,185,129,0.25);
+            transform: translateY(-1px);
+          }
+          .achiev-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .achiev-ai-btn.loading { animation: achiev-ai-pulse 1.4s infinite; }
+          #achievPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+          }
+          @media (max-width: 1100px) {
+            #achievPostLayout { grid-template-columns: 1fr; }
+          }
+          .achiev-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .achiev-post-row-item:hover {
+            border-color: #6ee7b7; background: #ecfdf5;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.08);
+          }
+          .achiev-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .achiev-row-btn.edit { background: #ede9fe; color: #6d28d9; }
+          .achiev-row-btn.edit:hover { background: #6d28d9; color: white; }
+          .achiev-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .achiev-row-btn.del:hover { background: #ef4444; color: white; }
+          #achievBackBtn { background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; }
+          #achievBackBtn:hover { background: #e2e8f0; }
+          .achiev-form-input { padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; width: 100%; box-sizing: border-box; }
+          .achiev-form-input:focus { border-color: #10b981; }
+          select.achiev-form-input { background: white; }
+          textarea.achiev-form-input { font-family: inherit; }
+          #achievSubmitBtn { flex: 1; background: #10b981; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+          #achievSubmitBtn:hover:not(:disabled) { background: #065f46; }
+          #achievSubmitBtn.achiev-submit-editing { background: #6d28d9; }
+          #achievSubmitBtn.achiev-submit-editing:hover:not(:disabled) { background: #4c1d95; }
+          #achievCancelEditBtn { padding: 11px 14px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+          #achievCancelEditBtn:hover { background: #e2e8f0; }
+          .achiev-view-all-link { font-size: 0.82rem; font-weight: 600; color: #10b981; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #6ee7b7; background: #ecfdf5; transition: all 0.2s; }
+          .achiev-view-all-link:hover { background: #d1fae5; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="achievBackBtn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Achievements</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage achievements — add new entries or edit existing ones.</p>
+          </div>
+        </div>
+
+        <div id="achievPostLayout">
+
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 id="achievFormTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-trophy" style="color: #10b981;"></i> Add Achievement
+            </h3>
+            <form id="achievPostForm" style="display: flex; flex-direction: column; gap: 16px;">
+              <input type="hidden" id="achievEditId" value="">
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Title</label>
+                  <input type="text" name="title" id="achTitle" placeholder="e.g. Best Research Paper" required class="achiev-form-input">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Category</label>
+                  <select name="category" id="achCategory" required class="achiev-form-input">
+                    <option value="">Select Category</option>
+                    <option value="academic">Academic</option>
+                    <option value="sports">Sports</option>
+                    <option value="research">Research</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="placement">Placement</option>
+                    <option value="award">Award</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Year</label>
+                  <input type="number" name="year" id="achYear" placeholder="${new Date().getFullYear()}" min="2000" max="${new Date().getFullYear() + 1}" class="achiev-form-input">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Priority <span style="color:#94a3b8; font-weight:400;">(lower = shown first)</span></label>
+                  <input type="number" name="priority" id="achPriority" placeholder="10" min="1" max="100" class="achiev-form-input">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Description</span>
+                  <span id="achievAiTag" style="display:none; font-size:0.72rem; color:#065f46; font-weight:600; background:#ecfdf5; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                </label>
+                <button type="button" id="achievAiDraftBtn" class="achiev-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="achievAiDraftBtnLabel">Draft Description with AI</span>
+                </button>
+                <textarea name="description" id="achievDescInput" rows="3" placeholder="Describe the achievement in detail..." required class="achiev-form-input"></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 4px;">
+                <button type="submit" id="achievSubmitBtn">
+                  <i class="fa-solid fa-paper-plane"></i> <span id="achievSubmitLabel">Publish Achievement</span>
+                </button>
+                <button type="button" id="achievCancelEditBtn" style="display:none;">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT: Achievements List -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-trophy" style="color: #10b981;"></i> All Achievements
+                  <span id="achievCountBadge" style="font-size: 0.72rem; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" class="achiev-view-all-link">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="achievPostSidelist" style="max-height: none; overflow-y: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading achievements...
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `);
+
+      document.getElementById('achievBackBtn')?.addEventListener('click', goToDashboard);
+
+      let allAchievData = [];
+      let isEditMode = false;
+
+      const categoryMeta = {
+        academic:  { icon: 'fa-book-open', color: '#4f46e5', bg: '#e0e7ff' },
+        sports:    { icon: 'fa-person-running', color: '#ea580c', bg: '#ffedd5' },
+        research:  { icon: 'fa-flask', color: '#7c3aed', bg: '#ede9fe' },
+        cultural:  { icon: 'fa-masks-theater', color: '#db2777', bg: '#fce7f3' },
+        placement: { icon: 'fa-briefcase', color: '#0369a1', bg: '#e0f2fe' },
+        award:     { icon: 'fa-award', color: '#d97706', bg: '#fef3c7' },
+        other:     { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' },
+      };
+
+      const loadPostSidelist = async () => {
+        const sidelist = document.getElementById('achievPostSidelist');
+        const countBadge = document.getElementById('achievCountBadge');
+        if (!sidelist) return;
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/achievements`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allAchievData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allAchievData.length;
+          renderSidelist();
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load achievements.</div>`;
+        }
+      };
+
+      const renderSidelist = () => {
+        const sidelist = document.getElementById('achievPostSidelist');
+        if (!sidelist) return;
+        if (!allAchievData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No achievements yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allAchievData.slice(0, 5).map(item => {
+          const cat = (item.category || 'other').toLowerCase();
+          const meta = categoryMeta[cat] || categoryMeta.other;
+          const statusColors = { approved: { bg: '#dcfce7', color: '#166534' }, pending: { bg: '#fef9c3', color: '#92400e' }, rejected: { bg: '#fee2e2', color: '#991b1b' } };
+          const sc = statusColors[item.status] || statusColors.pending;
+          return `
+            <div class="achiev-post-row-item" data-id="${item._id}">
+              <div style="width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; background:${meta.bg}; color:${meta.color};">
+                <i class="fa-solid ${meta.icon}"></i>
+              </div>
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:3px;">
+                <div style="font-size:0.9rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(item.title || 'Untitled')}</div>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                  <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:${meta.color};">${cat}</span>
+                  <span style="font-size:0.72rem; color:#94a3b8;">${item.year || ''}</span>
+                  <span style="font-size:0.7rem; font-weight:700; padding:1px 7px; border-radius:10px; background:${sc.bg}; color:${sc.color};">${item.status || 'pending'}</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px; margin-left:auto; flex-shrink:0; align-self:center;">
+                <button type="button" class="achiev-row-btn edit" data-id="${item._id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" class="achiev-row-btn del" data-id="${item._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>`;
+        }).join('');
+
+        sidelist.querySelectorAll('.achiev-row-btn.edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const item = allAchievData.find(a => a._id === id);
+            if (!item) return;
+            isEditMode = true;
+            document.getElementById('achievEditId').value = id;
+            document.getElementById('achTitle').value = item.title || '';
+            document.getElementById('achCategory').value = item.category || '';
+            document.getElementById('achYear').value = item.year || '';
+            document.getElementById('achPriority').value = item.priority || '';
+            document.getElementById('achievDescInput').value = item.description || '';
+            document.getElementById('achievFormTitle').innerHTML = '<i class="fa-solid fa-pen" style="color:#6d28d9;"></i> Edit Achievement';
+            document.getElementById('achievSubmitLabel').textContent = 'Save Changes';
+            document.getElementById('achievSubmitBtn').classList.add('achiev-submit-editing');
+            document.getElementById('achievSubmitBtn').style.background = '';
+            document.getElementById('achievCancelEditBtn').style.display = 'block';
+            document.getElementById('achievPostForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.querySelectorAll('.achiev-post-row-item').forEach(r => r.style.background = '');
+            const row = sidelist.querySelector(`.achiev-post-row-item[data-id="${id}"]`);
+            if (row) row.style.background = '#ede9fe';
+          });
+        });
+
+        sidelist.querySelectorAll('.achiev-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allAchievData.find(a => a._id === id);
+            const title = item?.title || 'this achievement';
+            if (!confirm(`Remove "${title}"?`)) return;
+            try {
+              const token = user.token || localStorage.getItem('token') || '';
+              const res = await fetch(`${apiBase}/api/achievements/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (res.ok) { loadPostSidelist(); }
+              else alert('Failed to remove achievement.');
+            } catch { alert('Deletion failed.'); }
+          });
+        });
+      };
+
+      document.getElementById('achievCancelEditBtn')?.addEventListener('click', () => {
+        isEditMode = false;
+        document.getElementById('achievEditId').value = '';
+        document.getElementById('achievPostForm').reset();
+        document.getElementById('achievSubmitBtn').classList.remove('achiev-submit-editing');
+        document.getElementById('achievSubmitBtn').style.background = '';
+        document.getElementById('achievCancelEditBtn').style.display = 'none';
+        document.getElementById('achievAiTag').style.display = 'none';
+        document.querySelectorAll('.achiev-post-row-item').forEach(r => r.style.background = '');
+      });
+
+      document.getElementById('achievAiDraftBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('achievAiDraftBtn');
+        const label = document.getElementById('achievAiDraftBtnLabel');
+        const descInput = document.getElementById('achievDescInput');
+        const aiTag = document.getElementById('achievAiTag');
+        const titleVal = document.getElementById('achTitle')?.value?.trim();
+        const catVal = document.getElementById('achCategory')?.value;
+        if (!titleVal) {
+          document.getElementById('achTitle')?.focus();
+          return;
+        }
+        btn.disabled = true;
+        btn.classList.add('loading');
+        if (label) label.textContent = 'Generating…';
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/ai/generate-leader-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: `Write a concise, inspiring description (2-3 sentences) for a college achievement titled "${titleVal}"${catVal ? ` in the ${catVal} category` : ''}. Make it suitable for a college achievement board.` })
+          });
+          if (!res.ok) throw new Error('AI failed');
+          const data = await res.json();
+          if (descInput && data.message) {
+            descInput.value = data.message;
+            descInput.style.borderColor = '#10b981';
+            setTimeout(() => { descInput.style.borderColor = '#cbd5e1'; }, 1500);
+          }
+          if (aiTag) aiTag.style.display = 'inline-flex';
+        } catch (err) {
+          alert('AI drafting failed. Please write the description manually.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          if (label) label.textContent = 'Draft Description with AI';
+        }
+      });
+
+      document.getElementById('achievPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const submitBtn = document.getElementById('achievSubmitBtn');
+        const submitLabel = document.getElementById('achievSubmitLabel');
+        const token = user.token || localStorage.getItem('token') || '';
+        const editId = document.getElementById('achievEditId').value;
+        const payload = {
+          title: document.getElementById('achTitle').value,
+          category: document.getElementById('achCategory').value,
+          year: parseInt(document.getElementById('achYear').value) || new Date().getFullYear(),
+          priority: parseInt(document.getElementById('achPriority').value) || 10,
+          description: document.getElementById('achievDescInput').value,
+        };
+        const isEdit = !!editId;
+
+        // Show loading state
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitLabel) submitLabel.textContent = isEdit ? 'Saving…' : 'Publishing…';
+
+        try {
+          const res = await fetch(
+            isEdit ? `${apiBase}/api/achievements/${editId}` : `${apiBase}/api/achievements`,
+            {
+              method: isEdit ? 'PUT' : 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify(payload)
+            }
+          );
+          if (res.ok) {
+            isEditMode = false;
+            document.getElementById('achievEditId').value = '';
+            form.reset();
+            document.getElementById('achievFormTitle').innerHTML = '<i class="fa-solid fa-trophy" style="color:#10b981;"></i> Add Achievement';
+            document.getElementById('achievSubmitBtn').classList.remove('achiev-submit-editing');
+            document.getElementById('achievSubmitBtn').style.background = '';
+            document.getElementById('achievCancelEditBtn').style.display = 'none';
+            document.getElementById('achievAiTag').style.display = 'none';
+            alert(isEdit ? 'Achievement updated successfully!' : 'Achievement published successfully!');
+            loadPostSidelist();
+          } else {
+            const err = await res.json().catch(() => ({}));
+            console.error('Achievement save error:', res.status, err);
+            alert(`Error ${res.status}: ${err.message || `Failed to ${isEdit ? 'update' : 'publish'}. Please restart the server.`}`);
+          }
+        } catch (error) {
+          console.error('Achievement submit network error:', error);
+          alert('Submission failed — could not reach the server.');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitLabel) submitLabel.textContent = isEdit ? 'Save Changes' : 'Publish Achievement';
+        }
+      });
+
+      loadPostSidelist();
+
+    } else {
+      // --- VIEW MODE ---
+      content(`
+        <style>
+          #achievGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin-top: 10px;
+          }
+          .achiev-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 180px;
+            box-sizing: border-box;
+          }
+          .achiev-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(16,185,129,0.1);
+            border-color: rgba(16,185,129,0.3);
+          }
+          .achiev-card-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; flex-shrink: 0;
+          }
+          .achiev-year-badge {
+            display: inline-block; padding: 2px 10px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7;
+          }
+          .achiev-card-edit-btn:hover { background: #6d28d9 !important; color: white !important; transform: scale(1.1); }
+          .achiev-card-delete-btn:hover { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
+          #achievViewBackBtn { background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; }
+          #achievViewBackBtn:hover { background: #e2e8f0; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="achievViewBackBtn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Achievements</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Academic, research, sports, cultural, and innovation achievements in one place.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
+          <div id="achievFilterTabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="achiev-tab active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; background: #10b981; color: white;">All</button>
+            <button type="button" class="achiev-tab" data-filter="academic" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Academic</button>
+            <button type="button" class="achiev-tab" data-filter="sports" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Sports</button>
+            <button type="button" class="achiev-tab" data-filter="research" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Research</button>
+            <button type="button" class="achiev-tab" data-filter="cultural" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Cultural</button>
+            <button type="button" class="achiev-tab" data-filter="award" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Awards</button>
+          </div>
+          <div style="position: relative;">
+            <input type="text" id="achievSearchInput" placeholder="Search achievements..." style="padding: 10px 18px 10px 38px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 240px; background: white; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+          </div>
+        </div>
+
+        <div id="achievGrid">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading achievements...</div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('achievViewBackBtn')?.addEventListener('click', goToDashboard);
+
+      const categoryMeta = {
+        academic:  { icon: 'fa-book-open', color: '#4f46e5', bg: '#e0e7ff' },
+        sports:    { icon: 'fa-person-running', color: '#ea580c', bg: '#ffedd5' },
+        research:  { icon: 'fa-flask', color: '#7c3aed', bg: '#ede9fe' },
+        cultural:  { icon: 'fa-masks-theater', color: '#db2777', bg: '#fce7f3' },
+        placement: { icon: 'fa-briefcase', color: '#0369a1', bg: '#e0f2fe' },
+        award:     { icon: 'fa-award', color: '#d97706', bg: '#fef3c7' },
+        other:     { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' },
+      };
+
+      let loadedAchievements = [];
+      let activeFilter = 'all';
+
+      const loadAchievements = async () => {
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/achievements`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          loadedAchievements = Array.isArray(data) ? data : [];
+          renderFilteredAchievements();
+        } catch (error) {
+          const grid = document.getElementById('achievGrid');
+          if (grid) grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #ef4444; grid-column: 1 / -1;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+              <div style="font-size: 1rem; font-weight: 600;">Unable to load achievements.</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Please ensure the server is running.</div>
+            </div>`;
+        }
+      };
+
+      const renderFilteredAchievements = () => {
+        const grid = document.getElementById('achievGrid');
+        if (!grid) return;
+
+        const searchVal = document.getElementById('achievSearchInput')?.value?.toLowerCase() || '';
+        let filtered = [...loadedAchievements];
+
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(item => (item.category || '').toLowerCase() === activeFilter);
+        }
+        if (searchVal) {
+          filtered = filtered.filter(item => {
+            return (item.title || '').toLowerCase().includes(searchVal)
+              || (item.description || '').toLowerCase().includes(searchVal)
+              || (item.category || '').toLowerCase().includes(searchVal);
+          });
+        }
+        // Sort by priority then year
+        filtered.sort((a, b) => (a.priority || 10) - (b.priority || 10) || (b.year || 0) - (a.year || 0));
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+              <div style="font-size: 1.05rem; font-weight: 600;">No achievements found</div>
+              <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">Try a different filter or search term.</div>
+            </div>`;
+          return;
+        }
+
+        const actionButtonsFn = (id) => isAuthority ? `
+          <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
+            <button type="button" class="achiev-card-edit-btn" data-id="${id}" title="Edit" style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button type="button" class="achiev-card-delete-btn" data-id="${id}" title="Remove" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>` : '';
+
+        grid.innerHTML = filtered.map(item => {
+          const cat = (item.category || 'other').toLowerCase();
+          const meta = categoryMeta[cat] || categoryMeta.other;
+          const statusColors = { approved: { bg: '#dcfce7', color: '#166534' }, pending: { bg: '#fef9c3', color: '#92400e' }, rejected: { bg: '#fee2e2', color: '#991b1b' } };
+          const sc = statusColors[item.status] || statusColors.pending;
+
+          return `
+            <div class="achiev-card">
+              ${actionButtonsFn(item._id)}
+              <div style="display: flex; gap: 14px; align-items: flex-start;">
+                <div class="achiev-card-icon" style="background: ${meta.bg}; color: ${meta.color};">
+                  <i class="fa-solid ${meta.icon}"></i>
+                </div>
+                <div style="overflow: hidden; min-width: 0; flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                    <span class="achiev-year-badge">${item.year || 'N/A'}</span>
+                    <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: ${meta.color}; background: ${meta.bg}; padding: 2px 8px; border-radius: 10px;">${cat}</span>
+                    ${item.status && item.status !== 'approved' ? `<span style="font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:10px; background:${sc.bg}; color:${sc.color};">${item.status}</span>` : ''}
+                  </div>
+                  <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${esc(item.title || 'Untitled')}</h3>
+                </div>
+              </div>
+
+              ${item.description ? `
+                <p style="margin: 0; font-size: 0.85rem; color: #475569; line-height: 1.6; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${esc(item.description)}</p>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+
+        if (isAuthority) {
+          grid.querySelectorAll('.achiev-card-delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              if (confirm('Are you sure you want to remove this achievement?')) {
+                try {
+                  const token = user.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${apiBase}/api/achievements/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (res.ok) { loadAchievements(); }
+                  else alert('Failed to remove achievement.');
+                } catch { alert('Deletion failed.'); }
+              }
+            });
+          });
+
+          grid.querySelectorAll('.achiev-card-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              window.location.href = `post.html?edit=${id}`;
+            });
+          });
+        }
+      };
+
+      // Filter tab logic
+      const tabs = document.querySelectorAll('.achiev-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => {
+            t.classList.remove('active');
+            t.style.background = '#fff';
+            t.style.border = '1px solid #e2e8f0';
+            t.style.color = '#475569';
+          });
+          tab.classList.add('active');
+          tab.style.background = '#10b981';
+          tab.style.border = 'none';
+          tab.style.color = '#fff';
+          activeFilter = tab.dataset.filter;
+          renderFilteredAchievements();
+        });
+      });
+
+      document.getElementById('achievSearchInput')?.addEventListener('input', renderFilteredAchievements);
+
+      loadAchievements();
+    }
+  }
+
   async function renderLeadersPage(info) {
     const userRole = (user.role || 'guest').toLowerCase();
     const isAuthority = ['principal', 'admin', 'dean', 'hod', 'teacher'].includes(userRole);
@@ -1821,27 +2466,61 @@
     if (isPostMode) {
       content(`
         <style>
-          @keyframes ai-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.3); }
-            50% { box-shadow: 0 0 0 8px rgba(139,92,246,0); }
+        <style>
+          @keyframes leader-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(107, 70, 193, 0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(107, 70, 193, 0); }
           }
-          .ai-draft-btn {
+          .leader-ai-btn {
             display: flex; align-items: center; gap: 8px;
             padding: 10px 18px; border-radius: 10px;
-            border: 1.5px solid #8b5cf6; background: #f5f3ff;
-            color: #6d28d9; font-weight: 600; font-size: 0.88rem;
+            border: 1.5px solid #6b46c1; background: #faf5ff;
+            color: #6b46c1; font-weight: 600; font-size: 0.88rem;
             cursor: pointer; transition: all 0.22s; width: 100%;
-            justify-content: center; letter-spacing: 0.01em;
+            justify-content: center;
           }
-          .ai-draft-btn:hover:not(:disabled) {
-            background: #6d28d9; color: white;
-            box-shadow: 0 4px 16px rgba(109,40,217,0.25);
+          .leader-ai-btn:hover:not(:disabled) {
+            background: #6b46c1; color: white;
+            box-shadow: 0 4px 16px rgba(107, 70, 193, 0.25);
             transform: translateY(-1px);
           }
-          .ai-draft-btn:disabled {
-            opacity: 0.65; cursor: not-allowed;
+          .leader-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .leader-ai-btn.loading { animation: leader-ai-pulse 1.4s infinite; }
+          #leaderPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
           }
-          .ai-draft-btn.loading { animation: ai-pulse 1.4s infinite; }
+          @media (max-width: 1100px) {
+            #leaderPostLayout { grid-template-columns: 1fr; }
+          }
+          .leader-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .leader-post-row-item:hover {
+            border-color: #d6bcfa; background: #faf5ff;
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.08);
+          }
+          .leader-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .leader-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .leader-row-btn.del:hover { background: #ef4444; color: white; }
+          .leader-form-input { padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; width: 100%; box-sizing: border-box; }
+          .leader-form-input:focus { border-color: #6b46c1; }
+          select.leader-form-input { background: white; }
+          textarea.leader-form-input { font-family: inherit; }
+          #leaderSubmitBtn { flex: 1; background: #6b46c1; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+          #leaderSubmitBtn:hover:not(:disabled) { background: #55309d; }
+          .leader-view-all-link { font-size: 0.82rem; font-weight: 600; color: #6b46c1; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #d6bcfa; background: #faf5ff; transition: all 0.2s; }
+          .leader-view-all-link:hover { background: #e9d5ff; }
         </style>
         
         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
@@ -1850,90 +2529,190 @@
           </button>
           <div>
             <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Academic Leaders</h2>
-            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Visionary leaders directing Asansol Engineering College's academic progress.</p>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage academic leaders — add new entries or delete existing ones.</p>
           </div>
         </div>
 
-        <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); max-width: 650px; margin: 0 auto;">
-          <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Academic Leader
-          </h3>
-          <form id="leaderPostForm" style="display: flex; flex-direction: column; gap: 18px;">
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Full Name</label>
-                <input type="text" name="name" placeholder="e.g. Dr. Jane Doe" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Role / Designation</label>
-                <select id="leaderRoleSelect" name="role" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-                  <option value="">Select Role</option>
-                  <option value="Principal">Principal</option>
-                  <option value="Vice Principal">Vice Principal</option>
-                  <option value="Dean of Academics">Dean of Academics</option>
-                  <option value="Dean of Students">Dean of Students</option>
-                  <option value="HOD">HOD (Head of Department)</option>
-                  <option value="Professor">Professor</option>
-                </select>
-              </div>
-            </div>
+        <div id="leaderPostLayout">
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Department (if HOD/Prof)</label>
-                <input type="text" name="department" id="leaderDeptInput" placeholder="e.g. CSE, ECE, Mechanical" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Qualification</label>
-                <input type="text" name="qualification" placeholder="e.g. Ph.D. in Computer Science" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Years of Experience</label>
-                <input type="text" name="experience" placeholder="e.g. 20 Years" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Email Address</label>
-                <input type="email" name="email" placeholder="e.g. leader@campus.com" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Display Priority (1 = Highest)</label>
-                <input type="number" name="priority" value="5" min="1" max="100" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Profile Picture</label>
-                <input type="file" name="image" accept="image/*" style="font-size: 0.85rem; color: #64748b;">
-              </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
-                <span>Inspiring Leadership Quote / Message</span>
-                <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
-              </label>
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Academic Leader
+            </h3>
+            <form id="leaderPostForm" style="display: flex; flex-direction: column; gap: 16px;">
               
-              <button type="button" id="leaderAiDraftBtn" class="ai-draft-btn" style="margin-bottom: 8px;">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span id="leaderAiDraftBtnLabel">Draft Quote with AI</span>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Full Name</label>
+                  <input type="text" name="name" placeholder="e.g. Dr. Jane Doe" required class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Role / Designation</label>
+                  <select id="leaderRoleSelect" name="role" required class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                    <option value="">Select Role</option>
+                    <option value="Principal">Principal</option>
+                    <option value="Vice Principal">Vice Principal</option>
+                    <option value="Dean of Academics">Dean of Academics</option>
+                    <option value="Dean of Students">Dean of Students</option>
+                    <option value="HOD">HOD (Head of Department)</option>
+                    <option value="Professor">Professor</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Department (if HOD/Prof)</label>
+                  <input type="text" name="department" id="leaderDeptInput" placeholder="e.g. CSE, ECE" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Qualification</label>
+                  <input type="text" name="qualification" placeholder="e.g. Ph.D." required class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Years of Experience</label>
+                  <input type="text" name="experience" placeholder="e.g. 20 Years" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Email Address</label>
+                  <input type="email" name="email" placeholder="e.g. leader@campus.com" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Display Priority (1 = Highest)</label>
+                  <input type="number" name="priority" value="5" min="1" max="100" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Profile Picture</label>
+                  <input type="file" name="image" accept="image/*" style="font-size: 0.85rem; color: #64748b;">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Inspiring Leadership Quote / Message</span>
+                  <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
+                </label>
+                
+                <button type="button" id="leaderAiDraftBtn" class="leader-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="leaderAiDraftBtnLabel">Draft Quote with AI</span>
+                </button>
+
+                <textarea name="message" id="leaderQuoteInput" rows="3" placeholder="A quote or welcome message from the leader..." class="leader-form-input"></textarea>
+              </div>
+
+              <button type="submit" id="leaderSubmitBtn">
+                <i class="fa-solid fa-paper-plane"></i> Publish Leader
               </button>
+            </form>
+          </div>
 
-              <textarea name="message" id="leaderQuoteInput" rows="3" placeholder="A quote or welcome message from the leader..." style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+          <!-- RIGHT: Leaders List Preview -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-user-group" style="color: var(--primary);"></i> All Leaders
+                  <span id="leaderCountBadge" style="font-size: 0.72rem; background: #faf5ff; color: #6b46c1; border: 1px solid #d6bcfa; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" class="leader-view-all-link">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="leaderPostSidelist" style="max-height: none; overflow-y: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading academic leaders...
+                </div>
+              </div>
             </div>
+          </div>
 
-            <button type="submit" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
-              <i class="fa-solid fa-paper-plane"></i> Publish Leader
-            </button>
-          </form>
         </div>
       `);
 
       document.getElementById('leaderBackBtn')?.addEventListener('click', goToDashboard);
+
+      let allLeadersData = [];
+
+      const loadLeaderPostSidelist = async () => {
+        const sidelist = document.getElementById('leaderPostSidelist');
+        const countBadge = document.getElementById('leaderCountBadge');
+        if (!sidelist) return;
+        try {
+          const res = await fetch(`${apiBase}/api/academic-leaders`);
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allLeadersData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allLeadersData.length;
+          renderLeaderSidelist();
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load academic leaders.</div>`;
+        }
+      };
+
+      const renderLeaderSidelist = () => {
+        const sidelist = document.getElementById('leaderPostSidelist');
+        if (!sidelist) return;
+        if (!allLeadersData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No leaders yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allLeadersData.slice(0, 5).map(item => {
+          let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=6b46c1&color=fff&rounded=true&bold=true&size=38`;
+          if (item.image) {
+            avatarSrc = item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`;
+          }
+          return `
+            <div class="leader-post-row-item" data-id="${item._id}">
+              <img src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=6b46c1&color=fff&rounded=true&bold=true&size=38';" style="width:38px; height:38px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:3px;">
+                <div style="font-size:0.9rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(item.name || 'Untitled')}</div>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                  <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:#6b46c1;">${esc(item.role || '')}</span>
+                  <span style="font-size:0.72rem; color:#94a3b8;">${esc(item.department || '')}</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px; margin-left:auto; flex-shrink:0; align-self:center;">
+                <button type="button" class="leader-row-btn del" data-id="${item._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>`;
+        }).join('');
+
+        sidelist.querySelectorAll('.leader-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allLeadersData.find(a => a._id === id);
+            const name = item?.name || 'this leader';
+            if (confirm(`Are you sure you want to remove ${name}?`)) {
+              try {
+                const token = user.token || localStorage.getItem('token') || '';
+                const res = await fetch(`${apiBase}/api/academic-leaders/${id}`, {
+                  method: 'DELETE',
+                  headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                  alert('Academic Leader removed successfully.');
+                  loadLeaderPostSidelist();
+                } else {
+                  alert('Failed to remove academic leader.');
+                }
+              } catch (error) {
+                alert('Network error while deleting.');
+              }
+            }
+          });
+        });
+      };
+
+      loadLeaderPostSidelist();
 
       // AI Draft Quote Event Listener
       document.getElementById('leaderAiDraftBtn')?.addEventListener('click', async () => {
@@ -1997,7 +2776,7 @@
           if (res.ok) {
             alert('Academic Leader published successfully.');
             form.reset();
-            window.location.href = 'view.html';
+            loadLeaderPostSidelist();
           } else {
             const err = await res.json();
             alert(err.message || 'Failed to publish academic leader.');

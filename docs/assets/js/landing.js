@@ -168,6 +168,61 @@ async function requestSos(type) {
 
 window.askAI = askAI;
 
+// Reusable Detail Popup Modal
+window.showDetailPopup = function(title, subtitle, content, dateText, category) {
+  let modal = document.getElementById('landing-detail-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'landing-detail-modal';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease;';
+    
+    const contentBox = document.createElement('div');
+    contentBox.style.cssText = 'background: white; padding: 32px; border-radius: 24px; max-width: 550px; width: 90%; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-color); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); max-height: 85vh; overflow-y: auto; text-align: left;';
+    contentBox.id = 'landing-detail-modal-content';
+    
+    modal.appendChild(contentBox);
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) window.closeDetailPopup();
+    });
+  }
+  
+  const contentBox = document.getElementById('landing-detail-modal-content');
+  contentBox.innerHTML = `
+    <button onclick="window.closeDetailPopup()" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); transition: background 0.2s;"><i class="fa-solid fa-xmark"></i></button>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div>
+        <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--primary); background: rgba(107, 70, 193, 0.1); padding: 4px 10px; border-radius: 20px;">${category || 'Update'}</span>
+        ${dateText ? `<span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">${dateText}</span>` : ''}
+      </div>
+      <div>
+        <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-dark); margin: 0; line-height: 1.3;">${title}</h2>
+        ${subtitle ? `<p style="font-size: 1rem; color: var(--text-muted); margin: 4px 0 0 0; font-weight: 500;">${subtitle}</p>` : ''}
+      </div>
+      <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+        <p style="font-size: 1rem; line-height: 1.6; color: var(--text-dark); margin: 0; white-space: pre-wrap;">${content}</p>
+      </div>
+    </div>
+  `;
+  
+  modal.style.opacity = '1';
+  modal.style.pointerEvents = 'auto';
+  setTimeout(() => {
+    contentBox.style.transform = 'scale(1)';
+  }, 10);
+};
+
+window.closeDetailPopup = function() {
+  const modal = document.getElementById('landing-detail-modal');
+  if (modal) {
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    const contentBox = document.getElementById('landing-detail-modal-content');
+    if (contentBox) contentBox.style.transform = 'scale(0.9)';
+  }
+};
+
 // Global Click Handler for CSP Compliance
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-action], [data-alert]");
@@ -179,11 +234,33 @@ document.addEventListener("click", (e) => {
   const url = el.dataset.url;
 
   if (alertMsg && !action) {
-    alert(alertMsg);
+    const parts = alertMsg.split('\n\n');
+    const title = parts[0] || 'Notice';
+    const content = parts.slice(1).join('\n\n') || '';
+    window.showDetailPopup(title, '', content, '', 'Campus Notice');
     return;
   }
 
   switch (action) {
+    case "showAchievement":
+      if (window.loadedAchievements) {
+        const ach = window.loadedAchievements.find(a => a._id === id);
+        if (ach) {
+          const catName = ach.category ? ach.category.toUpperCase() : 'ACHIEVEMENT';
+          const dateStr = ach.createdAt ? new Date(ach.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+          window.showDetailPopup(ach.title, ach.subtitle || '', ach.description, dateStr, catName);
+        }
+      }
+      break;
+    case "showNotice":
+      if (window.loadedNotices) {
+        const notice = window.loadedNotices.find((not, idx) => (not._id === id || idx.toString() === id));
+        if (notice) {
+          const dateStr = notice.date ? new Date(notice.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+          window.showDetailPopup(notice.title, '', notice.content, dateStr, 'CAMPUS NOTICE');
+        }
+      }
+      break;
     case "logout":
       if (typeof logout === "function") logout();
       break;
@@ -355,6 +432,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error("API Error");
       const notices = await res.json();
+      window.loadedNotices = notices;
 
       if (notices.length === 0) {
         noticeContainer.innerHTML =
@@ -371,7 +449,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         let iconClass = "fa-solid fa-bell";
         let iconStyle = "background: #d1fae5; color: #10b981;"; // Green
         const titleLower = n.title.toLowerCase();
-        const contentLower = n.content.toLowerCase();
+        
         if (
           titleLower.includes("vacation") ||
           titleLower.includes("holiday") ||
@@ -389,14 +467,17 @@ document.addEventListener("DOMContentLoaded", async () => {
           iconClass = "fa-solid fa-trophy";
         }
 
+        const isTruncated = n.content.length > 80;
+        const shortContent = isTruncated ? n.content.substring(0, 80) + "..." : n.content;
+
         html += `
-                <div class="notice-item fade-in stagger-${(index % 4) + 1}" data-alert="${n.title}\n\n${n.content}">
+                <div class="notice-item fade-in stagger-${(index % 4) + 1}" data-action="showNotice" data-id="${n._id || index}" style="cursor: pointer;">
                     <div style="${iconStyle} width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;"><i class="${iconClass}"></i></div>
-                    <div class="notice-info" style="min-width: 0;">
+                    <div class="notice-info" style="min-width: 0; flex: 1;">
                         <h4 style="font-size: 0.95rem; margin-bottom: 4px; color: var(--text-dark);">${n.title}</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${n.content}</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${shortContent}</p>
                     </div>
-                    <div class="notice-date" style="font-size: 0.8rem; font-weight: 600;">${date}</div>
+                    <div class="notice-date" style="font-size: 0.8rem; font-weight: 600; flex-shrink: 0;">${date}</div>
                 </div>`;
       });
       noticeContainer.innerHTML = html;
@@ -406,23 +487,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       const fallbackNotices = [
         {
           title: "Semester Exams",
-          content: "Final exams begin from Dec 25th. Check routine.",
+          content: "Final exams begin from Dec 25th. Check the exam schedule for dates, times, and venue assignments.",
           date: new Date(),
         },
         {
           title: "Campus Wi-Fi Update",
-          content: "Maintenance scheduled for Saturday night.",
+          content: "Maintenance scheduled for Saturday night. All network services will be temporarily unavailable from 11 PM to 2 AM.",
           date: new Date(Date.now() - 86400000),
         },
         {
           title: "Cultural Fest 2025",
-          content: "Registration opens next week for all students.",
+          content: "Registration opens next week for all students. Join the various events, competitions, and fun activities.",
           date: new Date(Date.now() - 172800000),
         },
       ];
+      window.loadedNotices = fallbackNotices;
 
       let html = "";
-      fallbackNotices.slice(0, 3).forEach((n) => {
+      fallbackNotices.slice(0, 3).forEach((n, index) => {
         const date = new Date(n.date).toLocaleDateString(undefined, {
           day: "numeric",
           month: "short",
@@ -448,14 +530,17 @@ document.addEventListener("DOMContentLoaded", async () => {
           iconClass = "fa-solid fa-trophy";
         }
 
+        const isTruncated = n.content.length > 80;
+        const shortContent = isTruncated ? n.content.substring(0, 80) + "..." : n.content;
+
         html += `
-                <div class="notice-item" data-alert="${n.title}\n\n${n.content}">
+                <div class="notice-item" data-action="showNotice" data-id="${index}" style="cursor: pointer;">
                     <div style="${iconStyle} width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;"><i class="${iconClass}"></i></div>
-                    <div class="notice-info" style="min-width: 0;">
+                    <div class="notice-info" style="min-width: 0; flex: 1;">
                         <h4 style="font-size: 0.95rem; margin-bottom: 4px; color: var(--text-dark);">${n.title}</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${n.content}</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${shortContent}</p>
                     </div>
-                    <div class="notice-date" style="font-size: 0.8rem; font-weight: 600;">${date}</div>
+                    <div class="notice-date" style="font-size: 0.8rem; font-weight: 600; flex-shrink: 0;">${date}</div>
                 </div>`;
       });
       noticeContainer.innerHTML = html;
@@ -539,6 +624,115 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
       console.error("Academic Leaders API Error:", error);
       leadersContainer.innerHTML = '<p style="text-align:center; width:100%; color:red;">Failed to load academic leaders.</p>';
+    }
+  }
+
+  // Load Achievements
+  const achievementsContainer = document.getElementById("achievements-list");
+  if (achievementsContainer) {
+    try {
+      const res = await fetch(`${API_BASE}/api/achievements`);
+      if (!res.ok) throw new Error("API Error");
+      const achievements = await res.json();
+      window.loadedAchievements = achievements;
+
+      if (achievements.length === 0) {
+        achievementsContainer.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-muted);">No achievements found.</p>';
+      } else {
+        // Sort achievements: priority ascending, then createdAt descending
+        achievements.sort((a, b) => {
+          if ((a.priority || 10) !== (b.priority || 10)) {
+            return (a.priority || 10) - (b.priority || 10);
+          }
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        const categoryMeta = {
+          academic:  { icon: 'fa-book-open', color: '#4f46e5', bg: '#e0e7ff' },
+          sports:    { icon: 'fa-person-running', color: '#ea580c', bg: '#ffedd5' },
+          research:  { icon: 'fa-flask', color: '#7c3aed', bg: '#ede9fe' },
+          cultural:  { icon: 'fa-masks-theater', color: '#db2777', bg: '#fce7f3' },
+          placement: { icon: 'fa-briefcase', color: '#0369a1', bg: '#e0f2fe' },
+          award:     { icon: 'fa-award', color: '#d97706', bg: '#fef3c7' },
+          other:     { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' },
+        };
+
+        let html = "";
+        // Show up to 3 achievements on the landing page
+        const displayAchievements = achievements.slice(0, 3);
+        displayAchievements.forEach((ach) => {
+          const cat = (ach.category || 'other').toLowerCase();
+          const meta = categoryMeta[cat] || categoryMeta.other;
+          
+          const isTruncated = ach.description.length > 120;
+          const shortDesc = isTruncated ? ach.description.substring(0, 120) + "..." : ach.description;
+
+          html += `
+            <div data-action="showAchievement" data-id="${ach._id}" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: ${meta.bg}; border-radius: var(--radius-md); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+              <div style="font-size: 2rem; color: ${meta.color}">
+                <i class="fa-solid ${meta.icon}"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-dark);">${ach.title}</h4>
+                <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: ${meta.color}; line-height: 1.4;">${shortDesc}</p>
+                ${isTruncated ? `<span style="font-size: 0.75rem; font-weight: 600; color: var(--primary); display: inline-block; margin-top: 4px;">Read More <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i></span>` : ''}
+              </div>
+            </div>
+          `;
+        });
+        achievementsContainer.innerHTML = html;
+      }
+    } catch (error) {
+      console.error("Achievements API Error, using fallback:", error);
+      // Fallback if API fails
+      const fallbackAchievements = [
+        {
+          _id: "fb_ach1",
+          title: "Top 10 Engineering College",
+          description: "Our institution was proudly ranked in the top 10 engineering colleges nationally by the National Education Board of 2025. This achievement reflects our strong curriculum, outstanding research infrastructure, stellar placements, and high quality of student life.",
+          category: "award",
+        },
+        {
+          _id: "fb_ach2",
+          title: "Green Campus Award",
+          description: "Recognized for sustainable green initiatives and environment preservation schemes by the State Department of Forestry and Environment. We successfully integrated solar energy and implemented zero-waste waste management protocols.",
+          category: "sports",
+        },
+        {
+          _id: "fb_ach3",
+          title: "Innovation Hub Grant",
+          description: "Received a prestigious federal grant of $50,000 for building a world-class Robotics and Autonomous Systems research laboratory. The lab will provide state-of-the-art developer boards, robotic arms, and testing environments.",
+          category: "research",
+        }
+      ];
+      window.loadedAchievements = fallbackAchievements;
+
+      let html = "";
+      fallbackAchievements.forEach((ach) => {
+        const cat = ach.category;
+        const meta = {
+          sports:    { icon: 'fa-leaf', color: '#10b981', bg: '#d1fae5' },
+          research:  { icon: 'fa-microchip', color: '#4f46e5', bg: '#e0e7ff' },
+          award:     { icon: 'fa-ranking-star', color: '#f59e0b', bg: '#fef3c7' },
+        }[cat] || { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' };
+
+        const isTruncated = ach.description.length > 120;
+        const shortDesc = isTruncated ? ach.description.substring(0, 120) + "..." : ach.description;
+
+        html += `
+          <div data-action="showAchievement" data-id="${ach._id}" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: ${meta.bg}; border-radius: var(--radius-md); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+            <div style="font-size: 2rem; color: ${meta.color}">
+              <i class="fa-solid ${meta.icon}"></i>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-dark);">${ach.title}</h4>
+              <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: ${meta.color}; line-height: 1.4;">${shortDesc}</p>
+              ${isTruncated ? `<span style="font-size: 0.75rem; font-weight: 600; color: var(--primary); display: inline-block; margin-top: 4px;">Read More <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i></span>` : ''}
+            </div>
+          </div>
+        `;
+      });
+      achievementsContainer.innerHTML = html;
     }
   }
 
