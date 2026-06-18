@@ -33,13 +33,76 @@ export const getStudentMarMoocs = async (req, res) => {
 // @desc    Submit new MAR or MOOC record
 // @route   POST /api/mar-moocs
 // @access  Student
+const MAR_SECTIONS = {
+    "2a": { points: 5, max: 10 },
+    "2b": { points: 3, max: 6 },
+    "3": { points: 5, max: 10 },
+    "4": { points: 1, max: 10 },
+    "5a": { points: 5, max: 40 },
+    "5b": { points: 20, max: 40 },
+    "6": { points: 10, max: 20 },
+    "7": { points: 10, max: 20 },
+    "8": { points: 15, max: 30 },
+    "9": { points: 30, max: 60 },
+    "10a": { points: 8, max: 16 },
+    "10b": { points: 10, max: 20 },
+    "11a": { points: 10, max: 20 },
+    "11b": { points: 5, max: 10 },
+    "11c": { points: 10, max: 20 },
+    "11d": { points: 12, max: 24 },
+    "11e": { points: 15, max: 30 },
+    "11f": { points: 20, max: 40 },
+    "12": { points: 10, max: 20 },
+    "13": { points: 10, max: 20 },
+    "14": { points: 10, max: 20 },
+    "15a": { points: 10, max: 20 },
+    "15b": { points: 5, max: 10 },
+    "15c": { points: 10, max: 20 },
+    "15d": { points: 10, max: 20 },
+    "15e": { points: 20, max: 40 }
+};
+
 export const submitMarMooc = async (req, res) => {
     try {
-        const { category, title, platform, points, link } = req.body;
+        const { category, title, platform, link, activitySection, startDate, endDate, duration } = req.body;
 
         // Basic Validation
-        if (!category || !title || !points) {
+        if (!category || !title) {
             return res.status(400).json({ message: 'Please provide all required fields.' });
+        }
+
+        let calculatedPoints = 0;
+
+        if (category === 'mar') {
+            if (!activitySection) {
+                return res.status(400).json({ message: 'Please select a MAR activity section.' });
+            }
+            const sec = MAR_SECTIONS[activitySection];
+            if (!sec) {
+                return res.status(400).json({ message: 'Invalid MAR activity section.' });
+            }
+
+            // Check if section is already maxed out based on verified entries
+            const records = await MarMooc.find({ student: req.user._id, category: 'mar', activitySection, status: 'Verified' });
+            const claimedPoints = records.reduce((acc, curr) => acc + (curr.points || 0), 0);
+            if (claimedPoints + sec.points > sec.max) {
+                return res.status(400).json({
+                    message: `Cannot claim points under this category. Maximum allowed is ${sec.max} points, and you have already claimed/verified ${claimedPoints} points. Claiming this would exceed the limit.`
+                });
+            }
+            calculatedPoints = sec.points;
+        } else if (category === 'mooc') {
+            if (!duration) {
+                return res.status(400).json({ message: 'Please provide the course duration in hours.' });
+            }
+            const durationHrs = Number(duration);
+            if (isNaN(durationHrs) || durationHrs <= 0) {
+                return res.status(400).json({ message: 'Duration must be a positive number.' });
+            }
+            calculatedPoints = Math.min(4, Math.floor(durationHrs / 8));
+            if (calculatedPoints <= 0) {
+                return res.status(400).json({ message: 'Course duration must be at least 8 hours to claim credits (1 credit per 8 hours).' });
+            }
         }
 
         // Prevent Duplicates
@@ -57,7 +120,6 @@ export const submitMarMooc = async (req, res) => {
 
         let certificateUrl = link || '';
         if (req.file) {
-            // If file uploaded, use the server path
             certificateUrl = `/uploads/${req.file.filename}`;
         }
 
@@ -66,10 +128,14 @@ export const submitMarMooc = async (req, res) => {
             category,
             title,
             platform: platform || 'Self',
-            points,
+            points: calculatedPoints,
+            startDate: startDate || null,
+            endDate: endDate || null,
+            duration: duration ? Number(duration) : null,
+            activitySection: activitySection || null,
             certificateUrl,
-            externalLink: link || '', // Store the original link if provided
-            status: 'Proposed' // Default status
+            externalLink: link || '',
+            status: 'Proposed'
         });
 
         // --- SYNC UPDATE: Recalculate Totals for User Profile ---

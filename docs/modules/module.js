@@ -485,6 +485,14 @@
       return;
     }
 
+    if (cfg.module === 'mar-moocs') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderMarMoocsPage(info);
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'alumni') {
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
@@ -8430,6 +8438,820 @@
           </div>
         </article>
       `;
+    }
+  }
+
+  async function renderMarMoocsPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const token = user.token || localStorage.getItem('token') || '';
+    const rootPrefix = getRootPrefix();
+
+    const MAR_SECTIONS = {
+      "2a": { label: "2.a Tech Fest/Fresher's/Teachers Day - Organizer (5 pts, max 10)", points: 5, max: 10 },
+      "2b": { label: "2.b Tech Fest/Fresher's/Teachers Day - Participant (3 pts, max 6)", points: 3, max: 6 },
+      "3": { label: "3. Rural Reporting (5 pts, max 10)", points: 5, max: 10 },
+      "4": { label: "4. Tree plantation and Up-keeping (1 pt/tree, max 10)", points: 1, max: 10 },
+      "5a": { label: "5.a Collection of fund/materials for Relief Camp (5 pts, max 40)", points: 5, max: 40 },
+      "5b": { label: "5.b Part of Relief Work Team (20 pts, max 40)", points: 20, max: 40 },
+      "6": { label: "6. Debate/GD/Workshop/Arts/Photo/Film (10 pts, max 20)", points: 10, max: 20 },
+      "7": { label: "7. Publication in News Paper, Mag, Blog (10 pts, max 20)", points: 10, max: 20 },
+      "8": { label: "8. Research Publication (15 pts, max 30)", points: 15, max: 30 },
+      "9": { label: "9. Innovative Projects (30 pts, max 60)", points: 30, max: 60 },
+      "10a": { label: "10.a Blood donation (8 pts, max 16)", points: 8, max: 16 },
+      "10b": { label: "10.b Blood Donation Camp Organization (10 pts, max 20)", points: 10, max: 20 },
+      "11a": { label: "11.a Sports/Games/Yoga - Personal Level (10 pts, max 20)", points: 10, max: 20 },
+      "11b": { label: "11.b Sports/Games/Yoga - College Level (5 pts, max 10)", points: 5, max: 10 },
+      "11c": { label: "11.c Sports/Games/Yoga - University Level (10 pts, max 20)", points: 10, max: 20 },
+      "11d": { label: "11.d Sports/Games/Yoga - District Level (12 pts, max 24)", points: 12, max: 24 },
+      "11e": { label: "11.e Sports/Games/Yoga - State Level (15 pts, max 30)", points: 15, max: 30 },
+      "11f": { label: "11.f Sports/Games/Yoga - National/International Level (20 pts, max 40)", points: 20, max: 40 },
+      "12": { label: "12. Professional Society/Student Chapter (10 pts, max 20)", points: 10, max: 20 },
+      "13": { label: "13. Industry Visit & Report / Event Mgmt Training (10 pts, max 20)", points: 10, max: 20 },
+      "14": { label: "14. Community Service & Allied Activities (10 pts, max 20)", points: 10, max: 20 },
+      "15a": { label: "15.a Self-Entrepreneurship - Organise workshop (10 pts, max 20)", points: 10, max: 20 },
+      "15b": { label: "15.b Self-Entrepreneurship - Take part in workshop (5 pts, max 10)", points: 5, max: 10 },
+      "15c": { label: "15.c Self-Entrepreneurship - Video film making (10 pts, max 20)", points: 10, max: 20 },
+      "15d": { label: "15.d Self-Entrepreneurship - Submit business plan (10 pts, max 20)", points: 10, max: 20 },
+      "15e": { label: "15.e Self-Entrepreneurship - Work for start-up (20 pts, max 40)", points: 20, max: 40 }
+    };
+
+    if (!document.getElementById('mar-mooc-custom-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'mar-mooc-custom-styles';
+      styleEl.innerHTML = `
+        .mar-mooc-layout {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 28px;
+          align-items: start;
+        }
+        @media (min-width: 992px) {
+          .mar-mooc-layout {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+        .progress-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
+          margin-bottom: 28px;
+        }
+        .progress-card {
+          background: white;
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 16px;
+          box-shadow: var(--shadow-sm);
+        }
+        .mar-mooc-form-card {
+          background: white;
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: var(--shadow-sm);
+          margin-bottom: 24px;
+        }
+        .records-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .record-item {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 14px 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .record-badge {
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 2px 8px;
+          border-radius: 6px;
+        }
+        .badge-verified { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-proposed { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .badge-rejected { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
+        
+        /* Guidelines Modal */
+        .guidelines-modal-overlay {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(5px);
+          z-index: 10000;
+          display: none;
+          align-items: center;
+          justify-content: center;
+        }
+        .guidelines-modal {
+          background: white;
+          border-radius: 16px;
+          padding: 20px;
+          max-width: 800px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+          position: relative;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
+    if (userRole === 'teacher') {
+      content(`
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <button type="button" id="marMoocBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Mentee MAR & MOOCs Claims</h2>
+              <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Review and approve/reject MAR activities and MOOC credits claimed by your academic mentees.</p>
+            </div>
+          </div>
+          <div>
+            <select id="teacherStatusFilter" style="padding: 10px 16px; border-radius: 12px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-weight: 600; background: white; cursor: pointer;">
+              <option value="Proposed">Pending Approval</option>
+              <option value="Verified">Approved / Verified</option>
+              <option value="Rejected">Rejected</option>
+              <option value="all">All Submissions</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mar-mooc-layout">
+          <!-- Left Column: MAR Claims -->
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; color:#1e1b4b; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-award" style="color:#2563eb;"></i> Mentee MAR Claims
+            </h3>
+            <div id="menteeMarContainer" class="records-list">
+              <div style="text-align:center; padding:20px; color:#64748b;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+            </div>
+          </div>
+
+          <!-- Right Column: MOOCs Claims -->
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; color:#1e1b4b; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-graduation-cap" style="color:#2563eb;"></i> Mentee MOOC Claims
+            </h3>
+            <div id="menteeMoocContainer" class="records-list">
+              <div style="text-align:center; padding:20px; color:#64748b;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+            </div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('marMoocBackBtn')?.addEventListener('click', goToDashboard);
+      document.getElementById('teacherStatusFilter')?.addEventListener('change', loadMenteeSubmissions);
+
+      window.handleMarMoocAction = async function (id, status) {
+        const remarkInput = document.getElementById(`remark-${id}`);
+        const remark = remarkInput ? remarkInput.value.trim() : '';
+
+        if (status === 'Rejected' && !remark) {
+          alert('Please enter a remark explaining the rejection.');
+          return;
+        }
+
+        const confirmMsg = `Are you sure you want to ${status === 'Verified' ? 'Approve' : 'Reject'} this claim?`;
+        if (!confirm(confirmMsg)) return;
+
+        try {
+          const res = await fetch(`${apiBase}/api/mar-moocs/${id}/status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ status, remark })
+          });
+
+          if (res.ok) {
+            alert(`Claim successfully ${status === 'Verified' ? 'Approved' : 'Rejected'}.`);
+            await loadMenteeSubmissions();
+          } else {
+            const errData = await res.json();
+            throw new Error(errData.message || 'Action failed');
+          }
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      async function loadMenteeSubmissions() {
+        const marContainer = document.getElementById('menteeMarContainer');
+        const moocContainer = document.getElementById('menteeMoocContainer');
+        if (!marContainer || !moocContainer) return;
+        const filterVal = document.getElementById('teacherStatusFilter')?.value || 'Proposed';
+
+        try {
+          const res = await fetch(`${apiBase}/api/mar-moocs/mentees`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error();
+          const submissions = await res.json();
+
+          let filtered = [...submissions];
+          if (filterVal !== 'all') {
+            filtered = filtered.filter(s => s.status === filterVal);
+          }
+
+          const marSubmissions = filtered.filter(s => s.category === 'mar');
+          const moocSubmissions = filtered.filter(s => s.category === 'mooc');
+
+          const renderCard = (s) => {
+            const dateStr = new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            const proofUrl = s.certificateUrl ? (s.certificateUrl.startsWith('http') ? s.certificateUrl : `${apiBase}${s.certificateUrl}`) : (s.externalLink || null);
+            const isMar = s.category === 'mar';
+            const secInfo = isMar ? (MAR_SECTIONS[s.activitySection] || { label: 'General Activity' }) : null;
+            const studentName = s.student?.name || 'Unknown Student';
+            const rollNo = s.student?.rollNumber || 'N/A';
+            const batchSection = [s.student?.batch, s.student?.section].filter(Boolean).join(' - ') || 'N/A';
+
+            let typeBadge = '';
+            let claimText = '';
+            if (isMar) {
+              typeBadge = `<span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;"><i class="fa-solid fa-award"></i> MAR Claim</span>`;
+              claimText = `<div><strong>Section:</strong> ${esc(secInfo ? secInfo.label : s.activitySection)}</div>
+                           <div><strong>Points:</strong> <strong style="color: #2563eb; font-size: 1rem;">+${s.points}</strong> MAR Points</div>`;
+            } else {
+              typeBadge = `<span style="background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;"><i class="fa-solid fa-graduation-cap"></i> MOOC Claim</span>`;
+              claimText = `<div><strong>Course Name:</strong> ${esc(s.title)}</div>
+                           <div><strong>Duration:</strong> ${s.duration || 0} Hours</div>
+                           ${s.startDate && s.endDate ? `<div><strong>Dates:</strong> ${new Date(s.startDate).toLocaleDateString('en-IN')} to ${new Date(s.endDate).toLocaleDateString('en-IN')}</div>` : ''}
+                           <div><strong>Credits Claimed:</strong> <strong style="color: #2563eb; font-size: 1rem;">+${s.points}</strong> Credits</div>`;
+            }
+
+            const statusBadge = getStatusBadge(s.status);
+
+            let actionHtml = '';
+            if (s.status === 'Proposed') {
+              actionHtml = `
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Mentor Remarks (Optional)</label>
+                    <input type="text" id="remark-${s._id}" placeholder="Enter any feedback or reason for rejection..." style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; width: 100%;">
+                  </div>
+                  <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn-action-reject" onclick="window.handleMarMoocAction('${s._id}', 'Rejected')" style="background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                      <i class="fa-solid fa-xmark"></i> Reject
+                    </button>
+                    <button type="button" class="btn-action-approve" onclick="window.handleMarMoocAction('${s._id}', 'Verified')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                      <i class="fa-solid fa-check"></i> Approve
+                    </button>
+                  </div>
+                </div>
+              `;
+            } else if (s.remark) {
+              actionHtml = `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 0.8rem; color: #475569;">
+                  <strong>Mentor Remark:</strong> ${esc(s.remark)}
+                </div>
+              `;
+            }
+
+            return `
+              <div class="record-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 12px; flex-wrap: wrap;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <strong style="font-size: 0.95rem; color: #1e1b4b;">${esc(studentName)}</strong>
+                      <span style="font-size: 0.75rem; color: #64748b;">(Roll: ${esc(rollNo)})</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">Batch/Sec: ${esc(batchSection)}</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    ${typeBadge}
+                    ${statusBadge}
+                  </div>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px; font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 4px;">
+                  <div><strong>Claim Title:</strong> ${esc(s.title)}</div>
+                  ${claimText}
+                  <div><strong>Submitted on:</strong> ${dateStr}</div>
+                </div>
+
+                ${proofUrl ? `
+                  <a href="${proofUrl}" target="_blank" rel="noopener noreferrer" style="align-self: flex-start; font-size: 0.8rem; color: #2563eb; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 600;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Proof
+                  </a>
+                ` : ''}
+
+                ${actionHtml}
+              </div>
+            `;
+          };
+
+          if (marSubmissions.length === 0) {
+            marContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">No MAR claims in this filter.</div>`;
+          } else {
+            marContainer.innerHTML = marSubmissions.map(renderCard).join('');
+          }
+
+          if (moocSubmissions.length === 0) {
+            moocContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">No MOOC claims in this filter.</div>`;
+          } else {
+            moocContainer.innerHTML = moocSubmissions.map(renderCard).join('');
+          }
+
+        } catch (err) {
+          marContainer.innerHTML = `<div style="color:red; text-align:center; padding:20px;">Error loading MAR claims.</div>`;
+          moocContainer.innerHTML = `<div style="color:red; text-align:center; padding:20px;">Error loading MOOC claims.</div>`;
+        }
+      }
+
+      await loadMenteeSubmissions();
+      return;
+    }
+
+    // Guidelines dropdown options HTML
+    let sectionsOptionsHTML = '';
+    for (const key in MAR_SECTIONS) {
+      sectionsOptionsHTML += `<option value="${key}">${esc(MAR_SECTIONS[key].label)}</option>`;
+    }
+
+    content(`
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="marMoocBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">MAR & MOOCs Tracker</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage Mandatory Additional Requirements and MOOC course claims under academic mentorship.</p>
+          </div>
+        </div>
+        <div>
+          <button type="button" id="viewGuidelinesBtn" class="btn-outline-purple" style="padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-regular fa-file-image"></i> View MAR Guidelines
+          </button>
+        </div>
+      </div>
+
+      <!-- Point Progress Columns -->
+      <div class="mar-mooc-layout" style="margin-bottom: 28px; gap: 28px;">
+        <!-- Left Side: MAR Progress -->
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm);">
+          <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 1.1rem; font-weight: 800; color: #2563eb; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-award"></i> MAR Progress Status
+          </h3>
+          <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px; align-items: center;">
+            <div style="text-align: center; border-right: 1px solid #e2e8f0; padding-right: 16px;">
+              <div style="font-size: 0.85rem; color: #475569; font-weight: 600;">Overall MAR</div>
+              <div style="font-size: 2rem; font-weight: 800; margin: 8px 0;">
+                <span id="totalMarPts" style="color:#ef4444;">0</span> <span style="font-size: 1rem; font-weight: 500; color: #64748b;">/ 100</span>
+              </div>
+              <span id="overallMarBadge" style="font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5;">Unfulfilled</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding-left: 8px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 1 Progress:</span>
+                <span><strong id="y1Mar" style="color:#ef4444;">0</strong> / 25 pts</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 2 Progress:</span>
+                <span><strong id="y2Mar" style="color:#ef4444;">0</strong> / 25 pts</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 3 Progress:</span>
+                <span><strong id="y3Mar" style="color:#ef4444;">0</strong> / 25 pts</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 4 Progress:</span>
+                <span><strong id="y4Mar" style="color:#ef4444;">0</strong> / 25 pts</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: MOOCs Progress -->
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm);">
+          <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 1.1rem; font-weight: 800; color: #2563eb; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-graduation-cap"></i> MOOCs Progress Status
+          </h3>
+          <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px; align-items: center;">
+            <div style="text-align: center; border-right: 1px solid #e2e8f0; padding-right: 16px;">
+              <div style="font-size: 0.85rem; color: #475569; font-weight: 600;">Overall MOOCs</div>
+              <div style="font-size: 2rem; font-weight: 800; margin: 8px 0;">
+                <span id="totalMoocPts" style="color:#ef4444;">0</span> <span style="font-size: 1rem; font-weight: 500; color: #64748b;">/ 20</span>
+              </div>
+              <span id="overallMoocBadge" style="font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5;">Unfulfilled</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding-left: 8px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 1 Progress:</span>
+                <span><strong id="y1Mooc" style="color:#ef4444;">0</strong> / 4 pts</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 2 Progress:</span>
+                <span><strong id="y2Mooc" style="color:#ef4444;">0</strong> / 4 pts</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 3 Progress:</span>
+                <span><strong id="y3Mooc" style="color:#ef4444;">0</strong> / 4 pts</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Year 4 Progress:</span>
+                <span><strong id="y4Mooc" style="color:#ef4444;">0</strong> / 4 pts</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mar-mooc-layout">
+        <!-- Left Side: MAR Section -->
+        <div>
+          <div class="mar-mooc-form-card">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800; color: #2563eb; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-award"></i> Claim MAR Points
+            </h3>
+            <form id="marUploadForm" style="display:flex; flex-direction:column; gap:16px;">
+              <input type="hidden" name="category" value="mar">
+              
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Event / Activity Name</label>
+                <input type="text" name="title" placeholder="e.g. Organized College Techfest" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Activity Section (Guidelines)</label>
+                <select name="activitySection" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:white;">
+                  <option value="">Select section under which you claim points</option>
+                  ${sectionsOptionsHTML}
+                </select>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Upload Document / Proof File</label>
+                <input type="file" name="file" accept="application/pdf, image/*" required style="font-size:0.85rem; color:#64748b;">
+              </div>
+
+              <button type="submit" style="background:#2563eb; color:white; padding:12px; border-radius:8px; font-weight:600; border:none; cursor:pointer;" onmouseenter="this.style.background='#1d4ed8';" onmouseleave="this.style.background='#2563eb';">
+                Submit for Mentor Approval
+              </button>
+            </form>
+          </div>
+
+          <h3 style="font-size:1.15rem; font-weight:700; color:#1e1b4b; margin-bottom:14px;">Your MAR Activity Claims</h3>
+          <div id="marClaimsList" class="records-list">
+            <div style="text-align:center; padding:20px; color:#64748b;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+
+        <!-- Right Side: MOOCs Section -->
+        <div>
+          <div class="mar-mooc-form-card" style="border-color: #bfdbfe; background: #fafcff;">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800; color: #2563eb; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-graduation-cap"></i> Claim MOOC Credits
+            </h3>
+            <form id="moocUploadForm" style="display:flex; flex-direction:column; gap:16px;">
+              <input type="hidden" name="category" value="mooc">
+
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Course Name</label>
+                <input type="text" name="title" placeholder="e.g. Introduction to Python (NPTEL)" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Duration (in Hours)</label>
+                <input type="number" name="duration" placeholder="e.g. 40" required min="1" style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+                <span style="font-size:0.75rem; color:#64748b;">* Calculates 1 point per 8 hours (Max 4 points per course).</span>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <label style="font-size:0.8rem; font-weight:600; color:#475569;">Starting Date</label>
+                  <input type="date" name="startDate" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <label style="font-size:0.8rem; font-weight:600; color:#475569;">Ending Date</label>
+                  <input type="date" name="endDate" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Certificate Proof (File upload or External link)</label>
+                <input type="file" name="file" accept="application/pdf, image/*" style="font-size:0.85rem; color:#64748b; margin-bottom:8px;">
+                <input type="url" name="link" placeholder="Or enter certificate URL e.g. https://nptel.ac.in/verify/..." style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+              </div>
+
+              <button type="submit" style="background:#2563eb; color:white; padding:12px; border-radius:8px; font-weight:600; border:none; cursor:pointer;" onmouseenter="this.style.background='#1d4ed8';" onmouseleave="this.style.background='#2563eb';">
+                Submit for Mentor Approval
+              </button>
+            </form>
+          </div>
+
+          <h3 style="font-size:1.15rem; font-weight:700; color:#1e1b4b; margin-bottom:14px;">Your MOOC Course Claims</h3>
+          <div id="moocClaimsList" class="records-list">
+            <div style="text-align:center; padding:20px; color:#64748b;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guidelines Modal overlay -->
+      <div id="guidelinesModalOverlay" class="guidelines-modal-overlay">
+        <div class="guidelines-modal">
+          <button type="button" id="closeGuidelinesModal" style="position:absolute; top:12px; right:16px; border:none; background:transparent; font-size:1.4rem; cursor:pointer; color:#64748b;"><i class="fa-solid fa-xmark"></i></button>
+          <h3 style="margin-top:0; margin-bottom:16px; font-size:1.25rem; font-weight:800; color:#1e1b4b;">MAKAUT Mandatory Additional Requirements (MAR) Guidelines</h3>
+          <div style="width:100%; overflow:hidden; border-radius:12px;">
+            <img src="${rootPrefix}assets/images/mar-activity-list.jpg" alt="MAR Activity List Notice" style="width:100%; height:auto;">
+          </div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('marMoocBackBtn')?.addEventListener('click', goToDashboard);
+    
+    // Guidelines popup binding
+    const guidelinesModal = document.getElementById('guidelinesModalOverlay');
+    document.getElementById('viewGuidelinesBtn')?.addEventListener('click', () => {
+      if (guidelinesModal) guidelinesModal.style.display = 'flex';
+    });
+    document.getElementById('closeGuidelinesModal')?.addEventListener('click', () => {
+      if (guidelinesModal) guidelinesModal.style.display = 'none';
+    });
+    guidelinesModal?.addEventListener('click', (e) => {
+      if (e.target === guidelinesModal) guidelinesModal.style.display = 'none';
+    });
+
+    // Form submits
+    document.getElementById('marUploadForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const submitBtn = form.querySelector('button[type="submit"]');
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/api/mar-moocs`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('MAR activity claim submitted successfully to your mentor.');
+          form.reset();
+          loadMarMoocsData();
+        } else {
+          const errData = await res.json();
+          throw new Error(errData.message || 'Submission failed');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Submit for Mentor Approval';
+        }
+      }
+    });
+
+    document.getElementById('moocUploadForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const fileInput = form.querySelector('input[type="file"]');
+      const urlInput = form.querySelector('input[name="link"]');
+
+      if (!fileInput.files.length && !urlInput.value.trim()) {
+        alert('Please either upload a certificate file or enter an external certificate link.');
+        return;
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/api/mar-moocs`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('MOOC credit claim submitted successfully to your mentor.');
+          form.reset();
+          loadMarMoocsData();
+        } else {
+          const errData = await res.json();
+          throw new Error(errData.message || 'Submission failed');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Submit for Mentor Approval';
+        }
+      }
+    });
+
+    await loadMarMoocsData();
+
+    async function loadMarMoocsData() {
+      const marList = document.getElementById('marClaimsList');
+      const moocList = document.getElementById('moocClaimsList');
+      if (!marList || !moocList) return;
+
+      try {
+        const res = await fetch(`${apiBase}/api/mar-moocs`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const records = data.records || [];
+
+        // Distribute points across years
+        // Overall totals
+        let totalMarPoints = 0;
+        let totalMoocPoints = 0;
+
+        let yearPoints = {
+          1: { mar: 0, mooc: 0 },
+          2: { mar: 0, mooc: 0 },
+          3: { mar: 0, mooc: 0 },
+          4: { mar: 0, mooc: 0 }
+        };
+
+        records.forEach(r => {
+          if (r.status === 'Verified') {
+            const entryYear = getEntryAcademicYear(r.createdAt);
+            if (r.category === 'mar') {
+              totalMarPoints += (r.points || 0);
+              if (yearPoints[entryYear]) yearPoints[entryYear].mar += (r.points || 0);
+            } else if (r.category === 'mooc') {
+              totalMoocPoints += (r.points || 0);
+              if (yearPoints[entryYear]) yearPoints[entryYear].mooc += (r.points || 0);
+            }
+          }
+        });
+
+        // Set overall point displays & colors
+        const marSpan = document.getElementById('totalMarPts');
+        const overallMarBadge = document.getElementById('overallMarBadge');
+        if (marSpan) {
+          marSpan.innerText = totalMarPoints;
+          if (totalMarPoints >= 100) {
+            marSpan.style.color = '#10b981';
+            if (overallMarBadge) {
+              overallMarBadge.innerText = 'Fulfilled';
+              overallMarBadge.style.background = '#d1fae5';
+              overallMarBadge.style.color = '#065f46';
+              overallMarBadge.style.borderColor = '#a7f3d0';
+            }
+          } else {
+            marSpan.style.color = '#ef4444';
+            if (overallMarBadge) {
+              overallMarBadge.innerText = 'Unfulfilled';
+              overallMarBadge.style.background = '#fee2e2';
+              overallMarBadge.style.color = '#ef4444';
+              overallMarBadge.style.borderColor = '#fca5a5';
+            }
+          }
+        }
+
+        const moocSpan = document.getElementById('totalMoocPts');
+        const overallMoocBadge = document.getElementById('overallMoocBadge');
+        if (moocSpan) {
+          moocSpan.innerText = totalMoocPoints;
+          if (totalMoocPoints >= 20) {
+            moocSpan.style.color = '#10b981';
+            if (overallMoocBadge) {
+              overallMoocBadge.innerText = 'Fulfilled';
+              overallMoocBadge.style.background = '#d1fae5';
+              overallMoocBadge.style.color = '#065f46';
+              overallMoocBadge.style.borderColor = '#a7f3d0';
+            }
+          } else {
+            moocSpan.style.color = '#ef4444';
+            if (overallMoocBadge) {
+              overallMoocBadge.innerText = 'Unfulfilled';
+              overallMoocBadge.style.background = '#fee2e2';
+              overallMoocBadge.style.color = '#ef4444';
+              overallMoocBadge.style.borderColor = '#fca5a5';
+            }
+          }
+        }
+
+        // Set year displays & highlight unfulfilled in red
+        for (let y = 1; y <= 4; y++) {
+          const yMarEl = document.getElementById(`y${y}Mar`);
+          if (yMarEl) {
+            yMarEl.innerText = yearPoints[y].mar;
+            yMarEl.style.color = yearPoints[y].mar >= 25 ? '#10b981' : '#ef4444';
+          }
+
+          const yMoocEl = document.getElementById(`y${y}Mooc`);
+          if (yMoocEl) {
+            yMoocEl.innerText = yearPoints[y].mooc;
+            yMoocEl.style.color = yearPoints[y].mooc >= 4 ? '#10b981' : '#ef4444';
+          }
+        }
+
+        // Render Lists
+        const marRecords = records.filter(r => r.category === 'mar');
+        const moocRecords = records.filter(r => r.category === 'mooc');
+
+        if (marRecords.length === 0) {
+          marList.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">No MAR claims registered.</div>`;
+        } else {
+          marList.innerHTML = marRecords.map(r => renderMarRecordHtml(r)).join('');
+        }
+
+        if (moocRecords.length === 0) {
+          moocList.innerHTML = `<div style="text-align:center; padding:20px; color:#64748b;">No MOOC claims registered.</div>`;
+        } else {
+          moocList.innerHTML = moocRecords.map(r => renderMoocRecordHtml(r)).join('');
+        }
+
+      } catch (err) {
+        marList.innerHTML = `<div style="color:red; text-align:center; padding:20px;">Error loading MAR claims.</div>`;
+        moocList.innerHTML = `<div style="color:red; text-align:center; padding:20px;">Error loading MOOC claims.</div>`;
+      }
+    }
+
+    function getEntryAcademicYear(createdAt) {
+      const currentYearStr = user.year || '1st Year';
+      const currentYearNum = parseInt(currentYearStr) || 1;
+      const diffMs = Date.now() - new Date(createdAt).getTime();
+      const diffYears = Math.floor(diffMs / (365 * 24 * 60 * 60 * 1000));
+      const entryYear = Math.max(1, currentYearNum - diffYears);
+      return entryYear;
+    }
+
+    function renderMarRecordHtml(r) {
+      const dateStr = new Date(r.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const secInfo = MAR_SECTIONS[r.activitySection] || { label: 'General Activity' };
+      const statusBadge = getStatusBadge(r.status);
+      const proofUrl = r.certificateUrl ? (r.certificateUrl.startsWith('http') ? r.certificateUrl : `${apiBase}${r.certificateUrl}`) : null;
+
+      return `
+        <div class="record-item">
+          <div style="display:flex; justify-content:space-between; align-items:start; gap:10px;">
+            <strong style="font-size:0.9rem; color:#1e1b4b;">${esc(r.title)}</strong>
+            ${statusBadge}
+          </div>
+          <div style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:2px; margin-top:2px;">
+            <div>Category: ${esc(secInfo.label)}</div>
+            <div>Submitted on ${dateStr}</div>
+            ${r.status === 'Verified' ? `<div style="color:#059669; font-weight:600;">+${r.points} MAR Points Credited</div>` : `<div style="color:#2563eb;">Claiming +${r.points} MAR Points (Pending Approval)</div>`}
+            ${r.remark ? `<div style="color:#b91c1c; font-style:italic; margin-top:4px;">* Remark: ${esc(r.remark)}</div>` : ''}
+          </div>
+          ${proofUrl ? `
+            <a href="${proofUrl}" target="_blank" rel="noopener noreferrer" style="align-self:flex-start; margin-top:6px; font-size:0.75rem; color:#2563eb; text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Document Proof
+            </a>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderMoocRecordHtml(r) {
+      const dateStr = new Date(r.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const statusBadge = getStatusBadge(r.status);
+      const proofUrl = r.certificateUrl || r.externalLink;
+      const formattedProofUrl = proofUrl ? (proofUrl.startsWith('http') ? proofUrl : `${apiBase}${proofUrl}`) : null;
+
+      return `
+        <div class="record-item" style="border-left: 3px solid #2563eb;">
+          <div style="display:flex; justify-content:space-between; align-items:start; gap:10px;">
+            <strong style="font-size:0.9rem; color:#1e1b4b;">${esc(r.title)}</strong>
+            ${statusBadge}
+          </div>
+          <div style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:2px; margin-top:2px;">
+            <div>Duration: <strong>${r.duration || 0} Hours</strong></div>
+            <div>Submitted on ${dateStr}</div>
+            ${r.status === 'Verified' ? `<div style="color:#2563eb; font-weight:600;">+${r.points} MOOC Credits Credited</div>` : `<div style="color:#2563eb;">Claiming +${r.points} MOOC Credits (Pending Approval)</div>`}
+            ${r.remark ? `<div style="color:#b91c1c; font-style:italic; margin-top:4px;">* Remark: ${esc(r.remark)}</div>` : ''}
+          </div>
+          ${formattedProofUrl ? `
+            <a href="${formattedProofUrl}" target="_blank" rel="noopener noreferrer" style="align-self:flex-start; margin-top:6px; font-size:0.75rem; color:#2563eb; text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Certificate Proof
+            </a>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'Verified') return `<span class="record-badge badge-verified"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+      if (status === 'Rejected') return `<span class="record-badge badge-rejected"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+      return `<span class="record-badge badge-proposed"><i class="fa-regular fa-clock"></i> Pending Mentor</span>`;
     }
   }
 

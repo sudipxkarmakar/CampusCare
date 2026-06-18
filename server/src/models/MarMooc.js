@@ -22,6 +22,18 @@ const marMoocSchema = new mongoose.Schema({
     completionDate: {
         type: Date,
     },
+    startDate: {
+        type: Date,
+    },
+    endDate: {
+        type: Date,
+    },
+    duration: {
+        type: Number,
+    },
+    activitySection: {
+        type: String,
+    },
     certificateUrl: {
         type: String,
     },
