@@ -564,6 +564,118 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (nextAlumniBtn) nextAlumniBtn.style.display = "none";
       } else {
         let activeAlumniIndex = 0;
+        let alumniAutoplayInterval;
+
+        const showAlumniModal = (alumnus) => {
+          const existingModal = document.getElementById("alumni-detail-modal");
+          if (existingModal) existingModal.remove();
+
+          const name = alumnus.user ? alumnus.user.name : alumnus.name || "Alumni";
+          const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+          const degreeDept = (alumnus.degree && alumnus.department) 
+            ? `${alumnus.degree} in ${alumnus.department}`
+            : (alumnus.degree || alumnus.department || "N/A");
+          const classOf = alumnus.graduationYear ? ` (Class of ${alumnus.graduationYear})` : "";
+          const linkedinUrl = alumnus.linkedinProfile || `https://linkedin.com/search/results/people/?keywords=${encodeURIComponent(name)}`;
+
+          const modalHtml = `
+            <div id="alumni-detail-modal" style="
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100vw;
+              height: 100vh;
+              background: rgba(0, 0, 0, 0.5);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 100000;
+              backdrop-filter: blur(4px);
+            ">
+              <div style="
+                background: white;
+                border-radius: var(--radius-lg);
+                width: 90%;
+                max-width: 455px;
+                padding: 30px;
+                position: relative;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+                border: 1px solid var(--border-color);
+                animation: slideDown 0.3s ease-out;
+                text-align: center;
+              ">
+                <button id="close-alumni-modal-btn" style="
+                  position: absolute;
+                  top: 15px;
+                  right: 15px;
+                  background: none;
+                  border: none;
+                  font-size: 1.5rem;
+                  color: var(--text-muted);
+                  cursor: pointer;
+                  transition: color 0.2s;
+                " onmouseenter="this.style.color='var(--danger)'" onmouseleave="this.style.color='var(--text-muted)'">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <img src="${avatarUrl}" alt="${name}" style="
+                  width: 100px;
+                  height: 100px;
+                  border-radius: 50%;
+                  object-fit: cover;
+                  margin: 0 auto 16px auto;
+                  border: 3px solid var(--primary-light);
+                " />
+
+                <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin: 0 0 4px 0;">${name}</h3>
+                <p style="font-size: 0.95rem; font-weight: 600; color: var(--primary); margin: 0 0 12px 0;">${alumnus.jobTitle} @ ${alumnus.currentCompany}</p>
+
+                <div style="text-align: left; background: var(--bg-color); padding: 16px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
+                  <p style="margin: 0 0 8px 0;"><strong><i class="fa-solid fa-graduation-cap" style="width: 20px; color: var(--primary);"></i> Qualification:</strong> ${degreeDept}${classOf}</p>
+                  <p style="margin: 0 0 8px 0;"><strong><i class="fa-solid fa-briefcase" style="width: 20px; color: var(--primary);"></i> Current Company:</strong> ${alumnus.currentCompany || 'N/A'}</p>
+                  ${alumnus.about ? `<p style="margin: 8px 0 0 0; font-style: italic; border-top: 1px dashed var(--border-color); padding-top: 8px; color: var(--text-muted); font-size: 0.88rem;">"${alumnus.about}"</p>` : ''}
+                </div>
+
+                <a href="${linkedinUrl}" target="_blank" rel="noopener" style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  background: #0077b5;
+                  color: white;
+                  padding: 10px 24px;
+                  border-radius: var(--radius-full);
+                  text-decoration: none;
+                  font-weight: 600;
+                  font-size: 0.9rem;
+                  transition: all 0.3s;
+                  box-shadow: 0 4px 12px rgba(0, 119, 181, 0.25);
+                " onmouseenter="this.style.background='#005582'; this.style.transform='translateY(-1px)';" onmouseleave="this.style.background='#0077b5'; this.style.transform='none';">
+                  <i class="fa-brands fa-linkedin" style="font-size: 1.1rem;"></i> LinkedIn Profile
+                </a>
+              </div>
+            </div>
+          `;
+
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = modalHtml;
+          const modalElement = tempDiv.firstElementChild;
+          document.body.appendChild(modalElement);
+
+          const closeModal = () => {
+            modalElement.remove();
+            document.removeEventListener("keydown", handleKeyDown);
+          };
+
+          const handleKeyDown = (e) => {
+            if (e.key === "Escape") closeModal();
+          };
+
+          modalElement.querySelector("#close-alumni-modal-btn").onclick = closeModal;
+          modalElement.onclick = (e) => {
+            if (e.target === modalElement) closeModal();
+          };
+          document.addEventListener("keydown", handleKeyDown);
+        };
 
         const renderActiveAlumni = () => {
           const a = alumni[activeAlumniIndex];
@@ -579,27 +691,65 @@ document.addEventListener("DOMContentLoaded", async () => {
           let linkedinHtml = "";
           if (a.linkedinProfile) {
             linkedinHtml = `
-              <a href="${a.linkedinProfile}" target="_blank" rel="noopener" 
-                 style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: #0077b5; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: color 0.2s;"
-                 onmouseenter="this.style.color='#005582'; this.style.textDecoration='underline'" 
-                 onmouseleave="this.style.color='#0077b5'; this.style.textDecoration='none'">
-                <i class="fa-brands fa-linkedin" style="font-size: 1.1rem;"></i> LinkedIn Profile
-              </a>
+              <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: #0077b5; font-weight: 600; font-size: 0.85rem;">
+                <i class="fa-brands fa-linkedin" style="font-size: 1.1rem;"></i> View LinkedIn Info
+              </span>
             `;
           }
 
+          // Programmatically enforce layout wrapper constraints to override caching
+          const alumniWrapper = alumniContainer.parentElement;
+          if (alumniWrapper) {
+            alumniWrapper.style.width = "100%";
+            alumniWrapper.style.flex = "1";
+            alumniWrapper.style.display = "flex";
+            alumniWrapper.style.alignItems = "stretch";
+            alumniWrapper.style.marginBottom = "16px";
+          }
+          const alumniSectionTop = alumniContainer.closest("#alumni")?.firstElementChild;
+          if (alumniSectionTop) {
+            alumniSectionTop.style.flex = "1";
+            alumniSectionTop.style.display = "flex";
+            alumniSectionTop.style.flexDirection = "column";
+          }
+          if (prevAlumniBtn) prevAlumniBtn.style.alignSelf = "center";
+          if (nextAlumniBtn) nextAlumniBtn.style.alignSelf = "center";
+
+          alumniContainer.style.alignSelf = "stretch";
+          alumniContainer.style.alignItems = "stretch";
+          alumniContainer.style.flex = "1";
+          alumniContainer.style.display = "flex";
+          alumniContainer.style.height = "100%";
+
           alumniContainer.innerHTML = `
-            <div class="fade-in" style="display: flex; align-items: center; gap: 20px; background: var(--bg-color); padding: 20px; border-radius: var(--radius-md); min-height: 120px;">
-              <img src="${avatarUrl}" alt="${name}" class="profile-img" style="margin: 0; width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
-              <div style="flex: 1; min-width: 0;">
-                <h4 class="profile-name" style="font-size: 1.1rem; margin-bottom: 2px; text-align: left;">${name}</h4>
-                ${degreeDept ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 4px 0; text-align: left;"><i class="fa-solid fa-graduation-cap" style="margin-right: 4px;"></i> ${degreeDept}${classOf}</p>` : ""}
-                <p class="profile-role" style="margin-bottom: 8px; text-align: left; font-weight: 600; color: var(--primary);">${a.jobTitle} @ ${a.currentCompany}</p>
-                <p class="profile-quote" style="margin: 0 0 8px 0; text-align: left; font-size: 0.85rem; color: var(--text-muted); font-style: italic;">"${a.about || "Proud Alumni of CampusCare"}"</p>
+            <div class="fade-in" style="display: flex; align-items: center; gap: 20px; background: var(--bg-color); padding: 24px; border-radius: var(--radius-lg); width: 100%; height: 100%; box-sizing: border-box; flex: 1; border: 1px solid transparent; transition: all 0.3s; cursor: pointer;" id="active-alumni-card">
+              <img src="${avatarUrl}" alt="${name}" class="profile-img" style="margin: 0; width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); flex-shrink: 0; box-shadow: var(--shadow-sm);">
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                <h4 class="profile-name" style="font-size: 1.15rem; margin: 0 0 2px 0; text-align: left; font-weight: 700; color: var(--text-dark);">${name}</h4>
+                ${degreeDept ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 4px 0; text-align: left; font-weight: 500;"><i class="fa-solid fa-graduation-cap" style="margin-right: 4px; color: var(--primary);"></i> ${degreeDept}${classOf}</p>` : ""}
+                <p class="profile-role" style="margin: 0 0 8px 0; text-align: left; font-weight: 600; color: var(--primary); font-size: 0.9rem;">${a.jobTitle} @ ${a.currentCompany}</p>
+                <p class="profile-quote" style="margin: 0 0 8px 0; text-align: left; font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${a.about || "Proud Alumni of CampusCare"}"</p>
                 ${linkedinHtml}
               </div>
             </div>
           `;
+
+          const card = document.getElementById("active-alumni-card");
+          if (card) {
+            card.onclick = () => showAlumniModal(a);
+            card.onmouseenter = () => {
+              card.style.transform = 'translateY(-4px)';
+              card.style.boxShadow = 'var(--shadow-md)';
+              card.style.borderColor = 'rgba(107, 70, 193, 0.2)';
+              card.style.background = '#ffffff';
+            };
+            card.onmouseleave = () => {
+              card.style.transform = 'none';
+              card.style.boxShadow = 'none';
+              card.style.borderColor = 'transparent';
+              card.style.background = 'var(--bg-color)';
+            };
+          }
 
           // Handle button states if only 1 alumni exists
           if (alumni.length <= 1) {
@@ -611,13 +761,27 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         };
 
+        const startAlumniAutoplay = () => {
+          stopAlumniAutoplay();
+          alumniAutoplayInterval = setInterval(() => {
+            activeAlumniIndex = (activeAlumniIndex + 1) % alumni.length;
+            renderActiveAlumni();
+          }, 5000);
+        };
+
+        const stopAlumniAutoplay = () => {
+          if (alumniAutoplayInterval) clearInterval(alumniAutoplayInterval);
+        };
+
         renderActiveAlumni();
+        startAlumniAutoplay();
 
         if (prevAlumniBtn) {
           prevAlumniBtn.onclick = (e) => {
             e.preventDefault();
             activeAlumniIndex = (activeAlumniIndex - 1 + alumni.length) % alumni.length;
             renderActiveAlumni();
+            startAlumniAutoplay();
           };
         }
         if (nextAlumniBtn) {
@@ -625,6 +789,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             e.preventDefault();
             activeAlumniIndex = (activeAlumniIndex + 1) % alumni.length;
             renderActiveAlumni();
+            startAlumniAutoplay();
           };
         }
       }
@@ -639,6 +804,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load Academic Leaders
   const leadersContainer = document.getElementById("academic-leaders-list");
+  const prevLeaderBtn = document.getElementById("prev-leader-btn");
+  const nextLeaderBtn = document.getElementById("next-leader-btn");
   if (leadersContainer) {
     try {
       const res = await fetch(`${API_BASE}/api/academic-leaders`);
@@ -647,28 +814,222 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (leaders.length === 0) {
         leadersContainer.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-muted);">No academic leaders found.</p>';
+        if (prevLeaderBtn) prevLeaderBtn.style.display = "none";
+        if (nextLeaderBtn) nextLeaderBtn.style.display = "none";
       } else {
-        let html = "";
-        // Show up to 4 leaders on the landing page
-        const displayLeaders = leaders.slice(0, 4);
-        displayLeaders.forEach((leader) => {
-          const avatarUrl = leader.image ? `${API_BASE}${leader.image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random`;
-          const quote = leader.message ? `"${leader.message}"` : '"Leading with excellence."';
-          
-          html += `
-            <div class="profile-card" style="flex: 1; min-width: 200px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-              <img src="${avatarUrl}" class="profile-img" alt="${leader.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random'" />
-              <p class="profile-quote" style="min-height: 48px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-style: italic;">${quote}</p>
-              <h4 class="profile-name" style="margin-top: 10px; margin-bottom: 2px;">- ${leader.name}</h4>
-              <p class="profile-role" style="color: var(--primary); font-weight: 600; font-size: 0.85rem;">${leader.role}</p>
+        let activeLeaderIndex = 0;
+        let autoplayInterval;
+
+        const showLeaderModal = (leader) => {
+          const existingModal = document.getElementById("leader-detail-modal");
+          if (existingModal) existingModal.remove();
+
+          const avatarUrl = leader.image 
+            ? (leader.image.startsWith("http") ? leader.image : `${API_BASE}${leader.image}`) 
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random`;
+
+          const modalHtml = `
+            <div id="leader-detail-modal" style="
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100vw;
+              height: 100vh;
+              background: rgba(0, 0, 0, 0.5);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 100000;
+              backdrop-filter: blur(4px);
+            ">
+              <div style="
+                background: white;
+                border-radius: var(--radius-lg);
+                width: 90%;
+                max-width: 455px;
+                padding: 30px;
+                position: relative;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+                border: 1px solid var(--border-color);
+                animation: slideDown 0.3s ease-out;
+                text-align: center;
+              ">
+                <button id="close-leader-modal-btn" style="
+                  position: absolute;
+                  top: 15px;
+                  right: 15px;
+                  background: none;
+                  border: none;
+                  font-size: 1.5rem;
+                  color: var(--text-muted);
+                  cursor: pointer;
+                  transition: color 0.2s;
+                " onmouseenter="this.style.color='var(--danger)'" onmouseleave="this.style.color='var(--text-muted)'">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <img src="${avatarUrl}" alt="${leader.name}" style="
+                  width: 100px;
+                  height: 100px;
+                  border-radius: 50%;
+                  object-fit: cover;
+                  margin: 0 auto 16px auto;
+                  border: 3px solid var(--primary-light);
+                " onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random'" />
+
+                <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin: 0 0 4px 0;">${leader.name}</h3>
+                <p style="font-size: 0.95rem; font-weight: 600; color: var(--primary); margin: 0 0 12px 0;">${leader.role}${leader.department ? ` (${leader.department})` : ''}</p>
+
+                <div style="text-align: left; background: var(--bg-color); padding: 16px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
+                  <p style="margin: 0 0 8px 0;"><strong><i class="fa-solid fa-graduation-cap" style="width: 20px; color: var(--primary);"></i> Qualification:</strong> ${leader.qualification}</p>
+                  <p style="margin: 0 0 8px 0;"><strong><i class="fa-solid fa-briefcase" style="width: 20px; color: var(--primary);"></i> Experience:</strong> ${leader.experience || 'N/A'}</p>
+                  <p style="margin: 0 0 8px 0;"><strong><i class="fa-solid fa-envelope" style="width: 20px; color: var(--primary);"></i> Email:</strong> <a href="mailto:${leader.email}" style="color: var(--primary); text-decoration: none; font-weight: 500;">${leader.email || 'N/A'}</a></p>
+                  ${leader.message ? `<p style="margin: 8px 0 0 0; font-style: italic; border-top: 1px dashed var(--border-color); padding-top: 8px; color: var(--text-muted); font-size: 0.88rem;">"${leader.message}"</p>` : ''}
+                </div>
+
+                <a href="https://linkedin.com/search/results/people/?keywords=${encodeURIComponent(leader.name)}" target="_blank" rel="noopener" style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  background: #0077b5;
+                  color: white;
+                  padding: 10px 24px;
+                  border-radius: var(--radius-full);
+                  text-decoration: none;
+                  font-weight: 600;
+                  font-size: 0.9rem;
+                  transition: all 0.3s;
+                  box-shadow: 0 4px 12px rgba(0, 119, 181, 0.25);
+                " onmouseenter="this.style.background='#005582'; this.style.transform='translateY(-1px)';" onmouseleave="this.style.background='#0077b5'; this.style.transform='none';">
+                  <i class="fa-brands fa-linkedin" style="font-size: 1.1rem;"></i> LinkedIn Profile
+                </a>
+              </div>
             </div>
           `;
-        });
-        leadersContainer.innerHTML = html;
+
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = modalHtml;
+          const modalElement = tempDiv.firstElementChild;
+          document.body.appendChild(modalElement);
+
+          const closeModal = () => {
+            modalElement.remove();
+            document.removeEventListener("keydown", handleKeyDown);
+          };
+
+          const handleKeyDown = (e) => {
+            if (e.key === "Escape") closeModal();
+          };
+
+          modalElement.querySelector("#close-leader-modal-btn").onclick = closeModal;
+          modalElement.onclick = (e) => {
+            if (e.target === modalElement) closeModal();
+          };
+          document.addEventListener("keydown", handleKeyDown);
+        };
+
+        const renderActiveLeader = () => {
+          const leader = leaders[activeLeaderIndex];
+          const avatarUrl = leader.image 
+            ? (leader.image.startsWith("http") ? leader.image : `${API_BASE}${leader.image}`) 
+            : `https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random`;
+          const quote = leader.message ? `"${leader.message}"` : '"Leading with excellence."';
+          
+          // Programmatically enforce layout wrapper constraints to override caching
+          const wrapper = leadersContainer.parentElement;
+          if (wrapper) {
+            wrapper.style.width = "100%";
+            wrapper.style.flex = "1";
+            wrapper.style.display = "flex";
+            wrapper.style.alignItems = "stretch";
+            wrapper.style.marginBottom = "0px";
+          }
+          if (prevLeaderBtn) prevLeaderBtn.style.alignSelf = "center";
+          if (nextLeaderBtn) nextLeaderBtn.style.alignSelf = "center";
+
+          leadersContainer.style.alignSelf = "stretch";
+          leadersContainer.style.alignItems = "stretch";
+          leadersContainer.style.flex = "1";
+          leadersContainer.style.display = "flex";
+          leadersContainer.style.height = "100%";
+
+          leadersContainer.innerHTML = `
+            <div class="fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: var(--bg-color); padding: 28px 24px; border-radius: var(--radius-lg); width: 100%; height: 100%; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; flex: 1; box-sizing: border-box;" id="active-leader-card">
+              <img src="${avatarUrl}" class="profile-img" alt="${leader.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(leader.name)}&background=random'" style="margin: 0; width: 95px; height: 95px; border-radius: 50%; object-fit: cover; border: 3.5px solid var(--primary-light); flex-shrink: 0; box-shadow: var(--shadow-sm);" />
+              <div style="text-align: center; width: 100%; display: flex; flex-direction: column; gap: 8px; margin: 16px 0;">
+                <h4 class="profile-name" style="font-size: 1.35rem; margin: 0; font-weight: 700; color: var(--text-dark); text-align: center;">${leader.name}</h4>
+                <p class="profile-role" style="color: var(--primary); font-weight: 600; font-size: 0.95rem; margin: 0; text-align: center;">${leader.role}${leader.department ? ` (${leader.department})` : ''}</p>
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 6px 14px; border-radius: var(--radius-md); margin: 4px auto 0 auto; font-size: 0.85rem; display: inline-block; width: fit-content; text-align: center; border: 1px solid rgba(0,0,0,0.03);">
+                  <span style="color: var(--text-muted); font-weight: 500;"><i class="fa-solid fa-graduation-cap" style="color: var(--primary); margin-right: 6px;"></i> ${leader.qualification}</span>
+                </div>
+              </div>
+              <p class="profile-quote" style="margin: 0; font-size: 0.88rem; color: var(--text-muted); font-style: italic; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; border-top: 1px dashed rgba(107, 70, 193, 0.15); padding-top: 12px; text-align: center; width: 100%;">${quote}</p>
+            </div>
+          `;
+
+          const card = document.getElementById("active-leader-card");
+          if (card) {
+            card.onclick = () => showLeaderModal(leader);
+            card.onmouseenter = () => {
+              card.style.transform = 'translateY(-4px)';
+              card.style.boxShadow = 'var(--shadow-md)';
+              card.style.borderColor = 'rgba(107, 70, 193, 0.2)';
+              card.style.background = '#ffffff';
+            };
+            card.onmouseleave = () => {
+              card.style.transform = 'none';
+              card.style.boxShadow = 'none';
+              card.style.borderColor = 'transparent';
+              card.style.background = 'var(--bg-color)';
+            };
+          }
+
+          if (leaders.length <= 1) {
+            if (prevLeaderBtn) prevLeaderBtn.style.display = "none";
+            if (nextLeaderBtn) nextLeaderBtn.style.display = "none";
+          } else {
+            if (prevLeaderBtn) prevLeaderBtn.style.display = "flex";
+            if (nextLeaderBtn) nextLeaderBtn.style.display = "flex";
+          }
+        };
+
+        const startAutoplay = () => {
+          stopAutoplay();
+          autoplayInterval = setInterval(() => {
+            activeLeaderIndex = (activeLeaderIndex + 1) % leaders.length;
+            renderActiveLeader();
+          }, 5000);
+        };
+
+        const stopAutoplay = () => {
+          if (autoplayInterval) clearInterval(autoplayInterval);
+        };
+
+        renderActiveLeader();
+        startAutoplay();
+
+        if (prevLeaderBtn) {
+          prevLeaderBtn.onclick = (e) => {
+            e.preventDefault();
+            activeLeaderIndex = (activeLeaderIndex - 1 + leaders.length) % leaders.length;
+            renderActiveLeader();
+            startAutoplay();
+          };
+        }
+        if (nextLeaderBtn) {
+          nextLeaderBtn.onclick = (e) => {
+            e.preventDefault();
+            activeLeaderIndex = (activeLeaderIndex + 1) % leaders.length;
+            renderActiveLeader();
+            startAutoplay();
+          };
+        }
       }
     } catch (error) {
       console.error("Academic Leaders API Error:", error);
       leadersContainer.innerHTML = '<p style="text-align:center; width:100%; color:red;">Failed to load academic leaders.</p>';
+      if (prevLeaderBtn) prevLeaderBtn.style.display = "none";
+      if (nextLeaderBtn) nextLeaderBtn.style.display = "none";
     }
   }
 
