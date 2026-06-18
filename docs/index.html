@@ -604,9 +604,9 @@
           <!-- Academic Leaders -->
           <section
             class="section-card"
-            id="faculty" style="position: relative"
+            id="faculty" style="position: relative; display: flex; flex-direction: column; justify-content: space-between; height: 100%;"
           >
-            <div class="section-header">
+            <div class="section-header" style="margin-bottom: 20px;">
               <h2>
                 <i class="fa-solid fa-user-group"></i> Academic Leaders
               </h2>
@@ -617,39 +617,63 @@
               >
             </div>
 
-                <div style="display: flex; align-items: center; gap: 10px">
-                  <button
-                    style="
-                      background: none;
-                      border: none;
-                      font-size: 1.2rem;
-                      color: var(--text-muted);
-                      cursor: pointer;
-                    "
-                    data-alert="Previous slide"
-                  >
-                    <i class="fa-solid fa-chevron-left"></i>
-                  </button>
-                  <div id="academic-leaders-list" style="display: flex; gap: 16px; flex: 1; overflow-x: auto; padding-bottom: 8px;">
-                    <!-- Leaders loaded dynamically via JS -->
-                    <div style="text-align:center; width: 100%; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
-                      <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--primary); display:block; margin-bottom:10px;"></i>
-                      Loading academic leaders...
-                    </div>
-                  </div>
-                  <button
-                    style="
-                      background: none;
-                      border: none;
-                      font-size: 1.2rem;
-                      color: var(--text-muted);
-                      cursor: pointer;
-                    "
-                    data-alert="Next slide"
-                  >
-                    <i class="fa-solid fa-chevron-right"></i>
-                  </button>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex: 1; height: 100%; width: 100%;">
+              <button
+                id="prev-leader-btn"
+                style="
+                  background: white;
+                  border: 1px solid var(--border-color);
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: var(--text-muted);
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  flex-shrink: 0;
+                  box-shadow: var(--shadow-sm);
+                "
+                onmouseenter="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'; this.style.transform='scale(1.08)';"
+                onmouseleave="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'; this.style.transform='scale(1)';"
+                aria-label="Previous Leader"
+              >
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              
+              <div id="academic-leaders-list" style="flex: 1; min-width: 0; display: flex; align-items: stretch; align-self: stretch; height: 100%;">
+                <!-- Leaders loaded dynamically via JS -->
+                <div style="text-align:center; width: 100%; padding: 20px; color: var(--text-muted); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--primary); display:block; margin-bottom:10px;"></i>
+                  Loading academic leaders...
                 </div>
+              </div>
+
+              <button
+                id="next-leader-btn"
+                style="
+                  background: white;
+                  border: 1px solid var(--border-color);
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: var(--text-muted);
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  flex-shrink: 0;
+                  box-shadow: var(--shadow-sm);
+                "
+                onmouseenter="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'; this.style.transform='scale(1.08)';"
+                onmouseleave="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'; this.style.transform='scale(1)';"
+                aria-label="Next Leader"
+              >
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
           </section>
 
           <!-- Alumni Excellence -->
@@ -1136,7 +1160,7 @@
     
     <script src="assets/js/api.js?v=1.6"></script>
     <script src="assets/js/ai.js"></script>
-    <script src="assets/js/landing.js?v=2.0"></script>
+    <script src="assets/js/landing.js?v=3.3"></script>
   </body>
 </html>
 
