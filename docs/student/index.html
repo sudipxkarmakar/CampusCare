@@ -431,6 +431,19 @@
               <div class="module-title-compact">Help Desk</div>
             </div>
 
+            <!-- Hosteler Only Modules -->
+            <a href="../modules/mess-menu/view.html" class="module-card-compact hosteler-only-module" style="display: none;">
+              <div class="module-icon-compact" style="background:rgba(245, 158, 11, 0.1); color:var(--warning)"><i
+                  class="fa-solid fa-utensils"></i></div>
+              <div class="module-title-compact">Mess Routine</div>
+            </a>
+
+            <a href="../hostel/index.html" class="module-card-compact hosteler-only-module" style="display: none;">
+              <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:var(--success)"><i
+                  class="fa-solid fa-stamp"></i></div>
+              <div class="module-title-compact">Leave Status</div>
+            </a>
+
           </div>
         </section>
 
@@ -542,6 +555,71 @@
           </div>
         </section>
 
+      </div>
+
+      <!-- ROW 4 (1:1:1 Ratio): Hosteler Special (Mess Menu + Leave Status + Emergency Contacts) -->
+      <div id="hosteler-special-row" class="triple-grid" style="margin-top: 32px; align-items: stretch; display: none;">
+        <!-- Column 1: Mess Menu (Today) -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-utensils" style="color: var(--warning);"></i> Today's Mess Menu</h2>
+            <a href="../modules/mess-menu/view.html" class="btn-view-all">View All</a>
+          </div>
+          <div id="today-mess-menu-container" style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading mess menu...
+            </div>
+          </div>
+        </section>
+
+        <!-- Column 2: Leave Status -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-circle-info" style="color: var(--success);"></i> Leave Status</h2>
+            <a href="../hostel/index.html" class="btn-view-all">Manage</a>
+          </div>
+          <div id="leave-status-container" style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading leave status...
+            </div>
+          </div>
+        </section>
+
+        <!-- Column 3: Emergency Contacts -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-phone-volume" style="color: var(--danger);"></i> Emergency Contacts</h2>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: center;">
+            <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+              <div style="background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">Main Gate Warden</h4>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">+91 98765 43210</p>
+              </div>
+            </div>
+            <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+              <div style="background: rgba(245, 158, 11, 0.1); color: var(--warning); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                <i class="fa-solid fa-kit-medical"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">Campus Clinic</h4>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">+91 98765 43211</p>
+              </div>
+            </div>
+            <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+              <div style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">Hostel Helpline</h4>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">+91 98765 43212</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
     </main>

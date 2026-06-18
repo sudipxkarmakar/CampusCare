@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import User from './src/models/User.js';
 
-const MONGO_URI = 'mongodb+srv://skmultiverse:skmultiverse@cluster0.y46rdtn.mongodb.net/campuscare?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = 'mongodb://skmultiverse:skmultiverse@ac-evrcra0-shard-00-00.y46rdtn.mongodb.net:27017,ac-evrcra0-shard-00-01.y46rdtn.mongodb.net:27017,ac-evrcra0-shard-00-02.y46rdtn.mongodb.net:27017/campuscare?ssl=true&authSource=admin&retryWrites=true&w=majority';
 
 async function run() {
   await mongoose.connect(MONGO_URI);

@@ -1009,7 +1009,7 @@
       documents: '/api/documents',
       'mar-moocs': '/api/mar-moocs',
       routine: '/api/routine/student',
-      'mess-menu': '/api/warden/mess',
+      'mess-menu': '/api/hostel/mess',
       leaders: '/api/academic-leaders',
       alumni: '/api/alumni',
       achievements: '/api/achievements'
@@ -7984,7 +7984,7 @@
 
       try {
         const token = user.token || localStorage.getItem('token') || '';
-        const res = await fetch(`${apiBase}/api/warden/mess`, {
+        const res = await fetch(`${apiBase}/api/hostel/mess`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error('Mess menu load error');

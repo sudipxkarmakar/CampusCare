@@ -114,6 +114,21 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchNotices();
     fetchRoutine();
     fetchLeaves();
+
+    // Hosteler-specific dashboard row
+    if (user.role === 'hosteler') {
+        // Show hosteler-only module buttons inside My Modules & Actions
+        const hostelerModules = document.querySelectorAll('.hosteler-only-module');
+        hostelerModules.forEach(mod => {
+            mod.style.display = 'flex';
+        });
+
+        const specialRow = document.getElementById('hosteler-special-row');
+        if (specialRow) {
+            specialRow.style.display = 'grid';
+        }
+        fetchStudentMessMenu();
+    }
 });
 
 // Profile refresher
@@ -570,65 +585,128 @@ async function fetchLeaves() {
 
 function renderLeavesWidget() {
     const container = document.getElementById('gate-pass-widget-content');
-    if (!container) return;
+    const statusContainer = document.getElementById('leave-status-container');
 
-    if (!allLeaves || allLeaves.length === 0) {
-        container.innerHTML = `
-            <div style="text-align:center; padding: 24px; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; gap:12px;">
-                <div style="width:48px; height:48px; border-radius:50%; background:rgba(79, 70, 229, 0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
-                    <i class="fa-solid fa-stamp"></i>
-                </div>
-                <div>
-                    <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Gate Pass Requests</h4>
-                    <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any gate pass or leaves yet.</p>
-                </div>
-                <a href="../hostel/index.html" class="btn-pill btn-filled-purple" style="font-size:0.8rem; padding:8px 16px; margin-top:4px; text-decoration:none;">Apply Now</a>
-            </div>`;
-        return;
-    }
+    const renderInto = (el) => {
+        if (!el) return;
 
-    let html = '<div style="display:flex; flex-direction:column; gap:12px; height: 100%; justify-content: flex-start;">';
-    // Show only the 3 most recent requests
-    allLeaves.slice(0, 3).forEach((l, i) => {
-        let icon = 'fa-stamp';
-        let bg = 'rgba(79, 70, 229, 0.1)';
-        let tc = 'var(--primary)';
-        if (l.type === 'Night Out') {
-            icon = 'fa-moon';
-            bg = 'rgba(79, 70, 229, 0.1)';
-            tc = 'var(--primary)';
-        } else if (l.type === 'Home Visit') {
-            icon = 'fa-house-chimney';
-            bg = 'rgba(16, 185, 129, 0.1)';
-            tc = 'var(--success)';
-        } else if (l.type === 'Medical') {
-            icon = 'fa-kit-medical';
-            bg = 'rgba(239, 68, 68, 0.1)';
-            tc = 'var(--danger)';
+        if (!allLeaves || allLeaves.length === 0) {
+            el.innerHTML = `
+                <div style="text-align:center; padding: 24px; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; gap:12px;">
+                    <div style="width:48px; height:48px; border-radius:50%; background:rgba(79, 70, 229, 0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                        <i class="fa-solid fa-stamp"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Gate Pass Requests</h4>
+                        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any gate pass or leaves yet.</p>
+                    </div>
+                    <a href="../hostel/index.html" class="btn-pill btn-filled-purple" style="font-size:0.8rem; padding:8px 16px; margin-top:4px; text-decoration:none;">Apply Now</a>
+                </div>`;
+            return;
         }
 
-        const statusText = l.status || 'Pending';
-        let statusColor = '#f59e0b'; // pending
-        if (statusText === 'Approved') statusColor = '#10b981';
-        if (statusText.includes('Rejected')) statusColor = '#ef4444';
+        let html = '<div style="display:flex; flex-direction:column; gap:12px; height: 100%; justify-content: flex-start; width: 100%;">';
+        // Show only the 3 most recent requests
+        allLeaves.slice(0, 3).forEach((l, i) => {
+            let icon = 'fa-stamp';
+            let bg = 'rgba(79, 70, 229, 0.1)';
+            let tc = 'var(--primary)';
+            if (l.type === 'Night Out') {
+                icon = 'fa-moon';
+                bg = 'rgba(79, 70, 229, 0.1)';
+                tc = 'var(--primary)';
+            } else if (l.type === 'Home Visit') {
+                icon = 'fa-house-chimney';
+                bg = 'rgba(16, 185, 129, 0.1)';
+                tc = 'var(--success)';
+            } else if (l.type === 'Medical') {
+                icon = 'fa-kit-medical';
+                bg = 'rgba(239, 68, 68, 0.1)';
+                tc = 'var(--danger)';
+            }
 
-        const startDate = new Date(l.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-        
-        html += `
-        <a href="../hostel/index.html" style="text-decoration:none; display:flex; gap:12px; padding: 12px; border-radius: var(--radius-md); background: var(--bg-color); border: 1px solid var(--border-color); transition: all 0.2s; align-items: center;" class="notice-item-clickable">
-            <div style="background:${bg}; color:${tc}; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                <i class="fa-solid ${icon}"></i>
-            </div>
-            <div style="min-width: 0; flex:1;">
-                <h4 style="font-size: 0.9rem; margin:0 0 4px 0; color: var(--text-dark); font-weight:600;">${l.type}</h4>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.reason || 'No reason provided'}</p>
-            </div>
-            <div style="text-align: right; flex-shrink: 0;">
-                <div style="font-size: 0.75rem; font-weight: 700; color: ${statusColor}; text-transform: uppercase; margin-bottom: 2px;">${statusText}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">${startDate}</div>
-            </div>
-        </a>`;
-    });
-    html += '</div>';
-    container.innerHTML = html;
+            const statusText = l.status || 'Pending';
+            let statusColor = '#f59e0b'; // pending
+            if (statusText === 'Approved') statusColor = '#10b981';
+            if (statusText.includes('Rejected')) statusColor = '#ef4444';
+
+            const startDate = new Date(l.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+            
+            html += `
+            <a href="../hostel/index.html" style="text-decoration:none; display:flex; gap:12px; padding: 12px; border-radius: var(--radius-md); background: var(--bg-color); border: 1px solid var(--border-color); transition: all 0.2s; align-items: center;" class="notice-item-clickable">
+                <div style="background:${bg}; color:${tc}; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                    <i class="fa-solid ${icon}"></i>
+                </div>
+                <div style="min-width: 0; flex:1;">
+                    <h4 style="font-size: 0.9rem; margin:0 0 4px 0; color: var(--text-dark); font-weight:600;">${l.type}</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.reason || 'No reason provided'}</p>
+                </div>
+                <div style="text-align: right; flex-shrink: 0;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: ${statusColor}; text-transform: uppercase; margin-bottom: 2px;">${statusText}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">${startDate}</div>
+                </div>
+            </a>`;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    };
+
+    renderInto(container);
+    renderInto(statusContainer);
+}
+
+// Fetch Mess Menu for Hosteler
+async function fetchStudentMessMenu() {
+    const container = document.getElementById('today-mess-menu-container');
+    if (!container) return;
+
+    try {
+        const res = await fetch(`${API_URL}/hostel/mess`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        if (res.ok) {
+            const menu = await res.json();
+            const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const today = daysOfWeek[new Date().getDay()];
+            const todayData = menu.find(m => m.day === today);
+
+            if (!todayData || (!todayData.breakfast && !todayData.lunch && !todayData.snacks && !todayData.dinner)) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 16px 0;">
+                        No menu set for today (${today}).
+                    </div>`;
+                return;
+            }
+
+            const meals = [
+                { name: 'Breakfast', icon: 'fa-mug-hot', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)', value: todayData.breakfast },
+                { name: 'Lunch', icon: 'fa-bowl-food', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)', value: todayData.lunch },
+                { name: 'Dinner', icon: 'fa-plate-wheat', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)', value: todayData.dinner }
+            ];
+
+            let html = '';
+            meals.forEach(m => {
+                const valText = m.value ? m.value : 'Not set';
+                html += `
+                    <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); transition: all 0.2s;">
+                        <div style="background: ${m.bg}; color: ${m.color}; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                            <i class="fa-solid ${m.icon}"></i>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 0.75rem; margin: 0 0 2px 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">${m.name}</h4>
+                            <p style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${valText}">${valText}</p>
+                        </div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        } else {
+            throw new Error('Response not ok');
+        }
+    } catch (e) {
+        console.error('Error fetching mess menu:', e);
+        container.innerHTML = `
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+                Failed to load today's mess menu.
+            </div>`;
+    }
 }
