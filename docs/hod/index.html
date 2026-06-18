@@ -82,6 +82,19 @@
           margin-bottom: 0;
           line-height: 1.2;
       }
+
+      /* Media queries for modules grid */
+      @media (max-width: 1200px) {
+        .my-modules-grid {
+          grid-template-columns: repeat(4, 1fr) !important;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .my-modules-grid {
+          grid-template-columns: repeat(3, 1fr) !important;
+        }
+      }
   </style>
 </head>
 
@@ -272,7 +285,7 @@
             <div class="section-header">
               <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-bolt" style="color: var(--primary);"></i> Academic Management & Actions</h2>
             </div>
-            <div class="my-modules-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px;">
+            <div class="my-modules-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 16px;">
               <a href="../modules/gate-pass/approve.html" class="module-card-compact">
                 <div class="module-icon-compact" style="background:rgba(239, 68, 68, 0.1); color:var(--danger)"><i class="fa-solid fa-file-signature"></i></div>
                 <div class="module-title-compact">Leave Requests</div>
