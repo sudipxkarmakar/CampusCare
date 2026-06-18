@@ -461,7 +461,7 @@
               </a>
               <a href="../modules/routine/post.html" class="module-card-compact">
                 <div class="module-icon-compact" style="background:rgba(168, 85, 247, 0.1); color:var(--secondary)"><i class="fa-solid fa-calendar-week"></i></div>
-                <div class="module-title-compact">Routine Mgmt</div>
+                <div class="module-title-compact">Routine Management</div>
               </a>
               <a href="mentor_allocation.html" class="module-card-compact">
                 <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:var(--success)"><i class="fa-solid fa-chalkboard-user"></i></div>
@@ -516,53 +516,49 @@
 
       </div>
 
-      <!-- ROW 3 (2:1 Ratio): Students Table Preview + Leave Request Preview -->
+      <!-- ROW 3 (1:1:1 Ratio): Notices + Complaints + Leave Requests -->
       <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
 
-        <!-- Left Column (Span 2): Students Table -->
-        <div style="grid-column: span 2;">
-          <!-- Department Students Table Preview -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-users-rectangle" style="color: var(--primary);"></i> Department Students</h2>
-              <a href="../modules/student-database/view.html" class="btn-view-all">View All</a>
+        <!-- Column 1: Notices -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header">
+            <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-bullhorn" style="color: var(--secondary);"></i> Notices</h2>
+            <a href="../modules/notices/post.html" class="btn-view-all" style="font-size: 0.85rem;">Post Notice</a>
+          </div>
+          <div id="hod-notices-preview" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading notices...
             </div>
-            <div style="overflow-x: auto; margin-top: 16px;">
-              <table class="dashboard-table">
-                <thead>
-                  <tr>
-                    <th>Student Name</th>
-                    <th>Year</th>
-                    <th>Performance</th>
-                    <th>Attendance</th>
-                    <th style="text-align: right;">Action</th>
-                  </tr>
-                </thead>
-                <tbody id="students-table-body">
-                  <!-- Dynamically populated by JS -->
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
+          </div>
+        </section>
 
-        <!-- Right Column (Span 1): Leave Requests Preview -->
-        <div style="grid-column: span 1; display: flex;">
-          <!-- Leave Requests Preview Widget -->
-          <section class="section-card" id="hod-leave-preview-widget" style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
-            <div class="section-header" style="margin-bottom: 0;">
-              <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-file-signature" style="color: var(--warning);"></i> Leave Request Preview
-              </h2>
-              <a href="../modules/gate-pass/approve.html" class="btn-view-all" style="font-size: 0.85rem;">View All</a>
+        <!-- Column 2: Recent Complaints -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header">
+            <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Recent Complaints</h2>
+            <a href="../modules/complaints/resolve.html" class="btn-view-all" style="font-size: 0.85rem;">View All</a>
+          </div>
+          <div id="recent-complaints-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading complaints...
             </div>
-            <div id="leave-preview-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; justify-content: center;">
-              <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 24px 0;">
-                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading leave request...
-              </div>
+          </div>
+        </section>
+
+        <!-- Column 3: Leave Requests -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header">
+            <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-file-signature" style="color: var(--warning);"></i> Leave Requests
+            </h2>
+            <a href="../modules/gate-pass/approve.html" class="btn-view-all" style="font-size: 0.85rem;">View All</a>
+          </div>
+          <div id="leave-preview-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading leave requests...
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
 
     </main>
   </div>
@@ -643,6 +639,7 @@
             loadRecentComplaintsPreview();
             loadHODSchedulePreview();
             loadHODLeavePreview();
+            loadHODNoticesPreview();
         }, 500);
     });
 
@@ -670,7 +667,7 @@
             }
         } catch (e) {
             console.error('Error loading complaints preview:', e);
-            document.getElementById('recent-complaints-list-top').innerHTML = `
+            document.getElementById('recent-complaints-list').innerHTML = `
                 <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
                     Failed to load live complaints.
                 </div>
@@ -679,7 +676,7 @@
     }
 
     function renderRecentComplaintsList(complaints) {
-        const container = document.getElementById('recent-complaints-list-top');
+        const container = document.getElementById('recent-complaints-list');
         if (!container) return;
 
         // Sort by createdAt descending, filter out Resolved ones
@@ -916,6 +913,52 @@
                 ${html}
             </div>
         `;
+    }
+
+    async function loadHODNoticesPreview() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+        const container = document.getElementById('hod-notices-preview');
+        if (!container) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/notices`, {
+                headers: { 'Authorization': `Bearer ${user.token}` }
+            });
+            if (!res.ok) throw new Error('Response not ok');
+            const notices = await res.json();
+            const recent = notices
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 4);
+
+            if (recent.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:16px 0;">No notices posted yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = recent.map(n => {
+                const date = n.createdAt ? new Date(n.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : '';
+                const audience = n.audience || 'General';
+                const audienceColor = audience === 'Hostel' ? '#8b5cf6' : '#0284c7';
+                const audienceBg = audience === 'Hostel' ? 'rgba(139,92,246,0.1)' : 'rgba(2,132,199,0.1)';
+                return `
+                    <div style="display:flex; gap:12px; align-items:flex-start; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
+                        <div style="background:rgba(139,92,246,0.1); color:var(--secondary); width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <h4 style="font-size:0.85rem; margin:0 0 2px 0; color:var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${n.title || ''}">${n.title || 'Notice'}</h4>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">${date} · <span style="background:${audienceBg}; color:${audienceColor}; padding:0 6px; border-radius:6px; font-weight:600;">${audience}</span></p>
+                        </div>
+                    </div>`;
+            }).join('');
+        } catch (e) {
+            if (container) container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">Could not load notices.</div>`;
+        }
     }
   </script>
 </body>
