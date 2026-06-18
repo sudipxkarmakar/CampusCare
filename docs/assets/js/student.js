@@ -512,7 +512,9 @@ function renderNotices(filterType) {
 
     let filtered = [];
     if (filterType === 'personal') {
-        filtered = allNotices.filter(n => n.audience !== 'general');
+        filtered = allNotices.filter(n => n.audience !== 'general' && n.audience !== 'hosteler');
+    } else if (filterType === 'hosteler') {
+        filtered = allNotices.filter(n => n.audience === 'hosteler');
     } else {
         filtered = allNotices.filter(n => n.audience === 'general');
     }
