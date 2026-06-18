@@ -159,10 +159,29 @@ function setupProfile() {
         document.getElementById('userProfile').style.display = 'flex';
         document.getElementById('userName').innerText = `Hello, ${user.name}`;
         
+        // Real-time greeting
         const greetingName = document.getElementById('warden-name');
-        if (greetingName) greetingName.innerText = user.name;
-        
+        if (greetingName) greetingName.innerText = user.name; // set name first
+        updateWardenGreeting(); // then rebuild h1 with correct salutation + name
+
         document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>${user.hostelName || 'Hostel Admin'}`;
+    }
+}
+
+function updateWardenGreeting() {
+    const hour = new Date().getHours();
+    let salutation, icon;
+    if (hour >= 0 && hour < 5)         { salutation = 'Good night';     icon = '🌙'; }
+    else if (hour >= 5 && hour < 12)   { salutation = 'Good morning';   icon = '☀️'; }
+    else if (hour >= 12 && hour < 17)  { salutation = 'Good afternoon'; icon = '☀️'; }
+    else                               { salutation = 'Good evening';   icon = '🌆'; }
+
+    const h1 = document.querySelector('#home h1');
+    const nameSpan = document.getElementById('warden-name');
+    const name = nameSpan ? nameSpan.innerText : 'Warden';
+
+    if (h1) {
+        h1.innerHTML = `<span>${icon}</span> ${salutation}, <span id="warden-name" style="color: var(--success); font-weight: 800;">${name}</span>!`;
     }
 }
 

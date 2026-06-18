@@ -8,19 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // Welcome Greeting Generator
 function getGreetingText(name) {
     const hour = new Date().getHours();
-    let salutation = "Good morning";
-    let icon = "☀️";
-    
-    if (hour >= 5 && hour < 12) {
-        salutation = "Good morning";
-        icon = "☀️";
-    } else if (hour >= 12 && hour < 17) {
-        salutation = "Good afternoon";
-        icon = "☀️";
-    } else {
-        salutation = "Good evening";
-        icon = "🌙";
-    }
+    let salutation, icon;
+
+    if (hour >= 0 && hour < 5)         { salutation = 'Good night';     icon = '🌙'; }
+    else if (hour >= 5 && hour < 12)   { salutation = 'Good morning';   icon = '☀️'; }
+    else if (hour >= 12 && hour < 17)  { salutation = 'Good afternoon'; icon = '☀️'; }
+    else                               { salutation = 'Good evening';   icon = '🌆'; }
     
     return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
 }

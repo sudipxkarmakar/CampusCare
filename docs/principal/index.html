@@ -160,7 +160,7 @@
         </div>
       </header>
 
-      <!-- ROW 1 (2:1 Ratio): Hero Banner + Active Monitoring Alerts -->
+      <!-- ROW 1 (2:1 Ratio): Hero Banner + Calendar -->
       <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
         
         <!-- Left Section (Span 2): Hero + Core Stats -->
@@ -218,33 +218,18 @@
           </div>
         </div>
 
-        <!-- Right Section (Span 1): Active Monitoring Alerts -->
-        <section class="section-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-          <div style="margin-bottom: 1.5rem;">
-              <h3 style="margin: 0; color: var(--text-dark); font-size: 1.25rem;">Active Monitoring</h3>
-              <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.85rem;">Attention required at administrative checkpoints</p>
+        <!-- Right Section (Span 1): Calendar -->
+        <section class="section-card" id="calendar-widget" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 0;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> Calendar</h2>
           </div>
-
-          <div style="display: flex; flex-direction: column; gap: 16px; flex: 1; justify-content: center;">
-            <div class="stat-card-new" style="border: 1px solid var(--border-color); background: var(--bg-color); align-items: center; text-align: center;">
-              <div class="icon-wrapper" style="background: #fef3c7; color: #b45309;">
-                <i class="fa-solid fa-file-signature"></i>
-              </div>
-              <div class="stat-info" style="text-align: center;">
-                <h4>Active Leaves</h4>
-                <p class="stat-value" id="activeLeaves" style="color: #b45309;">0</p>
-              </div>
-            </div>
-
-            <a href="../modules/complaints/resolve.html" class="stat-card-new stat-card-link" style="border: 1px solid var(--border-color); background: var(--bg-color); align-items: center; text-align: center;">
-              <div class="icon-wrapper" style="background: #fee2e2; color: #b91c1c;">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-              </div>
-              <div class="stat-info" style="text-align: center;">
-                <h4>Open Complaints</h4>
-                <p class="stat-value" id="openComplaints" style="color: #b91c1c;">0</p>
-              </div>
-            </a>
+          <div style="text-align: center; margin: 16px 0; font-weight: 600; display:flex; justify-content:space-between; align-items:center;">
+            <i class="fa-solid fa-chevron-left" id="prev-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+            <span id="calendar-month-year">June 2026</span>
+            <i class="fa-solid fa-chevron-right" id="next-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+          </div>
+          <div class="calendar-grid" id="calendar-days-container">
+            <!-- Dynamically populated from JS -->
           </div>
         </section>
       </div>
@@ -423,5 +408,51 @@
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/principal.js"></script>
   <script src="../assets/js/ai.js"></script>
+  <script>
+    /* ── CALENDAR WIDGET ─────────────────────────────── */
+    let calendarDate = new Date();
+
+    function initCalendar() {
+        renderCalendar(calendarDate);
+        document.getElementById('prev-month').addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() - 1);
+            renderCalendar(calendarDate);
+        });
+        document.getElementById('next-month').addEventListener('click', () => {
+            calendarDate.setMonth(calendarDate.getMonth() + 1);
+            renderCalendar(calendarDate);
+        });
+    }
+
+    function renderCalendar(date) {
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const today = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const container = document.getElementById('calendar-days-container');
+        const dayLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+        let html = '';
+        dayLabels.forEach(d => {
+            html += `<div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding:4px 0;">${d}</div>`;
+        });
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div></div>`;
+        }
+        for (let d = 1; d <= daysInMonth; d++) {
+            const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+            html += `<div style="text-align:center; padding:6px 4px; font-size:0.8rem; border-radius:50%; cursor:default;
+                ${isToday ? 'background:var(--primary); color:white; font-weight:700;' : 'color:var(--text-dark);'}
+                transition: background 0.2s;">${d}</div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', initCalendar);
+  </script>
 </body>
 </html>
