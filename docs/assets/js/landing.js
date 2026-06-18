@@ -186,11 +186,16 @@ window.showDetailPopup = function(title, subtitle, content, dateText, category) 
     modal.addEventListener('click', (e) => {
       if (e.target === modal) window.closeDetailPopup();
     });
+    
+    // Add escape key handler
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') window.closeDetailPopup();
+    });
   }
   
   const contentBox = document.getElementById('landing-detail-modal-content');
   contentBox.innerHTML = `
-    <button onclick="window.closeDetailPopup()" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); transition: background 0.2s;"><i class="fa-solid fa-xmark"></i></button>
+    <button data-action="closeDetailPopup" aria-label="Close details" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); transition: background 0.2s;"><i class="fa-solid fa-xmark"></i></button>
     <div style="display: flex; flex-direction: column; gap: 16px;">
       <div>
         <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--primary); background: rgba(107, 70, 193, 0.1); padding: 4px 10px; border-radius: 20px;">${category || 'Update'}</span>
@@ -276,6 +281,11 @@ document.addEventListener("click", (e) => {
             modal.style.display = currentDisplay === 'none' ? 'flex' : 'none';
           }
         }
+      }
+      break;
+    case "closeDetailPopup":
+      if (typeof window.closeDetailPopup === "function") {
+        window.closeDetailPopup();
       }
       break;
     case "toggleRightPanel":
