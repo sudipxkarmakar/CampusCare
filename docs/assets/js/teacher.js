@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Top Right Profile
     const userNameEl = document.getElementById('userName');
-    const userDeptEl = document.getElementById('userDept');
+    const userDeptEl = document.getElementById('userDept') || document.getElementById('userRole');
     if (userNameEl) userNameEl.innerText = `Hi, ${user.name ? user.name.split(' ')[0] : 'Faculty'} 👋`;
     if (userDeptEl) userDeptEl.innerText = user.department || 'Department';
 
