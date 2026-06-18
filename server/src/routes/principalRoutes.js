@@ -7,7 +7,8 @@ import {
     getAllStudents,
     getAllTeachers,
     getAllHODs,
-    getAllWardens
+    getAllWardens,
+    getAllLeaves
 } from '../controllers/principalController.js';
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get('/students', protect, principal, getAllStudents);
 router.get('/teachers', protect, principal, getAllTeachers);
 router.get('/hods', protect, principal, getAllHODs);
 router.get('/wardens', protect, principal, getAllWardens);
+router.get('/leaves', protect, principal, getAllLeaves);
 router.put('/complaints/:id/resolve', protect, principal, resolveComplaintDirectly);
 
 export default router;

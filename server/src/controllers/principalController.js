@@ -136,6 +136,21 @@ const getAllWardens = async (req, res) => {
     }
 };
 
+// @desc    Get All Leaves
+// @route   GET /api/principal/leaves
+// @access  Private/Principal
+const getAllLeaves = async (req, res) => {
+    try {
+        const leaves = await Leave.find({})
+            .populate('student', 'name rollNumber department roomNumber')
+            .sort({ createdAt: -1 });
+        res.json(leaves);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 export {
     getPrincipalDashboardStats,
     getAllStaff,
@@ -143,5 +158,6 @@ export {
     getAllStudents,
     getAllTeachers,
     getAllHODs,
-    getAllWardens
+    getAllWardens,
+    getAllLeaves
 };
