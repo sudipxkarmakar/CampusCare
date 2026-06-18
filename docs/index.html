@@ -600,7 +600,7 @@
         <!-- END ROW 2 -->
 
         <!-- ROW 3: Leaders, Alumni, Achievements -->
-        <div class="triple-grid" id="alumni-section">
+        <div class="triple-grid" id="alumni-section" style="align-items: stretch;">
           <!-- Academic Leaders -->
           <section
             class="section-card"
@@ -653,74 +653,127 @@
           </section>
 
           <!-- Alumni Excellence -->
-          <section class="section-card" id="alumni">
-            <div class="section-header">
-              <h2>
-                <i class="fa-solid fa-graduation-cap"></i> Alumni Excellence
-              </h2>
-              <a
-                href="modules/alumni/view.html"
-                class="btn-view-all"
-                >View All</a
-              >
-            </div>
-            <div id="alumni-list">
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 20px;
-                  background: var(--bg-color);
-                  padding: 20px;
-                  border-radius: var(--radius-md);
-                "
-              >
-                <img
-                  src="https://ui-avatars.com/api/?name=AR&background=random"
-                  class="profile-img"
-                  style="margin: 0; width: 70px; height: 70px"
-                />
-                <div>
-                  <h4 class="profile-name" style="font-size: 1.1rem">
-                    Ahmad Raza
-                  </h4>
-                  <p class="profile-role" style="margin-bottom: 8px">
-                    Software Engineer at Google
-                  </p>
-                  <p
-                    class="profile-quote"
-                    style="margin: 0; text-align: left"
+          <section class="section-card" id="alumni" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+            <div>
+              <div class="section-header" style="margin-bottom: 20px;">
+                <h2>
+                  <i class="fa-solid fa-graduation-cap"></i> Alumni Excellence
+                </h2>
+                <a
+                  href="modules/alumni/view.html"
+                  class="btn-view-all"
+                  >View All</a
+                >
+              </div>
+              
+              <!-- Slider Wrapper -->
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                <button
+                  id="prev-alumni-btn"
+                  style="
+                    background: white;
+                    border: 1px solid var(--border-color);
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--text-muted);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    flex-shrink: 0;
+                    box-shadow: var(--shadow-sm);
+                  "
+                  onmouseenter="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'; this.style.transform='scale(1.08)';"
+                  onmouseleave="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'; this.style.transform='scale(1)';"
+                  aria-label="Previous Alumni"
+                >
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                
+                <div id="alumni-list" style="flex: 1; min-width: 0;">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 20px;
+                      background: var(--bg-color);
+                      padding: 20px;
+                      border-radius: var(--radius-md);
+                    "
                   >
-                    "Hard work, consistency and curiosity will take you
-                    places."
-                  </p>
+                    <img
+                      src="https://ui-avatars.com/api/?name=AR&background=random"
+                      class="profile-img"
+                      style="margin: 0; width: 70px; height: 70px; border-radius: 50%;"
+                      alt="Ahmad Raza"
+                    />
+                    <div>
+                      <h4 class="profile-name" style="font-size: 1.1rem; text-align: left;">Ahmad Raza</h4>
+                      <p class="profile-role" style="margin-bottom: 8px; text-align: left; font-weight: 600; color: var(--primary);">Software Engineer at Google</p>
+                      <p
+                        class="profile-quote"
+                        style="margin: 0; text-align: left; font-size: 0.85rem; color: var(--text-muted);"
+                      >
+                        "Hard work, consistency and curiosity will take you places."
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  id="next-alumni-btn"
+                  style="
+                    background: white;
+                    border: 1px solid var(--border-color);
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--text-muted);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    flex-shrink: 0;
+                    box-shadow: var(--shadow-sm);
+                  "
+                  onmouseenter="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'; this.style.transform='scale(1.08)';"
+                  onmouseleave="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'; this.style.transform='scale(1)';"
+                  aria-label="Next Alumni"
+                >
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="alumni-stats" style="margin-top: 16px; margin-bottom: 20px;">
+                <div class="alumni-stat-item text-center">
+                  <h3>120+</h3>
+                  <p>Alumni Network</p>
+                </div>
+                <div class="alumni-stat-item text-center">
+                  <h3>18</h3>
+                  <p>Industry Mentors</p>
+                </div>
+                <div class="alumni-stat-item text-center">
+                  <h3>24</h3>
+                  <p>Events Completed</p>
+                </div>
+                <div class="alumni-stat-item text-center">
+                  <h3>850+</h3>
+                  <p>Student Interactions</p>
                 </div>
               </div>
-            </div>
-            <div class="alumni-stats">
-              <div class="alumni-stat-item text-center">
-                <h3>120+</h3>
-                <p>Alumni Network</p>
+              <div style="text-align: center">
+                <a
+                  href="modules/alumni/view.html"
+                  class="btn-view-all"
+                  >Connect with Alumni &rarr;</a
+                >
               </div>
-              <div class="alumni-stat-item text-center">
-                <h3>18</h3>
-                <p>Industry Mentors</p>
-              </div>
-              <div class="alumni-stat-item text-center">
-                <h3>24</h3>
-                <p>Events Completed</p>
-              </div>
-              <div class="alumni-stat-item text-center">
-                <h3>850+</h3>
-                <p>Student Interactions</p>
-              </div>
-            </div>
-            <div style="text-align: center">
-              <a
-                href="modules/alumni/view.html"
-                class="btn-view-all"
-                >Connect with Alumni &rarr;</a
-              >
             </div>
           </section>
 
