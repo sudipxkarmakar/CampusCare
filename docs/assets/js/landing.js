@@ -1070,9 +1070,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           const cat = (ach.category || 'other').toLowerCase();
           const meta = categoryMeta[cat] || categoryMeta.other;
           
-          const isTruncated = ach.description.length > 120;
-          const shortDesc = isTruncated ? ach.description.substring(0, 120) + "..." : ach.description;
-
           html += `
             <div data-action="showAchievement" data-id="${ach._id}" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: ${meta.bg}; border-radius: var(--radius-md); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
               <div style="font-size: 2rem; color: ${meta.color}">
@@ -1080,8 +1077,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               </div>
               <div style="flex: 1; min-width: 0;">
                 <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-dark);">${ach.title}</h4>
-                <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: ${meta.color}; line-height: 1.4;">${shortDesc}</p>
-                ${isTruncated ? `<span style="font-size: 0.75rem; font-weight: 600; color: var(--primary); display: inline-block; margin-top: 4px;">Read More <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i></span>` : ''}
+                <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: ${meta.color}; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${ach.description}</p>
               </div>
             </div>
           `;
@@ -1122,9 +1118,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           award:     { icon: 'fa-ranking-star', color: '#f59e0b', bg: '#fef3c7' },
         }[cat] || { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' };
 
-        const isTruncated = ach.description.length > 120;
-        const shortDesc = isTruncated ? ach.description.substring(0, 120) + "..." : ach.description;
-
         html += `
           <div data-action="showAchievement" data-id="${ach._id}" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: ${meta.bg}; border-radius: var(--radius-md); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
             <div style="font-size: 2rem; color: ${meta.color}">
@@ -1132,8 +1125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
             <div style="flex: 1; min-width: 0;">
               <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-dark);">${ach.title}</h4>
-              <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: ${meta.color}; line-height: 1.4;">${shortDesc}</p>
-              ${isTruncated ? `<span style="font-size: 0.75rem; font-weight: 600; color: var(--primary); display: inline-block; margin-top: 4px;">Read More <i class="fa-solid fa-chevron-right" style="font-size:0.65rem;"></i></span>` : ''}
+              <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: ${meta.color}; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${ach.description}</p>
             </div>
           </div>
         `;

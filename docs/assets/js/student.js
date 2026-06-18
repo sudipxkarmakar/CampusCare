@@ -15,6 +15,7 @@ if (user.role !== 'student' && user.role !== 'hosteler') {
 // Global state for filtering
 let allAssignments = [];
 let allNotices = [];
+let allLeaves = [];
 let currentCalendarDate = new Date();
 
 const calendarEvents = {
@@ -112,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchStats();
     fetchNotices();
     fetchRoutine();
+    fetchLeaves();
 });
 
 // Profile refresher
@@ -549,4 +551,84 @@ function renderNotices(filterType) {
 function logout() {
     localStorage.removeItem('user');
     window.location.href = '../index.html';
+}
+
+// Gate Pass / Leaves Widget Functions
+async function fetchLeaves() {
+    try {
+        const res = await fetch(`${API_URL}/hostel/my-leaves`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        if (res.ok) {
+            allLeaves = await res.json();
+            renderLeavesWidget();
+        }
+    } catch (error) {
+        console.error('Error fetching leaves:', error);
+    }
+}
+
+function renderLeavesWidget() {
+    const container = document.getElementById('gate-pass-widget-content');
+    if (!container) return;
+
+    if (!allLeaves || allLeaves.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding: 24px; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; gap:12px;">
+                <div style="width:48px; height:48px; border-radius:50%; background:rgba(79, 70, 229, 0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                    <i class="fa-solid fa-stamp"></i>
+                </div>
+                <div>
+                    <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Gate Pass Requests</h4>
+                    <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any gate pass or leaves yet.</p>
+                </div>
+                <a href="../hostel/index.html" class="btn-pill btn-filled-purple" style="font-size:0.8rem; padding:8px 16px; margin-top:4px; text-decoration:none;">Apply Now</a>
+            </div>`;
+        return;
+    }
+
+    let html = '<div style="display:flex; flex-direction:column; gap:12px; height: 100%; justify-content: flex-start;">';
+    // Show only the 3 most recent requests
+    allLeaves.slice(0, 3).forEach((l, i) => {
+        let icon = 'fa-stamp';
+        let bg = 'rgba(79, 70, 229, 0.1)';
+        let tc = 'var(--primary)';
+        if (l.type === 'Night Out') {
+            icon = 'fa-moon';
+            bg = 'rgba(79, 70, 229, 0.1)';
+            tc = 'var(--primary)';
+        } else if (l.type === 'Home Visit') {
+            icon = 'fa-house-chimney';
+            bg = 'rgba(16, 185, 129, 0.1)';
+            tc = 'var(--success)';
+        } else if (l.type === 'Medical') {
+            icon = 'fa-kit-medical';
+            bg = 'rgba(239, 68, 68, 0.1)';
+            tc = 'var(--danger)';
+        }
+
+        const statusText = l.status || 'Pending';
+        let statusColor = '#f59e0b'; // pending
+        if (statusText === 'Approved') statusColor = '#10b981';
+        if (statusText.includes('Rejected')) statusColor = '#ef4444';
+
+        const startDate = new Date(l.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+        
+        html += `
+        <a href="../hostel/index.html" style="text-decoration:none; display:flex; gap:12px; padding: 12px; border-radius: var(--radius-md); background: var(--bg-color); border: 1px solid var(--border-color); transition: all 0.2s; align-items: center;" class="notice-item-clickable">
+            <div style="background:${bg}; color:${tc}; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                <i class="fa-solid ${icon}"></i>
+            </div>
+            <div style="min-width: 0; flex:1;">
+                <h4 style="font-size: 0.9rem; margin:0 0 4px 0; color: var(--text-dark); font-weight:600;">${l.type}</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.reason || 'No reason provided'}</p>
+            </div>
+            <div style="text-align: right; flex-shrink: 0;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: ${statusColor}; text-transform: uppercase; margin-bottom: 2px;">${statusText}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">${startDate}</div>
+            </div>
+        </a>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
 }
