@@ -453,6 +453,14 @@
       return;
     }
 
+    if (cfg.module === 'mess-menu') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderMessMenuPage(info);
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'complaints') {
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
@@ -7083,6 +7091,9 @@
   }
 
   async function renderRoutinePage(info) {
+    // Clean up any lingering modals in document.body
+    document.body.querySelectorAll('#routineSlotModal, #messSlotModal').forEach(m => m.remove());
+
     // Hide default hero
     const hero = document.getElementById('home');
     if (hero) hero.style.display = 'none';
@@ -7549,13 +7560,17 @@
 
     function openEditModal(cellDay, cellSlot) {
       const modal = document.getElementById('routineSlotModal');
+      if (!modal) return;
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
       const infoText = document.getElementById('routineModalInfo');
       const select = document.getElementById('routineModalSelect');
       const saveBtn = document.getElementById('routineModalSaveBtn');
       const deleteBtn = document.getElementById('routineModalDeleteBtn');
       const cancelBtn = document.getElementById('routineModalCancelBtn');
 
-      if (!modal || !select) return;
+      if (!select) return;
 
       infoText.innerText = `Schedule slot on ${cellDay} at ${cellSlot} for ${dept} ${year} (${batch})`;
       
@@ -7723,6 +7738,389 @@
 
       cancelBtn.onclick = () => {
         modal.style.display = 'none';
+      };
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      };
+    }
+  }
+
+  async function renderMessMenuPage(info) {
+    // Clean up any lingering modals in document.body
+    document.body.querySelectorAll('#routineSlotModal, #messSlotModal').forEach(m => m.remove());
+
+    // Hide default hero
+    const hero = document.getElementById('home');
+    if (hero) hero.style.display = 'none';
+
+    const role = (user.role || 'Guest').toLowerCase();
+    const isWarden = role === 'warden';
+    const isPrincipal = role === 'principal';
+    const isAdmin = role === 'admin';
+    const isWardenOrPrincipal = isWarden || isPrincipal || isAdmin;
+    const isEditMode = isWardenOrPrincipal && cfg.mode === 'post';
+
+    // CSS injection for mess menu grid
+    if (!document.getElementById('mess-grid-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'mess-grid-styles';
+      styles.innerHTML = `
+        .mess-grid-container {
+          background: #ffffff;
+          border-radius: 18px;
+          padding: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid #f1f5f9;
+          margin-bottom: 24px;
+        }
+        .mess-grid {
+          display: grid;
+          grid-template-columns: 110px repeat(4, 1fr);
+          gap: 8px;
+        }
+        .mess-grid.current-day-row {
+          background: #f1f5f9 !important;
+          border-radius: 8px;
+        }
+        .mess-grid.current-day-row .mess-slot-cell:not(.assigned) {
+          background: #e2e8f0 !important;
+          border-color: #cbd5e1 !important;
+        }
+        .mess-header-cell {
+          font-weight: 700;
+          font-size: 0.75rem;
+          color: #4f46e5;
+          text-align: center;
+          padding: 10px 4px;
+          background: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .mess-day-cell {
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #1e1b4b;
+          background: #f1f5f9;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #cbd5e1;
+        }
+        .mess-day-cell.current-day {
+          background: #6b46c1 !important;
+          color: #ffffff !important;
+          border-color: #6b46c1 !important;
+          box-shadow: 0 0 8px rgba(107, 70, 193, 0.2);
+        }
+        .mess-slot-cell {
+          background: #fafafa;
+          border: 1px dashed #e2e8f0;
+          border-radius: 8px;
+          padding: 8px 6px;
+          min-height: 58px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          font-size: 0.75rem;
+          transition: all 0.2s;
+          cursor: default;
+        }
+        .mess-slot-cell.assigned {
+          background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+          border: 1px solid #c084fc;
+          color: #581c87;
+        }
+        .mess-slot-cell.assigned:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+        }
+        .mess-slot-cell.editable {
+          cursor: pointer;
+          border-style: solid;
+        }
+        .mess-slot-cell.editable:hover {
+          border-color: #6b46c1;
+          background: #fdfeff;
+          box-shadow: inset 0 0 0 1px #6b46c1;
+        }
+        .mess-cell-food {
+          font-weight: 800;
+          font-size: 0.75rem;
+          line-height: 1.2;
+          color: #1e1b4b;
+        }
+        .mess-cell-empty {
+          color: #cbd5e1;
+          font-style: italic;
+          font-size: 0.65rem;
+        }
+        /* Modal Style Override */
+        .routine-modal-overlay {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          z-index: 9999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+        }
+        .routine-modal {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 24px;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+          border: 1px solid #e2e8f0;
+          animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+
+    const html = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="messBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+              ${isEditMode ? 'Mess Menu Management' : 'Weekly Mess Menu'}
+            </h2>
+            <p id="messSub" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">
+              Loading menu details...
+            </p>
+          </div>
+        </div>
+        <div id="messActionArea" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap;"></div>
+      </div>
+
+      <!-- Main mess grid wrapper -->
+      <div id="messGridWrapper" style="width: 100%; overflow-x: auto;">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading menu details...</div>
+        </div>
+      </div>
+
+      <!-- Custom Mess Edit Modal -->
+      <div id="messSlotModal" class="routine-modal-overlay">
+        <div class="routine-modal">
+          <h3 id="messModalTitle" style="margin-top: 0; margin-bottom: 8px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b;">Edit Mess Menu Slot</h3>
+          <p id="messModalInfo" style="font-size: 0.8rem; color: #64748b; margin-bottom: 20px; line-height: 1.4;"></p>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; font-size: 0.8rem; color: #475569; margin-bottom: 8px;">Food Menu</label>
+            <input type="text" id="messModalInput" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: white; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #1e1b4b;" placeholder="Enter food item(s)"></input>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" id="messModalCancelBtn" class="btn-outline-purple" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; background: transparent; border: 1px solid #e2e8f0; color: #475569;">Cancel</button>
+            <button type="button" id="messModalSaveBtn" class="btn-filled-purple" style="font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; background: #6b46c1; color: white; border: none;">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const el = content(html);
+    document.getElementById('messBackBtn')?.addEventListener('click', goToDashboard);
+
+    // Setup action switcher
+    const actionArea = document.getElementById('messActionArea');
+    if (actionArea && isWardenOrPrincipal) {
+      actionArea.innerHTML = isEditMode
+        ? `<a href="view.html" class="btn-pill btn-outline-purple" style="font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-eye"></i> View</a>`
+        : `<a href="post.html" class="btn-pill btn-filled-purple" style="font-size: 0.85rem; font-weight: 600; background:#6b46c1; color:white; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-pen-to-square"></i> Edit</a>`;
+    }
+
+    const meals = ['Breakfast', 'Lunch', 'Snacks', 'Dinner'];
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    let loadedMenu = [];
+
+    await loadData();
+
+    async function loadData() {
+      const gridWrapper = document.getElementById('messGridWrapper');
+      if (gridWrapper) {
+        gridWrapper.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading menu...</div>
+          </div>
+        `;
+      }
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const res = await fetch(`${apiBase}/api/warden/mess`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Mess menu load error');
+        loadedMenu = await res.json();
+
+        const subtitle = document.getElementById('messSub');
+        if (subtitle) {
+          subtitle.innerText = isEditMode ? 'Modify daily menu options for the hostel mess' : 'Weekly meal planning for residents';
+        }
+
+        renderGrid();
+      } catch (err) {
+        console.error(err);
+        if (gridWrapper) {
+          gridWrapper.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #ef4444;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 8px;"></i>
+              <div>Failed to load mess menu. Please check backend server.</div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderGrid() {
+      const wrapper = document.getElementById('messGridWrapper');
+      if (!wrapper) return;
+
+      let gridHTML = `
+        <div class="mess-grid-container">
+          <div class="mess-grid" style="margin-bottom: 8px;">
+            <div class="mess-header-cell" style="background: #e0e7ff; color: #4338ca;">Day / Meal</div>
+            ${meals.map(m => `<div class="mess-header-cell">${m}</div>`).join('')}
+          </div>
+      `;
+
+      const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+      days.forEach(day => {
+        const isToday = day === currentDay;
+        const dayCellClass = isToday ? 'mess-day-cell current-day' : 'mess-day-cell';
+        gridHTML += `
+          <div class="mess-grid ${isToday ? 'current-day-row' : ''}" style="margin-bottom: 8px;">
+            <div class="${dayCellClass}">${day}</div>
+        `;
+
+        meals.forEach(meal => {
+          const dayData = loadedMenu.find(m => m.day === day) || {};
+          const mealKey = meal.toLowerCase();
+          const food = dayData[mealKey] || '';
+
+          const hasFood = !!food;
+          let cellStyle = '';
+          if (hasFood) {
+            cellStyle = 'background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #c084fc; color: #581c87; font-weight: 700;';
+            if (isToday) {
+              cellStyle = 'background: linear-gradient(135deg, #e9d5ff, #c084fc); border: 1px solid #a855f7; color: #3b0764; font-weight: 800;';
+            }
+          }
+
+          gridHTML += `
+            <div class="mess-slot-cell ${hasFood ? 'assigned' : ''} ${isEditMode ? 'editable' : ''}" style="${cellStyle}" data-day="${day}" data-meal="${mealKey}">
+              ${hasFood ? `<span class="mess-cell-food">${esc(food)}</span>` : `<span class="mess-cell-empty">-</span>`}
+            </div>
+          `;
+        });
+
+        gridHTML += `</div>`; // Close row
+      });
+
+      gridHTML += `</div>`; // Close container
+      wrapper.innerHTML = gridHTML;
+
+      if (isEditMode) {
+        wrapper.querySelectorAll('.mess-slot-cell.editable').forEach(cell => {
+          cell.addEventListener('click', () => {
+            const cellDay = cell.dataset.day;
+            const cellMeal = cell.dataset.meal;
+            openEditModal(cellDay, cellMeal);
+          });
+        });
+      }
+    }
+
+    function openEditModal(cellDay, cellMeal) {
+      const modal = document.getElementById('messSlotModal');
+      if (!modal) return;
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+      const infoText = document.getElementById('messModalInfo');
+      const input = document.getElementById('messModalInput');
+      const saveBtn = document.getElementById('messModalSaveBtn');
+      const cancelBtn = document.getElementById('messModalCancelBtn');
+
+      if (!input) return;
+
+      const dayData = loadedMenu.find(m => m.day === cellDay) || {};
+      const currentFood = dayData[cellMeal] || '';
+
+      infoText.innerText = `Edit ${cellMeal.toUpperCase()} menu for ${cellDay}`;
+      input.value = currentFood;
+
+      modal.style.display = 'flex';
+      input.focus();
+
+      saveBtn.onclick = async () => {
+        const token = user.token || localStorage.getItem('token') || '';
+        const newValue = input.value.trim();
+
+        const updatedDayData = {
+          day: cellDay,
+          breakfast: dayData.breakfast || '',
+          lunch: dayData.lunch || '',
+          snacks: dayData.snacks || '',
+          dinner: dayData.dinner || '',
+          ...dayData
+        };
+
+        updatedDayData[cellMeal] = newValue;
+
+        try {
+          const res = await fetch(`${apiBase}/api/warden/mess`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              day: cellDay,
+              breakfast: updatedDayData.breakfast,
+              lunch: updatedDayData.lunch,
+              snacks: updatedDayData.snacks,
+              dinner: updatedDayData.dinner
+            })
+          });
+
+          if (!res.ok) throw new Error('Save mess menu failed');
+          modal.style.display = 'none';
+          await loadData();
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+      };
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
       };
     }
   }
