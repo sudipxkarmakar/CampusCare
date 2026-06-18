@@ -526,46 +526,18 @@
           </div>
         </section>
 
-        <!-- Column 3: Academic Progress -->
-        <section class="section-card" id="academic-progress-card"
-          style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-          <div class="section-header" style="width: 100%; text-align: left; margin-bottom: 12px;">
-            <h2 style="font-size: 1.25rem; margin: 0;"><i class="fa-solid fa-chart-pie"
-                style="color: var(--primary);"></i> Academic Progress</h2>
+        <!-- Column 3: Gate Pass -->
+        <section class="section-card" id="gate-pass-card"
+          style="display: flex; flex-direction: column; align-items: stretch;">
+          <div class="section-header" style="width: 100%; text-align: left; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 1.25rem; margin: 0;"><i class="fa-solid fa-stamp"
+                style="color: var(--primary);"></i> Gate Pass</h2>
+            <a href="../hostel/index.html" class="btn-view-all">Apply</a>
           </div>
-          <div
-            style="position: relative; margin: 16px auto; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;">
-            <div id="progress-pie-chart"
-              style="width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(var(--primary) 0% 0%, var(--border-color) 0% 100%); transition: background 0.5s ease;">
-            </div>
-            <div
-              style="position: absolute; width: 90px; height: 90px; background: white; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);">
-              <span id="progress-percentage"
-                style="font-size: 1.4rem; font-weight: 800; color: var(--text-dark);">0%</span>
-              <span
-                style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Complete</span>
-            </div>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px;">
-            <div
-              style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: var(--bg-color); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-              <span
-                style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                <span
-                  style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--primary);"></span>
-                Submitted Tasks
-              </span>
-              <strong id="progress-submitted-count" style="font-size: 0.9rem; color: var(--text-dark);">0</strong>
-            </div>
-            <div
-              style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: var(--bg-color); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-              <span
-                style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                <span
-                  style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--border-color);"></span>
-                Pending Tasks
-              </span>
-              <strong id="progress-pending-count" style="font-size: 0.9rem; color: var(--text-dark);">0</strong>
+          <div id="gate-pass-widget-content" style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center;">
+            <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 8px;"></i>
+              <div>Loading gate passes...</div>
             </div>
           </div>
         </section>
