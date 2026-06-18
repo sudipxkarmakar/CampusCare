@@ -1,11 +1,19 @@
 import Achievement from '../models/Achievement.js';
 
-// @desc    Get all APPROVED achievements (public)
+// @desc    Get achievements
+//          - HOD / principal: all (pending + approved + rejected)
+//          - Everyone else: only approved
 // @route   GET /api/achievements
 export const getAchievements = async (req, res) => {
     try {
-        const achievements = await Achievement.find({ status: 'approved' })
-            .sort({ priority: 1, year: -1, createdAt: -1 })
+        // If an auth token is present, check if the user is an authority
+        const role = (req.user?.role || 'guest').toLowerCase();
+        const isAuthority = ['hod', 'principal', 'admin', 'dean'].includes(role);
+
+        const filter = isAuthority ? {} : { status: 'approved' };
+
+        const achievements = await Achievement.find(filter)
+            .sort({ priority: 1, createdAt: -1 })
             .populate('submittedBy', 'name role department')
             .lean();
         res.json(achievements);
@@ -18,13 +26,16 @@ export const getAchievements = async (req, res) => {
 // @route   POST /api/achievements
 export const createAchievement = async (req, res) => {
     const { title, description, category, year, image, priority } = req.body;
-    const submitterRole = req.user.role;
+    const submitterRole = (req.user.role || '').toLowerCase();
 
     if (!['teacher', 'hod', 'principal'].includes(submitterRole)) {
         return res.status(403).json({ message: 'Only teachers, HODs, and principals can submit achievements.' });
     }
 
     try {
+        // HODs and principals auto-approve their own submissions
+        const autoApprove = ['hod', 'principal'].includes(submitterRole);
+
         const achievement = new Achievement({
             title,
             description,
@@ -34,10 +45,9 @@ export const createAchievement = async (req, res) => {
             priority: priority || 10,
             submittedBy: req.user._id,
             submittedByRole: submitterRole,
-            // Principals auto-approve their own submissions
-            status: submitterRole === 'principal' ? 'approved' : 'pending',
-            verifiedBy: submitterRole === 'principal' ? req.user._id : null,
-            verifiedByRole: submitterRole === 'principal' ? 'principal' : null,
+            status: autoApprove ? 'approved' : 'pending',
+            verifiedBy: autoApprove ? req.user._id : null,
+            verifiedByRole: autoApprove ? submitterRole : null,
         });
 
         const saved = await achievement.save();
@@ -47,10 +57,43 @@ export const createAchievement = async (req, res) => {
     }
 };
 
+// @desc    Update an achievement (hod / principal)
+// @route   PUT /api/achievements/:id
+export const updateAchievement = async (req, res) => {
+    const role = (req.user.role || '').toLowerCase();
+    if (!['hod', 'principal'].includes(role)) {
+        return res.status(403).json({ message: 'Only HODs and Principals can update achievements.' });
+    }
+
+    const { title, description, category, year, priority, image } = req.body;
+
+    try {
+        const achievement = await Achievement.findById(req.params.id);
+        if (!achievement) return res.status(404).json({ message: 'Achievement not found.' });
+
+        if (title !== undefined) achievement.title = title;
+        if (description !== undefined) achievement.description = description;
+        if (category !== undefined) achievement.category = category;
+        if (year !== undefined) achievement.year = year;
+        if (priority !== undefined) achievement.priority = priority;
+        if (image !== undefined) achievement.image = image;
+
+        // Keep status approved after edit (HOD is authoritative)
+        achievement.status = 'approved';
+        achievement.verifiedBy = req.user._id;
+        achievement.verifiedByRole = role;
+
+        const updated = await achievement.save();
+        res.json(updated);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
 // @desc    Get all PENDING achievements (hod / principal can see & verify)
 // @route   GET /api/achievements/pending
 export const getPendingAchievements = async (req, res) => {
-    const role = req.user.role;
+    const role = (req.user.role || '').toLowerCase();
     if (!['hod', 'principal'].includes(role)) {
         return res.status(403).json({ message: 'Only HODs and Principals can view pending achievements.' });
     }
@@ -68,8 +111,8 @@ export const getPendingAchievements = async (req, res) => {
 // @desc    Approve or Reject an achievement
 // @route   PATCH /api/achievements/:id/verify
 export const verifyAchievement = async (req, res) => {
-    const { status, rejectionReason } = req.body; // status: 'approved' | 'rejected'
-    const role = req.user.role;
+    const { status, rejectionReason } = req.body;
+    const role = (req.user.role || '').toLowerCase();
 
     if (!['hod', 'principal'].includes(role)) {
         return res.status(403).json({ message: 'Only HODs and Principals can verify achievements.' });
@@ -98,11 +141,12 @@ export const verifyAchievement = async (req, res) => {
     }
 };
 
-// @desc    Delete an achievement (principal only)
+// @desc    Delete an achievement (hod / principal)
 // @route   DELETE /api/achievements/:id
 export const deleteAchievement = async (req, res) => {
-    if (req.user.role !== 'principal') {
-        return res.status(403).json({ message: 'Only the principal can delete achievements.' });
+    const role = (req.user.role || '').toLowerCase();
+    if (!['hod', 'principal'].includes(role)) {
+        return res.status(403).json({ message: 'Only HODs and Principals can delete achievements.' });
     }
     try {
         const achievement = await Achievement.findByIdAndDelete(req.params.id);

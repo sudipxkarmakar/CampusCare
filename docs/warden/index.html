@@ -115,7 +115,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <a href="../index.html" class="logo-container">
-        <img src="../assets/images/hero-illustration.png" alt="Logo" class="logo-icon"
+        <img src="../assets/images/logo.png" alt="Logo" class="logo-icon"
           onerror="this.src='https://ui-avatars.com/api/?name=CC&background=10b981&color=fff&rounded=true'" />
         <div class="logo-text">CampusCare</div>
       </a>
@@ -575,7 +575,7 @@
         // Sort by createdAt descending, filter out Resolved ones
         const activeComplaints = complaints.filter(c => c.status !== 'Resolved');
         const sorted = activeComplaints.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        const recent = sorted.slice(0, 2); // Show top 2 recent active complaints
+        const recent = sorted.slice(0, 5); // Show top 5 recent active complaints
 
         if (recent.length === 0) {
             container.innerHTML = `

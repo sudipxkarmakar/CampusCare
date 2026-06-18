@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "inspect": "node scripts/inspect_complaints.js"
+    "inspect": "node scripts/inspect_complaints.js",
+    "check-achievements": "node check_achievements.js"
   },
   "dependencies": {
     "compression": "^1.8.1",

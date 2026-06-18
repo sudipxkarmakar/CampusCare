@@ -120,6 +120,9 @@
         const userRole = (user.role || 'Guest').toLowerCase();
         const isStudent = userRole === 'student' || userRole === 'hosteler';
         if (cfg.module === 'assignments' && isStudent && key === 'post') return false;
+        if (cfg.module === 'routine' && key === 'post') {
+          return userRole === 'hod' || userRole === 'principal' || userRole === 'admin';
+        }
         return true;
       })
       .map(([key, value]) => `<a class="btn-dashboard ${cfg.mode === key ? 'active' : ''}" href="${value}"><i class="fa-solid ${key === 'post' ? 'fa-plus' : key === 'resolve' ? 'fa-check' : 'fa-eye'}"></i> ${label(key)}</a>`)
@@ -181,15 +184,15 @@
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
-        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Post Alumni</a></li>
-        <li><a href="${rootPrefix}modules/alumni/view.html" class="nav-item ${cfg.module === 'alumni' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Alumni Excellence</a></li>
-        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
-        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> Academic Leaders</a></li>
+        <li><a href="${rootPrefix}modules/achievements/post.html" class="nav-item ${cfg.module === 'achievements' ? 'active' : ''}"><i class="fa-solid fa-trophy"></i> Achievements</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
       navMenuHtml = `
         <li><a href="${rootPrefix}principal/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> Routine Management</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> All Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> All Teachers</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-hods" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-hods') ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> HODs</a></li>
@@ -197,7 +200,7 @@
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-list-check"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Global Notices</a></li>
         <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Central Library</a></li>
-        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
+        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> Add Academic Leader</a></li>
         <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
       `;
     } else {
@@ -320,7 +323,7 @@
           <aside class="sidebar">
             <a href="${rootPrefix}index.html" class="logo-container">
               <img
-                src="${rootPrefix}assets/images/hero-illustration.png"
+                src="${rootPrefix}assets/images/logo.png"
                 alt="Logo"
                 class="logo-icon"
                 onerror="this.src='https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'"
@@ -442,10 +445,34 @@
       });
     });
 
+    if (cfg.module === 'routine') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderRoutinePage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'mess-menu') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderMessMenuPage(info);
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'complaints') {
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderComplaintsPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'documents') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderDocumentsPage(info);
       initSidebar();
       return;
     }
@@ -470,6 +497,14 @@
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
       renderAssignmentsPage(info);
+      initSidebar();
+      return;
+    }
+
+    if (cfg.module === 'achievements') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderAchievementsPage(info);
       initSidebar();
       return;
     }
@@ -745,7 +780,7 @@
             <span>&bull;</span>
             <span>${d}</span>
           </div>
-          <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; max-height: 260px; overflow-y: auto; color: #334155; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; margin-bottom: 16px;">
+          <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; color: #334155; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; margin-bottom: 16px;">
             ${formatNoticeContent(notice.content || notice.description || '')}
           </div>
           <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #f5f3ff; border-radius: 12px; border: 1px solid #e9d5ff;">
@@ -1288,7 +1323,7 @@
                   View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
                 </a>
               </div>
-              <div id="alumniPostSidelist" style="max-height: 480px; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+              <div id="alumniPostSidelist" style="max-height: none; overflow-y: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
                 <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
                   <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
                   Loading alumni...
@@ -1343,7 +1378,7 @@
           sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No alumni profiles yet.</div>`;
           return;
         }
-        sidelist.innerHTML = allAlumniData.map(item => {
+        sidelist.innerHTML = allAlumniData.slice(0, 5).map(item => {
           const name = item.name || item.user?.name || 'Alumni';
           const avatarSrc = item.image
             ? (item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`)
@@ -1794,6 +1829,644 @@
     }
   }
 
+  async function renderAchievementsPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    const isAuthority = ['principal', 'admin', 'dean', 'hod'].includes(userRole);
+    const mode = cfg.mode || 'view';
+    const isPostMode = mode === 'post';
+
+    setTimeout(() => {
+      if (!isAuthority) {
+        document.querySelectorAll('.module-actions a[href*="post.html"]').forEach(el => el.style.display = 'none');
+      }
+    }, 50);
+
+    if (isPostMode && !isAuthority) {
+      content(`
+        <div class="section-card module-panel" style="text-align: center; padding: 40px; color: var(--danger);">
+          <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+          <h3>Access Denied</h3>
+          <p>Only HODs and administrators can post achievements.</p>
+        </div>
+      `);
+      return;
+    }
+
+    if (isPostMode) {
+      content(`
+        <style>
+          @keyframes achiev-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+          }
+          .achiev-ai-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px;
+            border: 1.5px solid #10b981; background: #ecfdf5;
+            color: #065f46; font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.22s; width: 100%;
+            justify-content: center;
+          }
+          .achiev-ai-btn:hover:not(:disabled) {
+            background: #10b981; color: white;
+            box-shadow: 0 4px 16px rgba(16,185,129,0.25);
+            transform: translateY(-1px);
+          }
+          .achiev-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .achiev-ai-btn.loading { animation: achiev-ai-pulse 1.4s infinite; }
+          #achievPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+          }
+          @media (max-width: 1100px) {
+            #achievPostLayout { grid-template-columns: 1fr; }
+          }
+          .achiev-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .achiev-post-row-item:hover {
+            border-color: #6ee7b7; background: #ecfdf5;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.08);
+          }
+          .achiev-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .achiev-row-btn.edit { background: #ede9fe; color: #6d28d9; }
+          .achiev-row-btn.edit:hover { background: #6d28d9; color: white; }
+          .achiev-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .achiev-row-btn.del:hover { background: #ef4444; color: white; }
+          #achievBackBtn { background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; }
+          #achievBackBtn:hover { background: #e2e8f0; }
+          .achiev-form-input { padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; width: 100%; box-sizing: border-box; }
+          .achiev-form-input:focus { border-color: #10b981; }
+          select.achiev-form-input { background: white; }
+          textarea.achiev-form-input { font-family: inherit; }
+          #achievSubmitBtn { flex: 1; background: #10b981; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+          #achievSubmitBtn:hover:not(:disabled) { background: #065f46; }
+          #achievSubmitBtn.achiev-submit-editing { background: #6d28d9; }
+          #achievSubmitBtn.achiev-submit-editing:hover:not(:disabled) { background: #4c1d95; }
+          #achievCancelEditBtn { padding: 11px 14px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; }
+          #achievCancelEditBtn:hover { background: #e2e8f0; }
+          .achiev-view-all-link { font-size: 0.82rem; font-weight: 600; color: #10b981; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #6ee7b7; background: #ecfdf5; transition: all 0.2s; }
+          .achiev-view-all-link:hover { background: #d1fae5; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="achievBackBtn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Achievements</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage achievements — add new entries or edit existing ones.</p>
+          </div>
+        </div>
+
+        <div id="achievPostLayout">
+
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 id="achievFormTitle" style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-trophy" style="color: #10b981;"></i> Add Achievement
+            </h3>
+            <form id="achievPostForm" style="display: flex; flex-direction: column; gap: 16px;">
+              <input type="hidden" id="achievEditId" value="">
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Title</label>
+                  <input type="text" name="title" id="achTitle" placeholder="e.g. Best Research Paper" required class="achiev-form-input">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Category</label>
+                  <select name="category" id="achCategory" required class="achiev-form-input">
+                    <option value="">Select Category</option>
+                    <option value="academic">Academic</option>
+                    <option value="sports">Sports</option>
+                    <option value="research">Research</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="placement">Placement</option>
+                    <option value="award">Award</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Year</label>
+                  <input type="number" name="year" id="achYear" placeholder="${new Date().getFullYear()}" min="2000" max="${new Date().getFullYear() + 1}" class="achiev-form-input">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Priority <span style="color:#94a3b8; font-weight:400;">(lower = shown first)</span></label>
+                  <input type="number" name="priority" id="achPriority" placeholder="10" min="1" max="100" class="achiev-form-input">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Description</span>
+                  <span id="achievAiTag" style="display:none; font-size:0.72rem; color:#065f46; font-weight:600; background:#ecfdf5; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                </label>
+                <button type="button" id="achievAiDraftBtn" class="achiev-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="achievAiDraftBtnLabel">Draft Description with AI</span>
+                </button>
+                <textarea name="description" id="achievDescInput" rows="3" placeholder="Describe the achievement in detail..." required class="achiev-form-input"></textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; margin-top: 4px;">
+                <button type="submit" id="achievSubmitBtn">
+                  <i class="fa-solid fa-paper-plane"></i> <span id="achievSubmitLabel">Publish Achievement</span>
+                </button>
+                <button type="button" id="achievCancelEditBtn" style="display:none;">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT: Achievements List -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-trophy" style="color: #10b981;"></i> All Achievements
+                  <span id="achievCountBadge" style="font-size: 0.72rem; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" class="achiev-view-all-link">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="achievPostSidelist" style="max-height: none; overflow-y: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading achievements...
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `);
+
+      document.getElementById('achievBackBtn')?.addEventListener('click', goToDashboard);
+
+      let allAchievData = [];
+      let isEditMode = false;
+
+      const categoryMeta = {
+        academic:  { icon: 'fa-book-open', color: '#4f46e5', bg: '#e0e7ff' },
+        sports:    { icon: 'fa-person-running', color: '#ea580c', bg: '#ffedd5' },
+        research:  { icon: 'fa-flask', color: '#7c3aed', bg: '#ede9fe' },
+        cultural:  { icon: 'fa-masks-theater', color: '#db2777', bg: '#fce7f3' },
+        placement: { icon: 'fa-briefcase', color: '#0369a1', bg: '#e0f2fe' },
+        award:     { icon: 'fa-award', color: '#d97706', bg: '#fef3c7' },
+        other:     { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' },
+      };
+
+      const loadPostSidelist = async () => {
+        const sidelist = document.getElementById('achievPostSidelist');
+        const countBadge = document.getElementById('achievCountBadge');
+        if (!sidelist) return;
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/achievements`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allAchievData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allAchievData.length;
+          renderSidelist();
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load achievements.</div>`;
+        }
+      };
+
+      const renderSidelist = () => {
+        const sidelist = document.getElementById('achievPostSidelist');
+        if (!sidelist) return;
+        if (!allAchievData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No achievements yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allAchievData.slice(0, 5).map(item => {
+          const cat = (item.category || 'other').toLowerCase();
+          const meta = categoryMeta[cat] || categoryMeta.other;
+          const statusColors = { approved: { bg: '#dcfce7', color: '#166534' }, pending: { bg: '#fef9c3', color: '#92400e' }, rejected: { bg: '#fee2e2', color: '#991b1b' } };
+          const sc = statusColors[item.status] || statusColors.pending;
+          return `
+            <div class="achiev-post-row-item" data-id="${item._id}">
+              <div style="width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; background:${meta.bg}; color:${meta.color};">
+                <i class="fa-solid ${meta.icon}"></i>
+              </div>
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:3px;">
+                <div style="font-size:0.9rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(item.title || 'Untitled')}</div>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                  <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:${meta.color};">${cat}</span>
+                  <span style="font-size:0.72rem; color:#94a3b8;">${item.year || ''}</span>
+                  <span style="font-size:0.7rem; font-weight:700; padding:1px 7px; border-radius:10px; background:${sc.bg}; color:${sc.color};">${item.status || 'pending'}</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px; margin-left:auto; flex-shrink:0; align-self:center;">
+                <button type="button" class="achiev-row-btn edit" data-id="${item._id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" class="achiev-row-btn del" data-id="${item._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>`;
+        }).join('');
+
+        sidelist.querySelectorAll('.achiev-row-btn.edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const item = allAchievData.find(a => a._id === id);
+            if (!item) return;
+            isEditMode = true;
+            document.getElementById('achievEditId').value = id;
+            document.getElementById('achTitle').value = item.title || '';
+            document.getElementById('achCategory').value = item.category || '';
+            document.getElementById('achYear').value = item.year || '';
+            document.getElementById('achPriority').value = item.priority || '';
+            document.getElementById('achievDescInput').value = item.description || '';
+            document.getElementById('achievFormTitle').innerHTML = '<i class="fa-solid fa-pen" style="color:#6d28d9;"></i> Edit Achievement';
+            document.getElementById('achievSubmitLabel').textContent = 'Save Changes';
+            document.getElementById('achievSubmitBtn').classList.add('achiev-submit-editing');
+            document.getElementById('achievSubmitBtn').style.background = '';
+            document.getElementById('achievCancelEditBtn').style.display = 'block';
+            document.getElementById('achievPostForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.querySelectorAll('.achiev-post-row-item').forEach(r => r.style.background = '');
+            const row = sidelist.querySelector(`.achiev-post-row-item[data-id="${id}"]`);
+            if (row) row.style.background = '#ede9fe';
+          });
+        });
+
+        sidelist.querySelectorAll('.achiev-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allAchievData.find(a => a._id === id);
+            const title = item?.title || 'this achievement';
+            if (!confirm(`Remove "${title}"?`)) return;
+            try {
+              const token = user.token || localStorage.getItem('token') || '';
+              const res = await fetch(`${apiBase}/api/achievements/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (res.ok) { loadPostSidelist(); }
+              else alert('Failed to remove achievement.');
+            } catch { alert('Deletion failed.'); }
+          });
+        });
+      };
+
+      document.getElementById('achievCancelEditBtn')?.addEventListener('click', () => {
+        isEditMode = false;
+        document.getElementById('achievEditId').value = '';
+        document.getElementById('achievPostForm').reset();
+        document.getElementById('achievSubmitBtn').classList.remove('achiev-submit-editing');
+        document.getElementById('achievSubmitBtn').style.background = '';
+        document.getElementById('achievCancelEditBtn').style.display = 'none';
+        document.getElementById('achievAiTag').style.display = 'none';
+        document.querySelectorAll('.achiev-post-row-item').forEach(r => r.style.background = '');
+      });
+
+      document.getElementById('achievAiDraftBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('achievAiDraftBtn');
+        const label = document.getElementById('achievAiDraftBtnLabel');
+        const descInput = document.getElementById('achievDescInput');
+        const aiTag = document.getElementById('achievAiTag');
+        const titleVal = document.getElementById('achTitle')?.value?.trim();
+        const catVal = document.getElementById('achCategory')?.value;
+        if (!titleVal) {
+          document.getElementById('achTitle')?.focus();
+          return;
+        }
+        btn.disabled = true;
+        btn.classList.add('loading');
+        if (label) label.textContent = 'Generating…';
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/ai/generate-leader-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ prompt: `Write a concise, inspiring description (2-3 sentences) for a college achievement titled "${titleVal}"${catVal ? ` in the ${catVal} category` : ''}. Make it suitable for a college achievement board.` })
+          });
+          if (!res.ok) throw new Error('AI failed');
+          const data = await res.json();
+          if (descInput && data.message) {
+            descInput.value = data.message;
+            descInput.style.borderColor = '#10b981';
+            setTimeout(() => { descInput.style.borderColor = '#cbd5e1'; }, 1500);
+          }
+          if (aiTag) aiTag.style.display = 'inline-flex';
+        } catch (err) {
+          alert('AI drafting failed. Please write the description manually.');
+        } finally {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          if (label) label.textContent = 'Draft Description with AI';
+        }
+      });
+
+      document.getElementById('achievPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const submitBtn = document.getElementById('achievSubmitBtn');
+        const submitLabel = document.getElementById('achievSubmitLabel');
+        const token = user.token || localStorage.getItem('token') || '';
+        const editId = document.getElementById('achievEditId').value;
+        const payload = {
+          title: document.getElementById('achTitle').value,
+          category: document.getElementById('achCategory').value,
+          year: parseInt(document.getElementById('achYear').value) || new Date().getFullYear(),
+          priority: parseInt(document.getElementById('achPriority').value) || 10,
+          description: document.getElementById('achievDescInput').value,
+        };
+        const isEdit = !!editId;
+
+        // Show loading state
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitLabel) submitLabel.textContent = isEdit ? 'Saving…' : 'Publishing…';
+
+        try {
+          const res = await fetch(
+            isEdit ? `${apiBase}/api/achievements/${editId}` : `${apiBase}/api/achievements`,
+            {
+              method: isEdit ? 'PUT' : 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify(payload)
+            }
+          );
+          if (res.ok) {
+            isEditMode = false;
+            document.getElementById('achievEditId').value = '';
+            form.reset();
+            document.getElementById('achievFormTitle').innerHTML = '<i class="fa-solid fa-trophy" style="color:#10b981;"></i> Add Achievement';
+            document.getElementById('achievSubmitBtn').classList.remove('achiev-submit-editing');
+            document.getElementById('achievSubmitBtn').style.background = '';
+            document.getElementById('achievCancelEditBtn').style.display = 'none';
+            document.getElementById('achievAiTag').style.display = 'none';
+            alert(isEdit ? 'Achievement updated successfully!' : 'Achievement published successfully!');
+            loadPostSidelist();
+          } else {
+            const err = await res.json().catch(() => ({}));
+            console.error('Achievement save error:', res.status, err);
+            alert(`Error ${res.status}: ${err.message || `Failed to ${isEdit ? 'update' : 'publish'}. Please restart the server.`}`);
+          }
+        } catch (error) {
+          console.error('Achievement submit network error:', error);
+          alert('Submission failed — could not reach the server.');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitLabel) submitLabel.textContent = isEdit ? 'Save Changes' : 'Publish Achievement';
+        }
+      });
+
+      loadPostSidelist();
+
+    } else {
+      // --- VIEW MODE ---
+      content(`
+        <style>
+          #achievGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+            margin-top: 10px;
+          }
+          .achiev-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 180px;
+            box-sizing: border-box;
+          }
+          .achiev-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(16,185,129,0.1);
+            border-color: rgba(16,185,129,0.3);
+          }
+          .achiev-card-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; flex-shrink: 0;
+          }
+          .achiev-year-badge {
+            display: inline-block; padding: 2px 10px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7;
+          }
+          .achiev-card-edit-btn:hover { background: #6d28d9 !important; color: white !important; transform: scale(1.1); }
+          .achiev-card-delete-btn:hover { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
+          #achievViewBackBtn { background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s; }
+          #achievViewBackBtn:hover { background: #e2e8f0; }
+        </style>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
+          <button type="button" id="achievViewBackBtn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Achievements</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Academic, research, sports, cultural, and innovation achievements in one place.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; width: 100%;">
+          <div id="achievFilterTabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="achiev-tab active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; background: #10b981; color: white;">All</button>
+            <button type="button" class="achiev-tab" data-filter="academic" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Academic</button>
+            <button type="button" class="achiev-tab" data-filter="sports" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Sports</button>
+            <button type="button" class="achiev-tab" data-filter="research" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Research</button>
+            <button type="button" class="achiev-tab" data-filter="cultural" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Cultural</button>
+            <button type="button" class="achiev-tab" data-filter="award" style="padding: 8px 18px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Awards</button>
+          </div>
+          <div style="position: relative;">
+            <input type="text" id="achievSearchInput" placeholder="Search achievements..." style="padding: 10px 18px 10px 38px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; width: 240px; background: white; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+          </div>
+        </div>
+
+        <div id="achievGrid">
+          <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading achievements...</div>
+          </div>
+        </div>
+      `);
+
+      document.getElementById('achievViewBackBtn')?.addEventListener('click', goToDashboard);
+
+      const categoryMeta = {
+        academic:  { icon: 'fa-book-open', color: '#4f46e5', bg: '#e0e7ff' },
+        sports:    { icon: 'fa-person-running', color: '#ea580c', bg: '#ffedd5' },
+        research:  { icon: 'fa-flask', color: '#7c3aed', bg: '#ede9fe' },
+        cultural:  { icon: 'fa-masks-theater', color: '#db2777', bg: '#fce7f3' },
+        placement: { icon: 'fa-briefcase', color: '#0369a1', bg: '#e0f2fe' },
+        award:     { icon: 'fa-award', color: '#d97706', bg: '#fef3c7' },
+        other:     { icon: 'fa-star', color: '#475569', bg: '#f1f5f9' },
+      };
+
+      let loadedAchievements = [];
+      let activeFilter = 'all';
+
+      const loadAchievements = async () => {
+        try {
+          const token = user.token || localStorage.getItem('token') || '';
+          const res = await fetch(`${apiBase}/api/achievements`, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          loadedAchievements = Array.isArray(data) ? data : [];
+          renderFilteredAchievements();
+        } catch (error) {
+          const grid = document.getElementById('achievGrid');
+          if (grid) grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #ef4444; grid-column: 1 / -1;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+              <div style="font-size: 1rem; font-weight: 600;">Unable to load achievements.</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Please ensure the server is running.</div>
+            </div>`;
+        }
+      };
+
+      const renderFilteredAchievements = () => {
+        const grid = document.getElementById('achievGrid');
+        if (!grid) return;
+
+        const searchVal = document.getElementById('achievSearchInput')?.value?.toLowerCase() || '';
+        let filtered = [...loadedAchievements];
+
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(item => (item.category || '').toLowerCase() === activeFilter);
+        }
+        if (searchVal) {
+          filtered = filtered.filter(item => {
+            return (item.title || '').toLowerCase().includes(searchVal)
+              || (item.description || '').toLowerCase().includes(searchVal)
+              || (item.category || '').toLowerCase().includes(searchVal);
+          });
+        }
+        // Sort by priority then year
+        filtered.sort((a, b) => (a.priority || 10) - (b.priority || 10) || (b.year || 0) - (a.year || 0));
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #94a3b8;"></i>
+              <div style="font-size: 1.05rem; font-weight: 600;">No achievements found</div>
+              <div style="font-size: 0.85rem; margin-top: 4px; color: #94a3b8;">Try a different filter or search term.</div>
+            </div>`;
+          return;
+        }
+
+        const actionButtonsFn = (id) => isAuthority ? `
+          <div style="position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 10;">
+            <button type="button" class="achiev-card-edit-btn" data-id="${id}" title="Edit" style="background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button type="button" class="achiev-card-delete-btn" data-id="${id}" title="Remove" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>` : '';
+
+        grid.innerHTML = filtered.map(item => {
+          const cat = (item.category || 'other').toLowerCase();
+          const meta = categoryMeta[cat] || categoryMeta.other;
+          const statusColors = { approved: { bg: '#dcfce7', color: '#166534' }, pending: { bg: '#fef9c3', color: '#92400e' }, rejected: { bg: '#fee2e2', color: '#991b1b' } };
+          const sc = statusColors[item.status] || statusColors.pending;
+
+          return `
+            <div class="achiev-card">
+              ${actionButtonsFn(item._id)}
+              <div style="display: flex; gap: 14px; align-items: flex-start;">
+                <div class="achiev-card-icon" style="background: ${meta.bg}; color: ${meta.color};">
+                  <i class="fa-solid ${meta.icon}"></i>
+                </div>
+                <div style="overflow: hidden; min-width: 0; flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                    <span class="achiev-year-badge">${item.year || 'N/A'}</span>
+                    <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: ${meta.color}; background: ${meta.bg}; padding: 2px 8px; border-radius: 10px;">${cat}</span>
+                    ${item.status && item.status !== 'approved' ? `<span style="font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:10px; background:${sc.bg}; color:${sc.color};">${item.status}</span>` : ''}
+                  </div>
+                  <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${esc(item.title || 'Untitled')}</h3>
+                </div>
+              </div>
+
+              ${item.description ? `
+                <p style="margin: 0; font-size: 0.85rem; color: #475569; line-height: 1.6; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${esc(item.description)}</p>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+
+        if (isAuthority) {
+          grid.querySelectorAll('.achiev-card-delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              if (confirm('Are you sure you want to remove this achievement?')) {
+                try {
+                  const token = user.token || localStorage.getItem('token') || '';
+                  const res = await fetch(`${apiBase}/api/achievements/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  if (res.ok) { loadAchievements(); }
+                  else alert('Failed to remove achievement.');
+                } catch { alert('Deletion failed.'); }
+              }
+            });
+          });
+
+          grid.querySelectorAll('.achiev-card-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const id = btn.dataset.id;
+              window.location.href = `post.html?edit=${id}`;
+            });
+          });
+        }
+      };
+
+      // Filter tab logic
+      const tabs = document.querySelectorAll('.achiev-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => {
+            t.classList.remove('active');
+            t.style.background = '#fff';
+            t.style.border = '1px solid #e2e8f0';
+            t.style.color = '#475569';
+          });
+          tab.classList.add('active');
+          tab.style.background = '#10b981';
+          tab.style.border = 'none';
+          tab.style.color = '#fff';
+          activeFilter = tab.dataset.filter;
+          renderFilteredAchievements();
+        });
+      });
+
+      document.getElementById('achievSearchInput')?.addEventListener('input', renderFilteredAchievements);
+
+      loadAchievements();
+    }
+  }
+
   async function renderLeadersPage(info) {
     const userRole = (user.role || 'guest').toLowerCase();
     const isAuthority = ['principal', 'admin', 'dean', 'hod', 'teacher'].includes(userRole);
@@ -1821,27 +2494,61 @@
     if (isPostMode) {
       content(`
         <style>
-          @keyframes ai-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.3); }
-            50% { box-shadow: 0 0 0 8px rgba(139,92,246,0); }
+        <style>
+          @keyframes leader-ai-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(107, 70, 193, 0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(107, 70, 193, 0); }
           }
-          .ai-draft-btn {
+          .leader-ai-btn {
             display: flex; align-items: center; gap: 8px;
             padding: 10px 18px; border-radius: 10px;
-            border: 1.5px solid #8b5cf6; background: #f5f3ff;
-            color: #6d28d9; font-weight: 600; font-size: 0.88rem;
+            border: 1.5px solid #6b46c1; background: #faf5ff;
+            color: #6b46c1; font-weight: 600; font-size: 0.88rem;
             cursor: pointer; transition: all 0.22s; width: 100%;
-            justify-content: center; letter-spacing: 0.01em;
+            justify-content: center;
           }
-          .ai-draft-btn:hover:not(:disabled) {
-            background: #6d28d9; color: white;
-            box-shadow: 0 4px 16px rgba(109,40,217,0.25);
+          .leader-ai-btn:hover:not(:disabled) {
+            background: #6b46c1; color: white;
+            box-shadow: 0 4px 16px rgba(107, 70, 193, 0.25);
             transform: translateY(-1px);
           }
-          .ai-draft-btn:disabled {
-            opacity: 0.65; cursor: not-allowed;
+          .leader-ai-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+          .leader-ai-btn.loading { animation: leader-ai-pulse 1.4s infinite; }
+          #leaderPostLayout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
           }
-          .ai-draft-btn.loading { animation: ai-pulse 1.4s infinite; }
+          @media (max-width: 1100px) {
+            #leaderPostLayout { grid-template-columns: 1fr; }
+          }
+          .leader-post-row-item {
+            display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+            border: 1px solid #f1f5f9; background: #ffffff;
+            transition: all 0.2s; position: relative; align-items: flex-start;
+            margin-bottom: 8px; box-sizing: border-box;
+          }
+          .leader-post-row-item:hover {
+            border-color: #d6bcfa; background: #faf5ff;
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.08);
+          }
+          .leader-row-btn {
+            border: none; border-radius: 8px;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.18s;
+          }
+          .leader-row-btn.del { background: #fee2e2; color: #ef4444; }
+          .leader-row-btn.del:hover { background: #ef4444; color: white; }
+          .leader-form-input { padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; width: 100%; box-sizing: border-box; }
+          .leader-form-input:focus { border-color: #6b46c1; }
+          select.leader-form-input { background: white; }
+          textarea.leader-form-input { font-family: inherit; }
+          #leaderSubmitBtn { flex: 1; background: #6b46c1; color: white; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+          #leaderSubmitBtn:hover:not(:disabled) { background: #55309d; }
+          .leader-view-all-link { font-size: 0.82rem; font-weight: 600; color: #6b46c1; text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid #d6bcfa; background: #faf5ff; transition: all 0.2s; }
+          .leader-view-all-link:hover { background: #e9d5ff; }
         </style>
         
         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
@@ -1850,90 +2557,190 @@
           </button>
           <div>
             <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Academic Leaders</h2>
-            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Visionary leaders directing Asansol Engineering College's academic progress.</p>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage academic leaders — add new entries or delete existing ones.</p>
           </div>
         </div>
 
-        <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); max-width: 650px; margin: 0 auto;">
-          <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Academic Leader
-          </h3>
-          <form id="leaderPostForm" style="display: flex; flex-direction: column; gap: 18px;">
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Full Name</label>
-                <input type="text" name="name" placeholder="e.g. Dr. Jane Doe" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Role / Designation</label>
-                <select id="leaderRoleSelect" name="role" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-                  <option value="">Select Role</option>
-                  <option value="Principal">Principal</option>
-                  <option value="Vice Principal">Vice Principal</option>
-                  <option value="Dean of Academics">Dean of Academics</option>
-                  <option value="Dean of Students">Dean of Students</option>
-                  <option value="HOD">HOD (Head of Department)</option>
-                  <option value="Professor">Professor</option>
-                </select>
-              </div>
-            </div>
+        <div id="leaderPostLayout">
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Department (if HOD/Prof)</label>
-                <input type="text" name="department" id="leaderDeptInput" placeholder="e.g. CSE, ECE, Mechanical" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Qualification</label>
-                <input type="text" name="qualification" placeholder="e.g. Ph.D. in Computer Science" required style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Years of Experience</label>
-                <input type="text" name="experience" placeholder="e.g. 20 Years" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Email Address</label>
-                <input type="email" name="email" placeholder="e.g. leader@campus.com" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center;">
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Display Priority (1 = Highest)</label>
-                <input type="number" name="priority" value="5" min="1" max="100" style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Profile Picture</label>
-                <input type="file" name="image" accept="image/*" style="font-size: 0.85rem; color: #64748b;">
-              </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
-                <span>Inspiring Leadership Quote / Message</span>
-                <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
-              </label>
+          <!-- LEFT: Post / Edit Form -->
+          <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Academic Leader
+            </h3>
+            <form id="leaderPostForm" style="display: flex; flex-direction: column; gap: 16px;">
               
-              <button type="button" id="leaderAiDraftBtn" class="ai-draft-btn" style="margin-bottom: 8px;">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span id="leaderAiDraftBtnLabel">Draft Quote with AI</span>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Full Name</label>
+                  <input type="text" name="name" placeholder="e.g. Dr. Jane Doe" required class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Role / Designation</label>
+                  <select id="leaderRoleSelect" name="role" required class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                    <option value="">Select Role</option>
+                    <option value="Principal">Principal</option>
+                    <option value="Vice Principal">Vice Principal</option>
+                    <option value="Dean of Academics">Dean of Academics</option>
+                    <option value="Dean of Students">Dean of Students</option>
+                    <option value="HOD">HOD (Head of Department)</option>
+                    <option value="Professor">Professor</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Department (if HOD/Prof)</label>
+                  <input type="text" name="department" id="leaderDeptInput" placeholder="e.g. CSE, ECE" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Qualification</label>
+                  <input type="text" name="qualification" placeholder="e.g. Ph.D." required class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Years of Experience</label>
+                  <input type="text" name="experience" placeholder="e.g. 20 Years" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Email Address</label>
+                  <input type="email" name="email" placeholder="e.g. leader@campus.com" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Display Priority (1 = Highest)</label>
+                  <input type="number" name="priority" value="5" min="1" max="100" class="leader-form-input" onfocus="this.style.borderColor='#6b46c1';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <label style="font-size: 0.82rem; font-weight: 600; color: #475569;">Profile Picture</label>
+                  <input type="file" name="image" accept="image/*" style="font-size: 0.85rem; color: #64748b;">
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Inspiring Leadership Quote / Message</span>
+                  <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
+                </label>
+                
+                <button type="button" id="leaderAiDraftBtn" class="leader-ai-btn" style="margin-bottom: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span id="leaderAiDraftBtnLabel">Draft Quote with AI</span>
+                </button>
+
+                <textarea name="message" id="leaderQuoteInput" rows="3" placeholder="A quote or welcome message from the leader..." class="leader-form-input"></textarea>
+              </div>
+
+              <button type="submit" id="leaderSubmitBtn">
+                <i class="fa-solid fa-paper-plane"></i> Publish Leader
               </button>
+            </form>
+          </div>
 
-              <textarea name="message" id="leaderQuoteInput" rows="3" placeholder="A quote or welcome message from the leader..." style="padding: 10px 14px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
+          <!-- RIGHT: Leaders List Preview -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden;">
+              <div style="padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-user-group" style="color: var(--primary);"></i> All Leaders
+                  <span id="leaderCountBadge" style="font-size: 0.72rem; background: #faf5ff; color: #6b46c1; border: 1px solid #d6bcfa; border-radius: 20px; padding: 2px 8px; font-weight: 700;"></span>
+                </h3>
+                <a href="view.html" class="leader-view-all-link">
+                  View All <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                </a>
+              </div>
+              <div id="leaderPostSidelist" style="max-height: none; overflow-y: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 0.88rem;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 6px; display: block;"></i>
+                  Loading academic leaders...
+                </div>
+              </div>
             </div>
+          </div>
 
-            <button type="submit" style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: all 0.2s;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='var(--primary)';">
-              <i class="fa-solid fa-paper-plane"></i> Publish Leader
-            </button>
-          </form>
         </div>
       `);
 
       document.getElementById('leaderBackBtn')?.addEventListener('click', goToDashboard);
+
+      let allLeadersData = [];
+
+      const loadLeaderPostSidelist = async () => {
+        const sidelist = document.getElementById('leaderPostSidelist');
+        const countBadge = document.getElementById('leaderCountBadge');
+        if (!sidelist) return;
+        try {
+          const res = await fetch(`${apiBase}/api/academic-leaders`);
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          allLeadersData = Array.isArray(data) ? data : [];
+          if (countBadge) countBadge.textContent = allLeadersData.length;
+          renderLeaderSidelist();
+        } catch {
+          sidelist.innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">Could not load academic leaders.</div>`;
+        }
+      };
+
+      const renderLeaderSidelist = () => {
+        const sidelist = document.getElementById('leaderPostSidelist');
+        if (!sidelist) return;
+        if (!allLeadersData.length) {
+          sidelist.innerHTML = `<div style="text-align:center; padding:24px; color:#94a3b8; font-size:0.85rem;"><i class="fa-regular fa-folder-open" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No leaders yet.</div>`;
+          return;
+        }
+        sidelist.innerHTML = allLeadersData.slice(0, 5).map(item => {
+          let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=6b46c1&color=fff&rounded=true&bold=true&size=38`;
+          if (item.image) {
+            avatarSrc = item.image.startsWith('http') ? item.image : `${apiBase}${item.image}`;
+          }
+          return `
+            <div class="leader-post-row-item" data-id="${item._id}">
+              <img src="${avatarSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=6b46c1&color=fff&rounded=true&bold=true&size=38';" style="width:38px; height:38px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+              <div style="min-width:0; flex:1; overflow:hidden; display:flex; flex-direction:column; gap:3px;">
+                <div style="font-size:0.9rem; font-weight:700; color:#1e1b4b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(item.name || 'Untitled')}</div>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                  <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:#6b46c1;">${esc(item.role || '')}</span>
+                  <span style="font-size:0.72rem; color:#94a3b8;">${esc(item.department || '')}</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px; margin-left:auto; flex-shrink:0; align-self:center;">
+                <button type="button" class="leader-row-btn del" data-id="${item._id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>`;
+        }).join('');
+
+        sidelist.querySelectorAll('.leader-row-btn.del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const item = allLeadersData.find(a => a._id === id);
+            const name = item?.name || 'this leader';
+            if (confirm(`Are you sure you want to remove ${name}?`)) {
+              try {
+                const token = user.token || localStorage.getItem('token') || '';
+                const res = await fetch(`${apiBase}/api/academic-leaders/${id}`, {
+                  method: 'DELETE',
+                  headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                  alert('Academic Leader removed successfully.');
+                  loadLeaderPostSidelist();
+                } else {
+                  alert('Failed to remove academic leader.');
+                }
+              } catch (error) {
+                alert('Network error while deleting.');
+              }
+            }
+          });
+        });
+      };
+
+      loadLeaderPostSidelist();
 
       // AI Draft Quote Event Listener
       document.getElementById('leaderAiDraftBtn')?.addEventListener('click', async () => {
@@ -1997,7 +2804,7 @@
           if (res.ok) {
             alert('Academic Leader published successfully.');
             form.reset();
-            window.location.href = 'view.html';
+            loadLeaderPostSidelist();
           } else {
             const err = await res.json();
             alert(err.message || 'Failed to publish academic leader.');
@@ -6289,6 +7096,1341 @@
     }
 
     return processedLines.join('\n');
+  }
+
+  async function renderRoutinePage(info) {
+    // Clean up any lingering modals in document.body
+    document.body.querySelectorAll('#routineSlotModal, #messSlotModal').forEach(m => m.remove());
+
+    // Hide default hero
+    const hero = document.getElementById('home');
+    if (hero) hero.style.display = 'none';
+
+    const role = (user.role || 'Guest').toLowerCase();
+    const isTeacher = role === 'teacher';
+    const isStudent = role === 'student' || role === 'hosteler';
+    const isWarden = role === 'warden';
+    const isHOD = role === 'hod';
+    const isPrincipal = role === 'principal';
+    const isEditor = isHOD || isPrincipal;
+    const isEditMode = isEditor && cfg.mode === 'post';
+
+    // CSS injection for routine grid to ensure beautiful look and fit on one screen
+    if (!document.getElementById('routine-grid-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'routine-grid-styles';
+      styles.innerHTML = `
+        .routine-grid-container {
+          background: #ffffff;
+          border-radius: 18px;
+          padding: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid #f1f5f9;
+          margin-bottom: 24px;
+        }
+        .routine-grid {
+          display: grid;
+          grid-template-columns: 110px repeat(8, 1fr);
+          gap: 6px;
+        }
+        .routine-grid.current-day-row {
+          background: #f1f5f9 !important;
+          border-radius: 8px;
+        }
+        .routine-grid.current-day-row .routine-slot-cell:not(.assigned) {
+          background: #e2e8f0 !important;
+          border-color: #cbd5e1 !important;
+        }
+        .routine-header-cell {
+          font-weight: 700;
+          font-size: 0.75rem;
+          color: #4f46e5;
+          text-align: center;
+          padding: 10px 4px;
+          background: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .routine-day-cell {
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #1e1b4b;
+          background: #f1f5f9;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #cbd5e1;
+        }
+        .routine-day-cell.current-day {
+          background: #6b46c1 !important;
+          color: #ffffff !important;
+          border-color: #6b46c1 !important;
+          box-shadow: 0 0 8px rgba(107, 70, 193, 0.2);
+        }
+        .routine-slot-cell {
+          background: #fafafa;
+          border: 1px dashed #e2e8f0;
+          border-radius: 8px;
+          padding: 6px 4px;
+          min-height: 52px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          font-size: 0.7rem;
+          transition: all 0.2s;
+          cursor: default;
+        }
+        .routine-slot-cell.assigned {
+          background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+          border: 1px solid #c084fc;
+          color: #581c87;
+          cursor: pointer;
+        }
+        .routine-slot-cell.assigned:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+        }
+        .routine-slot-cell.editable {
+          cursor: pointer;
+          border-style: solid;
+        }
+        .routine-slot-cell.editable:hover {
+          border-color: #6b46c1;
+          background: #fdfeff;
+          box-shadow: inset 0 0 0 1px #6b46c1;
+        }
+        .routine-cell-subject {
+          font-weight: 800;
+          font-size: 0.75rem;
+          line-height: 1.2;
+          color: #1e1b4b;
+        }
+        .routine-cell-teacher {
+          font-size: 0.65rem;
+          color: #6b7280;
+          margin-top: 3px;
+          font-weight: 600;
+        }
+        .routine-cell-meta {
+          font-size: 0.6rem;
+          color: #8b5cf6;
+          margin-top: 2px;
+          font-weight: 500;
+        }
+        .routine-cell-free {
+          color: #cbd5e1;
+          font-style: italic;
+          font-size: 0.65rem;
+        }
+        /* Modal Style Override */
+        .routine-modal-overlay {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          z-index: 9999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+        }
+        .routine-modal {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 24px;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+          border: 1px solid #e2e8f0;
+          animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+
+    const html = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="routineBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+              ${isEditMode ? 'Routine Management' : 'Class Routine'}
+            </h2>
+            <p id="routineSub" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">
+              Loading routine details...
+            </p>
+          </div>
+        </div>
+        <div id="routineActionArea" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap;"></div>
+      </div>
+
+      <!-- Main routine grid wrapper -->
+      <div id="routineGridWrapper" style="width: 100%; overflow-x: auto;">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading routine details...</div>
+        </div>
+      </div>
+
+      <!-- Custom Routine Edit Modal -->
+      <div id="routineSlotModal" class="routine-modal-overlay">
+        <div class="routine-modal">
+          <h3 id="routineModalTitle" style="margin-top: 0; margin-bottom: 8px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b;">Edit Routine Slot</h3>
+          <p id="routineModalInfo" style="font-size: 0.8rem; color: #64748b; margin-bottom: 20px; line-height: 1.4;"></p>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; font-size: 0.8rem; color: #475569; margin-bottom: 8px;">Subject & Teacher</label>
+            <select id="routineModalSelect" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: white; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #1e1b4b;"></select>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" id="routineModalDeleteBtn" class="btn-outline-red" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">Clear Slot</button>
+            <button type="button" id="routineModalCancelBtn" class="btn-outline-purple" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; background: transparent; border: 1px solid #e2e8f0; color: #475569;">Cancel</button>
+            <button type="button" id="routineModalSaveBtn" class="btn-filled-purple" style="font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; background: #6b46c1; color: white; border: none;">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const el = content(html);
+    document.getElementById('routineBackBtn')?.addEventListener('click', goToDashboard);
+
+    // Helper to map semester numbers to years
+    function getYearFromSemester(sem) {
+      const s = parseInt(sem);
+      if (s <= 2) return '1st Year';
+      if (s <= 4) return '2nd Year';
+      if (s <= 6) return '3rd Year';
+      return '4th Year';
+    }
+
+    // Filter selectors state
+    let dept = user.department || 'CSE';
+    let semester = user.semester || 1;
+    let year = getYearFromSemester(semester);
+    let batch = user.batch ? (user.batch.startsWith('Batch') ? user.batch : 'Batch ' + user.batch) : 'Batch 1';
+
+    // Populate selectors in the right-side Action Area
+    function updateSelectors() {
+      const actionArea = document.getElementById('routineActionArea');
+      if (!actionArea) return;
+
+      const depts = ['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT'];
+      const sems = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
+      const batches = ['Batch 1', 'Batch 2'];
+
+      let actionHTML = '';
+
+      if (!isTeacher) {
+        // Dept selector
+        if (isPrincipal || isWarden) {
+          actionHTML += `
+            <select id="selDept" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: #fff; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              ${depts.map(d => `<option value="${d}" ${d === dept ? 'selected' : ''}>Dept: ${d}</option>`).join('')}
+            </select>
+          `;
+        } else {
+          actionHTML += `<span style="font-size: 0.75rem; font-weight: 700; color: #6b46c1; background:#f5f3ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #c084fc;">Dept: ${dept}</span>`;
+        }
+
+        // Semester selector
+        if (isStudent) {
+          actionHTML += `<span style="font-size: 0.75rem; font-weight: 700; color: #6b46c1; background:#f5f3ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #c084fc;">Sem: ${semester}</span>`;
+        } else {
+          actionHTML += `
+            <select id="selSemester" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: #fff; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              ${sems.map((s, idx) => `<option value="${idx + 1}" ${idx + 1 === parseInt(semester) ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+          `;
+        }
+
+        // Batch selector
+        if (isStudent) {
+          actionHTML += `<span style="font-size: 0.75rem; font-weight: 700; color: #6b46c1; background:#f5f3ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #c084fc;">Batch: ${batch}</span>`;
+        } else {
+          actionHTML += `
+            <select id="selBatch" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: #fff; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              ${batches.map(b => `<option value="${b}" ${b === batch ? 'selected' : ''}>Batch: ${b}</option>`).join('')}
+            </select>
+          `;
+        }
+      }
+
+      // Add Edit / View switcher button
+      if (isEditor) {
+        const modeBtn = isEditMode
+          ? `<a href="view.html" class="btn-pill btn-outline-purple" style="font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-eye"></i> View</a>`
+          : `<a href="post.html" class="btn-pill btn-filled-purple" style="font-size: 0.85rem; font-weight: 600; background:#6b46c1; color:white; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-pen-to-square"></i> Edit</a>`;
+        actionHTML += modeBtn;
+      }
+
+      actionArea.innerHTML = actionHTML;
+
+      // Event listeners
+      document.getElementById('selDept')?.addEventListener('change', e => {
+        dept = e.target.value;
+        loadData();
+      });
+      document.getElementById('selSemester')?.addEventListener('change', e => {
+        semester = parseInt(e.target.value);
+        year = getYearFromSemester(semester);
+        loadData();
+      });
+      document.getElementById('selBatch')?.addEventListener('change', e => {
+        batch = e.target.value;
+        loadData();
+      });
+    }
+
+    const timeSlots = [
+      "09:30 - 10:30", "10:30 - 11:30", "11:30 - 12:30", "12:30 - 01:30",
+      "01:30 - 02:30", "02:30 - 03:30", "03:30 - 04:30", "04:30 - 05:30"
+    ];
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    let loadedRoutine = [];
+    let loadedSubjects = [];
+
+    updateSelectors();
+    await loadData();
+
+    async function loadData() {
+      const gridWrapper = document.getElementById('routineGridWrapper');
+      if (gridWrapper) {
+        gridWrapper.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading routine...</div>
+          </div>
+        `;
+      }
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        
+        // 1. Fetch Routine
+        let routineUrl = '';
+        if (isTeacher) {
+          routineUrl = `${apiBase}/api/routine/teacher`;
+        } else {
+          // Send normalized batch
+          const normalizedBatch = batch.match(/^\d+$/) ? `Batch ${batch}` : batch;
+          routineUrl = `${apiBase}/api/routine/student?year=${encodeURIComponent(year)}&semester=${semester}&batch=${encodeURIComponent(normalizedBatch)}&department=${encodeURIComponent(dept)}`;
+        }
+
+        const resRoutine = await fetch(routineUrl, { headers: { Authorization: `Bearer ${token}` } });
+        if (!resRoutine.ok) throw new Error('Routine load error');
+        loadedRoutine = await resRoutine.json();
+
+        // Update Subtitle
+        const subtitle = document.getElementById('routineSub');
+        if (subtitle) {
+          if (isTeacher) {
+            subtitle.innerText = `Teaching schedule for ${user.name}`;
+          } else {
+            subtitle.innerText = `Schedule for ${dept} department, ${year} (${batch})`;
+          }
+        }
+
+        // 2. Fetch Subjects if Edit mode to populate selector
+        if (isEditMode) {
+          const resSubjects = await fetch(`${apiBase}/api/subjects?dept=${encodeURIComponent(dept)}&semester=${semester}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (resSubjects.ok) {
+            loadedSubjects = await resSubjects.json();
+          }
+        }
+
+        renderGrid();
+
+      } catch (err) {
+        console.error(err);
+        if (gridWrapper) {
+          gridWrapper.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #ef4444;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 8px;"></i>
+              <div>Failed to load routine data. Please try again.</div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderGrid() {
+      const wrapper = document.getElementById('routineGridWrapper');
+      if (!wrapper) return;
+
+      let gridHTML = `
+        <div class="routine-grid-container">
+          <div class="routine-grid" style="margin-bottom: 6px;">
+            <div class="routine-header-cell" style="background: #e0e7ff; color: #4338ca;">Day / Time</div>
+            ${timeSlots.map(slot => `<div class="routine-header-cell">${slot}</div>`).join('')}
+          </div>
+      `;
+
+      const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+      days.forEach(day => {
+        const isToday = day === currentDay;
+        const dayCellClass = isToday ? 'routine-day-cell current-day' : 'routine-day-cell';
+        gridHTML += `
+          <div class="routine-grid ${isToday ? 'current-day-row' : ''}" style="margin-bottom: 6px;">
+            <div class="${dayCellClass}">${day}</div>
+        `;
+
+        timeSlots.forEach((slot, index) => {
+          // Find if there is a class scheduled
+          const entry = loadedRoutine.find(e => e.day === day && e.timeSlot === slot);
+          
+          if (entry) {
+            const subjectName = entry.subjectName || entry.subject?.name || 'Class';
+            const teacherName = entry.teacher?.name || 'TBA';
+            const isLab = subjectName.toLowerCase().includes('lab');
+            const isBreak = subjectName.toLowerCase() === 'break';
+            
+            let bgStyle = 'background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #c084fc; color: #581c87;';
+            if (isLab) {
+              bgStyle = 'background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #34d399; color: #065f46;';
+            } else if (isBreak) {
+              bgStyle = 'background: linear-gradient(135deg, #f1f5f9, #e2e8f0); border: 1px solid #cbd5e1; color: #475569;';
+            }
+
+            if (isToday) {
+              if (isBreak) {
+                bgStyle = 'background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border: 1px solid #94a3b8; color: #1e293b;';
+              } else {
+                bgStyle = 'background: linear-gradient(135deg, #e9d5ff, #c084fc); border: 1px solid #a855f7; color: #3b0764;';
+                if (isLab) {
+                  bgStyle = 'background: linear-gradient(135deg, #a7f3d0, #34d399); border: 1px solid #059669; color: #022c22;';
+                }
+              }
+            }
+
+            let cellDetails = '';
+            if (isBreak) {
+              cellDetails = '';
+            } else if (isTeacher) {
+              // Show Target Batch/Dept
+              const targetDept = entry.department || '';
+              const targetYear = entry.year || '';
+              const targetBatch = entry.batch || '';
+              cellDetails = `<div class="routine-cell-meta"><i class="fa-solid fa-graduation-cap"></i> ${targetDept} ${targetYear} (${targetBatch})</div>`;
+            } else {
+              cellDetails = `<div class="routine-cell-teacher"><i class="fa-solid fa-chalkboard-user"></i> ${teacherName}</div>`;
+            }
+
+            gridHTML += `
+              <div class="routine-slot-cell assigned ${isBreak ? 'break-slot' : ''} ${isEditMode ? 'editable' : ''}" style="${bgStyle}" data-day="${day}" data-slot="${slot}" data-index="${index}" data-id="${entry._id}">
+                <div class="routine-cell-subject">${esc(subjectName)}</div>
+                ${cellDetails}
+              </div>
+            `;
+          } else {
+            // Free slot
+            gridHTML += `
+              <div class="routine-slot-cell ${isEditMode ? 'editable' : ''}" data-day="${day}" data-slot="${slot}" data-index="${index}">
+                <span class="routine-cell-free">-</span>
+              </div>
+            `;
+          }
+        });
+
+        gridHTML += `</div>`; // Close row
+      });
+
+      gridHTML += `</div>`; // Close container
+      wrapper.innerHTML = gridHTML;
+
+      // Click cell handlers for edit mode
+      if (isEditMode) {
+        wrapper.querySelectorAll('.routine-slot-cell.editable').forEach(cell => {
+          cell.addEventListener('click', () => {
+            const cellDay = cell.dataset.day;
+            const cellSlot = cell.dataset.slot;
+            openEditModal(cellDay, cellSlot);
+          });
+        });
+      }
+    }
+
+    function openEditModal(cellDay, cellSlot) {
+      const modal = document.getElementById('routineSlotModal');
+      if (!modal) return;
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+      const infoText = document.getElementById('routineModalInfo');
+      const select = document.getElementById('routineModalSelect');
+      const saveBtn = document.getElementById('routineModalSaveBtn');
+      const deleteBtn = document.getElementById('routineModalDeleteBtn');
+      const cancelBtn = document.getElementById('routineModalCancelBtn');
+
+      if (!select) return;
+
+      infoText.innerText = `Schedule slot on ${cellDay} at ${cellSlot} for ${dept} ${year} (${batch})`;
+      
+      // Build options dropdown based on HOD decisions
+      let optionsHTML = `
+        <option value="FREE">No Class (Free period)</option>
+        <option value="BREAK">Break</option>
+      `;
+      loadedSubjects.forEach(s => {
+        let teacherName = 'TBA';
+        
+        // Find batch-specific assignment
+        if (s.batchAssignments && s.batchAssignments.length > 0) {
+          const match = s.batchAssignments.find(ba => ba.batch === batch || ba.batch === batch.replace('Batch ', ''));
+          if (match && match.teacher) {
+            teacherName = match.teacher.name || 'Assigned';
+          }
+        }
+        
+        // Fallback to general teachers
+        if (teacherName === 'TBA' && s.teachers && s.teachers.length > 0) {
+          teacherName = s.teachers[0].name || 'Assigned';
+        }
+        
+        if (teacherName === 'TBA' && s.teacher) {
+          teacherName = s.teacher.name || 'Assigned';
+        }
+
+        optionsHTML += `<option value="${s._id}">${esc(s.name)} (${esc(teacherName)})</option>`;
+      });
+
+      select.innerHTML = optionsHTML;
+
+      // Pre-select current subject if assigned
+      const entry = loadedRoutine.find(e => e.day === cellDay && e.timeSlot === cellSlot);
+      if (entry) {
+        if (entry.subjectName && entry.subjectName.toLowerCase() === 'break') {
+          select.value = 'BREAK';
+        } else if (entry.subject) {
+          select.value = entry.subject._id || entry.subject;
+        } else {
+          select.value = 'BREAK';
+        }
+        deleteBtn.style.display = 'block';
+      } else {
+        select.value = 'FREE';
+        deleteBtn.style.display = 'none';
+      }
+
+      modal.style.display = 'flex';
+
+      // Setup Save Handler
+      saveBtn.onclick = async () => {
+        const token = user.token || localStorage.getItem('token') || '';
+        const subjectId = select.value;
+
+        const deptEl = document.getElementById('selDept');
+        const semEl = document.getElementById('selSemester');
+        const batchEl = document.getElementById('selBatch');
+
+        const activeDept = deptEl ? deptEl.value : dept;
+        const activeSem = semEl ? parseInt(semEl.value) : semester;
+        const activeBatch = batchEl ? batchEl.value : batch;
+        const activeYear = getYearFromSemester(activeSem);
+        const normalizedBatch = activeBatch.match(/^\d+$/) ? `Batch ${activeBatch}` : activeBatch;
+
+        if (subjectId === 'FREE') {
+          // No Class selected -> delete the slot
+          try {
+            const res = await fetch(`${apiBase}/api/routine`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                day: cellDay,
+                timeSlot: cellSlot,
+                year: activeYear,
+                semester: activeSem,
+                batch: normalizedBatch,
+                department: activeDept
+              })
+            });
+            if (!res.ok) throw new Error('Delete failed');
+            modal.style.display = 'none';
+            await loadData();
+          } catch (err) {
+            alert('Error: ' + err.message);
+          }
+          return;
+        }
+
+        const body = {
+          day: cellDay,
+          timeSlot: cellSlot,
+          year: activeYear,
+          semester: activeSem,
+          department: activeDept,
+          batch: normalizedBatch,
+          subjectId: subjectId
+        };
+
+        try {
+          const res = await fetch(`${apiBase}/api/routine`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+          });
+
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.message || 'Save failed');
+          }
+
+          modal.style.display = 'none';
+          await loadData();
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      // Setup Delete Handler
+      deleteBtn.onclick = async () => {
+        if (!confirm('Clear this class slot?')) return;
+        const token = user.token || localStorage.getItem('token') || '';
+
+        const deptEl = document.getElementById('selDept');
+        const semEl = document.getElementById('selSemester');
+        const batchEl = document.getElementById('selBatch');
+
+        const activeDept = deptEl ? deptEl.value : dept;
+        const activeSem = semEl ? parseInt(semEl.value) : semester;
+        const activeBatch = batchEl ? batchEl.value : batch;
+        const activeYear = getYearFromSemester(activeSem);
+        const normalizedBatch = activeBatch.match(/^\d+$/) ? `Batch ${activeBatch}` : activeBatch;
+
+        try {
+          const res = await fetch(`${apiBase}/api/routine`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              day: cellDay,
+              timeSlot: cellSlot,
+              year: activeYear,
+              semester: activeSem,
+              batch: normalizedBatch,
+              department: activeDept
+            })
+          });
+
+          if (!res.ok) throw new Error('Delete failed');
+          modal.style.display = 'none';
+          await loadData();
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+      };
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      };
+    }
+  }
+
+  async function renderMessMenuPage(info) {
+    // Clean up any lingering modals in document.body
+    document.body.querySelectorAll('#routineSlotModal, #messSlotModal').forEach(m => m.remove());
+
+    // Hide default hero
+    const hero = document.getElementById('home');
+    if (hero) hero.style.display = 'none';
+
+    const role = (user.role || 'Guest').toLowerCase();
+    const isWarden = role === 'warden';
+    const isPrincipal = role === 'principal';
+    const isAdmin = role === 'admin';
+    const isWardenOrPrincipal = isWarden || isPrincipal || isAdmin;
+    const isEditMode = isWardenOrPrincipal && cfg.mode === 'post';
+
+    // CSS injection for mess menu grid
+    if (!document.getElementById('mess-grid-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'mess-grid-styles';
+      styles.innerHTML = `
+        .mess-grid-container {
+          background: #ffffff;
+          border-radius: 18px;
+          padding: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid #f1f5f9;
+          margin-bottom: 24px;
+        }
+        .mess-grid {
+          display: grid;
+          grid-template-columns: 110px repeat(4, 1fr);
+          gap: 8px;
+        }
+        .mess-grid.current-day-row {
+          background: #f1f5f9 !important;
+          border-radius: 8px;
+        }
+        .mess-grid.current-day-row .mess-slot-cell:not(.assigned) {
+          background: #e2e8f0 !important;
+          border-color: #cbd5e1 !important;
+        }
+        .mess-header-cell {
+          font-weight: 700;
+          font-size: 0.75rem;
+          color: #4f46e5;
+          text-align: center;
+          padding: 10px 4px;
+          background: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .mess-day-cell {
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #1e1b4b;
+          background: #f1f5f9;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #cbd5e1;
+        }
+        .mess-day-cell.current-day {
+          background: #6b46c1 !important;
+          color: #ffffff !important;
+          border-color: #6b46c1 !important;
+          box-shadow: 0 0 8px rgba(107, 70, 193, 0.2);
+        }
+        .mess-slot-cell {
+          background: #fafafa;
+          border: 1px dashed #e2e8f0;
+          border-radius: 8px;
+          padding: 8px 6px;
+          min-height: 58px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          font-size: 0.75rem;
+          transition: all 0.2s;
+          cursor: default;
+        }
+        .mess-slot-cell.assigned {
+          background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+          border: 1px solid #c084fc;
+          color: #581c87;
+        }
+        .mess-slot-cell.assigned:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+        }
+        .mess-slot-cell.editable {
+          cursor: pointer;
+          border-style: solid;
+        }
+        .mess-slot-cell.editable:hover {
+          border-color: #6b46c1;
+          background: #fdfeff;
+          box-shadow: inset 0 0 0 1px #6b46c1;
+        }
+        .mess-cell-food {
+          font-weight: 800;
+          font-size: 0.75rem;
+          line-height: 1.2;
+          color: #1e1b4b;
+        }
+        .mess-cell-empty {
+          color: #cbd5e1;
+          font-style: italic;
+          font-size: 0.65rem;
+        }
+        /* Modal Style Override */
+        .routine-modal-overlay {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          z-index: 9999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+        }
+        .routine-modal {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 24px;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+          border: 1px solid #e2e8f0;
+          animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+
+    const html = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="messBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+              ${isEditMode ? 'Mess Menu Management' : 'Weekly Mess Menu'}
+            </h2>
+            <p id="messSub" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">
+              Loading menu details...
+            </p>
+          </div>
+        </div>
+        <div id="messActionArea" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap;"></div>
+      </div>
+
+      <!-- Main mess grid wrapper -->
+      <div id="messGridWrapper" style="width: 100%; overflow-x: auto;">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading menu details...</div>
+        </div>
+      </div>
+
+      <!-- Custom Mess Edit Modal -->
+      <div id="messSlotModal" class="routine-modal-overlay">
+        <div class="routine-modal">
+          <h3 id="messModalTitle" style="margin-top: 0; margin-bottom: 8px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b;">Edit Mess Menu Slot</h3>
+          <p id="messModalInfo" style="font-size: 0.8rem; color: #64748b; margin-bottom: 20px; line-height: 1.4;"></p>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; font-size: 0.8rem; color: #475569; margin-bottom: 8px;">Food Menu</label>
+            <input type="text" id="messModalInput" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: white; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #1e1b4b;" placeholder="Enter food item(s)"></input>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" id="messModalCancelBtn" class="btn-outline-purple" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; background: transparent; border: 1px solid #e2e8f0; color: #475569;">Cancel</button>
+            <button type="button" id="messModalSaveBtn" class="btn-filled-purple" style="font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; background: #6b46c1; color: white; border: none;">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const el = content(html);
+    document.getElementById('messBackBtn')?.addEventListener('click', goToDashboard);
+
+    // Setup action switcher
+    const actionArea = document.getElementById('messActionArea');
+    if (actionArea && isWardenOrPrincipal) {
+      actionArea.innerHTML = isEditMode
+        ? `<a href="view.html" class="btn-pill btn-outline-purple" style="font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-eye"></i> View</a>`
+        : `<a href="post.html" class="btn-pill btn-filled-purple" style="font-size: 0.85rem; font-weight: 600; background:#6b46c1; color:white; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-pen-to-square"></i> Edit</a>`;
+    }
+
+    const meals = ['Breakfast', 'Lunch', 'Snacks', 'Dinner'];
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    let loadedMenu = [];
+
+    await loadData();
+
+    async function loadData() {
+      const gridWrapper = document.getElementById('messGridWrapper');
+      if (gridWrapper) {
+        gridWrapper.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading menu...</div>
+          </div>
+        `;
+      }
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        const res = await fetch(`${apiBase}/api/warden/mess`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Mess menu load error');
+        loadedMenu = await res.json();
+
+        const subtitle = document.getElementById('messSub');
+        if (subtitle) {
+          subtitle.innerText = isEditMode ? 'Modify daily menu options for the hostel mess' : 'Weekly meal planning for residents';
+        }
+
+        renderGrid();
+      } catch (err) {
+        console.error(err);
+        if (gridWrapper) {
+          gridWrapper.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #ef4444;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 8px;"></i>
+              <div>Failed to load mess menu. Please check backend server.</div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderGrid() {
+      const wrapper = document.getElementById('messGridWrapper');
+      if (!wrapper) return;
+
+      let gridHTML = `
+        <div class="mess-grid-container">
+          <div class="mess-grid" style="margin-bottom: 8px;">
+            <div class="mess-header-cell" style="background: #e0e7ff; color: #4338ca;">Day / Meal</div>
+            ${meals.map(m => `<div class="mess-header-cell">${m}</div>`).join('')}
+          </div>
+      `;
+
+      const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+      days.forEach(day => {
+        const isToday = day === currentDay;
+        const dayCellClass = isToday ? 'mess-day-cell current-day' : 'mess-day-cell';
+        gridHTML += `
+          <div class="mess-grid ${isToday ? 'current-day-row' : ''}" style="margin-bottom: 8px;">
+            <div class="${dayCellClass}">${day}</div>
+        `;
+
+        meals.forEach(meal => {
+          const dayData = loadedMenu.find(m => m.day === day) || {};
+          const mealKey = meal.toLowerCase();
+          const food = dayData[mealKey] || '';
+
+          const hasFood = !!food;
+          let cellStyle = '';
+          if (hasFood) {
+            cellStyle = 'background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #c084fc; color: #581c87; font-weight: 700;';
+            if (isToday) {
+              cellStyle = 'background: linear-gradient(135deg, #e9d5ff, #c084fc); border: 1px solid #a855f7; color: #3b0764; font-weight: 800;';
+            }
+          }
+
+          gridHTML += `
+            <div class="mess-slot-cell ${hasFood ? 'assigned' : ''} ${isEditMode ? 'editable' : ''}" style="${cellStyle}" data-day="${day}" data-meal="${mealKey}">
+              ${hasFood ? `<span class="mess-cell-food">${esc(food)}</span>` : `<span class="mess-cell-empty">-</span>`}
+            </div>
+          `;
+        });
+
+        gridHTML += `</div>`; // Close row
+      });
+
+      gridHTML += `</div>`; // Close container
+      wrapper.innerHTML = gridHTML;
+
+      if (isEditMode) {
+        wrapper.querySelectorAll('.mess-slot-cell.editable').forEach(cell => {
+          cell.addEventListener('click', () => {
+            const cellDay = cell.dataset.day;
+            const cellMeal = cell.dataset.meal;
+            openEditModal(cellDay, cellMeal);
+          });
+        });
+      }
+    }
+
+    function openEditModal(cellDay, cellMeal) {
+      const modal = document.getElementById('messSlotModal');
+      if (!modal) return;
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+      const infoText = document.getElementById('messModalInfo');
+      const input = document.getElementById('messModalInput');
+      const saveBtn = document.getElementById('messModalSaveBtn');
+      const cancelBtn = document.getElementById('messModalCancelBtn');
+
+      if (!input) return;
+
+      const dayData = loadedMenu.find(m => m.day === cellDay) || {};
+      const currentFood = dayData[cellMeal] || '';
+
+      infoText.innerText = `Edit ${cellMeal.toUpperCase()} menu for ${cellDay}`;
+      input.value = currentFood;
+
+      modal.style.display = 'flex';
+      input.focus();
+
+      saveBtn.onclick = async () => {
+        const token = user.token || localStorage.getItem('token') || '';
+        const newValue = input.value.trim();
+
+        const updatedDayData = {
+          day: cellDay,
+          breakfast: dayData.breakfast || '',
+          lunch: dayData.lunch || '',
+          snacks: dayData.snacks || '',
+          dinner: dayData.dinner || '',
+          ...dayData
+        };
+
+        updatedDayData[cellMeal] = newValue;
+
+        try {
+          const res = await fetch(`${apiBase}/api/warden/mess`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              day: cellDay,
+              breakfast: updatedDayData.breakfast,
+              lunch: updatedDayData.lunch,
+              snacks: updatedDayData.snacks,
+              dinner: updatedDayData.dinner
+            })
+          });
+
+          if (!res.ok) throw new Error('Save mess menu failed');
+          modal.style.display = 'none';
+          await loadData();
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+      };
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      };
+    }
+  }
+
+  async function renderDocumentsPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    
+    if (!document.getElementById('document-custom-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'document-custom-styles';
+      styleEl.innerHTML = `
+        .documents-grid-view {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+          align-items: stretch;
+          padding-right: 4px;
+          width: 100%;
+        }
+        @media (min-width: 640px) {
+          .documents-grid-view {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .documents-grid-view {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1400px) {
+          .documents-grid-view {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+        
+        .document-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.015);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          box-sizing: border-box;
+          margin-bottom: 4px;
+          height: 100%;
+          min-height: 280px;
+        }
+        .document-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(107, 70, 193, 0.08);
+          border-color: rgba(107, 70, 193, 0.25);
+        }
+        
+        .document-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+        }
+        .document-title-area {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+          flex: 1;
+        }
+        .document-title {
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0f172a;
+          font-family: 'Poppins', sans-serif;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        
+        .document-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          flex-grow: 1;
+        }
+        
+        .document-preview-area {
+          width: 100%;
+          height: 160px;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        }
+        .document-preview-area img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .document-preview-pdf {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          color: #e11d48;
+        }
+        .document-preview-pdf i {
+          font-size: 3rem;
+        }
+        .document-preview-pdf span {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #475569;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
+    content(`
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="documentBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Document Vault</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Securely upload, preview, and download your academic certificates, marksheets, and proofs.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="documentsListContainer" class="documents-grid-view">
+        <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading documents...</div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('documentBackBtn')?.addEventListener('click', goToDashboard);
+
+    await loadDocumentsList();
+
+    async function loadDocumentsList() {
+      const container = document.getElementById('documentsListContainer');
+      if (!container) return;
+      const token = user.token || localStorage.getItem('token') || '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/documents`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to load documents');
+        let docs = await res.json();
+
+        let gridHtml = `
+          <!-- Insert Card (First Card in Grid) -->
+          <article class="document-card" style="border: 2px dashed #6b46c1; background: #fcfaff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; width: 100%;">
+              <h4 style="margin-top: 0; margin-bottom: 4px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-file-circle-plus" style="color: #6b46c1; font-size: 1.3rem;"></i> Add Document
+              </h4>
+              <form id="documentPostForm" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.75rem; font-weight: 600; color: #475569;">Document Name</label>
+                  <input type="text" name="title" placeholder="e.g. 7th Sem Marksheet" required style="padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.85rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                
+                <input type="hidden" name="type" value="Other">
+
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.75rem; font-weight: 600; color: #475569;">File (PDF or Image)</label>
+                  <input type="file" name="file" accept="application/pdf, image/*" required style="font-size: 0.8rem; color: #64748b; width: 100%;">
+                </div>
+
+                <button type="submit" style="background: #6b46c1; color: white; border: none; padding: 11px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; transition: all 0.2s; width: 100%;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='#6b46c1';">
+                  <i class="fa-solid fa-upload"></i> Upload
+                </button>
+              </form>
+            </div>
+          </article>
+        `;
+
+        gridHtml += docs.map(d => renderDocumentCardHtml(d)).join('');
+        container.innerHTML = gridHtml;
+
+        // Bind form submit
+        const form = document.getElementById('documentPostForm');
+        form?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          const uploadBtn = form.querySelector('button[type="submit"]');
+          if (uploadBtn) {
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+          }
+
+          try {
+            const resUpload = await fetch(`${apiBase}/api/documents`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${token}` },
+              body: formData
+            });
+
+            if (resUpload.ok) {
+              alert('Document uploaded successfully.');
+              loadDocumentsList();
+            } else {
+              const errData = await resUpload.json();
+              throw new Error(errData.message || 'Upload failed');
+            }
+          } catch (err) {
+            alert('Error: ' + err.message);
+            if (uploadBtn) {
+              uploadBtn.disabled = false;
+              uploadBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload';
+            }
+          }
+        });
+
+        // Event listeners for Delete button
+        container.querySelectorAll('.btn-delete-doc').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = btn.dataset.id;
+            if (!confirm('Are you sure you want to delete this document?')) return;
+            try {
+              const resDel = await fetch(`${apiBase}/api/documents/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (resDel.ok) {
+                loadDocumentsList();
+              } else {
+                throw new Error('Deletion failed');
+              }
+            } catch (err) {
+              alert('Error: ' + err.message);
+            }
+          });
+        });
+
+      } catch (err) {
+        container.innerHTML = `<div class="module-empty" style="color: red; grid-column: 1 / -1;">Failed to load documents list.</div>`;
+      }
+    }
+
+    function renderDocumentCardHtml(d) {
+      const docUrl = d.fileUrl.startsWith('http') ? d.fileUrl : `${apiBase}${d.fileUrl}`;
+      const isPdf = d.fileUrl.toLowerCase().endsWith('.pdf');
+      const dateStr = new Date(d.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      
+      let previewHtml = '';
+      if (isPdf) {
+        previewHtml = `
+          <div class="document-preview-pdf">
+            <i class="fa-solid fa-file-pdf"></i>
+            <span>PDF Document</span>
+          </div>
+        `;
+      } else {
+        previewHtml = `<img src="${docUrl}" alt="${esc(d.title)}">`;
+      }
+
+      return `
+        <article class="document-card">
+          <div class="document-card-header">
+            <div class="document-title-area">
+              <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-file-image'}" style="color: ${isPdf ? '#e11d48' : '#3b82f6'}; font-size: 1.25rem;"></i>
+              <h4 class="document-title" title="${esc(d.title)}">${esc(d.title)}</h4>
+            </div>
+          </div>
+          
+          <div class="document-card-body">
+            <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Uploaded on ${dateStr}</p>
+            
+            <div class="document-preview-area" style="margin-top: 4px;">
+              ${previewHtml}
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 12px; width: 100%;">
+              <a href="${docUrl}" target="_blank" rel="noopener noreferrer" class="btn-outline-purple" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #6b46c1; border: 1px solid #6b46c1; background: transparent; transition: all 0.2s;" onmouseenter="this.style.background='#f5f3ff';" onmouseleave="this.style.background='transparent';">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+              </a>
+              <a href="${docUrl}" download="${esc(d.title)}" class="btn-filled-purple" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: white;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <button class="btn-outline-red btn-delete-doc" data-id="${d._id}" style="padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer;">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
   }
 
   function stripNoticeContent(text) {

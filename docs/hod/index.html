@@ -91,7 +91,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <a href="../index.html" class="logo-container">
-        <img src="../assets/images/hero-illustration.png" alt="Logo" class="logo-icon" onerror="this.src='https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'"/>
+        <img src="../assets/images/logo.png" alt="Logo" class="logo-icon" onerror="this.src='https://ui-avatars.com/api/?name=CC&background=6b46c1&color=fff&rounded=true'"/>
         <div class="logo-text">CampusCare</div>
       </a>
 
@@ -109,10 +109,11 @@
         <li><a href="../modules/student-database/view.html" class="nav-item"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
         <li><a href="../modules/student-database/view.html?filter=dept-teachers" class="nav-item"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="../modules/notices/post.html" class="nav-item"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
-        <li><a href="../modules/leaders/post.html" class="nav-item"><i class="fa-solid fa-user-crown"></i> Add Academic Leader</a></li>
-        <li><a href="../modules/leaders/view.html" class="nav-item"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
-        <li><a href="../modules/alumni/post.html" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Post Alumni Excellence</a></li>
+        <li><a href="../modules/alumni/post.html" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
+        <li><a href="../modules/leaders/post.html" class="nav-item"><i class="fa-solid fa-user-tie"></i> Academic Leaders</a></li>
+        <li><a href="../modules/achievements/post.html" class="nav-item"><i class="fa-solid fa-trophy"></i> Achievements</a></li>
       </ul>
+
 
       <div class="sidebar-bottom" style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 4px !important;">
         <a href="../modules/complaints/post.html" class="nav-item"><i class="fa-solid fa-circle-plus"></i> Register Complaint</a>
@@ -180,17 +181,15 @@
         </div>
       </header>
 
-      <!-- TOP ROW (2:1 Ratio): Hero Banner + Recent Complaints -->
+      <!-- TOP ROW (2:1 Ratio): Hero Banner + Stats + Recent Complaints -->
       <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
         
-        <!-- Left Column: Hero (Span 2) -->
-        <div style="grid-column: span 2; display: flex;">
+        <!-- Left Column (Span 2): Hero & Stats -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
           <section class="hero-card" id="home"
-            style="padding: 30px 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
-            <div class="hero-content" style="max-width: 65%; z-index: 2;">
-              <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <span>☀️</span> Good morning, <span id="hod-name" style="color: var(--primary); font-weight: 800;">HOD</span>!
-              </h1>
+            style="padding: 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+            <div class="hero-content" style="max-width: 60%; z-index: 2;">
+              <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3;">Good morning, <span id="hod-name" style="color: var(--primary); font-weight: 800;">HOD</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">☀️</span></h1>
               <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
                 Here's what's happening in your department's academic world.
               </p>
@@ -200,31 +199,7 @@
                 onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
             </div>
           </section>
-        </div>
 
-        <!-- Right Column: Recent Complaints (Span 1) -->
-        <section class="section-card" style="grid-column: span 1; display: flex; flex-direction: column; justify-content: space-between;">
-          <div class="section-header" style="margin-bottom: 12px;">
-            <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Recent Complaints
-            </h2>
-            <a href="../modules/complaints/resolve.html" class="btn-view-all" style="font-size: 0.8rem;">View All</a>
-          </div>
-          <div id="recent-complaints-list-top" style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center;">
-            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
-              Loading complaints...
-            </div>
-          </div>
-        </section>
-
-      </div>
-
-      <!-- TWO COLUMNS LAYOUT -->
-      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
-        
-        <!-- Left Section (Span 2) -->
-        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 32px;">
-          
           <!-- Stat Cards Row -->
           <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
             <a href="../modules/gate-pass/approve.html" class="stat-card-new" style="text-decoration: none; position: relative;">
@@ -268,7 +243,30 @@
               </div>
             </a>
           </div>
+        </div>
 
+        <!-- Right Column: Recent Complaints (Span 1) -->
+        <section class="section-card" style="grid-column: span 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Recent Complaints
+            </h2>
+            <a href="../modules/complaints/resolve.html" class="btn-view-all" style="font-size: 0.8rem;">View All</a>
+          </div>
+          <div id="recent-complaints-list-top" style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: center;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading complaints...
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ROW 2 (2:1 Ratio): Academic Management & Today's Schedule -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Section (Span 2): Academic Management -->
+        <div style="grid-column: span 2;">
           <!-- Quick Access Cards -->
           <section class="section-card">
             <div class="section-header">
@@ -309,19 +307,46 @@
               </a>
               <a href="../modules/alumni/post.html" class="module-card-compact">
                 <div class="module-icon-compact" style="background:rgba(217, 119, 6, 0.1); color:#d97706"><i class="fa-solid fa-graduation-cap"></i></div>
-                <div class="module-title-compact">Post Alumni</div>
+                <div class="module-title-compact">Alumni</div>
               </a>
-              <a href="../modules/leaders/view.html" class="module-card-compact">
+              <a href="../modules/leaders/post.html" class="module-card-compact">
                 <div class="module-icon-compact" style="background:rgba(99, 102, 241, 0.1); color:#6366f1"><i class="fa-solid fa-users"></i></div>
                 <div class="module-title-compact">Academic Leaders</div>
               </a>
-              <a href="../modules/achievements/view.html" class="module-card-compact">
-                <div class="module-icon-compact" style="background:rgba(234, 179, 8, 0.1); color:#eab308"><i class="fa-solid fa-trophy"></i></div>
+              <a href="../modules/achievements/post.html" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:#10b981"><i class="fa-solid fa-trophy"></i></div>
                 <div class="module-title-compact">Achievements</div>
               </a>
             </div>
           </section>
+        </div>
 
+        <!-- Right Section (Span 1): Today's Schedule -->
+        <div style="grid-column: span 1; display: flex;">
+          <!-- HOD's Today's Schedule -->
+          <section class="section-card" id="hod-schedule-widget" style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
+            <div class="section-header" style="margin-bottom: 0;">
+              <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i> Today's Schedule
+              </h2>
+              <a href="../modules/routine/post.html" class="btn-view-all" style="font-size: 0.85rem;">Manage Routine</a>
+            </div>
+            
+            <div id="todays-schedule-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; justify-content: center;">
+              <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 24px 0;">
+                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading your schedule...
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+      <!-- ROW 3 (2:1 Ratio): Students Table Preview + Leave Request Preview -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+
+        <!-- Left Column (Span 2): Students Table -->
+        <div style="grid-column: span 2;">
           <!-- Department Students Table Preview -->
           <section class="section-card">
             <div class="section-header">
@@ -345,31 +370,25 @@
               </table>
             </div>
           </section>
-
         </div>
 
-        <!-- Right Section (Span 1) -->
-        <div style="display: flex; flex-direction: column; gap: 32px;">
-          
-          <!-- HOD's Today's Schedule -->
-          <section class="section-card" id="hod-schedule-widget" style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Right Column (Span 1): Leave Requests Preview -->
+        <div style="grid-column: span 1; display: flex;">
+          <!-- Leave Requests Preview Widget -->
+          <section class="section-card" id="hod-leave-preview-widget" style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
             <div class="section-header" style="margin-bottom: 0;">
               <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i> Today's Schedule
+                <i class="fa-solid fa-file-signature" style="color: var(--warning);"></i> Leave Request Preview
               </h2>
-              <a href="../modules/routine/post.html" class="btn-view-all" style="font-size: 0.85rem;">Manage Routine</a>
+              <a href="../modules/gate-pass/approve.html" class="btn-view-all" style="font-size: 0.85rem;">View All</a>
             </div>
-            
-            <div id="todays-schedule-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <div id="leave-preview-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; flex: 1; justify-content: center;">
               <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 24px 0;">
-                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading your schedule...
+                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading leave request...
               </div>
             </div>
           </section>
-
         </div>
-
-      </div>
 
     </main>
   </div>
@@ -449,6 +468,7 @@
         setTimeout(() => {
             loadRecentComplaintsPreview();
             loadHODSchedulePreview();
+            loadHODLeavePreview();
         }, 500);
     });
 
@@ -491,7 +511,7 @@
         // Sort by createdAt descending, filter out Resolved ones
         const activeComplaints = complaints.filter(c => c.status !== 'Resolved');
         const sorted = activeComplaints.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        const recent = sorted.slice(0, 2); // Show top 2 recent active complaints
+        const recent = sorted.slice(0, 5); // Show top 5 recent active complaints
 
         if (recent.length === 0) {
             container.innerHTML = `
@@ -587,7 +607,7 @@
 
         if (todaysClasses.length === 0) {
             listEl.innerHTML = `
-                <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.9rem; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.95rem; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color); flex: 1; display: flex; align-items: center; justify-content: center; min-height: 200px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
                     No classes scheduled for today! 🎉
                 </div>
             `;
@@ -629,6 +649,99 @@
         });
         
         listEl.innerHTML = html;
+    }
+
+    async function loadHODLeavePreview() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const fetchUrl = `${API_BASE}/api/hod/leaves`;
+
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (res.ok) {
+                const leaves = await res.json();
+                renderHODLeavePreview(leaves);
+            } else {
+                throw new Error('Response not ok');
+            }
+        } catch (e) {
+            console.error('Error loading leave preview:', e);
+            document.getElementById('leave-preview-container').innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 16px 0;">
+                    Failed to load leave requests.
+                </div>
+            `;
+        }
+    }
+
+    function renderHODLeavePreview(leaves) {
+        const container = document.getElementById('leave-preview-container');
+        if (!container) return;
+
+        if (leaves.length === 0) {
+            container.innerHTML = `
+                <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.95rem; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color); flex: 1; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                    No leave requests found.
+                </div>
+            `;
+            return;
+        }
+
+        // Sort: Pending HOD status first, then by creation/start date descending (latest first)
+        const sorted = [...leaves].sort((a, b) => {
+            if (a.hodStatus === 'Pending' && b.hodStatus !== 'Pending') return -1;
+            if (a.hodStatus !== 'Pending' && b.hodStatus === 'Pending') return 1;
+            return new Date(b.createdAt || b.startDate) - new Date(a.createdAt || a.startDate);
+        });
+
+        // Show up to 4 leaves to match the routine list density
+        const recentLeaves = sorted.slice(0, 4);
+        let html = '';
+        
+        recentLeaves.forEach((leave, idx) => {
+            const studentName = leave.student ? leave.student.name : 'Student';
+            const reason = leave.reason || 'No reason specified';
+            
+            const formatDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+            const timeText = `${formatDate(leave.startDate)} - ${formatDate(leave.endDate)}`;
+            
+            let statusBadge = '';
+            if (leave.hodStatus === 'Pending') {
+                statusBadge = '<span style="background: rgba(245, 158, 11, 0.1); color: var(--warning); padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; white-space: nowrap;">Pending</span>';
+            } else if (leave.hodStatus === 'Approved') {
+                statusBadge = '<span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; white-space: nowrap;">Approved</span>';
+            } else {
+                statusBadge = '<span style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; white-space: nowrap;">Rejected</span>';
+            }
+
+            html += `
+            <div class="list-item-compact" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; transition: all 0.2s;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; width: 125px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; white-space: nowrap;">
+                    <i class="fa-regular fa-calendar-days" style="color: var(--primary)"></i> ${timeText}
+                </div>
+                <div style="flex: 1; padding: 0 16px; min-width: 0;">
+                    <h4 style="font-size: 0.9rem; margin: 0; color: var(--text-dark); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${studentName}">${studentName}</h4>
+                    <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${reason}</p>
+                </div>
+                <div style="flex-shrink: 0; display: flex; align-items: center;">
+                    ${statusBadge}
+                </div>
+            </div>`;
+        });
+
+        container.innerHTML = `
+            <div style="display: flex; flex-direction: column; flex: 1; justify-content: flex-start; min-height: 200px;">
+                ${html}
+            </div>
+        `;
     }
   </script>
 </body>

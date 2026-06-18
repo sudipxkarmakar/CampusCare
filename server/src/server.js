@@ -72,7 +72,7 @@ const startServer = async () => {
   app.use(compression());
 
   // 4. Strict CORS
-  const commonOrigins = ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:5173', 'http://localhost:5501'];
+  const commonOrigins = ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:5173', 'http://localhost:5501'];
   const allowedOrigins = process.env.NODE_ENV === 'production' 
       ? ['https://effervescent-lily-bbbe6a.netlify.app', 'https://campuscare-backend-96cn.onrender.com', ...commonOrigins] 
       : commonOrigins;
