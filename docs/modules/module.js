@@ -469,6 +469,14 @@
       return;
     }
 
+    if (cfg.module === 'documents') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderDocumentsPage(info);
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'leaders') {
       const hero = document.getElementById('home');
       if (hero) hero.style.display = 'none';
@@ -8122,6 +8130,306 @@
           modal.style.display = 'none';
         }
       };
+    }
+  }
+
+  async function renderDocumentsPage(info) {
+    const userRole = (user.role || 'guest').toLowerCase();
+    
+    if (!document.getElementById('document-custom-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'document-custom-styles';
+      styleEl.innerHTML = `
+        .documents-grid-view {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+          align-items: stretch;
+          padding-right: 4px;
+          width: 100%;
+        }
+        @media (min-width: 640px) {
+          .documents-grid-view {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .documents-grid-view {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1400px) {
+          .documents-grid-view {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+        
+        .document-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.015);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          box-sizing: border-box;
+          margin-bottom: 4px;
+          height: 100%;
+          min-height: 280px;
+        }
+        .document-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(107, 70, 193, 0.08);
+          border-color: rgba(107, 70, 193, 0.25);
+        }
+        
+        .document-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+        }
+        .document-title-area {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+          flex: 1;
+        }
+        .document-title {
+          margin: 0;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0f172a;
+          font-family: 'Poppins', sans-serif;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        
+        .document-card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          flex-grow: 1;
+        }
+        
+        .document-preview-area {
+          width: 100%;
+          height: 160px;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        }
+        .document-preview-area img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .document-preview-pdf {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          color: #e11d48;
+        }
+        .document-preview-pdf i {
+          font-size: 3rem;
+        }
+        .document-preview-pdf span {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #475569;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+
+    content(`
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="documentBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Document Vault</h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Securely upload, preview, and download your academic certificates, marksheets, and proofs.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="documentsListContainer" class="documents-grid-view">
+        <div style="text-align: center; padding: 40px; color: #64748b; grid-column: 1 / -1;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading documents...</div>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('documentBackBtn')?.addEventListener('click', goToDashboard);
+
+    await loadDocumentsList();
+
+    async function loadDocumentsList() {
+      const container = document.getElementById('documentsListContainer');
+      if (!container) return;
+      const token = user.token || localStorage.getItem('token') || '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/documents`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to load documents');
+        let docs = await res.json();
+
+        let gridHtml = `
+          <!-- Insert Card (First Card in Grid) -->
+          <article class="document-card" style="border: 2px dashed #6b46c1; background: #fcfaff; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; width: 100%;">
+              <h4 style="margin-top: 0; margin-bottom: 4px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-file-circle-plus" style="color: #6b46c1; font-size: 1.3rem;"></i> Add Document
+              </h4>
+              <form id="documentPostForm" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.75rem; font-weight: 600; color: #475569;">Document Name</label>
+                  <input type="text" name="title" placeholder="e.g. 7th Sem Marksheet" required style="padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.85rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+                </div>
+                
+                <input type="hidden" name="type" value="Other">
+
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.75rem; font-weight: 600; color: #475569;">File (PDF or Image)</label>
+                  <input type="file" name="file" accept="application/pdf, image/*" required style="font-size: 0.8rem; color: #64748b; width: 100%;">
+                </div>
+
+                <button type="submit" style="background: #6b46c1; color: white; border: none; padding: 11px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; transition: all 0.2s; width: 100%;" onmouseenter="this.style.background='#55309d';" onmouseleave="this.style.background='#6b46c1';">
+                  <i class="fa-solid fa-upload"></i> Upload
+                </button>
+              </form>
+            </div>
+          </article>
+        `;
+
+        gridHtml += docs.map(d => renderDocumentCardHtml(d)).join('');
+        container.innerHTML = gridHtml;
+
+        // Bind form submit
+        const form = document.getElementById('documentPostForm');
+        form?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          const uploadBtn = form.querySelector('button[type="submit"]');
+          if (uploadBtn) {
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+          }
+
+          try {
+            const resUpload = await fetch(`${apiBase}/api/documents`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${token}` },
+              body: formData
+            });
+
+            if (resUpload.ok) {
+              alert('Document uploaded successfully.');
+              loadDocumentsList();
+            } else {
+              const errData = await resUpload.json();
+              throw new Error(errData.message || 'Upload failed');
+            }
+          } catch (err) {
+            alert('Error: ' + err.message);
+            if (uploadBtn) {
+              uploadBtn.disabled = false;
+              uploadBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload';
+            }
+          }
+        });
+
+        // Event listeners for Delete button
+        container.querySelectorAll('.btn-delete-doc').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = btn.dataset.id;
+            if (!confirm('Are you sure you want to delete this document?')) return;
+            try {
+              const resDel = await fetch(`${apiBase}/api/documents/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (resDel.ok) {
+                loadDocumentsList();
+              } else {
+                throw new Error('Deletion failed');
+              }
+            } catch (err) {
+              alert('Error: ' + err.message);
+            }
+          });
+        });
+
+      } catch (err) {
+        container.innerHTML = `<div class="module-empty" style="color: red; grid-column: 1 / -1;">Failed to load documents list.</div>`;
+      }
+    }
+
+    function renderDocumentCardHtml(d) {
+      const docUrl = d.fileUrl.startsWith('http') ? d.fileUrl : `${apiBase}${d.fileUrl}`;
+      const isPdf = d.fileUrl.toLowerCase().endsWith('.pdf');
+      const dateStr = new Date(d.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      
+      let previewHtml = '';
+      if (isPdf) {
+        previewHtml = `
+          <div class="document-preview-pdf">
+            <i class="fa-solid fa-file-pdf"></i>
+            <span>PDF Document</span>
+          </div>
+        `;
+      } else {
+        previewHtml = `<img src="${docUrl}" alt="${esc(d.title)}">`;
+      }
+
+      return `
+        <article class="document-card">
+          <div class="document-card-header">
+            <div class="document-title-area">
+              <i class="fa-solid ${isPdf ? 'fa-file-pdf' : 'fa-file-image'}" style="color: ${isPdf ? '#e11d48' : '#3b82f6'}; font-size: 1.25rem;"></i>
+              <h4 class="document-title" title="${esc(d.title)}">${esc(d.title)}</h4>
+            </div>
+          </div>
+          
+          <div class="document-card-body">
+            <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Uploaded on ${dateStr}</p>
+            
+            <div class="document-preview-area" style="margin-top: 4px;">
+              ${previewHtml}
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 12px; width: 100%;">
+              <a href="${docUrl}" target="_blank" rel="noopener noreferrer" class="btn-outline-purple" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: #6b46c1; border: 1px solid #6b46c1; background: transparent; transition: all 0.2s;" onmouseenter="this.style.background='#f5f3ff';" onmouseleave="this.style.background='transparent';">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+              </a>
+              <a href="${docUrl}" download="${esc(d.title)}" class="btn-filled-purple" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; color: white;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <button class="btn-outline-red btn-delete-doc" data-id="${d._id}" style="padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer;">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
     }
   }
 

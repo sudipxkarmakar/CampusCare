@@ -549,6 +549,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Load Alumni
   const alumniContainer = document.getElementById("alumni-list");
+  const prevAlumniBtn = document.getElementById("prev-alumni-btn");
+  const nextAlumniBtn = document.getElementById("next-alumni-btn");
   if (alumniContainer) {
     try {
       const res = await fetch(`${API_BASE}/api/alumni`);
@@ -558,37 +560,80 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (alumni.length === 0) {
         alumniContainer.innerHTML =
           '<p style="text-align:center; width:100%;">No alumni profiles found.</p>';
+        if (prevAlumniBtn) prevAlumniBtn.style.display = "none";
+        if (nextAlumniBtn) nextAlumniBtn.style.display = "none";
       } else {
-        let html = "";
-        const displayAlumni = alumni.slice(0, 1);
-        displayAlumni.forEach((a, index) => {
-          const roleColor = [
-            "#10b981",
-            "#3b82f6",
-            "#f59e0b",
-            "#ef4444",
-            "#8b5cf6",
-          ][Math.floor(Math.random() * 5)];
-          const name = a.user ? a.user.name : a.name || "Alumni"; // Handle populated user or direct name
+        let activeAlumniIndex = 0;
+
+        const renderActiveAlumni = () => {
+          const a = alumni[activeAlumniIndex];
+          const name = a.user ? a.user.name : a.name || "Alumni";
           const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100`;
 
-          html += `
-                    <div style="display: flex; align-items: center; gap: 20px; background: var(--bg-color); padding: 20px; border-radius: var(--radius-md); margin-bottom: 10px;">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=100" alt="${name}" class="profile-img" style="margin: 0; width: 70px; height: 70px; border-radius: 50%;">
-                        <div>
-                            <h4 class="profile-name" style="font-size: 1.1rem; margin-bottom: 2px;">${name}</h4>
-                            <p class="profile-role" style="margin-bottom: 8px;">${a.jobTitle} @ ${a.currentCompany}</p>
-                            <p class="profile-quote" style="margin: 0; text-align: left; font-size: 0.85rem; color: var(--text-muted);">"${a.about || "Proud Alumni of CampusCare"}"</p>
-                        </div>
-                    </div>
-                    `;
-        });
-        alumniContainer.innerHTML = html;
+          // Constructing extra details to fill space
+          const degreeDept = (a.degree && a.department) 
+            ? `${a.degree} in ${a.department}`
+            : (a.degree || a.department || "");
+          const classOf = a.graduationYear ? ` (Class of ${a.graduationYear})` : "";
+          
+          let linkedinHtml = "";
+          if (a.linkedinProfile) {
+            linkedinHtml = `
+              <a href="${a.linkedinProfile}" target="_blank" rel="noopener" 
+                 style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: #0077b5; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: color 0.2s;"
+                 onmouseenter="this.style.color='#005582'; this.style.textDecoration='underline'" 
+                 onmouseleave="this.style.color='#0077b5'; this.style.textDecoration='none'">
+                <i class="fa-brands fa-linkedin" style="font-size: 1.1rem;"></i> LinkedIn Profile
+              </a>
+            `;
+          }
+
+          alumniContainer.innerHTML = `
+            <div class="fade-in" style="display: flex; align-items: center; gap: 20px; background: var(--bg-color); padding: 20px; border-radius: var(--radius-md); min-height: 120px;">
+              <img src="${avatarUrl}" alt="${name}" class="profile-img" style="margin: 0; width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
+              <div style="flex: 1; min-width: 0;">
+                <h4 class="profile-name" style="font-size: 1.1rem; margin-bottom: 2px; text-align: left;">${name}</h4>
+                ${degreeDept ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 4px 0; text-align: left;"><i class="fa-solid fa-graduation-cap" style="margin-right: 4px;"></i> ${degreeDept}${classOf}</p>` : ""}
+                <p class="profile-role" style="margin-bottom: 8px; text-align: left; font-weight: 600; color: var(--primary);">${a.jobTitle} @ ${a.currentCompany}</p>
+                <p class="profile-quote" style="margin: 0 0 8px 0; text-align: left; font-size: 0.85rem; color: var(--text-muted); font-style: italic;">"${a.about || "Proud Alumni of CampusCare"}"</p>
+                ${linkedinHtml}
+              </div>
+            </div>
+          `;
+
+          // Handle button states if only 1 alumni exists
+          if (alumni.length <= 1) {
+            if (prevAlumniBtn) prevAlumniBtn.style.display = "none";
+            if (nextAlumniBtn) nextAlumniBtn.style.display = "none";
+          } else {
+            if (prevAlumniBtn) prevAlumniBtn.style.display = "flex";
+            if (nextAlumniBtn) nextAlumniBtn.style.display = "flex";
+          }
+        };
+
+        renderActiveAlumni();
+
+        if (prevAlumniBtn) {
+          prevAlumniBtn.onclick = (e) => {
+            e.preventDefault();
+            activeAlumniIndex = (activeAlumniIndex - 1 + alumni.length) % alumni.length;
+            renderActiveAlumni();
+          };
+        }
+        if (nextAlumniBtn) {
+          nextAlumniBtn.onclick = (e) => {
+            e.preventDefault();
+            activeAlumniIndex = (activeAlumniIndex + 1) % alumni.length;
+            renderActiveAlumni();
+          };
+        }
       }
     } catch (error) {
       console.error("Alumni API Error:", error);
       alumniContainer.innerHTML =
         '<p style="text-align:center; color:red;">Failed to load alumni.</p>';
+      if (prevAlumniBtn) prevAlumniBtn.style.display = "none";
+      if (nextAlumniBtn) nextAlumniBtn.style.display = "none";
     }
   }
 
