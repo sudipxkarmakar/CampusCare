@@ -687,15 +687,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? `${a.degree} in ${a.department}`
             : (a.degree || a.department || "");
           const classOf = a.graduationYear ? ` (Class of ${a.graduationYear})` : "";
-          
-          let linkedinHtml = "";
-          if (a.linkedinProfile) {
-            linkedinHtml = `
-              <span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: #0077b5; font-weight: 600; font-size: 0.85rem;">
-                <i class="fa-brands fa-linkedin" style="font-size: 1.1rem;"></i> View LinkedIn Info
-              </span>
-            `;
-          }
 
           // Programmatically enforce layout wrapper constraints to override caching
           const alumniWrapper = alumniContainer.parentElement;
@@ -704,13 +695,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             alumniWrapper.style.flex = "1";
             alumniWrapper.style.display = "flex";
             alumniWrapper.style.alignItems = "stretch";
-            alumniWrapper.style.marginBottom = "16px";
-          }
-          const alumniSectionTop = alumniContainer.closest("#alumni")?.firstElementChild;
-          if (alumniSectionTop) {
-            alumniSectionTop.style.flex = "1";
-            alumniSectionTop.style.display = "flex";
-            alumniSectionTop.style.flexDirection = "column";
+            alumniWrapper.style.marginBottom = "0px";
           }
           if (prevAlumniBtn) prevAlumniBtn.style.alignSelf = "center";
           if (nextAlumniBtn) nextAlumniBtn.style.alignSelf = "center";
@@ -722,15 +707,18 @@ document.addEventListener("DOMContentLoaded", async () => {
           alumniContainer.style.height = "100%";
 
           alumniContainer.innerHTML = `
-            <div class="fade-in" style="display: flex; align-items: center; gap: 20px; background: var(--bg-color); padding: 24px; border-radius: var(--radius-lg); width: 100%; height: 100%; box-sizing: border-box; flex: 1; border: 1px solid transparent; transition: all 0.3s; cursor: pointer;" id="active-alumni-card">
-              <img src="${avatarUrl}" alt="${name}" class="profile-img" style="margin: 0; width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); flex-shrink: 0; box-shadow: var(--shadow-sm);">
-              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                <h4 class="profile-name" style="font-size: 1.15rem; margin: 0 0 2px 0; text-align: left; font-weight: 700; color: var(--text-dark);">${name}</h4>
-                ${degreeDept ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 4px 0; text-align: left; font-weight: 500;"><i class="fa-solid fa-graduation-cap" style="margin-right: 4px; color: var(--primary);"></i> ${degreeDept}${classOf}</p>` : ""}
-                <p class="profile-role" style="margin: 0 0 8px 0; text-align: left; font-weight: 600; color: var(--primary); font-size: 0.9rem;">${a.jobTitle} @ ${a.currentCompany}</p>
-                <p class="profile-quote" style="margin: 0 0 8px 0; text-align: left; font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${a.about || "Proud Alumni of CampusCare"}"</p>
-                ${linkedinHtml}
+            <div class="fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: var(--bg-color); padding: 28px 24px; border-radius: var(--radius-lg); width: 100%; height: 100%; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; flex: 1; box-sizing: border-box;" id="active-alumni-card">
+              <img src="${avatarUrl}" class="profile-img" alt="${name}" style="margin: 0; width: 95px; height: 95px; border-radius: 50%; object-fit: cover; border: 3.5px solid var(--primary-light); flex-shrink: 0; box-shadow: var(--shadow-sm);" />
+              <div style="text-align: center; width: 100%; display: flex; flex-direction: column; gap: 8px; margin: 16px 0;">
+                <h4 class="profile-name" style="font-size: 1.35rem; margin: 0; font-weight: 700; color: var(--text-dark); text-align: center;">${name}</h4>
+                <p class="profile-role" style="color: var(--primary); font-weight: 600; font-size: 0.95rem; margin: 0; text-align: center;">${a.jobTitle} @ ${a.currentCompany}</p>
+                ${degreeDept ? `
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 6px 14px; border-radius: var(--radius-md); margin: 4px auto 0 auto; font-size: 0.85rem; display: inline-block; width: fit-content; text-align: center; border: 1px solid rgba(0,0,0,0.03);">
+                  <span style="color: var(--text-muted); font-weight: 500;"><i class="fa-solid fa-graduation-cap" style="color: var(--primary); margin-right: 6px;"></i> ${degreeDept}${classOf}</span>
+                </div>
+                ` : ""}
               </div>
+              <p class="profile-quote" style="margin: 0; font-size: 0.88rem; color: var(--text-muted); font-style: italic; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; border-top: 1px dashed rgba(107, 70, 193, 0.15); padding-top: 12px; text-align: center; width: 100%;">${a.about ? `"${a.about}"` : '"Proud Alumni of CampusCare"'}</p>
             </div>
           `;
 
@@ -1543,17 +1531,12 @@ window.checkAuthState = function () {
     // Explicitly set flex to override CSS 'display: none' from class
     if (userProfile) userProfile.style.display = "flex";
 
-    if (userName) {
-      let displayName = "User";
-      if (user.name) displayName = user.name.split(" ")[0];
-      else if (user.role)
-        displayName = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+    if (userProfile) {
+      userProfile.style.display = "flex";
+      userProfile.style.alignItems = "center";
+      userProfile.style.gap = "10px";
 
-      userName.textContent = `Hello, ${displayName}`;
-    }
-
-    const userRoleEl = document.getElementById("userRole");
-    if (userRoleEl) {
+      let designation = "User";
       const role = (user.role || "").toLowerCase();
       if (role === "student" || role === "hosteler") {
         const dept = user.department || "Student";
@@ -1566,20 +1549,53 @@ window.checkAuthState = function () {
         } else if (user.batch) {
           yrText = `, Batch ${user.batch}`;
         }
-        userRoleEl.textContent = `${dept}${yrText}`;
+        designation = `${dept}${yrText}`;
       } else if (role === "teacher" || role === "hod" || role === "warden" || role === "dean" || role === "principal") {
         const roleLabels = {
           teacher: "Faculty",
-          hod: "Head of Department",
+          hod: "HOD",
           warden: "Hostel Admin",
-          dean: "Dean of Students",
+          dean: "Dean",
           principal: "Principal"
         };
         const label = roleLabels[role] || (role.charAt(0).toUpperCase() + role.slice(1));
-        const deptText = user.department ? `, Dept: ${user.department}` : "";
-        userRoleEl.textContent = `${label}${deptText}`;
+        const deptText = user.department ? `, ${user.department}` : "";
+        designation = `${label}${deptText}`;
       } else {
-        userRoleEl.textContent = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : "User";
+        designation = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : "User";
+      }
+
+      let displayName = "User";
+      if (user.name) displayName = user.name.split(" ")[0];
+      else if (user.role)
+        displayName = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+      let infoDiv = userProfile.querySelector(".user-profile-info");
+      if (!infoDiv) {
+        infoDiv = document.createElement("div");
+        infoDiv.className = "user-profile-info";
+        infoDiv.style.cssText = "display: flex; flex-direction: column; text-align: left; justify-content: center;";
+      }
+      infoDiv.innerHTML = `
+        <span id="userName" style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark); margin: 0; line-height: 1.2;">Hello, ${displayName}</span>
+        <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; line-height: 1.2;">${designation}</span>
+      `;
+
+      let avatar = userProfile.querySelector("#userAvatar");
+      let menu = userProfile.querySelector("#profileMenu");
+
+      Array.from(userProfile.childNodes).forEach(node => {
+        if (node !== avatar && node !== menu && node !== infoDiv) {
+          userProfile.removeChild(node);
+        }
+      });
+
+      if (!userProfile.contains(infoDiv)) {
+        if (menu) {
+          userProfile.insertBefore(infoDiv, menu);
+        } else {
+          userProfile.appendChild(infoDiv);
+        }
       }
     }
 
@@ -1784,35 +1800,55 @@ window.checkAuthState = function () {
       };
 
       const role = (user.role || "").toLowerCase();
+      let usernameText = user.rollNumber || user.employeeId || user.identifier || "";
+      let emailText = user.email || "";
+
+      if (role === "student" || role === "hosteler") {
+        let emailLocal = (user.email || "").split("@")[0];
+        if (emailLocal) {
+          usernameText = emailLocal; // e.g. "it10800222062"
+        }
+      }
+
       const colors = badgeColors[role] || { bg: "#ede9fe", color: "#6d28d9" };
       const roleLabel = user.role ? (user.role.toUpperCase() === 'HOD' ? 'HOD' : user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Member';
 
+      profileMenu.style.minWidth = "290px";
       profileMenu.style.flexDirection = "column";
       profileMenu.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 12px; min-width: 240px; padding: 2px;">
+        <div style="display: flex; flex-direction: column; gap: 12px; min-width: 290px; padding: 2px;">
           <!-- Line 1: Header with Badge -->
           <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 2px;">
             <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
-            <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-sm); background: ${colors.bg}; color: ${colors.color};">${roleLabel}</span>
+            <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); background: ${colors.bg}; color: ${colors.color};">${roleLabel}</span>
           </div>
           
           <!-- Line 2: Details (preserves #userDetails ID for inline scripts) -->
-          <div id="userDetails" style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 !important;">
-            <strong style="font-size: 0.95rem; color: var(--text-dark);">${user.name || "User"}</strong>
-            <span style="word-break: break-all;">${user.email || ""}</span>
-            <span style="font-weight: 500;">
-              ID: ${user.rollNumber || user.employeeId || user.identifier || "--"}
-              ${user.department ? ` • Dept: ${user.department}` : ""}
-              ${user.hostelName ? ` • Hostel: ${user.hostelName}` : ""}
-            </span>
+          <div id="userDetails" style="background: #f8fafc; border-radius: 16px; padding: 14px 16px; margin: 8px 0; border: 1px solid rgba(107, 70, 193, 0.06); display: flex; justify-content: space-between; align-items: stretch; gap: 16px; text-align: left;">
+            <!-- Left Column: Name & Email -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0;">
+              <span style="background: rgba(107, 70, 193, 0.08); color: var(--primary); padding: 5px 12px; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.3px; height: 26px; box-sizing: border-box; white-space: nowrap; width: fit-content;">${user.name || "User"}</span>
+              <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 500; word-break: break-all; line-height: 1.4;">
+                ${user.email || ""}
+              </div>
+            </div>
+            
+            <!-- Vertical Divider Line -->
+            <div style="width: 1px; background: rgba(107, 70, 193, 0.12); align-self: stretch;"></div>
+            
+            <!-- Right Column: ID & Dept -->
+            <div style="display: flex; flex-direction: column; justify-content: center; gap: 6px; font-size: 0.76rem; color: var(--text-muted); font-weight: 500; line-height: 1.4; flex-shrink: 0; min-width: 80px;">
+              <div>ID: <span style="color: var(--text-dark); font-weight: 700;">${user.rollNumber || user.employeeId || user.identifier || "--"}</span></div>
+              <div>Dept: <span style="color: var(--text-dark); font-weight: 700;">${user.department || "--"}</span></div>
+            </div>
           </div>
 
           <!-- Line 3: Actions -->
           <div style="display: flex; gap: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); padding-top: 12px;">
-            <a href="${profilePath}" class="btn-outline-purple" style="flex: 1 !important; text-align: center; font-size: 0.8rem; padding: 8px 10px; text-decoration: none; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
+            <a href="${profilePath}" class="btn-outline-purple" style="flex: 1 !important; text-align: center; font-size: 0.85rem; padding: 10px 12px; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; border: 1.5px solid var(--primary); color: var(--primary); background: transparent; cursor: pointer; margin-top: 0 !important; width: auto !important;" onmouseenter="this.style.background='rgba(107, 70, 193, 0.08)';" onmouseleave="this.style.background='transparent';">
               <i class="fa-regular fa-user"></i> Profile
             </a>
-            <button data-action="logout" onclick="logout()" class="btn-outline-red" style="flex: 1 !important; font-size: 0.8rem; padding: 8px 10px; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1px solid var(--danger); transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
+            <button data-action="logout" onclick="logout()" style="flex: 1 !important; font-size: 0.85rem; padding: 10px 12px; border-radius: var(--radius-md); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: none; background: #ef4444; color: white; transition: all 0.2s; margin-top: 0 !important; width: auto !important;" onmouseenter="this.style.background='#dc2626'; this.style.transform='translateY(-0.5px)';" onmouseleave="this.style.background='#ef4444'; this.style.transform='none';">
               <i class="fa-solid fa-right-from-bracket"></i> Logout
             </button>
           </div>
