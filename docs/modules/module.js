@@ -120,6 +120,9 @@
         const userRole = (user.role || 'Guest').toLowerCase();
         const isStudent = userRole === 'student' || userRole === 'hosteler';
         if (cfg.module === 'assignments' && isStudent && key === 'post') return false;
+        if (cfg.module === 'routine' && key === 'post') {
+          return userRole === 'hod' || userRole === 'principal' || userRole === 'admin';
+        }
         return true;
       })
       .map(([key, value]) => `<a class="btn-dashboard ${cfg.mode === key ? 'active' : ''}" href="${value}"><i class="fa-solid ${key === 'post' ? 'fa-plus' : key === 'resolve' ? 'fa-check' : 'fa-eye'}"></i> ${label(key)}</a>`)
@@ -189,6 +192,7 @@
       portalText = 'Principal Portal';
       navMenuHtml = `
         <li><a href="${rootPrefix}principal/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
+        <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> Routine Management</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> All Students</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> All Teachers</a></li>
         <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-hods" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-hods') ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> HODs</a></li>
@@ -440,6 +444,14 @@
         window.location.href = `${getRootPrefix()}index.html`;
       });
     });
+
+    if (cfg.module === 'routine') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderRoutinePage(info);
+      initSidebar();
+      return;
+    }
 
     if (cfg.module === 'complaints') {
       const hero = document.getElementById('home');
@@ -7068,6 +7080,651 @@
     }
 
     return processedLines.join('\n');
+  }
+
+  async function renderRoutinePage(info) {
+    // Hide default hero
+    const hero = document.getElementById('home');
+    if (hero) hero.style.display = 'none';
+
+    const role = (user.role || 'Guest').toLowerCase();
+    const isTeacher = role === 'teacher';
+    const isStudent = role === 'student' || role === 'hosteler';
+    const isWarden = role === 'warden';
+    const isHOD = role === 'hod';
+    const isPrincipal = role === 'principal';
+    const isEditor = isHOD || isPrincipal;
+    const isEditMode = isEditor && cfg.mode === 'post';
+
+    // CSS injection for routine grid to ensure beautiful look and fit on one screen
+    if (!document.getElementById('routine-grid-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'routine-grid-styles';
+      styles.innerHTML = `
+        .routine-grid-container {
+          background: #ffffff;
+          border-radius: 18px;
+          padding: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid #f1f5f9;
+          margin-bottom: 24px;
+        }
+        .routine-grid {
+          display: grid;
+          grid-template-columns: 110px repeat(8, 1fr);
+          gap: 6px;
+        }
+        .routine-grid.current-day-row {
+          background: #f1f5f9 !important;
+          border-radius: 8px;
+        }
+        .routine-grid.current-day-row .routine-slot-cell:not(.assigned) {
+          background: #e2e8f0 !important;
+          border-color: #cbd5e1 !important;
+        }
+        .routine-header-cell {
+          font-weight: 700;
+          font-size: 0.75rem;
+          color: #4f46e5;
+          text-align: center;
+          padding: 10px 4px;
+          background: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .routine-day-cell {
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #1e1b4b;
+          background: #f1f5f9;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #cbd5e1;
+        }
+        .routine-day-cell.current-day {
+          background: #6b46c1 !important;
+          color: #ffffff !important;
+          border-color: #6b46c1 !important;
+          box-shadow: 0 0 8px rgba(107, 70, 193, 0.2);
+        }
+        .routine-slot-cell {
+          background: #fafafa;
+          border: 1px dashed #e2e8f0;
+          border-radius: 8px;
+          padding: 6px 4px;
+          min-height: 52px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          font-size: 0.7rem;
+          transition: all 0.2s;
+          cursor: default;
+        }
+        .routine-slot-cell.assigned {
+          background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+          border: 1px solid #c084fc;
+          color: #581c87;
+          cursor: pointer;
+        }
+        .routine-slot-cell.assigned:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+        }
+        .routine-slot-cell.editable {
+          cursor: pointer;
+          border-style: solid;
+        }
+        .routine-slot-cell.editable:hover {
+          border-color: #6b46c1;
+          background: #fdfeff;
+          box-shadow: inset 0 0 0 1px #6b46c1;
+        }
+        .routine-cell-subject {
+          font-weight: 800;
+          font-size: 0.75rem;
+          line-height: 1.2;
+          color: #1e1b4b;
+        }
+        .routine-cell-teacher {
+          font-size: 0.65rem;
+          color: #6b7280;
+          margin-top: 3px;
+          font-weight: 600;
+        }
+        .routine-cell-meta {
+          font-size: 0.6rem;
+          color: #8b5cf6;
+          margin-top: 2px;
+          font-weight: 500;
+        }
+        .routine-cell-free {
+          color: #cbd5e1;
+          font-style: italic;
+          font-size: 0.65rem;
+        }
+        /* Modal Style Override */
+        .routine-modal-overlay {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          z-index: 9999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+        }
+        .routine-modal {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 24px;
+          max-width: 400px;
+          width: 90%;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+          border: 1px solid #e2e8f0;
+          animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+
+    const html = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button type="button" id="routineBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+              ${isEditMode ? 'Routine Management' : 'Class Routine'}
+            </h2>
+            <p id="routineSub" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; font-weight: 500;">
+              Loading routine details...
+            </p>
+          </div>
+        </div>
+        <div id="routineActionArea" style="display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap;"></div>
+      </div>
+
+      <!-- Main routine grid wrapper -->
+      <div id="routineGridWrapper" style="width: 100%; overflow-x: auto;">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading routine details...</div>
+        </div>
+      </div>
+
+      <!-- Custom Routine Edit Modal -->
+      <div id="routineSlotModal" class="routine-modal-overlay">
+        <div class="routine-modal">
+          <h3 id="routineModalTitle" style="margin-top: 0; margin-bottom: 8px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b;">Edit Routine Slot</h3>
+          <p id="routineModalInfo" style="font-size: 0.8rem; color: #64748b; margin-bottom: 20px; line-height: 1.4;"></p>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; font-size: 0.8rem; color: #475569; margin-bottom: 8px;">Subject & Teacher</label>
+            <select id="routineModalSelect" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: white; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #1e1b4b;"></select>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" id="routineModalDeleteBtn" class="btn-outline-red" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;">Clear Slot</button>
+            <button type="button" id="routineModalCancelBtn" class="btn-outline-purple" style="font-size: 0.8rem; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; background: transparent; border: 1px solid #e2e8f0; color: #475569;">Cancel</button>
+            <button type="button" id="routineModalSaveBtn" class="btn-filled-purple" style="font-size: 0.8rem; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; background: #6b46c1; color: white; border: none;">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const el = content(html);
+    document.getElementById('routineBackBtn')?.addEventListener('click', goToDashboard);
+
+    // Helper to map semester numbers to years
+    function getYearFromSemester(sem) {
+      const s = parseInt(sem);
+      if (s <= 2) return '1st Year';
+      if (s <= 4) return '2nd Year';
+      if (s <= 6) return '3rd Year';
+      return '4th Year';
+    }
+
+    // Filter selectors state
+    let dept = user.department || 'CSE';
+    let semester = user.semester || 1;
+    let year = getYearFromSemester(semester);
+    let batch = user.batch ? (user.batch.startsWith('Batch') ? user.batch : 'Batch ' + user.batch) : 'Batch 1';
+
+    // Populate selectors in the right-side Action Area
+    function updateSelectors() {
+      const actionArea = document.getElementById('routineActionArea');
+      if (!actionArea) return;
+
+      const depts = ['CSE', 'ECE', 'EE', 'ME', 'CE', 'IT'];
+      const sems = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
+      const batches = ['Batch 1', 'Batch 2'];
+
+      let actionHTML = '';
+
+      if (!isTeacher) {
+        // Dept selector
+        if (isPrincipal || isWarden) {
+          actionHTML += `
+            <select id="selDept" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: #fff; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              ${depts.map(d => `<option value="${d}" ${d === dept ? 'selected' : ''}>Dept: ${d}</option>`).join('')}
+            </select>
+          `;
+        } else {
+          actionHTML += `<span style="font-size: 0.75rem; font-weight: 700; color: #6b46c1; background:#f5f3ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #c084fc;">Dept: ${dept}</span>`;
+        }
+
+        // Semester selector
+        if (isStudent) {
+          actionHTML += `<span style="font-size: 0.75rem; font-weight: 700; color: #6b46c1; background:#f5f3ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #c084fc;">Sem: ${semester}</span>`;
+        } else {
+          actionHTML += `
+            <select id="selSemester" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: #fff; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              ${sems.map((s, idx) => `<option value="${idx + 1}" ${idx + 1 === parseInt(semester) ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+          `;
+        }
+
+        // Batch selector
+        if (isStudent) {
+          actionHTML += `<span style="font-size: 0.75rem; font-weight: 700; color: #6b46c1; background:#f5f3ff; padding: 6px 12px; border-radius: 8px; border: 1px solid #c084fc;">Batch: ${batch}</span>`;
+        } else {
+          actionHTML += `
+            <select id="selBatch" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: #fff; font-size: 0.8rem; font-weight: 600; color: #475569;">
+              ${batches.map(b => `<option value="${b}" ${b === batch ? 'selected' : ''}>Batch: ${b}</option>`).join('')}
+            </select>
+          `;
+        }
+      }
+
+      // Add Edit / View switcher button
+      if (isEditor) {
+        const modeBtn = isEditMode
+          ? `<a href="view.html" class="btn-pill btn-outline-purple" style="font-size: 0.85rem; font-weight: 600; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-eye"></i> View</a>`
+          : `<a href="post.html" class="btn-pill btn-filled-purple" style="font-size: 0.85rem; font-weight: 600; background:#6b46c1; color:white; text-decoration: none; padding: 6px 14px;"><i class="fa-solid fa-pen-to-square"></i> Edit</a>`;
+        actionHTML += modeBtn;
+      }
+
+      actionArea.innerHTML = actionHTML;
+
+      // Event listeners
+      document.getElementById('selDept')?.addEventListener('change', e => {
+        dept = e.target.value;
+        loadData();
+      });
+      document.getElementById('selSemester')?.addEventListener('change', e => {
+        semester = parseInt(e.target.value);
+        year = getYearFromSemester(semester);
+        loadData();
+      });
+      document.getElementById('selBatch')?.addEventListener('change', e => {
+        batch = e.target.value;
+        loadData();
+      });
+    }
+
+    const timeSlots = [
+      "09:30 - 10:30", "10:30 - 11:30", "11:30 - 12:30", "12:30 - 01:30",
+      "01:30 - 02:30", "02:30 - 03:30", "03:30 - 04:30", "04:30 - 05:30"
+    ];
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    let loadedRoutine = [];
+    let loadedSubjects = [];
+
+    updateSelectors();
+    await loadData();
+
+    async function loadData() {
+      const gridWrapper = document.getElementById('routineGridWrapper');
+      if (gridWrapper) {
+        gridWrapper.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+            <div>Loading routine...</div>
+          </div>
+        `;
+      }
+
+      try {
+        const token = user.token || localStorage.getItem('token') || '';
+        
+        // 1. Fetch Routine
+        let routineUrl = '';
+        if (isTeacher) {
+          routineUrl = `${apiBase}/api/routine/teacher`;
+        } else {
+          // Send normalized batch
+          const normalizedBatch = batch.match(/^\d+$/) ? `Batch ${batch}` : batch;
+          routineUrl = `${apiBase}/api/routine/student?year=${encodeURIComponent(year)}&semester=${semester}&batch=${encodeURIComponent(normalizedBatch)}&department=${encodeURIComponent(dept)}`;
+        }
+
+        const resRoutine = await fetch(routineUrl, { headers: { Authorization: `Bearer ${token}` } });
+        if (!resRoutine.ok) throw new Error('Routine load error');
+        loadedRoutine = await resRoutine.json();
+
+        // Update Subtitle
+        const subtitle = document.getElementById('routineSub');
+        if (subtitle) {
+          if (isTeacher) {
+            subtitle.innerText = `Teaching schedule for ${user.name}`;
+          } else {
+            subtitle.innerText = `Schedule for ${dept} department, ${year} (${batch})`;
+          }
+        }
+
+        // 2. Fetch Subjects if Edit mode to populate selector
+        if (isEditMode) {
+          const resSubjects = await fetch(`${apiBase}/api/subjects?dept=${encodeURIComponent(dept)}&semester=${semester}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (resSubjects.ok) {
+            loadedSubjects = await resSubjects.json();
+          }
+        }
+
+        renderGrid();
+
+      } catch (err) {
+        console.error(err);
+        if (gridWrapper) {
+          gridWrapper.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #ef4444;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 8px;"></i>
+              <div>Failed to load routine data. Please try again.</div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderGrid() {
+      const wrapper = document.getElementById('routineGridWrapper');
+      if (!wrapper) return;
+
+      let gridHTML = `
+        <div class="routine-grid-container">
+          <div class="routine-grid" style="margin-bottom: 6px;">
+            <div class="routine-header-cell" style="background: #e0e7ff; color: #4338ca;">Day / Time</div>
+            ${timeSlots.map(slot => `<div class="routine-header-cell">${slot}</div>`).join('')}
+          </div>
+      `;
+
+      const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+      days.forEach(day => {
+        const isToday = day === currentDay;
+        const dayCellClass = isToday ? 'routine-day-cell current-day' : 'routine-day-cell';
+        gridHTML += `
+          <div class="routine-grid ${isToday ? 'current-day-row' : ''}" style="margin-bottom: 6px;">
+            <div class="${dayCellClass}">${day}</div>
+        `;
+
+        timeSlots.forEach((slot, index) => {
+          // Find if there is a class scheduled
+          const entry = loadedRoutine.find(e => e.day === day && e.timeSlot === slot);
+          
+          if (entry) {
+            const subjectName = entry.subjectName || entry.subject?.name || 'Class';
+            const teacherName = entry.teacher?.name || 'TBA';
+            const isLab = subjectName.toLowerCase().includes('lab');
+            const isBreak = subjectName.toLowerCase() === 'break';
+            
+            let bgStyle = 'background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #c084fc; color: #581c87;';
+            if (isLab) {
+              bgStyle = 'background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #34d399; color: #065f46;';
+            } else if (isBreak) {
+              bgStyle = 'background: linear-gradient(135deg, #f1f5f9, #e2e8f0); border: 1px solid #cbd5e1; color: #475569;';
+            }
+
+            if (isToday) {
+              if (isBreak) {
+                bgStyle = 'background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border: 1px solid #94a3b8; color: #1e293b;';
+              } else {
+                bgStyle = 'background: linear-gradient(135deg, #e9d5ff, #c084fc); border: 1px solid #a855f7; color: #3b0764;';
+                if (isLab) {
+                  bgStyle = 'background: linear-gradient(135deg, #a7f3d0, #34d399); border: 1px solid #059669; color: #022c22;';
+                }
+              }
+            }
+
+            let cellDetails = '';
+            if (isBreak) {
+              cellDetails = '';
+            } else if (isTeacher) {
+              // Show Target Batch/Dept
+              const targetDept = entry.department || '';
+              const targetYear = entry.year || '';
+              const targetBatch = entry.batch || '';
+              cellDetails = `<div class="routine-cell-meta"><i class="fa-solid fa-graduation-cap"></i> ${targetDept} ${targetYear} (${targetBatch})</div>`;
+            } else {
+              cellDetails = `<div class="routine-cell-teacher"><i class="fa-solid fa-chalkboard-user"></i> ${teacherName}</div>`;
+            }
+
+            gridHTML += `
+              <div class="routine-slot-cell assigned ${isBreak ? 'break-slot' : ''} ${isEditMode ? 'editable' : ''}" style="${bgStyle}" data-day="${day}" data-slot="${slot}" data-index="${index}" data-id="${entry._id}">
+                <div class="routine-cell-subject">${esc(subjectName)}</div>
+                ${cellDetails}
+              </div>
+            `;
+          } else {
+            // Free slot
+            gridHTML += `
+              <div class="routine-slot-cell ${isEditMode ? 'editable' : ''}" data-day="${day}" data-slot="${slot}" data-index="${index}">
+                <span class="routine-cell-free">-</span>
+              </div>
+            `;
+          }
+        });
+
+        gridHTML += `</div>`; // Close row
+      });
+
+      gridHTML += `</div>`; // Close container
+      wrapper.innerHTML = gridHTML;
+
+      // Click cell handlers for edit mode
+      if (isEditMode) {
+        wrapper.querySelectorAll('.routine-slot-cell.editable').forEach(cell => {
+          cell.addEventListener('click', () => {
+            const cellDay = cell.dataset.day;
+            const cellSlot = cell.dataset.slot;
+            openEditModal(cellDay, cellSlot);
+          });
+        });
+      }
+    }
+
+    function openEditModal(cellDay, cellSlot) {
+      const modal = document.getElementById('routineSlotModal');
+      const infoText = document.getElementById('routineModalInfo');
+      const select = document.getElementById('routineModalSelect');
+      const saveBtn = document.getElementById('routineModalSaveBtn');
+      const deleteBtn = document.getElementById('routineModalDeleteBtn');
+      const cancelBtn = document.getElementById('routineModalCancelBtn');
+
+      if (!modal || !select) return;
+
+      infoText.innerText = `Schedule slot on ${cellDay} at ${cellSlot} for ${dept} ${year} (${batch})`;
+      
+      // Build options dropdown based on HOD decisions
+      let optionsHTML = `
+        <option value="FREE">No Class (Free period)</option>
+        <option value="BREAK">Break</option>
+      `;
+      loadedSubjects.forEach(s => {
+        let teacherName = 'TBA';
+        
+        // Find batch-specific assignment
+        if (s.batchAssignments && s.batchAssignments.length > 0) {
+          const match = s.batchAssignments.find(ba => ba.batch === batch || ba.batch === batch.replace('Batch ', ''));
+          if (match && match.teacher) {
+            teacherName = match.teacher.name || 'Assigned';
+          }
+        }
+        
+        // Fallback to general teachers
+        if (teacherName === 'TBA' && s.teachers && s.teachers.length > 0) {
+          teacherName = s.teachers[0].name || 'Assigned';
+        }
+        
+        if (teacherName === 'TBA' && s.teacher) {
+          teacherName = s.teacher.name || 'Assigned';
+        }
+
+        optionsHTML += `<option value="${s._id}">${esc(s.name)} (${esc(teacherName)})</option>`;
+      });
+
+      select.innerHTML = optionsHTML;
+
+      // Pre-select current subject if assigned
+      const entry = loadedRoutine.find(e => e.day === cellDay && e.timeSlot === cellSlot);
+      if (entry) {
+        if (entry.subjectName && entry.subjectName.toLowerCase() === 'break') {
+          select.value = 'BREAK';
+        } else if (entry.subject) {
+          select.value = entry.subject._id || entry.subject;
+        } else {
+          select.value = 'BREAK';
+        }
+        deleteBtn.style.display = 'block';
+      } else {
+        select.value = 'FREE';
+        deleteBtn.style.display = 'none';
+      }
+
+      modal.style.display = 'flex';
+
+      // Setup Save Handler
+      saveBtn.onclick = async () => {
+        const token = user.token || localStorage.getItem('token') || '';
+        const subjectId = select.value;
+
+        const deptEl = document.getElementById('selDept');
+        const semEl = document.getElementById('selSemester');
+        const batchEl = document.getElementById('selBatch');
+
+        const activeDept = deptEl ? deptEl.value : dept;
+        const activeSem = semEl ? parseInt(semEl.value) : semester;
+        const activeBatch = batchEl ? batchEl.value : batch;
+        const activeYear = getYearFromSemester(activeSem);
+        const normalizedBatch = activeBatch.match(/^\d+$/) ? `Batch ${activeBatch}` : activeBatch;
+
+        if (subjectId === 'FREE') {
+          // No Class selected -> delete the slot
+          try {
+            const res = await fetch(`${apiBase}/api/routine`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                day: cellDay,
+                timeSlot: cellSlot,
+                year: activeYear,
+                semester: activeSem,
+                batch: normalizedBatch,
+                department: activeDept
+              })
+            });
+            if (!res.ok) throw new Error('Delete failed');
+            modal.style.display = 'none';
+            await loadData();
+          } catch (err) {
+            alert('Error: ' + err.message);
+          }
+          return;
+        }
+
+        const body = {
+          day: cellDay,
+          timeSlot: cellSlot,
+          year: activeYear,
+          semester: activeSem,
+          department: activeDept,
+          batch: normalizedBatch,
+          subjectId: subjectId
+        };
+
+        try {
+          const res = await fetch(`${apiBase}/api/routine`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+          });
+
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.message || 'Save failed');
+          }
+
+          modal.style.display = 'none';
+          await loadData();
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      // Setup Delete Handler
+      deleteBtn.onclick = async () => {
+        if (!confirm('Clear this class slot?')) return;
+        const token = user.token || localStorage.getItem('token') || '';
+
+        const deptEl = document.getElementById('selDept');
+        const semEl = document.getElementById('selSemester');
+        const batchEl = document.getElementById('selBatch');
+
+        const activeDept = deptEl ? deptEl.value : dept;
+        const activeSem = semEl ? parseInt(semEl.value) : semester;
+        const activeBatch = batchEl ? batchEl.value : batch;
+        const activeYear = getYearFromSemester(activeSem);
+        const normalizedBatch = activeBatch.match(/^\d+$/) ? `Batch ${activeBatch}` : activeBatch;
+
+        try {
+          const res = await fetch(`${apiBase}/api/routine`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              day: cellDay,
+              timeSlot: cellSlot,
+              year: activeYear,
+              semester: activeSem,
+              batch: normalizedBatch,
+              department: activeDept
+            })
+          });
+
+          if (!res.ok) throw new Error('Delete failed');
+          modal.style.display = 'none';
+          await loadData();
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      };
+
+      cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+      };
+    }
   }
 
   function stripNoticeContent(text) {

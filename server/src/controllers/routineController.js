@@ -10,12 +10,13 @@ export const getStudentRoutine = async (req, res) => {
         // Assume user is attached to req by middleware (or passed as query for testing)
         // For simulation, we'll take query params or body, but typically req.user
 
-        let { department, year, batch, subBatch } = req.query;
+        let { department, year, batch, subBatch, semester } = req.query;
 
         // If 'me' (authenticated user context)
         if (req.user && req.user.role === 'student') {
             department = req.user.department;
             year = req.user.year;
+            semester = req.user.semester;
             // Normalize batch: "Batch 1" -> "1" to match Routine data format
             batch = req.user.batch ? req.user.batch.replace('Batch ', '') : req.user.batch;
             subBatch = req.user.subBatch; // "1-1"
@@ -28,11 +29,18 @@ export const getStudentRoutine = async (req, res) => {
 
         const query = {
             department,
-            // If user has a specific semester (e.g. 7), prefer that. 
-            // Fallback to year if semester is missing in user OR query params.
-            ...(req.user?.semester ? { semester: req.user.semester } : { year }),
             batch
         };
+
+        console.log("getStudentRoutine backend inputs:", { department, year, batch, subBatch, semester, userRole: req.user?.role }); // DEBUG
+
+        if (semester && semester !== 'undefined' && semester !== 'null') {
+            query.semester = parseInt(semester);
+        } else if (year && year !== 'undefined' && year !== 'null') {
+            query.year = year;
+        }
+
+        console.log("getStudentRoutine built DB query:", query); // DEBUG
 
         // Sub-batch logic: verify if routine is specific to sub-batch or general to batch
         // If query has subBatch, match (subBatch OR null)
@@ -80,9 +88,6 @@ export const getTeacherRoutine = async (req, res) => {
 // @desc    Update (Upsert) Routine Slot
 // @route   POST /api/routine
 // @access  HOD
-// @desc    Update (Upsert) Routine Slot
-// @route   POST /api/routine
-// @access  HOD
 export const updateRoutineSlot = async (req, res) => {
     try {
         const {
@@ -92,7 +97,8 @@ export const updateRoutineSlot = async (req, res) => {
             department,
             batch,
             subjectId,
-            subBatch
+            subBatch,
+            semester
         } = req.body;
 
         // Validation
@@ -156,13 +162,17 @@ export const updateRoutineSlot = async (req, res) => {
         // 3. Upsert Logic
         const filter = { department, year, batch, day, timeSlot };
         if (subBatch) filter.subBatch = subBatch;
-
+        if (semester && semester !== 'undefined' && semester !== 'null') {
+            filter.semester = parseInt(semester);
+        }
+ 
         const updateData = {
             subject: subjectId === 'BREAK' ? null : subjectId, // Store null for BREAK so it doesn't try to ObjectId cast
             subjectName,
             teacher: teacherId,
             room: '', // Room removed from UI
-            subBatch: subBatch || null
+            subBatch: subBatch || null,
+            semester: (semester && semester !== 'undefined' && semester !== 'null') ? parseInt(semester) : undefined
         };
 
         console.log("Update Data:", updateData); // DEBUG
@@ -188,9 +198,13 @@ export const updateRoutineSlot = async (req, res) => {
 // @access  HOD
 export const deleteRoutineSlot = async (req, res) => {
     try {
-        const { day, timeSlot, year, department, batch } = req.body;
+        const { day, timeSlot, year, department, batch, semester } = req.body;
+        const filter = { day, timeSlot, year, department, batch };
+        if (semester && semester !== 'undefined' && semester !== 'null') {
+            filter.semester = parseInt(semester);
+        }
 
-        await Routine.findOneAndDelete({ day, timeSlot, year, department, batch });
+        await Routine.findOneAndDelete(filter);
         res.json({ message: 'Slot cleared successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
