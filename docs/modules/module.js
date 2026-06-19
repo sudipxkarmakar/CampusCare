@@ -7025,12 +7025,19 @@
     let selectedBatch = 'all';
     let selectedDept = 'all';
     let selectedSubject = 'all';
-    let sortBy = 'name-asc';
+    
+    // Column header sorting state
+    let currentSortField = 'name';
+    let currentSortDir = 'asc';
+    
     let allDbData = [];
+
+    // Ensure WhatsApp draft modal exists and events are setup
+    setupWaDraftModalEvents();
 
     content(`
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
-        <button type="button" id="dbBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
+        <button type="button" id="dbBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;">
           <i class="fa-solid fa-arrow-left"></i>
         </button>
         <div>
@@ -7051,15 +7058,9 @@
           </div>
         </div>
 
-        <!-- Middle controls: Dynamic Category Filters (Year/Batch/Dept/Subject) + Sort Dropdown -->
+        <!-- Middle controls: Dynamic Category Filters (Year/Batch/Dept/Subject) -->
         <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
            <div id="dbDynamicFilters" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-           <div style="display: flex; gap: 10px; align-items: center;">
-             <label style="font-weight:700; font-size:0.85rem; color:#475569; margin:0;">Sort By:</label>
-             <select id="dbSortDropdown" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569;">
-               <!-- Sort options dynamically added -->
-             </select>
-           </div>
         </div>
 
         <!-- Table container -->
@@ -7072,7 +7073,12 @@
       </div>
     `);
 
-    document.getElementById('dbBackBtn')?.addEventListener('click', goToDashboard);
+    const backBtn = document.getElementById('dbBackBtn');
+    if (backBtn) {
+      backBtn.addEventListener('click', goToDashboard);
+      backBtn.addEventListener('mouseenter', () => { backBtn.style.background = '#e2e8f0'; });
+      backBtn.addEventListener('mouseleave', () => { backBtn.style.background = '#f8fafc'; });
+    }
 
     const dropdown = document.getElementById('dbFilterDropdown');
     let options = '';
@@ -7170,49 +7176,6 @@
       document.getElementById('filterSubjectSelect')?.addEventListener('change', (e) => { selectedSubject = e.target.value; renderFilteredTable(); });
     };
 
-    // Sort options builder helper
-    const updateSortDropdown = () => {
-      const sortSelect = document.getElementById('dbSortDropdown');
-      if (!sortSelect) return;
-      const filterVal = dropdown.value;
-
-      let optsHtml = `
-        <option value="name-asc">Name (A-Z)</option>
-        <option value="name-desc">Name (Z-A)</option>
-      `;
-
-      if (['my-students', 'my-mentees', 'dept-students', 'hostel-residents', 'all-students'].includes(filterVal)) {
-        optsHtml += `<option value="roll-asc">Roll Number</option>`;
-      }
-
-      if (['my-students', 'my-mentees', 'dept-students', 'dept-teachers', 'all-students', 'all-teachers', 'all-hods', 'all-wardens'].includes(filterVal)) {
-        optsHtml += `
-          <option value="att-desc">Attendance (High-Low)</option>
-          <option value="att-asc">Attendance (Low-High)</option>
-        `;
-      }
-
-      if (['my-mentees'].includes(filterVal)) {
-        optsHtml += `
-          <option value="mar-desc">MAR Points (High-Low)</option>
-          <option value="moocs-desc">MOOCs Credits (High-Low)</option>
-        `;
-      }
-
-      if (['dept-students', 'all-students'].includes(filterVal)) {
-        optsHtml += `
-          <option value="cgpa-desc">CGPA (High-Low)</option>
-        `;
-      }
-
-      if (filterVal === 'hostel-residents') {
-        optsHtml += `<option value="room-asc">Room Number</option>`;
-      }
-
-      sortSelect.innerHTML = optsHtml;
-      sortSelect.value = sortBy;
-    };
-
     const loadDbData = async () => {
       const filterVal = dropdown.value;
       const titleEl = document.getElementById('dbHeaderTitle');
@@ -7282,8 +7245,11 @@
         selectedDept = 'all';
         selectedSubject = 'all';
 
+        // Default sort to name asc when switching filter
+        currentSortField = 'name';
+        currentSortDir = 'asc';
+
         updateFilterDropdowns();
-        updateSortDropdown();
         renderFilteredTable();
       } catch (e) {
         if (tableContainer) tableContainer.innerHTML = '<div class="module-empty">Failed to load data.</div>';
@@ -7324,26 +7290,45 @@
         return true;
       });
       
-      // Sort
-      if (sortBy === 'name-asc') {
-        filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-      } else if (sortBy === 'name-desc') {
-        filtered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-      } else if (sortBy === 'roll-asc') {
-        filtered.sort((a, b) => (a.rollNumber || '').localeCompare(b.rollNumber || ''));
-      } else if (sortBy === 'att-desc') {
-        filtered.sort((a, b) => (b.attendance || 0) - (a.attendance || 0));
-      } else if (sortBy === 'att-asc') {
-        filtered.sort((a, b) => (a.attendance || 0) - (b.attendance || 0));
-      } else if (sortBy === 'mar-desc') {
-        filtered.sort((a, b) => (b.mar || 0) - (a.mar || 0));
-      } else if (sortBy === 'moocs-desc') {
-        filtered.sort((a, b) => (b.moocs || 0) - (a.moocs || 0));
-      } else if (sortBy === 'cgpa-desc') {
-        filtered.sort((a, b) => (b.cgpa || 0) - (a.cgpa || 0));
-      } else if (sortBy === 'room-asc') {
-        filtered.sort((a, b) => (a.roomNumber || '').localeCompare(b.roomNumber || ''));
-      }
+      // Sort using currentSortField and currentSortDir
+      filtered.sort((a, b) => {
+        if (currentSortField === 'attendance') {
+          const pctA = (a.attendance || 0) / (a.attendanceTotal || 100);
+          const pctB = (b.attendance || 0) / (b.attendanceTotal || 100);
+          return currentSortDir === 'asc' ? pctA - pctB : pctB - pctA;
+        }
+        if (currentSortField === 'assignmentsSubmitted') {
+          const valA = (a.assignmentsSubmitted || 0) / (a.assignmentsTotal || 10);
+          const valB = (b.assignmentsSubmitted || 0) / (b.assignmentsTotal || 10);
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        }
+        if (currentSortField === 'mar') {
+          const valA = (a.mar || 0) / (a.marTotal || 100);
+          const valB = (b.mar || 0) / (b.marTotal || 100);
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        }
+        if (currentSortField === 'moocs') {
+          const valA = (a.moocs || 0) / (a.moocsTotal || 20);
+          const valB = (b.moocs || 0) / (b.moocsTotal || 20);
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        }
+
+        let valA = a[currentSortField];
+        let valB = b[currentSortField];
+
+        if (valA === undefined || valA === null) valA = '';
+        if (valB === undefined || valB === null) valB = '';
+
+        const numA = Number(valA);
+        const numB = Number(valB);
+        if (!isNaN(numA) && !isNaN(numB) && valA !== '' && valB !== '') {
+          return currentSortDir === 'asc' ? numA - numB : numB - numA;
+        }
+
+        return currentSortDir === 'asc' 
+          ? String(valA).localeCompare(String(valB)) 
+          : String(valB).localeCompare(String(valA));
+      });
 
       // Column mapping and header building
       let cols = [];
@@ -7353,11 +7338,11 @@
       if (filterVal === 'my-students') {
         cols = ['name', 'rollNumber', 'email', 'attendance', 'assignmentsSubmitted', 'whatsapp'];
         headers = ['Name', 'Roll No', 'Mail', 'Attendance (I/N)', 'Assignment Submission (I/N)', 'WhatsApp Link'];
-        editableFields = { 'attendance': 'number', 'assignmentsSubmitted': 'number' };
+        editableFields = {};
       } else if (filterVal === 'my-mentees') {
         cols = ['name', 'rollNumber', 'email', 'attendance', 'mar', 'moocs', 'whatsapp'];
         headers = ['Name', 'Roll No', 'Mail', 'Attendance (I/N)', 'MAR (I/N)', 'MOOCs (I/N)', 'WhatsApp Link'];
-        editableFields = { 'attendance': 'number', 'mar': 'number', 'moocs': 'number' };
+        editableFields = { 'mar': 'number', 'moocs': 'number' };
       } else if (filterVal === 'dept-students') {
         cols = ['name', 'rollNumber', 'email', 'contactNumber', 'attendance', 'cgpa', 'whatsapp'];
         headers = ['Name', 'Roll No', 'Mail', 'Contact No', 'Attendance', 'CGPA', 'WhatsApp Link'];
@@ -7412,7 +7397,7 @@
           const cleanPhone = phone.replace(/\D/g, '');
           if (!cleanPhone) return '--';
           const prefix = cleanPhone.length === 10 ? '91' : '';
-          return `<a href="https://wa.me/${prefix}${cleanPhone}" target="_blank" style="color: #25D366; font-size: 1.25rem; display: inline-block; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.2)';" onmouseleave="this.style.transform='scale(1)';"><i class="fa-brands fa-whatsapp"></i></a>`;
+          return `<a href="#" class="db-wa-link" data-id="${item._id}" data-name="${item.name || 'Student'}" data-phone="${prefix}${cleanPhone}" data-attendance="${item.attendance || 0}" data-attendance-total="${item.attendanceTotal || 100}" data-assignments="${item.assignmentsSubmitted || 0}" data-assignments-total="${item.assignmentsTotal || 10}" style="color: #25D366; font-size: 1.25rem; display: inline-block; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.2)';" onmouseleave="this.style.transform='scale(1)';"><i class="fa-brands fa-whatsapp"></i></a>`;
         }
         
         if (col === 'subjectsAssigned') {
@@ -7425,7 +7410,19 @@
         }
 
         if (col === 'attendance') {
-          return `${val !== '--' ? val + '%' : '--'}`;
+          return 'N/A';
+        }
+        if (col === 'assignmentsSubmitted') {
+          const total = item.assignmentsTotal !== undefined ? item.assignmentsTotal : 10;
+          return val !== '--' ? `${val}/${total}` : '--';
+        }
+        if (col === 'mar') {
+          const total = item.marTotal !== undefined ? item.marTotal : 100;
+          return val !== '--' ? `${val}/${total}` : '--';
+        }
+        if (col === 'moocs') {
+          const total = item.moocsTotal !== undefined ? item.moocsTotal : 20;
+          return val !== '--' ? `${val}/${total}` : '--';
         }
 
         return val;
@@ -7436,7 +7433,21 @@
           <table class="module-table dashboard-table">
             <thead>
               <tr>
-                ${headers.map(h => `<th>${h}</th>`).join('')}
+                ${cols.map((col, idx) => {
+                  const h = headers[idx];
+                  const isSortable = col !== 'contactNumber' && col !== 'email' && col !== 'whatsapp';
+                  if (!isSortable) {
+                    return `<th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">${h}</th>`;
+                  }
+                  const isActive = currentSortField === col;
+                  const arrow = isActive ? (currentSortDir === 'asc' ? ' ↑' : ' ↓') : ' ↕';
+                  const opacity = isActive ? '1' : '0.35';
+                  return `
+                    <th class="db-sortable-header" data-col="${col}" style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem; cursor: pointer; user-select: none;">
+                      ${h} <span style="opacity: ${opacity}; font-size: 0.85rem; color: var(--primary, #4f46e5);">${arrow}</span>
+                    </th>
+                  `;
+                }).join('')}
               </tr>
             </thead>
             <tbody>
@@ -7448,18 +7459,28 @@
                     const cellDisplay = formatCellVal(item, col);
                     
                     if (isEditable) {
+                      let totalField = '';
+                      let totalVal = 0;
+                      if (col === 'attendance') { totalField = 'attendanceTotal'; totalVal = item.attendanceTotal !== undefined ? item.attendanceTotal : 100; }
+                      else if (col === 'assignmentsSubmitted') { totalField = 'assignmentsTotal'; totalVal = item.assignmentsTotal !== undefined ? item.assignmentsTotal : 10; }
+                      else if (col === 'mar') { totalField = 'marTotal'; totalVal = item.marTotal !== undefined ? item.marTotal : 100; }
+                      else if (col === 'moocs') { totalField = 'moocsTotal'; totalVal = item.moocsTotal !== undefined ? item.moocsTotal : 20; }
+
                       return `
                         <td class="db-interactive-cell" 
                             data-id="${item._id}" 
                             data-field="${col}" 
                             data-value="${rawVal}" 
-                            style="cursor: pointer; position: relative; font-weight: 600; color: var(--primary); text-decoration: underline dotted;"
-                            title="Click to edit value inline">
-                          ${cellDisplay}
+                            data-total-field="${totalField}"
+                            data-total-value="${totalVal}"
+                            style="cursor: pointer; position: relative; font-weight: 600; color: var(--primary); padding: 8px 12px; transition: background-color 0.2s;"
+                            title="Click to edit inline">
+                          <span>${cellDisplay}</span>
+                          <i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>
                         </td>
                       `;
                     }
-                    return `<td style="font-weight: 550;">${cellDisplay}</td>`;
+                    return `<td style="font-weight: 550; padding: 8px 12px;">${cellDisplay}</td>`;
                   }).join('')}
                 </tr>
               `).join('')}
@@ -7470,33 +7491,91 @@
 
       container.innerHTML = tableHtml;
 
+      // Attach header sorting click & hover listeners
+      container.querySelectorAll('.db-sortable-header').forEach(header => {
+        header.addEventListener('mouseenter', () => { header.style.backgroundColor = '#f1f5f9'; });
+        header.addEventListener('mouseleave', () => { header.style.backgroundColor = 'transparent'; });
+        header.addEventListener('click', () => {
+          const col = header.dataset.col;
+          if (currentSortField === col) {
+            currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentSortField = col;
+            currentSortDir = 'asc';
+          }
+          renderFilteredTable();
+        });
+      });
+
       // Attach inline editing listeners to interactive cells
       container.querySelectorAll('.db-interactive-cell').forEach(cell => {
+        cell.addEventListener('mouseenter', () => {
+          cell.style.backgroundColor = '#f1f5f9';
+          const icon = cell.querySelector('.cell-edit-icon');
+          if (icon) icon.style.opacity = '1';
+        });
+        cell.addEventListener('mouseleave', () => {
+          cell.style.backgroundColor = 'transparent';
+          const icon = cell.querySelector('.cell-edit-icon');
+          if (icon) icon.style.opacity = '0';
+        });
+
         cell.addEventListener('click', (e) => {
           if (cell.querySelector('input')) return;
           const id = cell.dataset.id;
           const field = cell.dataset.field;
+          const totalField = cell.dataset.totalField;
           const currentVal = parseFloat(cell.dataset.value) || 0;
+          const currentTotal = parseFloat(cell.dataset.totalValue) || 0;
 
-          const input = document.createElement('input');
-          input.type = 'number';
-          input.value = currentVal;
-          input.style.width = '75px';
-          input.style.padding = '4px 8px';
-          input.style.borderRadius = '6px';
-          input.style.border = '1.5px solid var(--primary)';
-          input.style.outline = 'none';
-          input.style.textAlign = 'center';
-          input.style.fontFamily = 'inherit';
-          input.style.fontSize = '0.9rem';
+          // Create wrapper container for two inputs
+          const editWrap = document.createElement('div');
+          editWrap.style.display = 'inline-flex';
+          editWrap.style.alignItems = 'center';
+          editWrap.style.gap = '4px';
+
+          const valInput = document.createElement('input');
+          valInput.type = 'number';
+          valInput.value = currentVal;
+          valInput.style.width = '55px';
+          valInput.style.padding = '2px 4px';
+          valInput.style.borderRadius = '4px';
+          valInput.style.border = '1px solid var(--primary)';
+          valInput.style.outline = 'none';
+          valInput.style.textAlign = 'center';
+          valInput.style.fontSize = '0.85rem';
+
+          const slash = document.createTextNode(' / ');
+
+          const totalInput = document.createElement('input');
+          totalInput.type = 'number';
+          totalInput.value = currentTotal;
+          totalInput.style.width = '55px';
+          totalInput.style.padding = '2px 4px';
+          totalInput.style.borderRadius = '4px';
+          totalInput.style.border = '1px solid var(--primary)';
+          totalInput.style.outline = 'none';
+          totalInput.style.textAlign = 'center';
+          totalInput.style.fontSize = '0.85rem';
+
+          editWrap.appendChild(valInput);
+          editWrap.appendChild(slash);
+          editWrap.appendChild(totalInput);
 
           cell.innerHTML = '';
-          cell.appendChild(input);
-          input.focus();
-          input.select();
+          cell.appendChild(editWrap);
+          valInput.focus();
+          valInput.select();
+
+          let isSaving = false;
 
           const saveInlineEdit = async () => {
-            const newVal = parseFloat(input.value) || 0;
+            if (isSaving) return;
+            isSaving = true;
+
+            const newVal = parseFloat(valInput.value) || 0;
+            const newTotal = parseFloat(totalInput.value) || 0;
+
             cell.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="color: var(--primary);"></i>`;
             
             try {
@@ -7506,16 +7585,25 @@
                   'Content-Type': 'application/json',
                   'Authorization': `Bearer ${user.token || ''}`
                 },
-                body: JSON.stringify({ [field]: newVal })
+                body: JSON.stringify({ 
+                  [field]: newVal,
+                  [totalField]: newTotal
+                })
               });
 
               if (res.ok) {
                 // Update local memory data
                 const localItem = allDbData.find(item => item._id === id);
-                if (localItem) localItem[field] = newVal;
+                if (localItem) {
+                  localItem[field] = newVal;
+                  localItem[totalField] = newTotal;
+                }
 
                 cell.dataset.value = newVal;
-                cell.innerHTML = `${newVal}${field === 'attendance' ? '%' : ''}`;
+                cell.dataset.totalValue = newTotal;
+                
+                // Show updated representation
+                cell.innerHTML = `<span>${newVal}/${newTotal}</span><i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>`;
                 cell.style.backgroundColor = '#d1fae5';
                 setTimeout(() => { cell.style.backgroundColor = ''; }, 1000);
               } else {
@@ -7523,31 +7611,226 @@
               }
             } catch (err) {
               cell.dataset.value = currentVal;
-              cell.innerHTML = `${currentVal}${field === 'attendance' ? '%' : ''}`;
+              cell.dataset.totalValue = currentTotal;
+              cell.innerHTML = `<span>${currentVal}/${currentTotal}</span><i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>`;
               cell.style.backgroundColor = '#fee2e2';
               setTimeout(() => { cell.style.backgroundColor = ''; }, 1000);
             }
           };
 
-          input.addEventListener('blur', saveInlineEdit);
-          input.addEventListener('keydown', (evt) => {
+          // Safe blur checks
+          const checkAndSave = () => {
+            setTimeout(() => {
+              if (document.activeElement !== valInput && document.activeElement !== totalInput) {
+                saveInlineEdit();
+              }
+            }, 100);
+          };
+
+          valInput.addEventListener('blur', checkAndSave);
+          totalInput.addEventListener('blur', checkAndSave);
+
+          const handleKeydown = (evt) => {
             if (evt.key === 'Enter') {
-              input.blur();
+              saveInlineEdit();
             } else if (evt.key === 'Escape') {
-              input.removeEventListener('blur', saveInlineEdit);
-              cell.innerHTML = `${currentVal}${field === 'attendance' ? '%' : ''}`;
+              valInput.removeEventListener('blur', checkAndSave);
+              totalInput.removeEventListener('blur', checkAndSave);
+              cell.innerHTML = `<span>${currentVal}/${currentTotal}</span><i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>`;
             }
+          };
+
+          valInput.addEventListener('keydown', handleKeydown);
+          totalInput.addEventListener('keydown', handleKeydown);
+        });
+      });
+
+      // Attach WhatsApp link listeners
+      container.querySelectorAll('.db-wa-link').forEach(link => {
+        link.addEventListener('mouseenter', () => { link.style.transform = 'scale(1.2)'; });
+        link.addEventListener('mouseleave', () => { link.style.transform = 'scale(1)'; });
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.openWaDraftModal({
+            name: link.dataset.name,
+            phone: link.dataset.phone,
+            attendance: link.dataset.attendance,
+            attendanceTotal: link.dataset.attendanceTotal,
+            assignments: link.dataset.assignments,
+            assignmentsTotal: link.dataset.assignmentsTotal
           });
         });
       });
     };
 
+    // Helper functions for WhatsApp draft modal setup
+    function setupWaDraftModalEvents() {
+      if (document.getElementById('waDraftModal')) return;
+
+      const modalHtml = `
+        <div id="waDraftModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+          <div style="background: white; border-radius: 16px; max-width: 500px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; animation: modalFadeIn 0.3s ease-out;">
+            <div style="background: linear-gradient(135deg, #128C7E, #075E54); padding: 20px; color: white; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.5rem;"></i>
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; font-family: 'Poppins', sans-serif;" id="waDraftModalTitle">Draft WhatsApp Message</h3>
+              </div>
+              <button type="button" id="waDraftCloseBtn" style="background: transparent; border: none; color: white; font-size: 1.25rem; cursor: pointer; opacity: 0.8; line-height: 1;">&times;</button>
+            </div>
+            
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 6px;">Message Draft:</label>
+                <textarea id="waDraftTextarea" rows="6" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; resize: vertical;" placeholder="Type or generate your message here..."></textarea>
+              </div>
+
+              <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-robot" style="color: #075E54;"></i> AI Draft Assistant
+                </label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="waAiPrompt" placeholder="Ask AI to draft... (e.g. Warn about low attendance)" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none;">
+                  <button type="button" id="waAiDraftBtn" style="background: #075E54; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center;">
+                    <span id="waAiBtnText">Generate</span>
+                    <i class="fa-solid fa-spinner fa-spin" id="waAiSpinner" style="display: none; margin-left: 6px;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                <button type="button" id="waCancelBtn" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                <button type="button" id="waSendBtn" style="background: #25D366; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 211, 102, 0.2);">
+                  Send <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <style>
+          @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        </style>
+      `;
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = modalHtml;
+      document.body.appendChild(tempDiv.firstElementChild);
+      if (tempDiv.querySelector('style')) {
+        document.head.appendChild(tempDiv.querySelector('style'));
+      }
+
+      const modal = document.getElementById('waDraftModal');
+      const closeBtn = document.getElementById('waDraftCloseBtn');
+      const cancelBtn = document.getElementById('waCancelBtn');
+      const sendBtn = document.getElementById('waSendBtn');
+      const aiDraftBtn = document.getElementById('waAiDraftBtn');
+      const aiPromptInput = document.getElementById('waAiPrompt');
+      const textarea = document.getElementById('waDraftTextarea');
+
+      let currentPhone = '';
+
+      const closeWaModal = () => {
+        modal.style.display = 'none';
+        textarea.value = '';
+        aiPromptInput.value = '';
+      };
+
+      closeBtn.onclick = closeWaModal;
+      cancelBtn.onclick = closeWaModal;
+
+      // Attach hover effects dynamically to stay CSP-compliant
+      closeBtn.addEventListener('mouseenter', () => { closeBtn.style.opacity = '1'; });
+      closeBtn.addEventListener('mouseleave', () => { closeBtn.style.opacity = '0.8'; });
+      
+      aiDraftBtn.addEventListener('mouseenter', () => { aiDraftBtn.style.background = '#128C7E'; });
+      aiDraftBtn.addEventListener('mouseleave', () => { aiDraftBtn.style.background = '#075E54'; });
+      
+      cancelBtn.addEventListener('mouseenter', () => { cancelBtn.style.background = '#e2e8f0'; });
+      cancelBtn.addEventListener('mouseleave', () => { cancelBtn.style.background = '#f1f5f9'; });
+      
+      sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#20ba5a'; });
+      sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#25D366'; });
+
+      window.openWaDraftModal = (studentData) => {
+        currentPhone = studentData.phone;
+        document.getElementById('waDraftModalTitle').textContent = `Draft Message to ${studentData.name}`;
+        
+        const isTeacher = (user.role || '').toLowerCase() === 'teacher';
+        let defaultMsg = `Hello ${studentData.name},\n\n`;
+        if (isTeacher) {
+          defaultMsg += `I wanted to reach out regarding your progress in class. Your attendance is currently ${studentData.attendance}/${studentData.attendanceTotal} and you have submitted ${studentData.assignments}/${studentData.assignmentsTotal} assignments. Please make sure to complete pending tasks.`;
+        } else {
+          defaultMsg += `I wanted to reach out to check in. Let's discuss your attendance (${studentData.attendance}/${studentData.attendanceTotal}) and academics when you're free.`;
+        }
+        textarea.value = defaultMsg;
+        modal.style.display = 'flex';
+        aiPromptInput.focus();
+      };
+
+      aiDraftBtn.onclick = async () => {
+        const promptText = aiPromptInput.value.trim();
+        if (!promptText) return alert('Please enter a prompt for the AI Assistant.');
+
+        const btnText = document.getElementById('waAiBtnText');
+        const spinner = document.getElementById('waAiSpinner');
+        
+        btnText.style.display = 'none';
+        spinner.style.display = 'inline-block';
+        aiDraftBtn.disabled = true;
+
+        try {
+          const studentName = document.getElementById('waDraftModalTitle').textContent.replace('Draft Message to ', '');
+          const contextPrompt = `Draft a brief, professional message for WhatsApp to a student named ${studentName} with the following context: "${promptText}". Use clear, direct sentences, keeping in mind the message will be sent via WhatsApp.`;
+          
+          const res = await fetch(`${apiBase}/api/ai/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user.token || ''}`
+            },
+            body: JSON.stringify({
+              text: contextPrompt,
+              clientContext: {
+                targetStudent: studentName,
+                userRole: user.role
+              }
+            })
+          });
+
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          
+          let reply = data.response?.message || data.response || data.message || '';
+          reply = reply.replace(/\*\*/g, '*'); // Convert markdown bold to WhatsApp bold
+          
+          if (reply) {
+            textarea.value = reply;
+          } else {
+            alert('Could not generate message draft.');
+          }
+        } catch (err) {
+          alert('Failed to connect to AI Assistant. Please draft manually.');
+        } finally {
+          btnText.style.display = 'inline';
+          spinner.style.display = 'none';
+          aiDraftBtn.disabled = false;
+        }
+      };
+
+      sendBtn.onclick = () => {
+        const msg = textarea.value.trim();
+        if (!msg) return alert('Message draft cannot be empty.');
+        
+        const encodedMsg = encodeURIComponent(msg);
+        const url = `https://wa.me/${currentPhone}?text=${encodedMsg}`;
+        window.open(url, '_blank');
+        closeWaModal();
+      };
+    }
+
     dropdown.addEventListener('change', loadDbData);
     document.getElementById('dbSearchInput')?.addEventListener('input', renderFilteredTable);
-    document.getElementById('dbSortDropdown')?.addEventListener('change', (e) => {
-      sortBy = e.target.value;
-      renderFilteredTable();
-    });
 
     await loadDbData();
   }
