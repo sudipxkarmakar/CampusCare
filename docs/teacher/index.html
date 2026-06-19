@@ -68,6 +68,100 @@
     .list-item-compact:last-child {
       border-bottom: none;
     }
+
+    /* Compact Module styling */
+    .module-card-compact {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      position: relative;
+    }
+
+    .module-card-compact:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-sm);
+      border-color: var(--primary-light);
+    }
+
+    .module-icon-compact {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .module-title-compact {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      text-decoration: none !important;
+    }
+
+    /* Filter tab styling */
+    .complaints-filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .filter-tab {
+      background: none;
+      border: none;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      transition: all 0.2s;
+    }
+
+    .filter-tab:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .filter-tab.active {
+      color: white;
+      background: var(--primary);
+    }
+
+    .clickable-preview-item, .module-card-compact, .qa-item {
+      text-decoration: none !important;
+    }
+
+    @media (max-width: 1024px) {
+      .my-modules-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .my-modules-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .my-modules-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
   </style>
 </head>
 
@@ -170,546 +264,227 @@
         </div>
       </header>
 
-      <!-- DASHBOARD 2:1 GRID -> TRIPLE GRID -->
-      <div class="triple-grid" style="margin-top: 16px;">
-
-        <!-- ==================== LEFT COLUMN (SPAN 2) ==================== -->
-        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 32px;">
-
+      <!-- ROW 1 (2:1 Grid): Hero & Stats + Calendar -->
+      <div class="triple-grid" style="margin-top: 16px; margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Section (Span 2) -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
           <!-- Hero Section -->
-          <div style="display: flex; flex-direction: column; gap: 24px;">
-            <section class="hero-card" id="home"
-              style="padding: 40px; display:flex; justify-content:space-between; align-items:center; border-radius: 24px;">
-              <div class="hero-content" style="max-width: 60%; z-index: 2;">
-                <h1 id="teacher-greeting" style="font-size:2.5rem; margin-bottom:12px; color: var(--text-dark);">Good
-                  morning! 👋</h1>
-                <p style="font-size:1rem; color:var(--text-muted); margin-bottom: 0;">
-                  Here's an overview of your teaching activities.
-                </p>
-              </div>
-              <div class="hero-image" style="z-index: 1;">
-                <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
-                  onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
-              </div>
-            </section>
+          <section class="hero-card" id="home"
+            style="padding: 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+            <div class="hero-content" style="max-width: 60%; z-index: 2;">
+              <h1 id="teacher-greeting" style="font-size:2.5rem; margin-bottom:12px; color: var(--text-dark); line-height: 1.3;">Good morning! 👋</h1>
+              <p style="font-size:1.1rem; color:var(--text-muted); margin-bottom: 0;">
+                Here's an overview of your teaching activities.
+              </p>
+            </div>
+            <div class="hero-image" style="z-index: 1;">
+              <img src="../assets/images/guest_illustration.png" alt="Mascot" style="max-width: 250px; height: auto;"
+                onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
+            </div>
+          </section>
 
-            <!-- Stat Cards -->
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-              <div class="stat-card-small">
-                <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;"><i
-                    class="fa-solid fa-calendar-day"></i></div>
-                <h4>Classes Today</h4>
-                <p class="stat-value" id="stat-classes">3</p>
-                <a href="../modules/routine/view.html"
-                  style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View
-                  Schedule</a>
-              </div>
-              <div class="stat-card-small">
-                <div class="icon-wrapper" style="background: #ede9fe; color: #7c3aed;"><i class="fa-solid fa-users"></i>
-                </div>
-                <h4>Students</h4>
-                <p class="stat-value" id="stat-students">86</p>
-                <a href="../modules/student-database/view.html"
-                  style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">Total
-                  Students</a>
-              </div>
-              <div class="stat-card-small">
-                <div class="icon-wrapper" style="background: #fef3c7; color: #d97706;"><i
-                    class="fa-solid fa-clipboard-check"></i></div>
-                <h4>Pending Tasks</h4>
-                <p class="stat-value" id="stat-tasks">6</p>
-                <a href="#pending-tasks"
-                  style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View
-                  Tasks</a>
-              </div>
-              <div class="stat-card-small">
-                <div class="icon-wrapper" style="background: #d1fae5; color: #059669;"><i
-                    class="fa-solid fa-user-graduate"></i></div>
-                <h4>Mentees</h4>
-                <p class="stat-value" id="stat-mentees">23</p>
-                <a href="mentees.html"
-                  style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View
-                  Mentees</a>
-              </div>
+          <!-- Stat Cards -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <div class="stat-card-small">
+              <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-calendar-day"></i></div>
+              <h4>Classes Today</h4>
+              <p class="stat-value" id="stat-classes">--</p>
+              <a href="../modules/routine/view.html"
+                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View Schedule</a>
+            </div>
+            <div class="stat-card-small">
+              <div class="icon-wrapper" style="background: #ede9fe; color: #7c3aed;"><i class="fa-solid fa-users"></i></div>
+              <h4>Students</h4>
+              <p class="stat-value" id="stat-students">--</p>
+              <a href="../modules/student-database/view.html"
+                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">Total Students</a>
+            </div>
+            <div class="stat-card-small">
+              <div class="icon-wrapper" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-clipboard-check"></i></div>
+              <h4>Pending Tasks</h4>
+              <p class="stat-value" id="stat-tasks">--</p>
+              <a href="javascript:void(0)"
+                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">Pending Approvals</a>
+            </div>
+            <div class="stat-card-small">
+              <div class="icon-wrapper" style="background: #d1fae5; color: #059669;"><i class="fa-solid fa-user-graduate"></i></div>
+              <h4>Mentees</h4>
+              <p class="stat-value" id="stat-mentees">--</p>
+              <a href="../modules/student-database/view.html?filter=my-mentees"
+                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View Mentees</a>
             </div>
           </div>
-
-          <!-- Quick Access -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-bolt"></i> Quick Access</h2>
-            </div>
-            <div class="quick-access-grid-4">
-              <a href="../modules/routine/view.html" class="qa-item">
-                <div class="qa-icon" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-calendar-days"></i>
-                </div>
-                <span style="font-weight: 600; font-size: 0.85rem;">My Classes</span>
-              </a>
-              <a href="../modules/assignments/post.html" class="qa-item">
-                <div class="qa-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-file-pen"></i>
-                </div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Assignments</span>
-              </a>
-              <a href="../modules/documents/post.html" class="qa-item">
-                <div class="qa-icon" style="background:#ede9fe; color:#7c3aed"><i class="fa-solid fa-file-lines"></i>
-                </div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Notes</span>
-              </a>
-              <a href="../modules/student-database/view.html" class="qa-item">
-                <div class="qa-icon" style="background:#d1fae5; color:#059669"><i class="fa-solid fa-users"></i></div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Students</span>
-              </a>
-              <a href="mentees.html" class="qa-item">
-                <div class="qa-icon" style="background:#e0e7ff; color:#4f46e5"><i
-                    class="fa-solid fa-hands-holding-child"></i></div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Mentees</span>
-              </a>
-              <a href="../modules/complaints/resolve.html" class="qa-item" style="position: relative;">
-                <span
-                  style="position: absolute; top: 10px; right: 10px; background: var(--danger); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">2</span>
-                <div class="qa-icon" style="background:#ffedd5; color:#ea580c"><i
-                    class="fa-solid fa-triangle-exclamation"></i></div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Complaints</span>
-              </a>
-              <a href="../modules/mar-moocs/post.html" class="qa-item">
-                <div class="qa-icon" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-award"></i></div>
-                <span style="font-weight: 600; font-size: 0.85rem; text-align: center;">MAR & MOOCs<br>Approval</span>
-              </a>
-              <a href="personal_space.html" class="qa-item">
-                <div class="qa-icon" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-folder-open"></i>
-                </div>
-                <span style="font-weight: 600; font-size: 0.85rem; text-align: center;">Personal<br>Space</span>
-              </a>
-              <a href="../modules/library.html" class="qa-item">
-                <div class="qa-icon" style="background:#d1fae5; color:#059669"><i class="fa-solid fa-book"></i></div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Library</span>
-              </a>
-              <a href="../modules/notices/post.html" class="qa-item">
-                <div class="qa-icon" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-bullhorn"></i>
-                </div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Official Notices</span>
-              </a>
-              <a href="#" class="qa-item">
-                <div class="qa-icon" style="background:#fce7f3; color:#db2777"><i class="fa-solid fa-chart-line"></i>
-                </div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Reports</span>
-              </a>
-              <a href="../modules/profile.html" class="qa-item">
-                <div class="qa-icon" style="background:#ede9fe; color:#7c3aed"><i class="fa-solid fa-gear"></i></div>
-                <span style="font-weight: 600; font-size: 0.85rem;">Settings</span>
-              </a>
-            </div>
-          </section>
-
-          <!-- Pending Tasks -->
-          <section class="section-card" id="pending-tasks">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-list-check"></i> Pending Tasks</h2>
-              <a href="#" class="btn-view-all">View All</a>
-            </div>
-            <div id="pending-tasks-list" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <!-- JS Injected. Here's a placeholder mapping to the image -->
-              <div class="notice-item fade-in">
-                <div
-                  style="background: #e0e7ff; color: #4f46e5; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-award"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.9rem; margin-bottom: 4px; color: var(--text-dark);">Review MAR & MOOCs
-                    Submission</h4>
-                  <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">3 submissions pending your approval
-                  </p>
-                </div>
-                <div class="notice-date" style="font-size: 0.75rem; font-weight: 600; color: var(--danger);">Due in 2
-                  days</div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); margin-left: 16px;"></i>
-              </div>
-              <div class="notice-item fade-in">
-                <div
-                  style="background: #fee2e2; color: #dc2626; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-file-pen"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.9rem; margin-bottom: 4px; color: var(--text-dark);">Grade Assignment: Data
-                    Structures</h4>
-                  <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">12 submissions</p>
-                </div>
-                <div class="notice-date" style="font-size: 0.75rem; font-weight: 600; color: var(--danger);">Due in 3
-                  days</div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); margin-left: 16px;"></i>
-              </div>
-              <div class="notice-item fade-in">
-                <div
-                  style="background: #d1fae5; color: #059669; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-user-group"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.9rem; margin-bottom: 4px; color: var(--text-dark);">Mentor Meeting Reports
-                  </h4>
-                  <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">5 mentee reports to review</p>
-                </div>
-                <div class="notice-date" style="font-size: 0.75rem; font-weight: 600; color: var(--danger);">Due in 5
-                  days</div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); margin-left: 16px;"></i>
-              </div>
-            </div>
-          </section>
-
-          <!-- My Students -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-users-rectangle"></i> My Students</h2>
-              <a href="../modules/student-database/view.html" class="btn-view-all">View All</a>
-            </div>
-            <div style="overflow-x: auto;">
-              <table class="dashboard-table" id="students-table">
-                <thead>
-                  <tr>
-                    <th>Student Name</th>
-                    <th>Course</th>
-                    <th>Performance</th>
-                    <th>Attendance</th>
-                    <th style="text-align: right;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- JS Injected Placeholders -->
-                  <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="https://ui-avatars.com/api/?name=Arham+Shah&background=random"
-                          style="width: 32px; height: 32px; border-radius: 50%;">
-                        <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Arham Shah</span>
-                      </div>
-                    </td>
-                    <td style="font-size: 0.85rem; color: var(--text-muted);">CSE-302</td>
-                    <td><span
-                        style="background: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">A-</span>
-                    </td>
-                    <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">92%</td>
-                    <td style="text-align: right;"><i class="fa-solid fa-eye"
-                        style="color: var(--primary); cursor: pointer;"></i></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="https://ui-avatars.com/api/?name=Sara+Khan&background=random"
-                          style="width: 32px; height: 32px; border-radius: 50%;">
-                        <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Sara Khan</span>
-                      </div>
-                    </td>
-                    <td style="font-size: 0.85rem; color: var(--text-muted);">CSE-302</td>
-                    <td><span
-                        style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">B+</span>
-                    </td>
-                    <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">88%</td>
-                    <td style="text-align: right;"><i class="fa-solid fa-eye"
-                        style="color: var(--primary); cursor: pointer;"></i></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="https://ui-avatars.com/api/?name=Ahmed+Raza&background=random"
-                          style="width: 32px; height: 32px; border-radius: 50%;">
-                        <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Ahmed Raza</span>
-                      </div>
-                    </td>
-                    <td style="font-size: 0.85rem; color: var(--text-muted);">CSE-304</td>
-                    <td><span
-                        style="background: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">A</span>
-                    </td>
-                    <td style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">95%</td>
-                    <td style="text-align: right;"><i class="fa-solid fa-eye"
-                        style="color: var(--primary); cursor: pointer;"></i></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <!-- Weekly Overview Chart (Placeholder) -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-chart-line"></i> Weekly Overview</h2>
-              <div style="display: flex; gap: 12px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">
-                <span style="display: flex; align-items: center; gap: 4px;"><span
-                    style="width: 8px; height: 8px; border-radius: 50%; background: #6b46c1;"></span> Classes</span>
-                <span style="display: flex; align-items: center; gap: 4px;"><span
-                    style="width: 8px; height: 8px; border-radius: 50%; background: #0ea5e9;"></span> Assignments</span>
-                <span style="display: flex; align-items: center; gap: 4px;"><span
-                    style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span> Meetings</span>
-              </div>
-            </div>
-            <!-- Simple CSS Line Chart Placeholder -->
-            <div
-              style="height: 200px; width: 100%; border-bottom: 1px solid var(--border-color); border-left: 1px solid var(--border-color); position: relative; margin-top: 24px;">
-              <!-- Just a visual mockup for the chart -->
-              <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <polyline fill="none" stroke="#6b46c1" stroke-width="2" points="0,50 20,20 40,30 60,40 80,60 100,50" />
-                <polyline fill="none" stroke="#0ea5e9" stroke-width="2" points="0,80 20,70 40,75 60,70 80,85 100,75" />
-                <polyline fill="none" stroke="#f59e0b" stroke-width="2" points="0,95 20,90 40,95 60,92 80,95 100,95" />
-
-                <!-- Dots for Classes -->
-                <circle cx="20" cy="20" r="2" fill="#6b46c1" />
-                <circle cx="40" cy="30" r="2" fill="#6b46c1" />
-                <circle cx="60" cy="40" r="2" fill="#6b46c1" />
-                <circle cx="80" cy="60" r="2" fill="#6b46c1" />
-
-                <!-- Dots for Assignments -->
-                <circle cx="20" cy="70" r="2" fill="#0ea5e9" />
-                <circle cx="40" cy="75" r="2" fill="#0ea5e9" />
-                <circle cx="60" cy="70" r="2" fill="#0ea5e9" />
-                <circle cx="80" cy="85" r="2" fill="#0ea5e9" />
-              </svg>
-              <!-- X Axis Labels -->
-              <div
-                style="display: flex; justify-content: space-between; position: absolute; bottom: -25px; width: 100%; font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">
-                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-              </div>
-            </div>
-            <div style="height: 25px;"></div>
-          </section>
-
         </div>
 
-        <!-- ==================== RIGHT COLUMN (SPAN 1) ==================== -->
-        <div style="display: flex; flex-direction: column; gap: 32px;">
+        <!-- Right Section (Span 1): Calendar -->
+        <section class="section-card" id="calendar-widget" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 0;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> Calendar</h2>
+          </div>
+          <div style="text-align: center; margin: 16px 0; font-weight: 600; display:flex; justify-content:space-between; align-items:center;">
+            <i class="fa-solid fa-chevron-left" id="prev-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+            <span id="calendar-month-year">May 2026</span>
+            <i class="fa-solid fa-chevron-right" id="next-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+          </div>
+          <div class="calendar-grid" id="calendar-days-container">
+            <!-- Dynamically populated from JS -->
+          </div>
+        </section>
 
-          <!-- Today's Schedule -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-regular fa-calendar-check"></i> Today's Schedule</h2>
-              <a href="../modules/routine/view.html" class="btn-view-all">View Full</a>
-            </div>
-            <div id="todays-schedule-list" style="display: flex; flex-direction: column; margin-top: 16px;">
-              <!-- Placeholder items -->
-              <div class="list-item-compact">
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; width: 60px;">09:00 AM</div>
-                <div style="flex: 1; padding: 0 12px;">
-                  <h4 style="font-size: 0.85rem; margin: 0; color: var(--text-dark);">DSA <span
-                      style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">(CSE-302)</span></h4>
-                </div>
-                <span
-                  style="background: #ede9fe; color: #7c3aed; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">Lab
-                  1</span>
-              </div>
-              <div class="list-item-compact">
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; width: 60px;">10:30 AM</div>
-                <div style="flex: 1; padding: 0 12px;">
-                  <h4 style="font-size: 0.85rem; margin: 0; color: var(--text-dark);">DBMS <span
-                      style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">(CSE-304)</span></h4>
-                </div>
-                <span
-                  style="background: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">Room
-                  204</span>
-              </div>
-              <div class="list-item-compact">
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; width: 60px;">12:00 PM</div>
-                <div style="flex: 1; padding: 0 12px;">
-                  <h4 style="font-size: 0.85rem; margin: 0; color: var(--text-dark);">Mentor Meeting</h4>
-                </div>
-                <span
-                  style="background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">Online</span>
-              </div>
-              <div class="list-item-compact">
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; width: 60px;">02:00 PM</div>
-                <div style="flex: 1; padding: 0 12px;">
-                  <h4 style="font-size: 0.85rem; margin: 0; color: var(--text-dark);">OOP <span
-                      style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">(CSE-301)</span></h4>
-                </div>
-                <span
-                  style="background: #ffedd5; color: #ea580c; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">Room
-                  201</span>
-              </div>
-            </div>
-          </section>
+      </div>
 
-          <!-- Class Overview -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-chart-pie"></i> Class Overview</h2>
-              <select
-                style="border: 1px solid var(--border-color); border-radius: 6px; padding: 4px; font-size: 0.75rem; color: var(--text-muted); outline: none;">
-                <option>This Semester</option>
-                <option>Last Semester</option>
-              </select>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px;">
-              <!-- CSS Doughnut Chart -->
-              <div
-                style="position: relative; width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(#6b46c1 0% 40%, #10b981 40% 70%, #f59e0b 70% 90%, #0ea5e9 90% 100%); display: flex; align-items: center; justify-content: center;">
-                <div
-                  style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                  <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark);">86</span>
-                  <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: 600;">Total Students</span>
-                </div>
-              </div>
-              <div
-                style="display: flex; flex-direction: column; gap: 12px; font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100px;">
-                  <span style="display: flex; align-items: center; gap: 8px;"><span
-                      style="width: 8px; height: 8px; border-radius: 50%; background: #6b46c1;"></span> CSE-302</span>
-                  <span style="color: var(--text-muted);">32</span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100px;">
-                  <span style="display: flex; align-items: center; gap: 8px;"><span
-                      style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> CSE-304</span>
-                  <span style="color: var(--text-muted);">28</span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100px;">
-                  <span style="display: flex; align-items: center; gap: 8px;"><span
-                      style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span> CSE-301</span>
-                  <span style="color: var(--text-muted);">16</span>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; width: 100px;">
-                  <span style="display: flex; align-items: center; gap: 8px;"><span
-                      style="width: 8px; height: 8px; border-radius: 50%; background: #0ea5e9;"></span> MTH-201</span>
-                  <span style="color: var(--text-muted);">10</span>
-                </div>
-              </div>
-            </div>
-          </section>
+      <!-- ROW 2 (2:1 Grid): Quick Access & Today's Schedule -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+        
+        <!-- Left Section (Span 2) -->
+        <section class="section-card" style="grid-column: span 2;">
+          <div class="section-header">
+            <h2><i class="fa-solid fa-bolt" style="color: var(--primary);"></i> Quick Access</h2>
+          </div>
+          <div class="my-modules-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 16px;">
+            
+            <a href="../modules/routine/view.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-calendar-days"></i></div>
+              <div class="module-title-compact">My Classes</div>
+            </a>
+            
+            <a href="../modules/assignments/post.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-file-pen"></i></div>
+              <div class="module-title-compact">Assignments</div>
+            </a>
+            
+            <a href="../modules/documents/post.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#ede9fe; color:#7c3aed"><i class="fa-solid fa-file-lines"></i></div>
+              <div class="module-title-compact">Notes</div>
+            </a>
+            
+            <a href="../modules/student-database/view.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#d1fae5; color:#059669"><i class="fa-solid fa-users"></i></div>
+              <div class="module-title-compact">Students</div>
+            </a>
+            
+            <a href="../modules/student-database/view.html?filter=my-mentees" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#e0e7ff; color:#4f46e5"><i class="fa-solid fa-hands-holding-child"></i></div>
+              <div class="module-title-compact">Mentees</div>
+            </a>
+            
+            <a href="../modules/complaints/resolve.html" class="module-card-compact" style="position: relative;">
+              <div id="complaints-badge-count" class="badge-count" style="display:none; top: 8px; right: 8px; min-width: 20px; width: auto; height: 20px; padding: 0 4px; border-radius: 10px; font-size: 0.65rem; line-height: 1; box-sizing: border-box; background: var(--danger); color: white; justify-content: center; align-items: center;">0</div>
+              <div class="module-icon-compact" style="background:#ffedd5; color:#ea580c"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="module-title-compact">Complaints</div>
+            </a>
+            
+            <a href="../modules/mar-moocs/post.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-award"></i></div>
+              <div class="module-title-compact" style="font-size: 0.75rem;">MAR & MOOCs</div>
+            </a>
+            
+            <a href="personal_space.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#fee2e2; color:#dc2626"><i class="fa-solid fa-folder-open"></i></div>
+              <div class="module-title-compact" style="font-size: 0.75rem;">Personal Space</div>
+            </a>
+            
+            <a href="../modules/library.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#d1fae5; color:#059669"><i class="fa-solid fa-book"></i></div>
+              <div class="module-title-compact">Library</div>
+            </a>
+            
+            <a href="../modules/notices/post.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#e0f2fe; color:#0284c7"><i class="fa-solid fa-bullhorn"></i></div>
+              <div class="module-title-compact" style="font-size: 0.75rem;">Official Notices</div>
+            </a>
+            
+            <a href="#" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#fce7f3; color:#db2777"><i class="fa-solid fa-chart-line"></i></div>
+              <div class="module-title-compact">Reports</div>
+            </a>
+            
+            <a href="../modules/profile.html" class="module-card-compact">
+              <div class="module-icon-compact" style="background:#ede9fe; color:#7c3aed"><i class="fa-solid fa-gear"></i></div>
+              <div class="module-title-compact">Settings</div>
+            </a>
+            
+          </div>
+        </section>
 
-          <!-- Recent Complaints -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-triangle-exclamation"></i> Recent Complaints</h2>
-              <a href="../modules/complaints/resolve.html" class="btn-view-all">View All</a>
-            </div>
-            <div id="recent-complaints-list"
-              style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <div class="notice-item">
-                <div
-                  style="background: #fee2e2; color: #dc2626; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-ban"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Classroom Behavior Issue
-                  </h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Student (Anonymous)</p>
-                </div>
-                <span
-                  style="background: #ffedd5; color: #ea580c; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">Open</span>
-              </div>
-              <div class="notice-item">
-                <div
-                  style="background: #e0f2fe; color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-comment-dots"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Unfair Grading</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Mentee</p>
-                </div>
-                <span
-                  style="background: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">In
-                  Review</span>
-              </div>
-              <div class="notice-item">
-                <div
-                  style="background: #d1fae5; color: #059669; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-check-circle"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Late Note Upload</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">By: Student</p>
-                </div>
-                <span
-                  style="background: #d1fae5; color: #059669; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700;">Resolved</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- Mentees Snapshot -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-solid fa-hands-holding-child"></i> Mentees Snapshot</h2>
-              <a href="mentees.html" class="btn-view-all">View All</a>
-            </div>
-            <div style="display: flex; flex-direction: column; margin-top: 16px;">
-              <div class="list-item-compact">
-                <div
-                  style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">
-                  <i class="fa-solid fa-users" style="color: #6b46c1;"></i> Total Mentees
-                </div>
-                <span style="font-size: 1rem; font-weight: 700; color: var(--text-dark);">23</span>
-              </div>
-              <div class="list-item-compact">
-                <div
-                  style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">
-                  <i class="fa-solid fa-file-invoice" style="color: #f59e0b;"></i> Reports to Review
-                </div>
-                <span style="font-size: 1rem; font-weight: 700; color: var(--text-dark);">5</span>
-              </div>
-              <div class="list-item-compact">
-                <div
-                  style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">
-                  <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> Open Issues
-                </div>
-                <span style="font-size: 1rem; font-weight: 700; color: var(--text-dark);">2</span>
-              </div>
-              <div class="list-item-compact">
-                <div
-                  style="display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">
-                  <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Resolved Issues
-                </div>
-                <span style="font-size: 1rem; font-weight: 700; color: var(--text-dark);">7</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- Official Notices -->
-          <section class="section-card">
-            <div class="section-header">
-              <h2><i class="fa-regular fa-file-lines"></i> Official Notices</h2>
-              <a href="../modules/notices/post.html" class="btn-view-all">View All</a>
-            </div>
-            <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-              <div class="notice-item">
-                <div
-                  style="background: #ffedd5; color: #ea580c; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-bullhorn"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Department Meeting</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">24 May 2025 • 11:00 AM</p>
-                </div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
-              </div>
-              <div class="notice-item">
-                <div
-                  style="background: #e0f2fe; color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-file-contract"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Curriculum Update</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">20 May 2025 • 02:00 PM</p>
-                </div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
-              </div>
-              <div class="notice-item">
-                <div
-                  style="background: #ede9fe; color: #7c3aed; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
-                  <i class="fa-solid fa-calendar"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">Mid Semester Exam
-                    Schedule</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">19 May 2025 • 10:30 AM</p>
-                </div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
-              </div>
-            </div>
-          </section>
-
-          <!-- AI Assistant Banner inside Right Column -->
-          <div
-            style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px; margin-top: 16px;">
-            <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;"
-              onerror="this.style.display='none'">
-            <div style="flex: 1;">
-              <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
-              <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help
-                with your tasks or looking for something?</p>
-              <button onclick="toggleModal('ai-modal')"
-                style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                Chat Now <i class="fa-solid fa-arrow-right"></i>
-              </button>
+        <!-- Right Section (Span 1): Today's Schedule -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header">
+            <h2><i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i> Today's Schedule</h2>
+            <a href="../modules/routine/view.html" class="btn-view-all">View Full</a>
+          </div>
+          <div id="todays-schedule-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+            <!-- Dynamically populated from JS -->
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading classes...
             </div>
           </div>
+        </section>
 
+      </div>
+
+      <!-- ROW 3 (1:1:1 Grid): Complaints, Notices, Assignments -->
+      <div class="triple-grid" style="align-items: stretch; margin-bottom: 32px;">
+        
+        <!-- Column 1: Complaints -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 4px;">
+            <h2><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Complaints</h2>
+            <a href="../modules/complaints/resolve.html" class="btn-view-all">View All</a>
+          </div>
+          <div class="complaints-filter-tabs">
+            <button class="filter-tab active" id="tab-my-students" data-filter="my-students">My Students</button>
+            <button class="filter-tab" id="tab-my-mentees" data-filter="my-mentees">My Mentees</button>
+            <button class="filter-tab" id="tab-general" data-filter="general">General</button>
+          </div>
+          <div id="recent-complaints-list" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 380px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading complaints...
+            </div>
+          </div>
+        </section>
+
+        <!-- Column 2: Official Notices -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header">
+            <h2><i class="fa-regular fa-file-lines" style="color: var(--primary);"></i> Official Notices</h2>
+            <a href="../modules/notices/post.html" class="btn-view-all">View All</a>
+          </div>
+          <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; overflow-y: auto; max-height: 440px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading notices...
+            </div>
+          </div>
+        </section>
+
+        <!-- Column 3: Assignments -->
+        <section class="section-card" style="display: flex; flex-direction: column;">
+          <div class="section-header">
+            <h2><i class="fa-solid fa-file-pen" style="color: var(--warning);"></i> Assignments</h2>
+            <a href="../modules/assignments/post.html" class="btn-view-all">View All</a>
+          </div>
+          <div id="assignments-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; overflow-y: auto; max-height: 440px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              Loading assignments...
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- AI Assistant Banner at the bottom -->
+      <div style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+        <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;"
+          onerror="this.style.display='none'">
+        <div style="flex: 1;">
+          <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
+          <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help with your tasks or looking for something?</p>
+          <button onclick="toggleModal('ai-modal')"
+            style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            Chat Now <i class="fa-solid fa-arrow-right"></i>
+          </button>
         </div>
-
       </div>
     </main>
 

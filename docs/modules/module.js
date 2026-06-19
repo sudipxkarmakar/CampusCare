@@ -3376,7 +3376,7 @@
     dropdown.innerHTML = options;
 
     if (userRole === 'student' || userRole === 'hosteler') dropdown.value = 'my';
-    else if (userRole === 'teacher') dropdown.value = 'mentees';
+    else if (userRole === 'teacher') dropdown.value = 'all';
     else if (userRole === 'hod') dropdown.value = 'dept';
     else if (userRole === 'warden') dropdown.value = 'hostel';
     else dropdown.value = 'all';
