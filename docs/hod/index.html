@@ -1042,6 +1042,40 @@
             if (!res.ok) throw new Error('Response not ok');
             const notices = await res.json();
             dashboardNotices = notices;
+            
+            // Inject event dates into calendar
+            let calendarUpdated = false;
+            notices.forEach(n => {
+                let eventDate = n.date;
+                let eventType = n.eventType || 'event';
+                
+                // Extract embedded meta if present
+                if (n.content && n.content.includes('[EVENT_META:')) {
+                    const match = n.content.match(/\[EVENT_META:(.*?)\]/);
+                    if (match && match[1]) {
+                        try {
+                            const meta = JSON.parse(match[1]);
+                            if (meta.date) eventDate = meta.date;
+                            if (meta.eventType) eventType = meta.eventType;
+                        } catch(e) {}
+                    }
+                }
+
+                if (eventDate) {
+                    const dateStr = eventDate.split('T')[0];
+                    if (!calendarEvents[dateStr]) {
+                        let rawDesc = n.content || n.description || 'View notice for details.';
+                        let plainDesc = rawDesc.replace(/<[^>]*>?/gm, '').substring(0, 100);
+                        if (rawDesc.length > 100) plainDesc += '...';
+                        calendarEvents[dateStr] = { type: eventType, title: n.title || 'Notice Event', desc: plainDesc };
+                        calendarUpdated = true;
+                    }
+                }
+            });
+            if (calendarUpdated && typeof renderCalendar === 'function') {
+                renderCalendar();
+            }
+
             const recent = notices
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                 .slice(0, 4);
@@ -1080,7 +1114,11 @@
         const date = notice.createdAt ? new Date(notice.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
         const audience = notice.audience || 'General';
         document.getElementById('modal-notice-meta').textContent = `${date} · ${audience.toUpperCase()}`;
-        document.getElementById('modal-notice-content').textContent = notice.content || '';
+        
+        let cleanContent = notice.content || '';
+        cleanContent = cleanContent.replace(/\[EVENT_META:(.*?)\]/g, '');
+        document.getElementById('modal-notice-content').innerHTML = cleanContent;
+        
         toggleModal('notice-detail-modal');
     };
 

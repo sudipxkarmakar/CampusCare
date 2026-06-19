@@ -832,16 +832,29 @@
 
       <div class="section-card module-panel" style="width: 100%; padding: 32px; border-radius: var(--radius-lg); background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
         <form id="modulePostForm" class="module-form" style="display: flex; flex-direction: column; gap: 24px;">
-          <!-- 1st Row: Title on Left, Audience on Right -->
-          <div style="display: flex; gap: 24px; width: 100%; align-items: flex-end;">
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+          <!-- 1st Row: Title on Left, Date & Type in Middle, Audience on Right -->
+          <div style="display: flex; gap: 16px; width: 100%; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 8px;">
               <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Notice Title</label>
               <input type="text" name="title" placeholder="Enter notice title..." required style="padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 1rem; width: 100%; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
             </div>
             
-            <div style="width: 250px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="width: 160px; display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Event Date</label>
+              <input type="date" name="date" style="padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; width: 100%; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+            </div>
+
+            <div style="width: 140px; display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Event Type</label>
+              <select name="eventType" style="padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; width: 100%; background: white; cursor: pointer; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+                <option value="event">Event</option>
+                <option value="holiday">Holiday</option>
+              </select>
+            </div>
+
+            <div style="width: 160px; display: flex; flex-direction: column; gap: 8px;">
               <label style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark); text-align: left;">Target Audience</label>
-              <select name="audience" required style="padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 1rem; width: 100%; background: white; cursor: pointer; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
+              <select name="audience" required style="padding: 14px 12px; border-radius: 12px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; width: 100%; background: white; cursor: pointer; transition: all 0.2s; font-weight: 500;" onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(107, 70, 193, 0.15)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';">
                 <option value="general">General</option>
                 <option value="student">Students</option>
                 <option value="teacher">Teachers</option>
@@ -1133,6 +1146,12 @@
     }[cfg.module];
     const hasFile = !!form.querySelector('input[type="file"]');
     const data = hasFile ? new FormData(form) : Object.fromEntries(new FormData(form).entries());
+    
+    if (cfg.module === 'notices' && !hasFile && data.date) {
+      const metaComment = `[EVENT_META:{"date":"${data.date}","eventType":"${data.eventType || 'event'}"}]`;
+      data.content = (data.content || '') + metaComment;
+    }
+
     if (cfg.module === 'complaints' && user._id) data.append('studentId', user._id);
     if (!endpoint) {
       saveLocal(cfg.module, Object.fromEntries(new FormData(form).entries()));
@@ -8327,6 +8346,8 @@
 
   function formatNoticeContent(text) {
     if (!text) return '';
+    
+    text = text.replace(/\[EVENT_META:(.*?)\]/g, '');
     
     const hasHtml = /<[a-z/][^>]*>/i.test(text);
     if (hasHtml) {

@@ -200,6 +200,8 @@ function esc(value) {
 function formatNoticeContent(text) {
     if (!text) return '';
     
+    text = text.replace(/\[EVENT_META:(.*?)\]/g, '');
+    
     const hasHtml = /<[a-z/][^>]*>/i.test(text);
     if (hasHtml) {
       return sanitizeHTML(text);
