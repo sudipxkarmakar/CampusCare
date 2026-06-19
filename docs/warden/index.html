@@ -477,46 +477,132 @@
     });
 
     /* ── CALENDAR WIDGET ─────────────────────────────── */
-    let calendarDate = new Date();
+    let currentCalendarDate = new Date();
+
+    const calendarEvents = {
+        '2026-05-01': { type: 'holiday', title: 'May Day / Labour Day', desc: 'College campus closed in observance of International Workers\' Day.' },
+        '2026-05-08': { type: 'holiday', title: 'Rabindranath Tagore Jayanti', desc: 'Celebration of the birth anniversary of Rabindranath Tagore. Holiday declared.' },
+        '2026-05-15': { type: 'event', title: 'Mid-Sem Exams Start', desc: 'Spring semester mid-term examinations commence for all departments.' },
+        '2026-05-18': { type: 'event', title: 'Guest Lecture: AI Trends', desc: 'Dr. Anita Sen will give a seminar on "Modern Trends in Generative AI" in Seminar Hall 1 at 2:00 PM.' },
+        '2026-05-20': { type: 'event', title: 'Annual Cultural Fest', desc: '"Sanskriti 2026" - The annual cultural festival of CampusCare starting from 10:00 AM.' },
+        '2026-05-21': { type: 'event', title: 'Cultural Fest Day 2', desc: 'Concerts, dances, and prize distribution ceremony for Sanskriti 2026.' },
+        '2026-05-25': { type: 'holiday', title: 'Buddha Purnima', desc: 'Public holiday on the occasion of Buddha Purnima.' },
+        
+        // Other months for navigation testing
+        '2026-04-15': { type: 'holiday', title: 'Bengali New Year (Poila Baisakh)', desc: 'Subho Noboborsho! College closed.' },
+        '2026-04-22': { type: 'event', title: 'Tech Fest "Tantra"', desc: 'Annual national-level coding and robotics contest.' },
+        '2026-06-05': { type: 'event', title: 'World Environment Day', desc: 'Tree plantation drive and poster exhibition on campus.' },
+        '2026-08-15': { type: 'holiday', title: 'Independence Day', desc: 'Flag hoisting ceremony at Main Lawn at 8:30 AM.' }
+    };
+
+    function getCalendarTooltip() {
+        let tooltip = document.getElementById('calendar-tooltip');
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.id = 'calendar-tooltip';
+            tooltip.className = 'cal-tooltip';
+            document.body.appendChild(tooltip);
+        }
+        return tooltip;
+    }
 
     function initCalendar() {
-        renderCalendar(calendarDate);
+        renderCalendar();
         document.getElementById('prev-month').addEventListener('click', () => {
-            calendarDate.setMonth(calendarDate.getMonth() - 1);
-            renderCalendar(calendarDate);
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
         });
         document.getElementById('next-month').addEventListener('click', () => {
-            calendarDate.setMonth(calendarDate.getMonth() + 1);
-            renderCalendar(calendarDate);
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
         });
     }
 
-    function renderCalendar(date) {
-        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        const today = new Date();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+    function renderCalendar() {
+        const monthYearEl = document.getElementById('calendar-month-year');
+        const daysContainer = document.getElementById('calendar-days-container');
+        if (!monthYearEl || !daysContainer) return;
+
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth();
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        monthYearEl.textContent = `${monthNames[month]} ${year}`;
+
+        daysContainer.innerHTML = '';
+
+        const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+        dayNames.forEach(d => {
+            const el = document.createElement('div');
+            el.className = 'cal-day-name';
+            el.textContent = d;
+            daysContainer.appendChild(el);
+        });
 
         const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const totalDays = new Date(year, month + 1, 0).getDate();
+        const prevTotalDays = new Date(year, month, 0).getDate();
 
-        const container = document.getElementById('calendar-days-container');
-        const dayLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-        let html = '';
-        dayLabels.forEach(d => {
-            html += `<div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding:4px 0;">${d}</div>`;
-        });
-        for (let i = 0; i < firstDay; i++) {
-            html += `<div></div>`;
+        const today = new Date();
+
+        // Fill preceding month days
+        for (let i = firstDay - 1; i >= 0; i--) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'cal-day muted';
+            dayDiv.textContent = prevTotalDays - i;
+            daysContainer.appendChild(dayDiv);
         }
-        for (let d = 1; d <= daysInMonth; d++) {
-            const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-            html += `<div style="text-align:center; padding:6px 4px; font-size:0.8rem; border-radius:50%; cursor:default; 
-                ${isToday ? 'background:var(--success); color:white; font-weight:700;' : 'color:var(--text-dark);'} 
-                transition: background 0.2s;">${d}</div>`;
+
+        // Fill current month days
+        for (let i = 1; i <= totalDays; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'cal-day';
+            dayDiv.textContent = i;
+
+            if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
+                dayDiv.classList.add('active');
+            }
+
+            // Check for holiday / event
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            const dayEvent = calendarEvents[dateStr];
+            if (dayEvent) {
+                dayDiv.classList.add(dayEvent.type === 'holiday' ? 'holiday-day' : 'event-day');
+                
+                dayDiv.addEventListener('mouseenter', () => {
+                    const tooltip = getCalendarTooltip();
+                    tooltip.innerHTML = `
+                        <span class="cal-tooltip-type ${dayEvent.type}">${dayEvent.type}</span>
+                        <div class="cal-tooltip-title">${dayEvent.title}</div>
+                        <div class="cal-tooltip-desc">${dayEvent.desc}</div>
+                    `;
+                    
+                    const rect = dayDiv.getBoundingClientRect();
+                    tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+                    tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+                    tooltip.style.transform = 'translate(-50%, -100%)';
+                    
+                    tooltip.classList.add('show');
+                });
+                
+                dayDiv.addEventListener('mouseleave', () => {
+                    const tooltip = getCalendarTooltip();
+                    tooltip.classList.remove('show');
+                });
+            }
+
+            daysContainer.appendChild(dayDiv);
         }
-        container.innerHTML = html;
+
+        // Fill succeeding month days to standard 42-grid size
+        const totalCellsAdded = firstDay + totalDays;
+        const remainingCells = 42 - totalCellsAdded;
+        for (let i = 1; i <= remainingCells; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'cal-day muted';
+            dayDiv.textContent = i;
+            daysContainer.appendChild(dayDiv);
+        }
     }
 
     async function loadTodayMessMenu() {

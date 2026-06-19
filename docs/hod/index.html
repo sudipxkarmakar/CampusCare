@@ -258,182 +258,155 @@
           </div>
         </div>
 
-        <!-- Right Column: Calendar Preview (Span 1) -->
-        <section class="section-card" style="grid-column: span 1; display: flex; flex-direction: column; gap: 0;">
-          <div class="section-header" style="margin-bottom: 16px;">
-            <h2 style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-regular fa-calendar" style="color: var(--primary);"></i> Calendar
-            </h2>
+        <!-- Right Section (Span 1): Calendar -->
+        <section class="section-card" id="calendar-widget" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 0;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-regular fa-calendar" style="color: var(--primary);"></i> Calendar</h2>
           </div>
-
-          <!-- Calendar Nav -->
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-            <button id="hod-cal-prev" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s;" onmouseenter="this.style.background='var(--primary-light)';this.style.color='var(--primary)';" onmouseleave="this.style.background='var(--bg-color)';this.style.color='var(--text-muted)';"><i class="fa-solid fa-chevron-left" style="font-size:0.7rem;"></i></button>
-            <span id="hod-cal-title" style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);"></span>
-            <button id="hod-cal-next" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s;" onmouseenter="this.style.background='var(--primary-light)';this.style.color='var(--primary)';" onmouseleave="this.style.background='var(--bg-color)';this.style.color='var(--text-muted)';"><i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i></button>
+          <div style="text-align: center; margin: 16px 0; font-weight: 600; display:flex; justify-content:space-between; align-items:center;">
+            <i class="fa-solid fa-chevron-left" id="prev-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+            <span id="calendar-month-year">June 2026</span>
+            <i class="fa-solid fa-chevron-right" id="next-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
           </div>
-
-          <!-- Weekday Headers -->
-          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 6px;">
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">Su</div>
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">Mo</div>
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">Tu</div>
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">We</div>
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">Th</div>
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">Fr</div>
-            <div style="text-align:center; font-size:0.7rem; font-weight:700; color:var(--text-muted); padding: 4px 0;">Sa</div>
+          <div class="calendar-grid" id="calendar-days-container">
+            <!-- Dynamically populated from JS -->
           </div>
-
-          <!-- Calendar Grid -->
-          <div id="hod-cal-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; flex: 1;"></div>
-
-          <!-- Event Legend -->
-          <div id="hod-cal-event-legend" style="margin-top: 14px; font-size: 0.78rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--border-color); padding-top: 12px;"></div>
         </section>
 
-        <style>
-          .hod-cal-day {
-            text-align: center;
-            padding: 5px 2px;
-            border-radius: 50%;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: default;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 2px;
-            color: var(--text-dark);
-            transition: background 0.15s;
-          }
-          .hod-cal-day.other-month { color: var(--text-muted); opacity: 0.4; }
-          .hod-cal-day.today > .hod-day-num {
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-          }
-          .hod-cal-day.has-event > .hod-day-num {
-            position: relative;
-          }
-          .hod-event-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--secondary);
-            flex-shrink: 0;
-          }
-          .hod-event-dot.holiday { background: var(--danger); }
-        </style>
-
         <script>
-        (function() {
-          const events = {
-            '2026-05-01': { type: 'holiday', title: 'May Day' },
-            '2026-05-08': { type: 'holiday', title: 'Tagore Jayanti' },
-            '2026-05-15': { type: 'event',   title: 'Mid-Sem Exams' },
-            '2026-05-18': { type: 'event',   title: 'Guest Lecture' },
-            '2026-05-20': { type: 'event',   title: 'Cultural Fest' },
-            '2026-05-25': { type: 'holiday', title: 'Buddha Purnima' },
-            '2026-04-15': { type: 'holiday', title: 'Poila Baisakh' },
-            '2026-04-22': { type: 'event',   title: 'Tech Fest' },
-            '2026-06-05': { type: 'event',   title: 'Environment Day' },
-            '2026-08-15': { type: 'holiday', title: 'Independence Day' },
+          /* ── CALENDAR WIDGET ─────────────────────────────── */
+          let currentCalendarDate = new Date();
+
+          const calendarEvents = {
+              '2026-05-01': { type: 'holiday', title: 'May Day / Labour Day', desc: 'College campus closed in observance of International Workers\' Day.' },
+              '2026-05-08': { type: 'holiday', title: 'Rabindranath Tagore Jayanti', desc: 'Celebration of the birth anniversary of Rabindranath Tagore. Holiday declared.' },
+              '2026-05-15': { type: 'event', title: 'Mid-Sem Exams Start', desc: 'Spring semester mid-term examinations commence for all departments.' },
+              '2026-05-18': { type: 'event', title: 'Guest Lecture: AI Trends', desc: 'Dr. Anita Sen will give a seminar on "Modern Trends in Generative AI" in Seminar Hall 1 at 2:00 PM.' },
+              '2026-05-20': { type: 'event', title: 'Annual Cultural Fest', desc: '"Sanskriti 2026" - The annual cultural festival of CampusCare starting from 10:00 AM.' },
+              '2026-05-21': { type: 'event', title: 'Cultural Fest Day 2', desc: 'Concerts, dances, and prize distribution ceremony for Sanskriti 2026.' },
+              '2026-05-25': { type: 'holiday', title: 'Buddha Purnima', desc: 'Public holiday on the occasion of Buddha Purnima.' },
+              
+              // Other months for navigation testing
+              '2026-04-15': { type: 'holiday', title: 'Bengali New Year (Poila Baisakh)', desc: 'Subho Noboborsho! College closed.' },
+              '2026-04-22': { type: 'event', title: 'Tech Fest "Tantra"', desc: 'Annual national-level coding and robotics contest.' },
+              '2026-06-05': { type: 'event', title: 'World Environment Day', desc: 'Tree plantation drive and poster exhibition on campus.' },
+              '2026-08-15': { type: 'holiday', title: 'Independence Day', desc: 'Flag hoisting ceremony at Main Lawn at 8:30 AM.' }
           };
 
-          const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-          let viewDate = new Date();
-
-          function pad(n) { return String(n).padStart(2, '0'); }
-          function dateKey(y, m, d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
-
-          function render() {
-            const today = new Date();
-            const y = viewDate.getFullYear();
-            const m = viewDate.getMonth();
-
-            document.getElementById('hod-cal-title').textContent = `${monthNames[m]} ${y}`;
-
-            const firstDay = new Date(y, m, 1).getDay(); // 0=Sun
-            const daysInMonth = new Date(y, m + 1, 0).getDate();
-            const daysInPrev  = new Date(y, m, 0).getDate();
-
-            const grid = document.getElementById('hod-cal-grid');
-            grid.innerHTML = '';
-
-            const eventsThisMonth = [];
-
-            // Leading days from prev month
-            for (let i = firstDay - 1; i >= 0; i--) {
-              const d = daysInPrev - i;
-              const cell = document.createElement('div');
-              cell.className = 'hod-cal-day other-month';
-              cell.innerHTML = `<span class="hod-day-num">${d}</span>`;
-              grid.appendChild(cell);
-            }
-
-            // Days of current month
-            for (let d = 1; d <= daysInMonth; d++) {
-              const key = dateKey(y, m, d);
-              const ev  = events[key];
-              const isToday = (today.getFullYear() === y && today.getMonth() === m && today.getDate() === d);
-
-              const cell = document.createElement('div');
-              cell.className = 'hod-cal-day' + (isToday ? ' today' : '') + (ev ? ' has-event' : '');
-
-              let inner = `<span class="hod-day-num">${d}</span>`;
-              if (ev) {
-                inner += `<span class="hod-event-dot ${ev.type === 'holiday' ? 'holiday' : ''}"></span>`;
-                eventsThisMonth.push({ d, ...ev });
+          function getCalendarTooltip() {
+              let tooltip = document.getElementById('calendar-tooltip');
+              if (!tooltip) {
+                  tooltip = document.createElement('div');
+                  tooltip.id = 'calendar-tooltip';
+                  tooltip.className = 'cal-tooltip';
+                  document.body.appendChild(tooltip);
               }
-              cell.innerHTML = inner;
-              grid.appendChild(cell);
-            }
+              return tooltip;
+          }
 
-            // Trailing days
-            const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
-            const trailing = totalCells - firstDay - daysInMonth;
-            for (let d = 1; d <= trailing; d++) {
-              const cell = document.createElement('div');
-              cell.className = 'hod-cal-day other-month';
-              cell.innerHTML = `<span class="hod-day-num">${d}</span>`;
-              grid.appendChild(cell);
-            }
+          function initCalendar() {
+              renderCalendar();
+              document.getElementById('prev-month').addEventListener('click', () => {
+                  currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+                  renderCalendar();
+              });
+              document.getElementById('next-month').addEventListener('click', () => {
+                  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+                  renderCalendar();
+              });
+          }
 
-            // Legend
-            const legend = document.getElementById('hod-cal-event-legend');
-            if (eventsThisMonth.length === 0) {
-              legend.innerHTML = '<span>No events this month</span>';
-            } else {
-              legend.innerHTML = eventsThisMonth.slice(0, 3).map(ev => `
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="width:7px; height:7px; border-radius:50%; background:${ev.type === 'holiday' ? 'var(--danger)' : 'var(--secondary)'}; flex-shrink:0;"></span>
-                  <span style="font-weight:600; color:var(--text-dark);">${monthNames[m].slice(0,3)} ${ev.d}</span>
-                  <span style="color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${ev.title}</span>
-                </div>`).join('');
-            }
+          function renderCalendar() {
+              const monthYearEl = document.getElementById('calendar-month-year');
+              const daysContainer = document.getElementById('calendar-days-container');
+              if (!monthYearEl || !daysContainer) return;
+
+              const year = currentCalendarDate.getFullYear();
+              const month = currentCalendarDate.getMonth();
+
+              const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+              monthYearEl.textContent = `${monthNames[month]} ${year}`;
+
+              daysContainer.innerHTML = '';
+
+              const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+              dayNames.forEach(d => {
+                  const el = document.createElement('div');
+                  el.className = 'cal-day-name';
+                  el.textContent = d;
+                  daysContainer.appendChild(el);
+              });
+
+              const firstDay = new Date(year, month, 1).getDay();
+              const totalDays = new Date(year, month + 1, 0).getDate();
+              const prevTotalDays = new Date(year, month, 0).getDate();
+
+              const today = new Date();
+
+              // Fill preceding month days
+              for (let i = firstDay - 1; i >= 0; i--) {
+                  const dayDiv = document.createElement('div');
+                  dayDiv.className = 'cal-day muted';
+                  dayDiv.textContent = prevTotalDays - i;
+                  daysContainer.appendChild(dayDiv);
+              }
+
+              // Fill current month days
+              for (let i = 1; i <= totalDays; i++) {
+                  const dayDiv = document.createElement('div');
+                  dayDiv.className = 'cal-day';
+                  dayDiv.textContent = i;
+
+                  if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
+                      dayDiv.classList.add('active');
+                  }
+
+                  // Check for holiday / event
+                  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                  const dayEvent = calendarEvents[dateStr];
+                  if (dayEvent) {
+                      dayDiv.classList.add(dayEvent.type === 'holiday' ? 'holiday-day' : 'event-day');
+                      
+                      dayDiv.addEventListener('mouseenter', () => {
+                          const tooltip = getCalendarTooltip();
+                          tooltip.innerHTML = `
+                              <span class="cal-tooltip-type ${dayEvent.type}">${dayEvent.type}</span>
+                              <div class="cal-tooltip-title">${dayEvent.title}</div>
+                              <div class="cal-tooltip-desc">${dayEvent.desc}</div>
+                          `;
+                          
+                          const rect = dayDiv.getBoundingClientRect();
+                          tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+                          tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+                          tooltip.style.transform = 'translate(-50%, -100%)';
+                          
+                          tooltip.classList.add('show');
+                      });
+                      
+                      dayDiv.addEventListener('mouseleave', () => {
+                          const tooltip = getCalendarTooltip();
+                          tooltip.classList.remove('show');
+                      });
+                  }
+
+                  daysContainer.appendChild(dayDiv);
+              }
+
+              // Fill succeeding month days to standard 42-grid size
+              const totalCellsAdded = firstDay + totalDays;
+              const remainingCells = 42 - totalCellsAdded;
+              for (let i = 1; i <= remainingCells; i++) {
+                  const dayDiv = document.createElement('div');
+                  dayDiv.className = 'cal-day muted';
+                  dayDiv.textContent = i;
+                  daysContainer.appendChild(dayDiv);
+              }
           }
 
           document.addEventListener('DOMContentLoaded', () => {
-            render();
-            document.getElementById('hod-cal-prev').addEventListener('click', () => {
-              viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
-              render();
-            });
-            document.getElementById('hod-cal-next').addEventListener('click', () => {
-              viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
-              render();
-            });
+              initCalendar();
           });
-        })();
         </script>
-
       </div>
 
       <!-- ROW 2 (2:1 Ratio): Academic Management & Today's Schedule -->
