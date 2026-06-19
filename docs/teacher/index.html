@@ -141,6 +141,31 @@
       background: var(--primary);
     }
 
+    /* Assignments Tabs */
+    .assignment-tabs {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .assignment-tab {
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .assignment-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
     .clickable-preview-item, .module-card-compact, .qa-item {
       text-decoration: none !important;
     }
@@ -448,10 +473,15 @@
         <!-- Column 2: Official Notices -->
         <section class="section-card" style="display: flex; flex-direction: column;">
           <div class="section-header">
-            <h2><i class="fa-regular fa-file-lines" style="color: var(--primary);"></i> Official Notices</h2>
+            <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-shield-halved" style="color: var(--secondary);"></i> Notices</h2>
             <a href="../modules/notices/post.html" class="btn-view-all">View All</a>
           </div>
-          <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; overflow-y: auto; max-height: 440px;">
+          <div class="assignment-tabs" id="notice-filter-tabs">
+            <div class="assignment-tab active" data-filter="general">General</div>
+            <div class="assignment-tab" data-filter="personal">Personal</div>
+            <div class="assignment-tab" data-filter="hosteler">Hostel</div>
+          </div>
+          <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 440px;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
               Loading notices...
             </div>

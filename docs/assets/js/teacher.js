@@ -33,6 +33,9 @@ const calendarEvents = {
 let allTeacherComplaints = { myStudents: [], myMentees: [], general: [] };
 let currentComplaintFilter = 'my-students';
 
+// Notice data cache
+let allNotices = [];
+
 function getCalendarTooltip() {
     let tooltip = document.getElementById('calendar-tooltip');
     if (!tooltip) {
@@ -81,6 +84,16 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('active');
             currentComplaintFilter = tab.dataset.filter;
             renderComplaints();
+        });
+    });
+
+    // Bind tab clicks for Notices
+    const noticeTabs = document.querySelectorAll('#notice-filter-tabs .assignment-tab');
+    noticeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            noticeTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            renderNotices(tab.dataset.filter);
         });
     });
 
@@ -273,38 +286,54 @@ async function fetchOfficialNotices() {
     try {
         const res = await fetch(`${API_URL}/notices?role=${user.role}&department=${user.department || ''}`);
         if (!res.ok) throw new Error('Failed to fetch notices');
-        const notices = await res.json();
-        const generalNotices = notices.filter(n => n.audience === 'general' || n.audience === 'teachers').slice(0, 5);
-
-        if (generalNotices.length === 0) {
-            listEl.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--text-muted);">No official notices.</div>`;
-            return;
-        }
-
-        let html = '';
-        generalNotices.forEach((n, i) => {
-            const bgColors = ['#ffedd5','#e0f2fe','#ede9fe','#d1fae5','#fce7f3'];
-            const textColors = ['#ea580c','#0284c7','#7c3aed','#059669','#db2777'];
-            const icons = ['fa-bullhorn','fa-file-contract','fa-calendar','fa-bell','fa-envelope'];
-            const bg = bgColors[i % bgColors.length];
-            const tc = textColors[i % textColors.length];
-            const icon = icons[i % icons.length];
-            const d = new Date(n.date || n.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-
-            html += `
-            <a href="../modules/notices/post.html" class="notice-item" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); cursor:pointer; text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
-                <div style="background: ${bg}; color: ${tc}; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;"><i class="fa-solid ${icon}"></i></div>
-                <div style="flex: 1; min-width:0;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${n.title}</h4>
-                  <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">${d}</p>
-                </div>
-                <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
-            </a>`;
-        });
-        listEl.innerHTML = html;
+        allNotices = await res.json();
+        
+        renderNotices('general');
     } catch (error) {
         console.error('Error fetching official notices:', error);
     }
+}
+
+function renderNotices(filterType) {
+    const listEl = document.getElementById('official-notices-list');
+    if (!listEl) return;
+
+    let filtered = [];
+    if (filterType === 'personal') {
+        filtered = allNotices.filter(n => n.audience !== 'general' && n.audience !== 'hosteler');
+    } else if (filterType === 'hosteler') {
+        filtered = allNotices.filter(n => n.audience === 'hosteler');
+    } else {
+        filtered = allNotices.filter(n => n.audience === 'general');
+    }
+
+    if (filtered.length === 0) {
+        listEl.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--text-muted);">No ${filterType} notices.</div>`;
+        return;
+    }
+
+    let html = '';
+    filtered.slice(0, 5).forEach((n, i) => {
+        const bgColors = ['#e0e7ff', '#fef3c7', '#d1fae5'];
+        const textColors = ['#4f46e5', '#f59e0b', '#10b981'];
+        const icons = ['fa-user-tie', 'fa-file-invoice', 'fa-envelope'];
+        
+        const bg = bgColors[i % bgColors.length];
+        const tc = textColors[i % textColors.length];
+        const icon = icons[i % icons.length];
+        const d = new Date(n.date || n.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+
+        html += `
+        <a href="../modules/notices/post.html" class="notice-item notice-item-clickable fade-in stagger-${(i % 4) + 1}" data-id="${n._id}" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); cursor:pointer; text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+            <div style="background:${bg}; color:${tc}; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;"><i class="fa-solid ${icon}"></i></div>
+            <div class="notice-info" style="min-width: 0; flex:1;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 4px; color: var(--text-dark);">${n.title}</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${n.content}</p>
+            </div>
+            <div class="notice-date" style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">${d}</div>
+        </a>`;
+    });
+    listEl.innerHTML = html;
 }
 
 // ── STATS (Students, Mentees, Tasks) ──
