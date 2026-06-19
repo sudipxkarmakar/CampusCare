@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Main Gate Warden",
+    "phone": "9614081784",
+    "icon": "fa-shield-halved",
+    "color": "danger"
+  },
+  {
+    "name": "Campus Clinic",
+    "phone": "+91 98765 43211",
+    "icon": "fa-kit-medical",
+    "color": "warning"
+  },
+  {
+    "name": "Hostel Helpline",
+    "phone": "+91 98765 43212",
+    "icon": "fa-headset",
+    "color": "success"
+  },
+  {
+    "name": "Campus Security",
+    "phone": "+91 98765 43213",
+    "icon": "fa-phone-volume",
+    "color": "primary"
+  }
+]

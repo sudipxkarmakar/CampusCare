@@ -219,7 +219,7 @@ if (loginForm) {
                     else if (result.role === 'hod') window.location.href = 'hod/index.html';
                     else if (result.role === 'warden') window.location.href = 'warden/index.html';
                     else if (result.role === 'principal') window.location.href = 'principal/index.html';
-                    else if (result.role === 'hosteler') window.location.href = 'hostel/index.html';
+                    else if (result.role === 'hosteler') window.location.href = 'student/index.html';
                     else if (result.role === 'student') window.location.href = 'student/index.html';
                     else window.location.href = 'index.html';
 

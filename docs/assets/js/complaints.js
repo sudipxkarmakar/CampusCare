@@ -364,7 +364,7 @@ function goToDashboard() {
     else if (role === 'warden') window.location.href = base + 'warden/index.html';
     else if (role === 'principal' || role === 'dean') window.location.href = base + 'principal/index.html';
     else if (role === 'teacher' || role === 'hod') window.location.href = base + 'teacher/index.html';
-    else if (role === 'hosteler') window.location.href = base + 'hostel/index.html';
+    else if (role === 'hosteler') window.location.href = base + 'student/index.html';
     else window.location.href = base + 'index.html';
 }
 

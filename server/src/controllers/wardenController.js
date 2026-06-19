@@ -214,12 +214,40 @@ const escalateComplaint = async (req, res) => {
         complaint.status = 'In Progress';
         complaint.isUplifted = true;
         complaint.upliftedTo = target;
-        await complaint.save();
-
         res.json(complaint);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error escalating complaint' });
+    }
+};
+
+// @desc    Update Emergency Contacts
+// @route   PUT /api/warden/contacts
+// @access  Private/Warden
+const updateEmergencyContacts = async (req, res) => {
+    try {
+        const { contacts } = req.body;
+        if (!contacts || !Array.isArray(contacts)) {
+            return res.status(400).json({ message: 'Invalid contacts data' });
+        }
+        
+        // Save using fs
+        const fs = await import('fs');
+        const path = await import('path');
+        const { fileURLToPath } = await import('url');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const contactsFilePath = path.join(__dirname, '../data/contacts.json');
+        
+        const dir = path.dirname(contactsFilePath);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(contactsFilePath, JSON.stringify(contacts, null, 2));
+        res.json({ message: 'Contacts updated successfully', contacts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
@@ -232,5 +260,6 @@ export {
     getMessMenu,
     getHostelComplaints,
     resolveComplaint,
-    escalateComplaint
+    escalateComplaint,
+    updateEmergencyContacts
 };
