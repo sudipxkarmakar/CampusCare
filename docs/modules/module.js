@@ -517,10 +517,17 @@
       return;
     }
 
+    if (cfg.module === 'student-database') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderStudentDatabase();
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'library') renderLibrary();
     else if (cfg.module === 'profile') renderProfile();
     else if (cfg.module === 'gate-pass') renderGatePassApproval();
-    else if (cfg.module === 'student-database') renderStudentDatabase();
     else if (cfg.mode === 'post') renderPostForm(info);
     else renderList(info);
 
@@ -7018,8 +7025,8 @@
           <i class="fa-solid fa-arrow-left"></i>
         </button>
         <div>
-          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Campus Directory</h2>
-          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Search and filter student and staff databases dynamically.</p>
+          <h2 id="dbHeaderTitle" style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Campus Directory</h2>
+          <p id="dbHeaderDesc" style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Search and filter student and staff databases dynamically.</p>
         </div>
       </div>
       
@@ -7078,6 +7085,39 @@
 
     const loadDbData = async () => {
       const filterVal = dropdown.value;
+      const titleEl = document.getElementById('dbHeaderTitle');
+      const descEl = document.getElementById('dbHeaderDesc');
+      if (titleEl && descEl) {
+        if (filterVal === 'my-students') {
+          titleEl.textContent = 'My Students';
+          descEl.textContent = 'List of students assigned to you for classes and assignment updates.';
+        } else if (filterVal === 'my-mentees') {
+          titleEl.textContent = 'My Mentees';
+          descEl.textContent = 'List of students under your mentorship.';
+        } else if (filterVal === 'hostel-residents') {
+          titleEl.textContent = 'Hostel Residents';
+          descEl.textContent = 'List of students residing in the hostel.';
+        } else if (filterVal === 'dept-students') {
+          titleEl.textContent = 'Department Students';
+          descEl.textContent = 'All students registered in your department (1st to 4th year).';
+        } else if (filterVal === 'dept-teachers') {
+          titleEl.textContent = 'Department Teachers';
+          descEl.textContent = 'List of faculty members in your department.';
+        } else if (filterVal === 'all-students') {
+          titleEl.textContent = 'All Students';
+          descEl.textContent = 'Master list of all students in the institution (1st to 4th year).';
+        } else if (filterVal === 'all-teachers') {
+          titleEl.textContent = 'All Teachers';
+          descEl.textContent = 'Directory of all teaching staff across departments.';
+        } else if (filterVal === 'all-hods') {
+          titleEl.textContent = 'Heads of Departments (HODs)';
+          descEl.textContent = 'Directory of all Department Heads.';
+        } else if (filterVal === 'all-wardens') {
+          titleEl.textContent = 'Hostel Wardens';
+          descEl.textContent = 'Directory of all hostel management staff and wardens.';
+        }
+      }
+
       const token = user.token || '';
       let endpoint = '';
       
