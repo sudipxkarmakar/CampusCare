@@ -8098,7 +8098,7 @@
       : role === 'principal' ? `${rootPrefix}principal/index.html`
       : role === 'hod' ? `${rootPrefix}hod/index.html`
       : role === 'teacher' ? `${rootPrefix}teacher/index.html`
-      : role === 'hosteler' ? `${rootPrefix}hostel/index.html`
+      : role === 'hosteler' ? `${rootPrefix}student/index.html`
       : role === 'student' ? `${rootPrefix}student/index.html`
       : `${rootPrefix}index.html`;
     window.location.href = target;

@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             else if (role === 'dean') dashPath = 'dean/index.html';
             else if (role === 'principal') dashPath = 'principal/index.html';
             else if (role === 'warden') dashPath = 'warden/index.html';
-            else if (role === 'hosteler') dashPath = 'hostel/index.html';
+            else if (role === 'hosteler') dashPath = 'student/index.html';
             
             backBtn.href = dashPath;
             backBtn.innerHTML = `<i class="fa-solid fa-house"></i> Dashboard`;

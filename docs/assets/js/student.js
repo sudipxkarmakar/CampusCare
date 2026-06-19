@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchStats();
     fetchNotices();
     fetchRoutine();
-    fetchLeaves();
 
     // Hosteler-specific dashboard row
     if (user.role === 'hosteler') {
@@ -128,7 +127,70 @@ document.addEventListener('DOMContentLoaded', () => {
             specialRow.style.display = 'grid';
         }
         fetchStudentMessMenu();
+        fetchLeaves();
+        fetchEmergencyContacts();
+
+        // Bind widget leave form
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        
+        const startInput = document.getElementById('widgetLeaveStart');
+        const endInput = document.getElementById('widgetLeaveEnd');
+        if (startInput) {
+            startInput.min = todayStr;
+            startInput.addEventListener('change', () => {
+                if (endInput) {
+                    endInput.min = startInput.value;
+                    if (endInput.value && endInput.value < startInput.value) {
+                        endInput.value = startInput.value;
+                    }
+                }
+            });
+        }
+        if (endInput) endInput.min = todayStr;
+
+        const widgetLeaveForm = document.getElementById('widgetLeaveForm');
+        if (widgetLeaveForm) {
+            widgetLeaveForm.addEventListener('submit', submitWidgetLeave);
+        }
+    } else {
+        // Student role
+        const gatePassCard = document.getElementById('gate-pass-card');
+        if (gatePassCard) {
+            gatePassCard.style.display = 'none';
+            const row3 = gatePassCard.parentElement;
+            if (row3) {
+                row3.style.gridTemplateColumns = '1fr 1fr';
+            }
+        }
+        // Hide hostel notice filter tab
+        const hostelNoticeTab = document.querySelector('#notice-filter-tabs [data-filter="hosteler"]');
+        if (hostelNoticeTab) {
+            hostelNoticeTab.style.display = 'none';
+        }
     }
+
+    // CSP event handler bindings
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+    });
+    document.getElementById('firstAidBtn')?.addEventListener('click', () => {
+        alert('Requesting First Aid Kit... Warden Notified!');
+    });
+    document.getElementById('needBloodBtn')?.addEventListener('click', () => {
+        const bg = prompt('Please enter the required Blood Group (e.g. O+):');
+        if (bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`);
+    });
+    document.getElementById('panicBtn')?.addEventListener('click', () => {
+        alert('Panic Signal Sent with Location!');
+    });
+    document.getElementById('askAiBtn')?.addEventListener('click', () => {
+        if (typeof askAI === 'function') askAI();
+    });
 });
 
 // Profile refresher
@@ -491,17 +553,7 @@ async function fetchNotices() {
         if (!res.ok) throw new Error('Failed to fetch notices');
         const notices = await res.json();
         
-        const mockNotices = [
-            { title: '🧹 Hostel Cleaning Drive Notice', content: 'All hostel residents are hereby informed that a hostel cleaning...', createdAt: '2025-12-18T10:00:00.000Z', audience: 'hosteler' },
-            { title: '🎄 Christmas Tree Decora...', content: 'All interested hostelers are invited to participate in the Christmas...', createdAt: '2025-12-15T09:00:00.000Z', audience: 'hosteler' },
-            { title: 'Submit Project Report', content: 'Everyone must bring their project report for final submission', createdAt: '2025-12-22T10:00:00.000Z', audience: 'personal' },
-            { title: 'Teachers metting', content: 'This is to inform all teaching staff that a departmental meeting will...', createdAt: '2025-12-18T11:00:00.000Z', audience: 'personal' },
-            { title: 'CA-2 Submission', content: 'All students of the IT Department are hereby informed that Project...', createdAt: '2025-12-18T08:00:00.000Z', audience: 'personal' },
-            { title: 'Teachers Meeting Regardi...', content: 'All teaching faculty members are informed that a meeting will be...', createdAt: '2025-12-15T11:00:00.000Z', audience: 'personal' }
-        ];
-        allNotices = [...notices, ...mockNotices];
-        
-        // Inject event dates into calendar
+        // Inject event dates into calendar before cleaning content
         let calendarUpdated = false;
         notices.forEach(n => {
             let eventDate = n.date;
@@ -532,6 +584,26 @@ async function fetchNotices() {
         if (calendarUpdated && typeof renderCalendar === 'function') {
             renderCalendar();
         }
+
+        notices.forEach(n => {
+            if (n.content) n.content = n.content.replace(/\[EVENT_META:.*?\]/g, '').trim();
+            if (n.title) n.title = n.title.replace(/\[EVENT_META:.*?\]/g, '').trim();
+        });
+
+        let filteredNotices = notices;
+        if (user.role !== 'hosteler') {
+            filteredNotices = notices.filter(n => n.audience !== 'hosteler');
+        }
+        
+        const mockNotices = [
+            { title: '🧹 Hostel Cleaning Drive Notice', content: 'All hostel residents are hereby informed that a hostel cleaning...', createdAt: '2025-12-18T10:00:00.000Z', audience: 'hosteler' },
+            { title: '🎄 Christmas Tree Decora...', content: 'All interested hostelers are invited to participate in the Christmas...', createdAt: '2025-12-15T09:00:00.000Z', audience: 'hosteler' },
+            { title: 'Submit Project Report', content: 'Everyone must bring their project report for final submission', createdAt: '2025-12-22T10:00:00.000Z', audience: 'personal' },
+            { title: 'Teachers metting', content: 'This is to inform all teaching staff that a departmental meeting will...', createdAt: '2025-12-18T11:00:00.000Z', audience: 'personal' },
+            { title: 'CA-2 Submission', content: 'All students of the IT Department are hereby informed that Project...', createdAt: '2025-12-18T08:00:00.000Z', audience: 'personal' },
+            { title: 'Teachers Meeting Regardi...', content: 'All teaching faculty members are informed that a meeting will be...', createdAt: '2025-12-15T11:00:00.000Z', audience: 'personal' }
+        ];
+        allNotices = [...filteredNotices, ...mockNotices];
         
         const personalNotices = allNotices.filter(n => n.audience !== 'general');
         const count = personalNotices.length;
@@ -608,6 +680,7 @@ function logout() {
     localStorage.removeItem('user');
     window.location.href = '../index.html';
 }
+window.logout = logout;
 
 // Gate Pass / Leaves Widget Functions
 async function fetchLeaves() {
@@ -625,75 +698,236 @@ async function fetchLeaves() {
 }
 
 function renderLeavesWidget() {
-    const container = document.getElementById('gate-pass-widget-content');
     const statusContainer = document.getElementById('leave-status-container');
+    if (!statusContainer) return;
 
-    const renderInto = (el) => {
-        if (!el) return;
+    if (!allLeaves || allLeaves.length === 0) {
+        statusContainer.innerHTML = `
+            <div style="text-align:center; padding: 24px; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; gap:12px;">
+                <div style="width:48px; height:48px; border-radius:50%; background:rgba(79, 70, 229, 0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                    <i class="fa-solid fa-stamp"></i>
+                </div>
+                <div>
+                    <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Leave Requests</h4>
+                    <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any leaves yet.</p>
+                </div>
+            </div>`;
+        return;
+    }
 
-        if (!allLeaves || allLeaves.length === 0) {
-            el.innerHTML = `
-                <div style="text-align:center; padding: 24px; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; gap:12px;">
-                    <div style="width:48px; height:48px; border-radius:50%; background:rgba(79, 70, 229, 0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
-                        <i class="fa-solid fa-stamp"></i>
-                    </div>
-                    <div>
-                        <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Leave Requests</h4>
-                        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any leaves yet.</p>
-                    </div>
-                    <a href="../hostel/index.html" class="btn-pill btn-filled-purple" style="font-size:0.8rem; padding:8px 16px; margin-top:4px; text-decoration:none;">Apply Now</a>
-                </div>`;
-            return;
+    let html = '<div style="display:flex; flex-direction:column; gap:12px; height: 100%; justify-content: flex-start; width: 100%;">';
+    // Show only the 4 most recent requests
+    allLeaves.slice(0, 4).forEach((l, i) => {
+        let icon = 'fa-stamp';
+        let bg = 'rgba(79, 70, 229, 0.1)';
+        let tc = 'var(--primary)';
+        if (l.type === 'Night Out') {
+            icon = 'fa-moon';
+            bg = 'rgba(79, 70, 229, 0.1)';
+            tc = 'var(--primary)';
+        } else if (l.type === 'Home Visit') {
+            icon = 'fa-house-chimney';
+            bg = 'rgba(16, 185, 129, 0.1)';
+            tc = 'var(--success)';
+        } else if (l.type === 'Medical') {
+            icon = 'fa-kit-medical';
+            bg = 'rgba(239, 68, 68, 0.1)';
+            tc = 'var(--danger)';
         }
 
-        let html = '<div style="display:flex; flex-direction:column; gap:12px; height: 100%; justify-content: flex-start; width: 100%;">';
-        // Show only the 3 most recent requests
-        allLeaves.slice(0, 3).forEach((l, i) => {
-            let icon = 'fa-stamp';
-            let bg = 'rgba(79, 70, 229, 0.1)';
-            let tc = 'var(--primary)';
-            if (l.type === 'Night Out') {
-                icon = 'fa-moon';
-                bg = 'rgba(79, 70, 229, 0.1)';
-                tc = 'var(--primary)';
-            } else if (l.type === 'Home Visit') {
-                icon = 'fa-house-chimney';
-                bg = 'rgba(16, 185, 129, 0.1)';
-                tc = 'var(--success)';
-            } else if (l.type === 'Medical') {
-                icon = 'fa-kit-medical';
-                bg = 'rgba(239, 68, 68, 0.1)';
-                tc = 'var(--danger)';
+        const statusText = l.status || 'Pending';
+        let statusStyle = '';
+        if (statusText.includes('Approved')) {
+            statusStyle = 'background: #e6fbf1; color: #03a85a; border: 1px solid #a3e9c5;';
+        } else if (statusText.includes('Rejected')) {
+            statusStyle = 'background: #fdf2f2; color: #e02424; border: 1px solid #f8b4b4;';
+        } else {
+            statusStyle = 'background: #fffbeb; color: #d97706; border: 1px solid #fcd34d;';
+        }
+
+        const startDate = l.startDate ? new Date(l.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '--';
+        
+        html += `
+        <div style="display:flex; gap:16px; padding: 14px; border-radius: var(--radius-md); background: white; border: 1px solid var(--border-color); transition: all 0.2s; align-items: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.02);" class="leave-status-item-clickable" data-id="${l._id}">
+            <div style="background:${bg}; color:${tc}; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                <i class="fa-solid ${icon}"></i>
+            </div>
+            <div style="min-width: 0; flex:1;">
+                <h4 style="font-size: 0.95rem; margin:0 0 2px 0; color: var(--text-dark); font-weight:700;">${l.type}</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.reason || 'No reason provided'}</p>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; font-weight: 500;"><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>${startDate}</div>
+            </div>
+            <div style="text-align: right; flex-shrink: 0;">
+                <span style="${statusStyle} padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;">${statusText}</span>
+            </div>
+        </div>`;
+    });
+    html += '</div>';
+    statusContainer.innerHTML = html;
+
+    // Attach click listeners for preview
+    statusContainer.querySelectorAll('.leave-status-item-clickable').forEach(item => {
+        item.addEventListener('click', () => {
+            const id = item.dataset.id;
+            const leave = allLeaves.find(l => l._id === id);
+            if (leave) {
+                showStudentLeaveDetailsModal(leave);
             }
-
-            const statusText = l.status || 'Pending';
-            let statusColor = '#f59e0b'; // pending
-            if (statusText === 'Approved') statusColor = '#10b981';
-            if (statusText.includes('Rejected')) statusColor = '#ef4444';
-
-            const startDate = new Date(l.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-            
-            html += `
-            <a href="../hostel/index.html" style="text-decoration:none; display:flex; gap:12px; padding: 12px; border-radius: var(--radius-md); background: var(--bg-color); border: 1px solid var(--border-color); transition: all 0.2s; align-items: center;" class="notice-item-clickable">
-                <div style="background:${bg}; color:${tc}; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                    <i class="fa-solid ${icon}"></i>
-                </div>
-                <div style="min-width: 0; flex:1;">
-                    <h4 style="font-size: 0.9rem; margin:0 0 4px 0; color: var(--text-dark); font-weight:600;">${l.type}</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.reason || 'No reason provided'}</p>
-                </div>
-                <div style="text-align: right; flex-shrink: 0;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: ${statusColor}; text-transform: uppercase; margin-bottom: 2px;">${statusText}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">${startDate}</div>
-                </div>
-            </a>`;
         });
-        html += '</div>';
-        el.innerHTML = html;
-    };
+    });
+}
 
-    renderInto(container);
-    renderInto(statusContainer);
+async function submitWidgetLeave(e) {
+    e.preventDefault();
+    const type = document.getElementById('widgetLeaveType').value;
+    const startDate = document.getElementById('widgetLeaveStart').value;
+    const endDate = document.getElementById('widgetLeaveEnd').value;
+    const reason = document.getElementById('widgetLeaveReason').value;
+
+    try {
+        const res = await fetch(`${API_URL}/hostel/leave`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify({ type, startDate, endDate, reason })
+        });
+
+        if (res.ok) {
+            alert('Leave Application Submitted Successfully!');
+            document.getElementById('widgetLeaveForm').reset();
+            // Refresh leave status list
+            fetchLeaves();
+        } else {
+            const data = await res.json();
+            alert(data.message || 'Failed to submit application.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Error submitting leave.');
+    }
+}
+
+function showStudentLeaveDetailsModal(leave) {
+    const studentName = user.name || 'Student';
+    const rollNo = user.rollNumber || 'N/A';
+    const roomNo = user.roomNumber || 'N/A';
+    const hostelName = user.hostelName || 'N/A';
+    const dept = user.department || 'N/A';
+    
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=random`;
+    
+    const fromDate = leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '--';
+    const toDate = leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '--';
+    
+    const type = leave.type || 'Leave';
+    const reason = leave.reason || '--';
+    
+    const hodStatus = leave.hodStatus || 'Pending';
+    const wardenStatus = leave.wardenStatus || 'Pending';
+
+    let hodBadgeHtml = '';
+    if (hodStatus === 'Approved') {
+      hodBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+    } else if (hodStatus === 'Rejected') {
+      hodBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+    } else {
+      hodBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+    }
+    if (leave.hodRemark) {
+      hodBadgeHtml += `<div style="font-size: 0.85rem; color: #b91c1c; margin-top: 8px; font-style: normal; font-weight: 600; background: #fee2e2; padding: 8px 12px; border-radius: 8px; border-left: 4px solid #ef4444; width: 100%; box-sizing: border-box; display: block; margin-bottom: 4px;">Reason: "${leave.hodRemark}"</div>`;
+    }
+
+    let wardenBadgeHtml = '';
+    if (wardenStatus === 'Approved') {
+      wardenBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+    } else if (wardenStatus === 'Rejected') {
+      wardenBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+    } else {
+      wardenBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+    }
+    if (leave.wardenRemark) {
+      wardenBadgeHtml += `<div style="font-size: 0.85rem; color: #b91c1c; margin-top: 8px; font-style: normal; font-weight: 600; background: #fee2e2; padding: 8px 12px; border-radius: 8px; border-left: 4px solid #ef4444; width: 100%; box-sizing: border-box; display: block; margin-bottom: 4px;">Reason: "${leave.wardenRemark}"</div>`;
+    }
+
+    let typeBadgeColor = 'background: #e0f2fe; color: #0369a1;';
+    if (type === 'Home Visit') {
+      typeBadgeColor = 'background: #ede9fe; color: #7c3aed;';
+    } else if (type === 'Medical') {
+      typeBadgeColor = 'background: #fee2e2; color: #b91c1c;';
+    }
+
+    const modalId = `leaveModal-${leave._id}`;
+    let modal = document.getElementById(modalId);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = modalId;
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+      modal.style.backdropFilter = 'blur(4px)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '9990';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <style>
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      </style>
+      <div style="background: white; border-radius: 20px; width: 90%; max-width: 580px; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; animation: modalFadeIn 0.3s ease-out; font-family: 'Inter', sans-serif;">
+        <!-- Close Button -->
+        <button type="button" class="closeModalBtn" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.2s;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 style="margin: 0 0 20px 0; font-size: 1.4rem; font-weight: 800; color: #0f172a; font-family: 'Poppins', sans-serif;">Leave Request Details</h3>
+
+        <!-- Student Profile Banner -->
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <img src="${avatarUrl}" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #cbd5e1; object-fit: cover;">
+          <div>
+            <h4 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">${studentName}</h4>
+            <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+              Roll: ${rollNo} | Dept: ${dept}
+            </p>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; font-size: 0.9rem; color: #475569;">
+          <div><strong>Leave Type:</strong> <span style="${typeBadgeColor} padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${type}</span></div>
+          <div><strong>Duration:</strong> <span style="font-weight: 650; color: var(--text-dark);">${fromDate} to ${toDate}</span></div>
+          <div><strong>Hostel Name:</strong> ${hostelName}</div>
+          <div><strong>Room Number:</strong> ${roomNo}</div>
+        </div>
+
+        <!-- Reason -->
+        <div style="margin-bottom: 20px;">
+          <strong style="font-size: 0.9rem; color: var(--text-dark); display: block; margin-bottom: 6px;">Reason for Leave:</strong>
+          <div style="font-size: 0.92rem; color: #334155; line-height: 1.5; background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 12px; white-space: pre-wrap; word-break: break-word;">${reason}</div>
+        </div>
+
+        <!-- Status Badges -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+          <div><strong style="font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 6px;">HOD Status:</strong> ${hodBadgeHtml}</div>
+          <div><strong style="font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 6px;">Warden Status:</strong> ${wardenBadgeHtml}</div>
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { modal.remove(); };
+    modal.querySelector('.closeModalBtn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 }
 
 // Fetch Mess Menu for Hosteler
@@ -722,6 +956,7 @@ async function fetchStudentMessMenu() {
             const meals = [
                 { name: 'Breakfast', icon: 'fa-mug-hot', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)', value: todayData.breakfast },
                 { name: 'Lunch', icon: 'fa-bowl-food', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)', value: todayData.lunch },
+                { name: 'Snacks', icon: 'fa-cookie-bite', color: '#ec4899', bg: 'rgba(236, 72, 153, 0.1)', value: todayData.snacks },
                 { name: 'Dinner', icon: 'fa-plate-wheat', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)', value: todayData.dinner }
             ];
 
@@ -750,4 +985,192 @@ async function fetchStudentMessMenu() {
                 Failed to load today's mess menu.
             </div>`;
     }
+}
+
+async function fetchEmergencyContacts() {
+    const container = document.getElementById('emergency-contacts-container');
+    if (!container) return;
+    try {
+        const res = await fetch(`${API_URL.replace('/warden', '')}/hostel/contacts`);
+        if (res.ok) {
+            const contacts = await res.json();
+            let html = '';
+            contacts.forEach((c, idx) => {
+                const bgClass = c.color === 'danger' ? 'rgba(239, 68, 68, 0.1)' : 
+                                c.color === 'warning' ? 'rgba(245, 158, 11, 0.1)' : 
+                                c.color === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(79, 70, 229, 0.1)';
+                const textC = c.color === 'danger' ? 'var(--danger)' : 
+                              c.color === 'warning' ? 'var(--warning)' : 
+                              c.color === 'success' ? 'var(--success)' : 'var(--primary)';
+                const cleanPhone = c.phone.replace(/[^\d+]/g, '');
+                html += `
+                <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+                  <div style="background: ${bgClass}; color: ${textC}; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                    <i class="fa-solid ${c.icon || 'fa-phone'}"></i>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">${c.name}</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">${c.phone}</p>
+                  </div>
+                  <a href="#" class="emergency-wa-link" data-name="${c.name}" data-phone="${cleanPhone}" style="color: #25D366; font-size: 1.25rem; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; transition: transform 0.2s; text-decoration: none !important;" onmouseenter="this.style.transform='scale(1.2)';" onmouseleave="this.style.transform='scale(1)';">
+                    <i class="fa-brands fa-whatsapp"></i>
+                  </a>
+                </div>`;
+            });
+            container.innerHTML = html;
+
+            // Bind click events to open AI Draft modal
+            container.querySelectorAll('.emergency-wa-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openEmergencyWaDraftModal(link.dataset.name, link.dataset.phone);
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching emergency contacts:', error);
+    }
+}
+
+function openEmergencyWaDraftModal(name, phone) {
+    let modal = document.getElementById('studentWaDraftModal');
+    if (!modal) {
+        const modalHtml = `
+        <div id="studentWaDraftModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+          <div style="background: white; border-radius: 16px; max-width: 500px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; animation: modalFadeIn 0.3s ease-out;">
+            <div style="background: linear-gradient(135deg, #128C7E, #075E54); padding: 20px; color: white; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.5rem;"></i>
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; font-family: 'Poppins', sans-serif;" id="studentWaDraftModalTitle">Draft WhatsApp Message</h3>
+              </div>
+              <button type="button" id="studentWaDraftCloseBtn" style="background: transparent; border: none; color: white; font-size: 1.25rem; cursor: pointer; opacity: 0.8; line-height: 1;">&times;</button>
+            </div>
+            
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 6px;">Message Draft:</label>
+                <textarea id="studentWaDraftTextarea" rows="6" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; font-family: inherit; resize: vertical;" placeholder="Type or generate your message here..."></textarea>
+              </div>
+
+              <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                <label style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-robot" style="color: #075E54;"></i> AI Draft Assistant
+                </label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="studentWaAiPrompt" placeholder="Ask AI to draft... (e.g. Request clinic appointment)" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none;">
+                  <button type="button" id="studentWaAiDraftBtn" style="background: #075E54; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center;">
+                    <span id="studentWaAiBtnText">Generate</span>
+                    <i class="fa-solid fa-spinner fa-spin" id="studentWaAiSpinner" style="display: none; margin-left: 6px;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                <button type="button" id="studentWaCancelBtn" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                <button type="button" id="studentWaSendBtn" style="background: #25D366; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(37, 211, 102, 0.2);">
+                  Send <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <style>
+          @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        </style>
+        `;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = modalHtml;
+        document.body.appendChild(tempDiv.firstElementChild);
+        if (tempDiv.querySelector('style')) {
+            document.head.appendChild(tempDiv.querySelector('style'));
+        }
+
+        modal = document.getElementById('studentWaDraftModal');
+    }
+
+    const closeBtn = document.getElementById('studentWaDraftCloseBtn');
+    const cancelBtn = document.getElementById('studentWaCancelBtn');
+    const sendBtn = document.getElementById('studentWaSendBtn');
+    const aiDraftBtn = document.getElementById('studentWaAiDraftBtn');
+    const aiPromptInput = document.getElementById('studentWaAiPrompt');
+    const textarea = document.getElementById('studentWaDraftTextarea');
+
+    document.getElementById('studentWaDraftModalTitle').textContent = `Draft Message to ${name}`;
+    let defaultMsg = `Hello ${name},\n\nI wanted to reach out to you regarding...`;
+    textarea.value = defaultMsg;
+    modal.style.display = 'flex';
+    aiPromptInput.value = '';
+    aiPromptInput.focus();
+
+    const closeWaModal = () => {
+        modal.style.display = 'none';
+    };
+
+    closeBtn.onclick = closeWaModal;
+    cancelBtn.onclick = closeWaModal;
+    
+    // Send handler
+    sendBtn.onclick = () => {
+        const text = textarea.value.trim();
+        const cleanPhone = phone.replace(/[^\d]/g, '');
+        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank');
+        closeWaModal();
+    };
+
+    // AI Generate handler
+    aiDraftBtn.onclick = async () => {
+        const promptText = aiPromptInput.value.trim();
+        if (!promptText) return alert('Please enter a prompt for the AI Assistant.');
+
+        const btnText = document.getElementById('studentWaAiBtnText');
+        const spinner = document.getElementById('studentWaAiSpinner');
+        
+        btnText.style.display = 'none';
+        spinner.style.display = 'inline-block';
+        aiDraftBtn.disabled = true;
+
+        try {
+            const contextPrompt = `Draft a brief, professional message from a student to ${name} with the following context: "${promptText}". Use clear, direct sentences, keeping in mind the message will be sent via WhatsApp.`;
+            
+            const res = await fetch(`${API_URL}/ai/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token || ''}`
+                },
+                body: JSON.stringify({
+                    text: contextPrompt,
+                    clientContext: {
+                        targetName: name,
+                        userRole: user.role
+                    }
+                })
+            });
+
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            let reply = '';
+            if (data && data.response) {
+                if (typeof data.response === 'string') {
+                    reply = data.response;
+                } else if (typeof data.response === 'object' && data.response.message) {
+                    reply = data.response.message;
+                } else {
+                    reply = JSON.stringify(data.response);
+                }
+            }
+            reply = reply.replace(/\*\*/g, '*'); // Convert markdown bold to WhatsApp bold
+            textarea.value = reply;
+        } catch (error) {
+            console.error(error);
+            alert('Failed to generate draft with AI.');
+        } finally {
+            btnText.style.display = 'inline-block';
+            spinner.style.display = 'none';
+            aiDraftBtn.disabled = false;
+        }
+    };
 }

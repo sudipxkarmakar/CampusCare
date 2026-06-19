@@ -9,7 +9,8 @@ import {
     getMessMenu,
     getHostelComplaints,
     resolveComplaint,
-    escalateComplaint
+    escalateComplaint,
+    updateEmergencyContacts
 } from '../controllers/wardenController.js';
 import upload from '../middleware/uploadMiddleware.js';
 
@@ -21,6 +22,7 @@ router.put('/leaves/:id/action', protect, warden, handleLeaveAction);
 router.put('/mess', protect, warden, updateMessMenu);
 router.get('/mess', protect, warden, getMessMenu);
 router.get('/students', protect, warden, getHostelers);
+router.put('/contacts', protect, warden, updateEmergencyContacts);
 
 // Complaint Management
 router.get('/complaints', protect, warden, getHostelComplaints);

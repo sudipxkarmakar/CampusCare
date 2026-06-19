@@ -201,7 +201,7 @@
 
       <div class="sidebar-bottom" style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 4px !important;">
         <a href="../modules/complaints/post.html" class="nav-item"><i class="fa-solid fa-circle-plus"></i> Register Complaint</a>
-        <a id="logoutBtn" href="javascript:void(0)" onclick="logout()" class="nav-item" data-action="logout"
+        <a id="logoutBtn" href="#" class="nav-item" data-action="logout"
           style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
       </div>
     </aside>
@@ -438,7 +438,7 @@
               <div class="module-title-compact">Mess Routine</div>
             </a>
 
-            <a href="../hostel/index.html" class="module-card-compact hosteler-only-module" style="display: none;">
+            <a href="#" class="module-card-compact hosteler-only-module" style="display: none;">
               <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:var(--success)"><i
                   class="fa-solid fa-stamp"></i></div>
               <div class="module-title-compact">Leave Status</div>
@@ -546,13 +546,35 @@
           <div class="section-header" style="width: 100%; text-align: left; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
             <h2 style="font-size: 1.25rem; margin: 0;"><i class="fa-solid fa-stamp"
                 style="color: var(--primary);"></i> Apply for Leave</h2>
-            <a href="../hostel/index.html" class="btn-view-all">Apply</a>
           </div>
-          <div id="gate-pass-widget-content" style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center;">
-            <div style="text-align: center; padding: 20px; color: var(--text-muted);">
-              <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.2rem; margin-bottom: 8px;"></i>
-              <div>Loading leave applications...</div>
-            </div>
+          <div id="gate-pass-widget-content" style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+            <form id="widgetLeaveForm" style="display: flex; flex-direction: column; gap: 10px; flex: 1; width: 100%;">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Leave Type</label>
+                <select id="widgetLeaveType" required style="width: 100%; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none;">
+                  <option value="Night Out">Night Out</option>
+                  <option value="Home Visit">Home Visit</option>
+                  <option value="Medical">Medical</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Start Date</label>
+                  <input type="date" id="widgetLeaveStart" required style="width: 100%; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">End Date</label>
+                  <input type="date" id="widgetLeaveEnd" required style="width: 100%; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none;">
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px; flex: 1;">
+                <label style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Reason</label>
+                <textarea id="widgetLeaveReason" placeholder="Purpose of leave..." required style="width: 100%; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-dark); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none; resize: none; flex: 1; min-height: 100px; box-sizing: border-box;"></textarea>
+              </div>
+              <button type="submit" class="btn-filled-purple" style="width: 100%; padding: 10px; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Leave
+              </button>
+            </form>
           </div>
         </section>
 
@@ -577,7 +599,7 @@
         <section class="section-card" style="display: flex; flex-direction: column;">
           <div class="section-header" style="margin-bottom: 12px;">
             <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-circle-info" style="color: var(--success);"></i> Leave Status</h2>
-            <a href="../hostel/index.html" class="btn-view-all">Manage</a>
+            <a href="#" class="btn-view-all">Manage</a>
           </div>
           <div id="leave-status-container" style="display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
@@ -591,33 +613,9 @@
           <div class="section-header" style="margin-bottom: 12px;">
             <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-phone-volume" style="color: var(--danger);"></i> Emergency Contacts</h2>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: center;">
-            <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
-              <div style="background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
-                <i class="fa-solid fa-shield-halved"></i>
-              </div>
-              <div style="flex: 1; min-width: 0;">
-                <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">Main Gate Warden</h4>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">+91 98765 43210</p>
-              </div>
-            </div>
-            <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
-              <div style="background: rgba(245, 158, 11, 0.1); color: var(--warning); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
-                <i class="fa-solid fa-kit-medical"></i>
-              </div>
-              <div style="flex: 1; min-width: 0;">
-                <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">Campus Clinic</h4>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">+91 98765 43211</p>
-              </div>
-            </div>
-            <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
-              <div style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
-                <i class="fa-solid fa-headset"></i>
-              </div>
-              <div style="flex: 1; min-width: 0;">
-                <h4 style="font-size: 0.85rem; margin: 0 0 2px 0; color: var(--text-dark); font-weight: 600;">Hostel Helpline</h4>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">+91 98765 43212</p>
-              </div>
+          <div id="emergency-contacts-container" style="display: flex; flex-direction: column; gap: 10px; flex: 1; justify-content: center;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
+              <i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Loading contacts...
             </div>
           </div>
         </section>
@@ -647,12 +645,11 @@
           style="background: var(--text-dark); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; grid-column: 1 / -1; transition: background 0.2s;">
           <i class="fa-solid fa-shield-halved"></i> Call Campus Security
         </a>
-        <button onclick="alert('Requesting First Aid Kit... Warden Notified!')"
+        <button id="firstAidBtn"
           style="background: var(--warning); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
           <i class="fa-solid fa-kit-medical" style="font-size:1.8rem;"></i> First Aid
         </button>
-        <button
-          onclick="const bg = prompt('Please enter the required Blood Group (e.g. O+):'); if(bg) alert(`Broadcasting Blood Requirement (${bg}) Alert to Campus!`)"
+        <button id="needBloodBtn"
           style="background: var(--danger); color: white; padding: 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; display:flex; flex-direction:column; align-items:center; gap:8px; transition: background 0.2s;">
           <i class="fa-solid fa-droplet" style="font-size:1.8rem;"></i> Need Blood
         </button>
@@ -660,7 +657,7 @@
           style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-md); text-decoration: none; font-weight: 600; display:flex; justify-content:center; align-items:center; gap:8px; transition: background 0.2s;">
           <i class="fa-solid fa-truck-medical"></i> Ambulance
         </a>
-        <button onclick="alert('Panic Signal Sent with Location!')"
+        <button id="panicBtn"
           style="background: var(--text-muted); color: white; padding: 12px; border-radius: var(--radius-md); border: none; cursor: pointer; font-weight: 600; transition: background 0.2s;">
           Other / Panic
         </button>
@@ -688,7 +685,7 @@
       <div style="display: flex; gap: 10px;">
         <input type="text" id="ai-input" placeholder="Ask about routine, hostel..."
           style="flex: 1; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none;">
-        <button onclick="askAI()" class="btn-filled-purple" style="padding: 0 20px;"><i
+        <button id="askAiBtn" class="btn-filled-purple" style="padding: 0 20px;"><i
             class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>

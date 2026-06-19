@@ -157,7 +157,7 @@ function renderAction(result) {
         sessionStorage.setItem('aiLeaveType', result.payload.type || '');
         sessionStorage.setItem('aiLeaveReason', result.payload.reason || '');
         const link = document.createElement('a');
-        link.href = 'hostel/index.html';
+        link.href = 'student/index.html';
         link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Leave';

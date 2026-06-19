@@ -1,6 +1,47 @@
 import MessMenu from '../models/MessMenu.js';
 import Leave from '../models/Leave.js';
 import User from '../models/User.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const contactsFilePath = path.join(__dirname, '../data/contacts.json');
+
+const defaultContacts = [
+  { name: 'Main Gate Warden', phone: '+91 98765 43210', icon: 'fa-shield-halved', color: 'danger' },
+  { name: 'Campus Clinic', phone: '+91 98765 43211', icon: 'fa-kit-medical', color: 'warning' },
+  { name: 'Hostel Helpline', phone: '+91 98765 43212', icon: 'fa-headset', color: 'success' },
+  { name: 'Campus Security', phone: '+91 98765 43213', icon: 'fa-phone-volume', color: 'primary' }
+];
+
+export const loadContactsHelper = () => {
+  try {
+    if (!fs.existsSync(contactsFilePath)) {
+      const dir = path.dirname(contactsFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(contactsFilePath, JSON.stringify(defaultContacts, null, 2));
+      return defaultContacts;
+    }
+    const data = fs.readFileSync(contactsFilePath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error loading contacts:', error);
+    return defaultContacts;
+  }
+};
+
+export const getEmergencyContacts = async (req, res) => {
+    try {
+        const contacts = loadContactsHelper();
+        res.json(contacts);
+    } catch (e) {
+        res.status(500).json({ message: 'Server Error contacts' });
+    }
+};
 
 // @desc    Get Mess Menu
 // @route   GET /api/hostel/mess

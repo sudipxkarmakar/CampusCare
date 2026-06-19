@@ -1768,10 +1768,9 @@ window.checkAuthState = function () {
       }
 
       if (role === "hosteler") {
-        // Dual badges side by side
+        // Only show Student badge to go to unified student/hosteler dashboard
         navRoleBadgeWrapper.innerHTML = "";
         navRoleBadgeWrapper.appendChild(makeBadge("Student", "student/index.html", "student"));
-        navRoleBadgeWrapper.appendChild(makeBadge("Hosteler", "modules/complaints/post.html", "hosteler"));
       } else {
         navRoleBadgeWrapper.innerHTML = "";
         const modulePath = roleModuleMap[role] || "index.html";
@@ -1931,7 +1930,7 @@ function goToDashboard() {
     else if (role === 'dean') window.location.href = base + 'dean/index.html';
     else if (role === 'hod') window.location.href = base + 'hod/index.html';
     else if (role === 'teacher') window.location.href = base + 'teacher/index.html';
-    else if (role === 'hosteler') window.location.href = base + 'hostel/index.html';
+    else if (role === 'hosteler') window.location.href = base + 'student/index.html';
     else window.location.href = base + 'index.html';
 }
 
