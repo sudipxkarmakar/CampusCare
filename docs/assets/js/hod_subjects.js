@@ -9,7 +9,15 @@ const yearMapping = {
     "2029": "1st Year"
 };
 
+const academicYearMapping = {
+    "1st Year": "2029",
+    "2nd Year": "2028",
+    "3rd Year": "2027",
+    "4th Year": "2026"
+};
+
 let currentSubjectForAssign = null; // Track which subject we are adding a teacher to
+let subjectToDeleteId = null; // Track which subject we are deleting
 
 // --- CENTRALIZED EVENT DELEGATION ---
 
@@ -44,8 +52,8 @@ document.addEventListener("click", (e) => {
         return;
     }
 
-    // 4. Modal Close Buttons
-    const closeBtn = e.target.closest(".close-modal-btn");
+    // 4. Modal Close Buttons (Handles cross icon & cancel buttons)
+    const closeBtn = e.target.closest(".close-modal-btn, .close-modal-btn-action");
     if (closeBtn) {
         e.preventDefault();
         const modalId = closeBtn.dataset.modal;
@@ -56,8 +64,27 @@ document.addEventListener("click", (e) => {
         return;
     }
 
-    // 5. Close Modal when clicking outside
-    if (e.target.classList.contains('modal')) {
+    // 5. Confirm Delete Subject (inside modal)
+    const confirmDeleteBtn = e.target.closest(".confirm-delete-subject-btn");
+    if (confirmDeleteBtn) {
+        e.preventDefault();
+        confirmDeleteSubject();
+        return;
+    }
+
+    // 6. Unassign Teacher Button
+    const unassignBtn = e.target.closest(".unassign-teacher-btn");
+    if (unassignBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const subjectId = unassignBtn.dataset.id;
+        const batchName = unassignBtn.dataset.batch;
+        unassignTeacher(subjectId, batchName);
+        return;
+    }
+
+    // 7. Close Modal when clicking outside (backdrop)
+    if (e.target.classList.contains('modal-overlay')) {
         e.target.style.display = "none";
         if (e.target.id === 'deleteSubjectModal') subjectToDeleteId = null;
     }
@@ -83,16 +110,45 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth(); // Verify auth on load
     const yearSelect = document.getElementById('academicYearFilter');
     if (yearSelect) {
-        yearSelect.value = "2026";
+        yearSelect.value = "4th Year";
         handleMainYearChange();
+        yearSelect.addEventListener('change', handleMainYearChange);
+    }
+    const semSelect = document.getElementById('semesterFilter');
+    if (semSelect) {
+        semSelect.addEventListener('change', loadSubjects);
+    }
+
+    // Modal elements listeners
+    const modalStudentYearSelect = document.getElementById('modalStudentYear');
+    if (modalStudentYearSelect) {
+        modalStudentYearSelect.addEventListener('change', handleModalYearChange);
+    }
+    const manualNameInput = document.getElementById('manualName');
+    if (manualNameInput) {
+        const updateCode = () => {
+            const val = manualNameInput.value;
+            const match = SUBJECT_CATALOG.find(s => s.name.toLowerCase() === val.toLowerCase());
+            if (match) {
+                document.getElementById('manualCode').value = match.code;
+            }
+        };
+        manualNameInput.addEventListener('input', updateCode);
+        manualNameInput.addEventListener('change', updateCode);
+    }
+    const addSubjectForm = document.getElementById('addSubjectForm');
+    if (addSubjectForm) {
+        addSubjectForm.addEventListener('submit', handleAddSubject);
     }
 });
 
 async function loadSubjects() {
-    const year = document.getElementById('academicYearFilter').value;
+    const studentYear = document.getElementById('academicYearFilter').value;
     const semester = document.getElementById('semesterFilter').value;
-    const batch = document.getElementById('batchFilter')?.value || 'all';
+    const batch = 'all';
 
+    if (!studentYear) return;
+    const year = academicYearMapping[studentYear];
     if (!year) return;
 
     const listDiv = document.getElementById('subjectList');
@@ -112,9 +168,6 @@ async function loadSubjects() {
         if (semester && semester !== 'all') {
             url += `&semester=${semester}`;
         }
-        if (batch && batch !== 'all') {
-            url += `&batch=${batch}`;
-        }
 
         const res = await fetch(url, {
             headers: {
@@ -127,14 +180,6 @@ async function loadSubjects() {
         const finalSubjects = subjects.filter(sub => {
             let match = true;
             if (semester && semester !== 'all') match = match && (sub.semester == semester);
-
-            // Fix: Allow subjects with no strict batch definition (common subjects) to show even if batch filter is active
-            if (batch && batch !== 'all') {
-                // If subject has a batch, it MUST match. If it has no batch, we assume it's for all batches.
-                if (sub.batch && sub.batch !== batch) {
-                    match = false;
-                }
-            }
             return match;
         });
 
@@ -158,12 +203,13 @@ async function loadSubjects() {
 }
 
 function handleMainYearChange() {
-    const year = document.getElementById('academicYearFilter').value;
+    const studentYear = document.getElementById('academicYearFilter').value;
+    const year = academicYearMapping[studentYear];
     const semSelect = document.getElementById('semesterFilter');
 
     semSelect.innerHTML = '<option value="all">All Semesters</option>';
 
-    if (subjectDataMap[year]) {
+    if (year && subjectDataMap[year]) {
         subjectDataMap[year].semesters.forEach(sem => {
             const opt = document.createElement('option');
             opt.value = sem;
@@ -207,7 +253,7 @@ function createSubjectCard(subject) {
 
         if (teacher) {
             actionButtons += `
-                <button onclick="unassignTeacher('${subject._id}', '${batchName}')"
+                <button class="unassign-teacher-btn" data-id="${subject._id}" data-batch="${batchName}"
                     style="margin-left:5px; background: var(--danger-light); border: 1px solid var(--border-color); color: var(--danger); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
                     onmouseenter="this.style.background='var(--danger)'; this.style.color='white';"
                     onmouseleave="this.style.background='var(--danger-light)'; this.style.color='var(--danger)';"
@@ -218,14 +264,14 @@ function createSubjectCard(subject) {
         }
 
         return `
-            <div style="margin-top:8px; padding:8px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <div style="font-size:0.75rem; color: var(--text-muted); font-weight:600; text-transform:uppercase;">${batchName}</div>
-                    <div style="font-size:0.85rem; color:${color}; font-weight:600;">
-                        ${icon} ${teacherName}
+            <div style="padding:10px 12px; background:#f8fafc; border-radius:10px; border:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+                <div style="min-width:0;">
+                    <div style="font-size:0.7rem; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">${batchName}</div>
+                    <div style="font-size:0.85rem; color:${color}; font-weight:600; display:flex; align-items:center; gap:6px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${teacherName}">
+                        ${icon} <span style="overflow:hidden; text-overflow:ellipsis;">${teacherName}</span>
                     </div>
                 </div>
-                <div style="display:flex;">
+                <div style="display:flex; flex-shrink:0; margin-left:12px;">
                     ${actionButtons}
                 </div>
             </div>
@@ -233,25 +279,32 @@ function createSubjectCard(subject) {
     };
 
     div.innerHTML = `
-        <div style="width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-                <div>
-                    <h3 style="color:#2d3748; margin:0; font-size:1.1rem;">${subject.name}</h3>
-                    <div style="font-size:0.85rem; color:#64748b; font-family:monospace; margin-top:2px;">${subject.code}</div>
+        <div style="width:100%; display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; gap:14px; align-items:flex-start;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: var(--primary);">
+                    <i class="fa-solid fa-book-bookmark"></i>
                 </div>
-                <button class="delete-btn-hover delete-subject-btn" data-id="${subject._id}"
-                        style="border:none; background:none; color:#ef4444; cursor:pointer; font-size:1rem; padding:5px; position:relative; z-index:10;" 
-                        title="Delete Subject">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
+                <div style="flex:1; min-width:0;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <h3 style="color:#1e1b4b; margin:0; font-size:1.05rem; font-weight:700; line-height:1.3; font-family:'Poppins', sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${subject.name}">${subject.name}</h3>
+                        <button class="delete-btn-hover delete-subject-btn" data-id="${subject._id}"
+                                style="border:none; background:none; color:#f87171; cursor:pointer; font-size:1rem; padding:4px; display:flex; align-items:center; justify-content:center; transition:color 0.2s; margin-left:8px;" 
+                                onmouseenter="this.style.color='#ef4444';"
+                                onmouseleave="this.style.color='#f87171';"
+                                title="Delete Subject">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <div style="font-size:0.8rem; color:#64748b; font-family:monospace; margin-top:2px; font-weight:600;">${subject.code}</div>
+                </div>
             </div>
             
-            <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:12px; display:flex; gap:10px;">
-                <span style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${subject.year}</span>
-                <span style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">Sem ${subject.semester}</span>
+            <div style="font-size:0.8rem; font-weight:600; color:#475569; display:flex; gap:8px;">
+                <span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; border:1px solid #e2e8f0;">${subject.year}</span>
+                <span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; border:1px solid #e2e8f0;">Semester ${subject.semester}</span>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:5px;">
+            <div style="display:flex; flex-direction:column; gap:8px; border-top:1px dashed #e2e8f0; padding-top:12px;">
                 ${renderBatchSlot('Batch 1', b1Teacher)}
                 ${renderBatchSlot('Batch 2', b2Teacher)}
             </div>
@@ -266,7 +319,7 @@ function createSubjectCard(subject) {
 async function openTeacherExpertiseModalForSubject(subjectId, subjectName, batchName) {
     currentSubjectForAssign = { id: subjectId, name: subjectName, batch: batchName };
     const modal = document.getElementById('teacherExpertiseModal');
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
 
     const title = modal.querySelector('h2');
     if (title) title.innerText = `Assign Teacher for: ${subjectName} (${batchName})`;
@@ -469,47 +522,29 @@ function populateSubjectDatalist() {
     });
 }
 
-function handleSubjectNameInput(input) {
-    const val = input.value;
-    const match = SUBJECT_CATALOG.find(s => s.name.toLowerCase() === val.toLowerCase());
-    if (match) {
-        document.getElementById('manualCode').value = match.code;
-    }
-}
-
-
 // --- MODAL FUNCTIONS (Legacy wrap for Add Subject) ---
 
 function openAddSubjectModal() {
-    const year = document.getElementById('academicYearFilter').value;
-    if (!year) {
-        alert("Please select an academic year first.");
-        return;
+    const studentYear = document.getElementById('academicYearFilter').value;
+    const modalYearSelect = document.getElementById('modalStudentYear');
+    if (studentYear) {
+        modalYearSelect.value = studentYear;
+    } else {
+        modalYearSelect.value = "";
     }
-    const modalYearSelect = document.getElementById('modalAcademicYear');
-    modalYearSelect.value = year;
     handleModalYearChange();
     populateSubjectDatalist(); // Populate choices
-    document.getElementById('addSubjectModal').style.display = 'block';
+    document.getElementById('addSubjectModal').style.display = 'flex';
 }
 
 function handleModalYearChange() {
-    const selectedYear = document.getElementById('modalAcademicYear').value;
-    const studentYear = yearMapping[selectedYear];
-    const yearSelect = document.querySelector('select[name="year"]');
-
-    if (studentYear && yearSelect) {
-        yearSelect.value = studentYear;
-    }
-    updateSemesterOptions(selectedYear);
-}
-
-function updateSemesterOptions(academicYear) {
+    const studentYear = document.getElementById('modalStudentYear').value;
     const semSelect = document.getElementById('modalSemester');
     semSelect.innerHTML = '<option value="">Select Semester</option>';
 
-    if (subjectDataMap[academicYear]) {
-        subjectDataMap[academicYear].semesters.forEach(sem => {
+    const year = academicYearMapping[studentYear];
+    if (year && subjectDataMap[year]) {
+        subjectDataMap[year].semesters.forEach(sem => {
             const opt = document.createElement('option');
             opt.value = sem;
             opt.textContent = `Semester ${sem}`;
@@ -521,23 +556,25 @@ function updateSemesterOptions(academicYear) {
 async function handleAddSubject(e) {
     e.preventDefault();
     const form = e.target;
-    const academicYear = document.getElementById('modalAcademicYear').value;
+    const studentYear = document.getElementById('modalStudentYear').value;
+    const mSemester = document.getElementById('modalSemester').value;
     const mName = document.getElementById('manualName').value;
     const mCode = document.getElementById('manualCode').value;
 
-    if (!mName || !mCode) {
-        alert("Subject Name and Code are required.");
+    if (!studentYear || !mSemester || !mName || !mCode) {
+        alert("All fields are required.");
         return;
     }
 
+    const academicYear = academicYearMapping[studentYear];
     const token = getAuthToken();
     const data = {
         name: mName,
         code: mCode,
         credits: 3,
         department: 'IT',
-        year: form.year.value,
-        semester: form.semester.value,
+        year: studentYear,
+        semester: mSemester,
         academicYear: academicYear
     };
 
@@ -569,10 +606,9 @@ function openDeleteModal(event, id) {
         event.stopPropagation();
     }
     subjectToDeleteId = id;
-    document.getElementById('deleteSubjectModal').style.display = 'block';
+    document.getElementById('deleteSubjectModal').style.display = 'flex';
 }
 
-let subjectToDeleteId = null;
 async function confirmDeleteSubject() {
     if (!subjectToDeleteId) return;
 
