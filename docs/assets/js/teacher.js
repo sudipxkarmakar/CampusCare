@@ -286,8 +286,50 @@ async function fetchOfficialNotices() {
     try {
         const res = await fetch(`${API_URL}/notices?role=${user.role}&department=${user.department || ''}`);
         if (!res.ok) throw new Error('Failed to fetch notices');
-        allNotices = await res.json();
+        const notices = await res.json();
         
+        const mockNotices = [
+            { title: '🧹 Hostel Cleaning Drive Notice', content: 'All hostel residents are hereby informed that a hostel cleaning...', createdAt: '2025-12-18T10:00:00.000Z', audience: 'hosteler' },
+            { title: '🎄 Christmas Tree Decora...', content: 'All interested hostelers are invited to participate in the Christmas...', createdAt: '2025-12-15T09:00:00.000Z', audience: 'hosteler' },
+            { title: 'Submit Project Report', content: 'Everyone must bring their project report for final submission', createdAt: '2025-12-22T10:00:00.000Z', audience: 'personal' },
+            { title: 'Teachers metting', content: 'This is to inform all teaching staff that a departmental meeting will...', createdAt: '2025-12-18T11:00:00.000Z', audience: 'personal' },
+            { title: 'CA-2 Submission', content: 'All students of the IT Department are hereby informed that Project...', createdAt: '2025-12-18T08:00:00.000Z', audience: 'personal' },
+            { title: 'Teachers Meeting Regardi...', content: 'All teaching faculty members are informed that a meeting will be...', createdAt: '2025-12-15T11:00:00.000Z', audience: 'personal' }
+        ];
+        allNotices = [...notices, ...mockNotices];
+        
+        // Inject event dates into calendar
+        let calendarUpdated = false;
+        notices.forEach(n => {
+            let eventDate = n.date;
+            let eventType = n.eventType || 'event';
+            
+            if (n.content && n.content.includes('[EVENT_META:')) {
+                const match = n.content.match(/\[EVENT_META:(.*?)\]/);
+                if (match && match[1]) {
+                    try {
+                        const meta = JSON.parse(match[1]);
+                        if (meta.date) eventDate = meta.date;
+                        if (meta.eventType) eventType = meta.eventType;
+                    } catch(e) {}
+                }
+            }
+
+            if (eventDate) {
+                const dateStr = eventDate.split('T')[0];
+                if (typeof calendarEvents !== 'undefined' && !calendarEvents[dateStr]) {
+                    let rawDesc = n.content || n.description || 'View notice for details.';
+                    let plainDesc = rawDesc.replace(/<[^>]*>?/gm, '').substring(0, 100);
+                    if (rawDesc.length > 100) plainDesc += '...';
+                    calendarEvents[dateStr] = { type: eventType, title: n.title || 'Notice Event', desc: plainDesc };
+                    calendarUpdated = true;
+                }
+            }
+        });
+        if (calendarUpdated && typeof renderCalendar === 'function') {
+            renderCalendar();
+        }
+
         renderNotices('general');
     } catch (error) {
         console.error('Error fetching official notices:', error);
@@ -324,16 +366,27 @@ function renderNotices(filterType) {
         const d = new Date(n.date || n.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
         html += `
-        <a href="../modules/notices/post.html" class="notice-item notice-item-clickable fade-in stagger-${(i % 4) + 1}" data-id="${n._id}" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); cursor:pointer; text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div class="notice-item notice-item-clickable fade-in stagger-${(i % 4) + 1}" data-id="${n._id || i}" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); cursor:pointer; text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
             <div style="background:${bg}; color:${tc}; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;"><i class="fa-solid ${icon}"></i></div>
             <div class="notice-info" style="min-width: 0; flex:1;">
                 <h4 style="font-size: 0.9rem; margin-bottom: 4px; color: var(--text-dark);">${n.title}</h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${n.content}</p>
             </div>
             <div class="notice-date" style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">${d}</div>
-        </a>`;
+        </div>`;
     });
     listEl.innerHTML = html;
+
+    document.querySelectorAll('#official-notices-list .notice-item-clickable').forEach(item => {
+        item.addEventListener('click', () => {
+            const noticeId = item.dataset.id;
+            const notice = filtered.find((n, index) => (n._id === noticeId || index.toString() === noticeId));
+            if (notice && typeof window.showDetailPopup === 'function') {
+                const dStr = new Date(notice.date || notice.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+                window.showDetailPopup(notice.title || 'Notice', '', notice.content || '', dStr, notice.audience || 'General');
+            }
+        });
+    });
 }
 
 // ── STATS (Students, Mentees, Tasks) ──
