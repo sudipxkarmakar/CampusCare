@@ -500,7 +500,7 @@ async function fetchNotices() {
             noticeCountEl.style.display = count > 0 ? 'flex' : 'none';
         }
 
-        renderNotices('personal');
+        renderNotices('general');
     } catch (error) {
         console.error('Error fetching notices:', error);
     }

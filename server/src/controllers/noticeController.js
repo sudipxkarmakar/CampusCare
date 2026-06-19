@@ -22,12 +22,10 @@ export const getNotices = async (req, res) => {
         // Base Audience Filter
         let audienceList = ['general', 'public'];
 
-        if (role === 'student') {
-            audienceList = ['student', 'general'];
+        if (role === 'student' || role === 'hosteler') {
+            audienceList = ['student', 'general', 'hosteler'];
         } else if (role === 'teacher') {
             audienceList = ['teacher', 'general', 'student', 'hosteler'];
-        } else if (role === 'hosteler') {
-            audienceList = ['hosteler']; // STRICT: Only show notices meant for hostelers (e.g. mess, cleaning)
         } else if (role === 'hod') {
             audienceList = ['teacher', 'general', 'student', 'hosteler'];
         } else if (role === 'warden') {

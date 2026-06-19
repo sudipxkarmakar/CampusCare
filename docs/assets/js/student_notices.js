@@ -52,11 +52,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 (user && n.targetDept === user.department)
             );
         } else {
-            // General Notices (General + Student) - Standard View
-            // Fix: Include 'student' audience in default view
+            // General Notices (General + Student + Hosteler) - Standard View
+            // Fix: Include 'student' and 'hosteler' audience in default view
             displayNotices = allNotices.filter(n =>
                 n.audience === 'general' ||
                 n.audience === 'student' ||
+                n.audience === 'hosteler' ||
                 !n.audience ||
                 (user && n.targetDept === user.department)
             );
