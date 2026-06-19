@@ -525,9 +525,16 @@
       return;
     }
 
+    if (cfg.module === 'gate-pass') {
+      const hero = document.getElementById('home');
+      if (hero) hero.style.display = 'none';
+      renderGatePassApproval();
+      initSidebar();
+      return;
+    }
+
     if (cfg.module === 'library') renderLibrary();
     else if (cfg.module === 'profile') renderProfile();
-    else if (cfg.module === 'gate-pass') renderGatePassApproval();
     else if (cfg.mode === 'post') renderPostForm(info);
     else renderList(info);
 
@@ -6755,21 +6762,30 @@
 
   async function renderGatePassApproval() {
     content(`
-      <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-        <div class="section-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px;">
-          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
-            <i class="fa-solid fa-stamp" style="color: var(--primary); margin-right: 8px;"></i> Approve Leave Requests
-          </h2>
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px; width: 100%;">
+        <button type="button" id="gatePassBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div>
+          <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">Leave Approvals</h2>
           <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Review, approve, or reject student leave applications.</p>
         </div>
-        <div id="leaveTableContainer">
-          <div style="text-align: center; padding: 40px; color: #64748b;">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
-            <div>Loading leave requests...</div>
-          </div>
+      </div>
+      <div id="leaveCardsContainer" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%;">
+        <div style="text-align: center; padding: 40px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+          <div>Loading leave requests...</div>
         </div>
       </div>
     `);
+
+    // Attach back button listener
+    const backBtn = document.getElementById('gatePassBackBtn');
+    if (backBtn) {
+      backBtn.addEventListener('click', goToDashboard);
+      backBtn.addEventListener('mouseenter', () => { backBtn.style.backgroundColor = '#e2e8f0'; });
+      backBtn.addEventListener('mouseleave', () => { backBtn.style.backgroundColor = '#f8fafc'; });
+    }
 
     // Add reject modal to body if it doesn't already exist
     if (!document.getElementById('gatePassRejectModal')) {
@@ -6780,13 +6796,17 @@
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Please specify a reason for rejecting this leave request. This will be visible to the student.</p>
             <textarea id="gatePassRejectRemark" placeholder="Enter reason here..." style="width: 100%; height: 100px; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: inherit; font-size: 0.9rem; margin-bottom: 20px; outline: none; resize: none;"></textarea>
             <div style="display: flex; justify-content: flex-end; gap: 12px;">
-              <button onclick="window.closeLeaveRejectModal()" class="module-btn" style="background: #f1f5f9; color: var(--text-dark); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Cancel</button>
-              <button onclick="window.confirmLeaveReject()" class="module-btn" style="background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Reject Request</button>
+              <button id="gatePassRejectCancelBtn" class="module-btn" style="background: #f1f5f9; color: var(--text-dark); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Cancel</button>
+              <button id="gatePassRejectConfirmBtn" class="module-btn" style="background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Reject Request</button>
             </div>
           </div>
         </div>
       `;
       document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      // Wire reject modal buttons dynamically to prevent inline CSP violations
+      document.getElementById('gatePassRejectCancelBtn')?.addEventListener('click', () => window.closeLeaveRejectModal());
+      document.getElementById('gatePassRejectConfirmBtn')?.addEventListener('click', () => window.confirmLeaveReject());
     }
 
     const userRole = (user.role || '').toLowerCase();
@@ -6862,7 +6882,7 @@
       const res = await fetch(`${apiBase}${endpoint}`, { headers: { Authorization: `Bearer ${token}` } });
       const leaves = res.ok ? await res.json() : [];
 
-      const container = document.getElementById('leaveTableContainer');
+      const container = document.getElementById('leaveCardsContainer');
       if (!container) return;
 
       if (leaves.length === 0) {
@@ -6875,11 +6895,9 @@
         return;
       }
 
-      const tbodyHtml = leaves.map(leave => {
+      const cardsHtml = leaves.map(leave => {
         const studentName = leave.student?.name || 'Unknown';
         const rollNo = leave.student?.rollNumber || 'N/A';
-        const roomNo = leave.student?.roomNumber || 'N/A';
-        const hostelName = leave.student?.hostelName || '';
         const dept = leave.student?.department || '';
         
         const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=random`;
@@ -6917,37 +6935,6 @@
           wardenBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.wardenRemark)}"</div>`;
         }
 
-        let actionHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">Action Completed</span>';
-        if (userRole === 'hod') {
-          if (hodStatus === 'Pending') {
-            actionHtml = `
-              <div style="display: flex; gap: 8px;">
-                <button onclick="window.processLeaveAction('${leave._id}', 'approve')" class="module-btn" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid fa-check"></i> Approve</button>
-                <button onclick="window.openLeaveRejectModal('${leave._id}')" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#ef4444'; this.style.color='white';" onmouseleave="this.style.background='#fee2e2'; this.style.color='#ef4444';"><i class="fa-solid fa-xmark"></i> Reject</button>
-              </div>
-            `;
-          }
-        } else if (userRole === 'warden') {
-          if (wardenStatus === 'Pending') {
-            let btnStyle = 'background: var(--success);';
-            let btnText = 'Approve';
-            let btnIcon = 'fa-stamp';
-            let btnTitle = 'Approve leave for this student?';
-            if (hodStatus !== 'Approved') {
-              btnStyle = 'background: var(--warning);';
-              btnText = 'Approve (Direct)';
-              btnIcon = 'fa-bolt';
-              btnTitle = 'HOD has not approved yet. Directly approve leave?';
-            }
-            actionHtml = `
-              <div style="display: flex; gap: 8px;">
-                <button onclick="window.processLeaveAction('${leave._id}', 'approve', '', '${btnTitle}')" class="module-btn" style="${btnStyle} color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid ${btnIcon}"></i> ${btnText}</button>
-                <button onclick="window.openLeaveRejectModal('${leave._id}')" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onmouseenter="this.style.background='#ef4444'; this.style.color='white';" onmouseleave="this.style.background='#fee2e2'; this.style.color='#ef4444';"><i class="fa-solid fa-xmark"></i> Reject</button>
-              </div>
-            `;
-          }
-        }
-
         let typeBadgeColor = 'background: #e0f2fe; color: #0369a1;'; // Night Out / Blue
         if (type === 'Home Visit') {
           typeBadgeColor = 'background: #ede9fe; color: #7c3aed;'; // Purple
@@ -6956,65 +6943,245 @@
         }
 
         return `
-          <tr style="border-bottom: 1px solid #f1f5f9; vertical-align: middle;">
-            <td style="padding: 14px 12px;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="${avatarUrl}" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #e2e8f0;">
+          <div class="leave-card" data-id="${leave._id}" style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.25s; cursor: pointer; user-select: none;">
+            
+            <!-- Summary Header Row (Always Visible) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; pointer-events: none;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <img src="${avatarUrl}" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid #f1f5f9; object-fit: cover;">
                 <div>
-                  <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-dark);">${esc(studentName)}</div>
-                  <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
-                    ${esc(rollNo)} | Room ${esc(roomNo)} | ${esc(hostelName)} | ${esc(dept)}
-                  </div>
+                  <h4 style="margin: 0; font-size: 1rem; font-weight: 750; color: var(--text-dark); font-family: 'Poppins', sans-serif;">${esc(studentName)}</h4>
+                  <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
+                    Roll: ${esc(rollNo)} | Dept: ${esc(dept)}
+                  </p>
                 </div>
               </div>
-            </td>
-            <td style="padding: 14px 12px;">
-              <span style="${typeBadgeColor} padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700;">${esc(type)}</span>
-            </td>
-            <td style="padding: 14px 12px; font-size: 0.82rem; color: var(--text-dark); font-weight: 500;">
-              <div>${fromDate}</div>
-              <div style="color: var(--text-muted); font-size: 0.75rem;">to ${toDate}</div>
-            </td>
-            <td style="padding: 14px 12px; font-size: 0.82rem; color: var(--text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${esc(reason)}">
-              ${esc(reason)}
-            </td>
-            <td style="padding: 14px 12px; font-size: 0.85rem;">
-              ${hodBadgeHtml}
-            </td>
-            <td style="padding: 14px 12px; font-size: 0.85rem;">
-              ${wardenBadgeHtml}
-            </td>
-            <td style="padding: 14px 12px; text-align: left;">
-              ${actionHtml}
-            </td>
-          </tr>
+              
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span style="${typeBadgeColor} padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px;">${esc(type)}</span>
+                <span style="font-size: 0.8rem; font-weight: 650; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                  <i class="fa-regular fa-calendar"></i> ${fromDate} to ${toDate}
+                </span>
+              </div>
+            </div>
+
+            <!-- Reason Row (Always Visible) -->
+            <div style="margin-top: 14px; font-size: 0.88rem; color: #475569; line-height: 1.5; pointer-events: none;">
+              <strong style="color: var(--text-dark);">Reason:</strong> ${esc(reason)}
+            </div>
+
+            <!-- Status Badges Row (Always Visible) -->
+            <div style="margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap; border-top: 1px solid #f1f5f9; padding-top: 12px; pointer-events: none;">
+              <div style="display: inline-flex; align-items: center; gap: 6px;"><strong style="font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase;">HOD:</strong> ${hodBadgeHtml}</div>
+              <div style="display: inline-flex; align-items: center; gap: 6px;"><strong style="font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Warden:</strong> ${wardenBadgeHtml}</div>
+            </div>
+
+          </div>
         `;
       }).join('');
 
-      container.innerHTML = `
-        <div class="module-table-wrap" style="margin-top: 10px; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; background: white;">
-          <table class="module-table dashboard-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Student Details</th>
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Type</th>
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Duration</th>
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Reason</th>
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">HOD Status</th>
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Warden Status</th>
-                <th style="padding: 12px; color: #475569; font-weight: 700; font-size: 0.85rem;">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tbodyHtml}
-            </tbody>
-          </table>
-        </div>
-      `;
-    } catch {
-      const container = document.getElementById('leaveTableContainer');
+      container.innerHTML = cardsHtml;
+
+      // Attach Card click listener to open the floating details modal
+      container.querySelectorAll('.leave-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.dataset.id;
+          const leave = leaves.find(item => item._id === id);
+          if (leave) {
+            showLeaveDetailsModal(leave, userRole, token);
+          }
+        });
+        
+        // Add card hovering micro-interactions
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-2px)';
+          card.style.boxShadow = '0 6px 16px rgba(0,0,0,0.04)';
+          card.style.borderColor = 'rgba(107, 70, 193, 0.2)';
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'none';
+          card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
+          card.style.borderColor = 'var(--border-color)';
+        });
+      });
+
+    } catch (e) {
+      console.error(e);
+      const container = document.getElementById('leaveCardsContainer');
       if (container) container.innerHTML = '<div class="module-empty">Unable to load gate-pass approvals.</div>';
     }
+  }
+
+  function showLeaveDetailsModal(leave, userRole, token) {
+    const studentName = leave.student?.name || 'Unknown';
+    const rollNo = leave.student?.rollNumber || 'N/A';
+    const roomNo = leave.student?.roomNumber || 'N/A';
+    const hostelName = leave.student?.hostelName || '';
+    const dept = leave.student?.department || '';
+    
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=random`;
+    
+    const fromDate = leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '--';
+    const toDate = leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '--';
+    
+    const type = leave.type || 'Leave';
+    const reason = leave.reason || '--';
+    
+    const hodStatus = leave.hodStatus || 'Pending';
+    const wardenStatus = leave.wardenStatus || 'Pending';
+
+    let hodBadgeHtml = '';
+    if (hodStatus === 'Approved') {
+      hodBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+    } else if (hodStatus === 'Rejected') {
+      hodBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+    } else {
+      hodBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+    }
+    if (leave.hodRemark) {
+      hodBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.hodRemark)}"</div>`;
+    }
+
+    let wardenBadgeHtml = '';
+    if (wardenStatus === 'Approved') {
+      wardenBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+    } else if (wardenStatus === 'Rejected') {
+      wardenBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+    } else {
+      wardenBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-clock"></i> Pending</span>`;
+    }
+    if (leave.wardenRemark) {
+      wardenBadgeHtml += `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px; font-style:italic;">"${esc(leave.wardenRemark)}"</div>`;
+    }
+
+    let actionHtml = '<span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Action Completed</span>';
+    if (userRole === 'hod') {
+      if (hodStatus === 'Pending') {
+        actionHtml = `
+          <div style="display: flex; gap: 8px;">
+            <button id="modalLeaveApproveBtn" class="module-btn" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid fa-check"></i> Approve</button>
+            <button id="modalLeaveRejectBtn" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid fa-xmark"></i> Reject</button>
+          </div>
+        `;
+      }
+    } else if (userRole === 'warden') {
+      if (wardenStatus === 'Pending') {
+        let btnStyle = 'background: var(--success);';
+        let btnText = 'Approve';
+        let btnIcon = 'fa-stamp';
+        let btnTitle = 'Approve leave for this student?';
+        if (hodStatus !== 'Approved') {
+          btnStyle = 'background: var(--warning);';
+          btnText = 'Approve (Direct)';
+          btnIcon = 'fa-bolt';
+          btnTitle = 'HOD has not approved yet. Directly approve leave?';
+        }
+        actionHtml = `
+          <div style="display: flex; gap: 8px;">
+            <button id="modalLeaveApproveDirectBtn" data-title="${btnTitle}" class="module-btn" style="${btnStyle} color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid ${btnIcon}"></i> ${btnText}</button>
+            <button id="modalLeaveRejectBtn" class="module-btn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"><i class="fa-solid fa-xmark"></i> Reject</button>
+          </div>
+        `;
+      }
+    }
+
+    let typeBadgeColor = 'background: #e0f2fe; color: #0369a1;';
+    if (type === 'Home Visit') {
+      typeBadgeColor = 'background: #ede9fe; color: #7c3aed;';
+    } else if (type === 'Medical') {
+      typeBadgeColor = 'background: #fee2e2; color: #b91c1c;';
+    }
+
+    const modalId = `leaveModal-${leave._id}`;
+    let modal = document.getElementById(modalId);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = modalId;
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+      modal.style.backdropFilter = 'blur(4px)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '9990';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <style>
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      </style>
+      <div style="background: white; border-radius: 20px; width: 90%; max-width: 580px; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; animation: modalFadeIn 0.3s ease-out; font-family: 'Inter', sans-serif;">
+        <!-- Close Button -->
+        <button type="button" class="closeModalBtn" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.2s;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3 style="margin: 0 0 20px 0; font-size: 1.4rem; font-weight: 800; color: #0f172a; font-family: 'Poppins', sans-serif;">Leave Request Details</h3>
+
+        <!-- Student Profile Banner -->
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <img src="${avatarUrl}" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #cbd5e1; object-fit: cover;">
+          <div>
+            <h4 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">${esc(studentName)}</h4>
+            <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+              Roll: ${esc(rollNo)} | Dept: ${esc(dept)}
+            </p>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; font-size: 0.9rem; color: #475569;">
+          <div><strong>Leave Type:</strong> <span style="${typeBadgeColor} padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${esc(type)}</span></div>
+          <div><strong>Duration:</strong> <span style="font-weight: 650; color: var(--text-dark);">${fromDate} to ${toDate}</span></div>
+          <div><strong>Hostel Name:</strong> ${esc(hostelName || 'N/A')}</div>
+          <div><strong>Room Number:</strong> ${esc(roomNo || 'N/A')}</div>
+        </div>
+
+        <!-- Reason -->
+        <div style="margin-bottom: 20px;">
+          <strong style="font-size: 0.9rem; color: var(--text-dark); display: block; margin-bottom: 6px;">Reason for Leave:</strong>
+          <div style="font-size: 0.92rem; color: #334155; line-height: 1.5; background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 12px; white-space: pre-wrap; word-break: break-word;">${esc(reason)}</div>
+        </div>
+
+        <!-- Status Badges -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; border-top: 1px solid #f1f5f9; padding-top: 16px; margin-bottom: 24px;">
+          <div><strong style="font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 6px;">HOD Status:</strong> ${hodBadgeHtml}</div>
+          <div><strong style="font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 6px;">Warden Status:</strong> ${wardenBadgeHtml}</div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+          ${actionHtml}
+        </div>
+      </div>
+    `;
+
+    const closeModal = () => { modal.remove(); };
+    modal.querySelector('.closeModalBtn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    modal.querySelector('#modalLeaveApproveBtn')?.addEventListener('click', async () => {
+      await window.processLeaveAction(leave._id, 'approve');
+      closeModal();
+    });
+
+    modal.querySelector('#modalLeaveApproveDirectBtn')?.addEventListener('click', async (e) => {
+      const title = e.currentTarget.dataset.title;
+      await window.processLeaveAction(leave._id, 'approve', '', title);
+      closeModal();
+    });
+
+    modal.querySelector('#modalLeaveRejectBtn')?.addEventListener('click', () => {
+      window.openLeaveRejectModal(leave._id);
+    });
   }
 
   async function renderStudentDatabase() {
