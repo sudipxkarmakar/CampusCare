@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Subject from '../models/Subject.js';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -330,13 +331,98 @@ export const loginUser = async (req, res) => {
 // @access  Private
 export const getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password').populate('mentor', 'name email');
+        const user = await User.findById(req.user._id).select('-password').populate('mentor', 'name email').populate('assignedTeachers', 'name email role');
         if (user) {
-            res.json(user);
+            let userObj = user.toObject();
+            const role = (user.role || '').toLowerCase();
+            
+            if (role === 'student' || role === 'hosteler') {
+                const Subject = mongoose.model('Subject');
+                const studentSubjects = await Subject.find({
+                    department: user.department,
+                    academicYear: user.passOutYear
+                }).populate('batchAssignments.teacher', 'name email role');
+
+                const subjectsList = [];
+                const teachersList = [];
+                const assignedSubjects = [];
+                const teacherIds = new Set();
+
+                for (const sub of studentSubjects) {
+                    const assignment = (sub.batchAssignments || []).find(ba => ba.batch === user.batch);
+                    let subjectStr = `${sub.name} (${sub.code})`;
+                    let assignedTeacherName = 'Not Assigned';
+
+                    if (assignment) {
+                        subjectsList.push(subjectStr);
+                        if (assignment.teacher) {
+                            assignedTeacherName = assignment.teacher.name;
+                            if (!teacherIds.has(assignment.teacher._id.toString())) {
+                                teachersList.push({
+                                    _id: assignment.teacher._id,
+                                    name: assignment.teacher.name,
+                                    email: assignment.teacher.email,
+                                    role: assignment.teacher.role
+                                });
+                                teacherIds.add(assignment.teacher._id.toString());
+                            }
+                        }
+                    } else if (!sub.batchAssignments || sub.batchAssignments.length === 0) {
+                        subjectsList.push(subjectStr);
+                        if (sub.teacher) {
+                            const TeacherModel = mongoose.model('User');
+                            const tInfo = await TeacherModel.findById(sub.teacher).select('name email role');
+                            if (tInfo) {
+                                assignedTeacherName = tInfo.name;
+                                if (!teacherIds.has(tInfo._id.toString())) {
+                                    teachersList.push(tInfo);
+                                    teacherIds.add(tInfo._id.toString());
+                                }
+                            }
+                        }
+                    }
+                    assignedSubjects.push({
+                        subject: subjectStr,
+                        teacher: assignedTeacherName
+                    });
+                }
+
+                userObj.subjects = subjectsList;
+                userObj.assignedTeachers = teachersList;
+                userObj.assignedSubjects = assignedSubjects;
+            } else if (['teacher', 'hod', 'dean', 'principal', 'warden'].includes(role)) {
+                const Subject = mongoose.model('Subject');
+                const subjectsTaught = await Subject.find({
+                    $or: [
+                        { teacher: user._id },
+                        { 'batchAssignments.teacher': user._id }
+                    ]
+                });
+
+                const mappedBatches = [];
+                for (const tb of (user.teachingBatches || [])) {
+                    const batchSubjects = subjectsTaught.filter(sub => {
+                        const yearMatch = sub.academicYear === tb.passOutYear;
+                        const assignment = (sub.batchAssignments || []).find(ba => ba.batch === tb.batch);
+                        const teacherMatch = assignment ? (assignment.teacher && assignment.teacher.toString() === user._id.toString()) : (sub.teacher && sub.teacher.toString() === user._id.toString());
+                        return yearMatch && teacherMatch;
+                    });
+                    const subNames = batchSubjects.map(s => s.name);
+                    mappedBatches.push({
+                        passOutYear: tb.passOutYear,
+                        batch: tb.batch,
+                        subjects: subNames
+                    });
+                }
+                userObj.teachingBatches = mappedBatches;
+            }
+            
+            res.json(userObj);
         } else {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -414,6 +500,7 @@ export const updateProfile = async (req, res) => {
             if (req.body.section) user.section = req.body.section;
             if (req.body.hostelName) user.hostelName = req.body.hostelName;
             if (req.body.roomNumber) user.roomNumber = req.body.roomNumber;
+            if (req.body.passOutYear) user.passOutYear = req.body.passOutYear;
 
             // Teacher / Staff specific
             if (['teacher', 'hod', 'dean', 'principal', 'warden'].includes(user.role)) {

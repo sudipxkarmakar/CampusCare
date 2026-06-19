@@ -6262,24 +6262,487 @@
     load();
   }
 
-  function renderProfile() {
-    const name = user.name || 'User';
+  async function renderProfile() {
+    // Hide default hero
+    const hero = document.getElementById('home');
+    if (hero) hero.style.display = 'none';
+
+    const token = user.token || localStorage.getItem('token') || '';
+    const role = (user.role || 'guest').toLowerCase();
+    
+    // Fetch latest profile details from server
+    let p = { ...user };
+    try {
+      const res = await fetch(`${apiBase}/api/auth/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const remoteData = await res.json();
+        p = { ...user, ...remoteData };
+        Object.assign(user, p);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    } catch (err) {
+      console.error('Error fetching profile from database:', err);
+    }
+
+    const name = p.name || 'User';
+
+    // Avatar resolution
+    let avatarSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff&rounded=true&bold=true`;
+    if (p.profilePicture) {
+      avatarSrc = p.profilePicture.startsWith('http') ? p.profilePicture : `${apiBase}${p.profilePicture}`;
+    }
+
+    // Role display label
+    const roleLabels = {
+      student: 'Student',
+      hosteler: 'Hosteler',
+      teacher: 'Teacher / Faculty',
+      hod: 'Head of Department',
+      warden: 'Warden',
+      principal: 'Principal',
+      admin: 'Administrator'
+    };
+    const roleLabelText = roleLabels[role] || 'Member';
+
+    function renderBadgeList(arr, emptyText = 'None') {
+      if (!arr || arr.length === 0) return `<span style="font-size:0.85rem; color:#64748b; font-style:italic;">${emptyText}</span>`;
+      return arr.map(item => {
+        let text = '';
+        if (typeof item === 'object' && item !== null) {
+          if (item.batch && item.passOutYear) {
+            text = `${item.batch} (Passout: ${item.passOutYear})`;
+          } else if (item.name) {
+            text = item.name;
+          } else {
+            text = JSON.stringify(item);
+          }
+        } else {
+          text = String(item);
+        }
+        return `<span style="display:inline-block; background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:12px; font-size:0.8rem; font-weight:500; border:1px solid #cbd5e1; margin-right:6px; margin-bottom:6px;">${esc(text)}</span>`;
+      }).join('');
+    }
+
+    function renderMergedSubjects(p) {
+      const list = p.assignedSubjects || [];
+      if (list.length === 0) {
+        if (p.subjects && p.subjects.length > 0) {
+          return p.subjects.map((sub, idx) => {
+            const t = p.assignedTeachers && p.assignedTeachers[idx] ? (p.assignedTeachers[idx].name || p.assignedTeachers[idx]) : 'Not Assigned';
+            const text = `${sub} - ${t.name || t}`;
+            return `<span style="display:inline-block; background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:12px; font-size:0.8rem; font-weight:500; border:1px solid #cbd5e1; margin-right:6px; margin-bottom:6px;">${esc(text)}</span>`;
+          }).join('');
+        }
+        return `<span style="font-size:0.85rem; color:#64748b; font-style:italic;">None</span>`;
+      }
+      return list.map(item => {
+        const text = `${item.subject} - ${item.teacher}`;
+        return `<span style="display:inline-block; background:#f1f5f9; color:#475569; padding:4px 10px; border-radius:12px; font-size:0.8rem; font-weight:500; border:1px solid #cbd5e1; margin-right:6px; margin-bottom:6px;">${esc(text)}</span>`;
+      }).join('');
+    }
+
+    // Account Information (Name, Email, Phone, Blood Group) - General
+    let fieldsHtml = `
+      <!-- Account Info Section -->
+      <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+        <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-user" style="color: var(--primary);"></i> Account Details
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <label style="font-size:0.8rem; font-weight:600; color:#475569;">Full Name</label>
+            <input type="text" name="name" value="${esc(p.name || '')}" placeholder="Your Full Name" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <label style="font-size:0.8rem; font-weight:600; color:#475569;">Email Address</label>
+            <input type="email" name="email" value="${esc(p.email || '')}" placeholder="Your Email Address" required style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <label style="font-size:0.8rem; font-weight:600; color:#475569;">Contact Number</label>
+            <input type="tel" name="contactNumber" value="${esc(p.contactNumber || '')}" placeholder="10-digit number" pattern="[0-9]{10}" style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <label style="font-size:0.8rem; font-weight:600; color:#475569;">Blood Group</label>
+            <input type="text" name="bloodGroup" value="${esc(p.bloodGroup || '')}" placeholder="e.g. O+, A-" style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Role Details (Academic / Professional)
+    let roleFieldsHtml = '';
+    let allocsHtml = '';
+    
+    if (role === 'student' || role === 'hosteler') {
+      const mentorText = p.mentor ? (typeof p.mentor === 'object' ? p.mentor.name : p.mentor) : 'Not Assigned';
+      roleFieldsHtml = `
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+          <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary);"></i> Academic Info (Institution Decided)
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Roll Number</label>
+              <input type="text" value="${esc(p.rollNumber || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Department</label>
+              <input type="text" value="${esc(p.department || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Current Year</label>
+              <input type="text" value="${esc(p.year || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Semester</label>
+              <input type="text" value="${esc(p.semester || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Academic Batch</label>
+              <input type="text" value="${esc(p.batch || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Sub Batch</label>
+              <input type="text" value="${esc(p.subBatch || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Assigned Mentor</label>
+              <input type="text" value="${esc(mentorText)}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Pass Out Year</label>
+              <input type="text" value="${esc(p.passOutYear || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px; grid-column: span 2; margin-top: 10px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Assigned Subjects & Teachers</label>
+              <div style="display:flex; flex-wrap:wrap;">${renderMergedSubjects(p)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (role === 'hosteler') {
+        roleFieldsHtml += `
+          <!-- Hostel Info -->
+          <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-hotel" style="color: var(--primary);"></i> Hostel Info (Institution Decided)
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Hostel Name</label>
+                <input type="text" value="${esc(p.hostelName || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Room Number</label>
+                <input type="text" value="${esc(p.roomNumber || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    } else if (['teacher', 'hod', 'warden', 'principal'].includes(role)) {
+      const isWardenOrPrincipal = role === 'warden' || role === 'principal';
+      const isTeacherOrHOD = role === 'teacher' || role === 'hod';
+
+      function mapTeachingBatch(tb) {
+        if (!tb) return '';
+        const currentYear = new Date().getFullYear();
+        const diff = Number(tb.passOutYear) - currentYear;
+        let yearStr = '';
+        if (diff === 0) yearStr = '4th Year';
+        else if (diff === 1) yearStr = '3rd Year';
+        else if (diff === 2) yearStr = '2nd Year';
+        else if (diff === 3) yearStr = '1st Year';
+        else yearStr = `${tb.passOutYear} Graduating`;
+
+        const subjectsStr = (tb.subjects || []).join(', ') || (p.teachingSubjects || []).join(', ');
+        return `${subjectsStr ? subjectsStr + ' - ' : ''}${yearStr} (Passout: ${tb.passOutYear}), ${tb.batch}`;
+      }
+
+      function mapMenteeSubBatch(subBatchStr) {
+        if (!subBatchStr || !subBatchStr.includes('-')) return subBatchStr;
+        const parts = subBatchStr.split('-');
+        const batchNum = parts[0];
+        const batchName = `Batch ${batchNum}`;
+        
+        const matchedBatch = (p.teachingBatches || []).find(tb => tb.batch === batchName);
+        const passOutStr = matchedBatch ? ` (Passout: ${matchedBatch.passOutYear})` : '';
+        
+        let yearStr = '';
+        if (matchedBatch) {
+          const currentYear = new Date().getFullYear();
+          const diff = Number(matchedBatch.passOutYear) - currentYear;
+          if (diff === 0) yearStr = '4th Year';
+          else if (diff === 1) yearStr = '3rd Year';
+          else if (diff === 2) yearStr = '2nd Year';
+          else if (diff === 3) yearStr = '1st Year';
+          else yearStr = `${matchedBatch.passOutYear} Graduating`;
+        }
+        
+        return `${yearStr}${passOutStr} - ${batchName} - Sub Batch: ${subBatchStr}`;
+      }
+
+      const mappedTeachingBatches = (p.teachingBatches || []).map(mapTeachingBatch);
+      const mappedMentees = (p.menteesSubBatches || []).map(mapMenteeSubBatch);
+      
+      roleFieldsHtml = `
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+          <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-briefcase" style="color: var(--primary);"></i> Professional Information
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 20px;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Employee ID</label>
+              <input type="text" value="${esc(p.employeeId || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            ${p.department ? `
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Department</label>
+              <input type="text" value="${esc(p.department || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>` : ''}
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Designation</label>
+              <input type="text" value="${esc(p.designation || '')}" disabled style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; background:#f1f5f9; color:#64748b; cursor:not-allowed;">
+            </div>
+            ${role !== 'principal' ? `
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Years of Experience</label>
+              <input type="number" name="yearsExperience" value="${p.yearsExperience ?? ''}" placeholder="e.g. 5" style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem;">
+            </div>` : ''}
+          </div>
+          ${isTeacherOrHOD ? `
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="font-size:0.8rem; font-weight:600; color:#475569;">Expertise Areas</label>
+            <div id="expertiseContainer" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; min-height: 48px; background: #fff;">
+              ${(p.expertise || []).map(exp => `
+                <div class="expertise-tag" data-tag="${esc(exp)}" style="display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;">
+                  <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                  <span>${esc(exp)}</span>
+                  <button type="button" class="remove-exp-btn" style="background: none; border: none; color: #15803d; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem;" onclick="this.parentElement.remove()">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
+              <input type="text" id="newExpertiseInput" placeholder="Add a new expertise area..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;">
+              <button type="button" id="addExpertiseBtn" class="btn-outline-purple" style="padding: 8px 16px; font-size: 0.85rem; border-radius: 8px; font-weight: 600; white-space: nowrap;">+ Add</button>
+            </div>
+          </div>` : ''}
+          ${isWardenOrPrincipal ? `
+          <div style="display:flex; flex-direction:column; gap:4px; margin-top: 16px;">
+            <label style="font-size:0.8rem; font-weight:600; color:#475569;">About / Bio</label>
+            <textarea name="about" placeholder="Tell us about yourself..." style="padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; outline:none; font-size:0.9rem; font-family:inherit; min-height:80px; resize:none;">${esc(p.about || '')}</textarea>
+          </div>` : ''}
+        </div>
+      `;
+
+      // Allocations section for Faculty
+      allocsHtml = `
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+          <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.15rem; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-network-wired" style="color: var(--primary);"></i> Institutional Allocations (Read-only)
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Teaching Subjects</label>
+              <div style="display:flex; flex-wrap:wrap;">${renderBadgeList(p.teachingSubjects)}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Teaching Batches</label>
+              <div style="display:flex; flex-wrap:wrap;">${renderBadgeList(mappedTeachingBatches)}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Mentees Sub-Batches</label>
+              <div style="display:flex; flex-wrap:wrap;">${renderBadgeList(mappedMentees)}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:0.8rem; font-weight:600; color:#475569;">Availability Slots (9:30 AM to 5:30 PM)</label>
+              <div style="display:flex; flex-wrap:wrap;">${renderBadgeList(p.availabilitySlots)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Combine everything into a clean structure using the Notice list style wrapper panel
     content(`
-      <div class="section-card module-panel">
-        <div class="section-header"><h2><i class="fa-solid fa-user-gear"></i> View / Edit Profile</h2></div>
-        <form id="profileForm" class="module-form">
-          <label>Name<input name="name" value="${esc(name)}"></label>
-          <label>Email<input name="email" value="${esc(user.email || '')}"></label>
-          <label>Department<input name="department" value="${esc(user.department || '')}"></label>
-          <label>Phone<input name="phone" value="${esc(user.phone || '')}"></label>
-          <button class="module-btn primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+      <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <div class="section-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
+              <i class="fa-solid fa-user-gear" style="color: var(--primary); margin-right: 8px;"></i> Profile Settings
+            </h2>
+            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Manage your account details and institutional preferences.</p>
+          </div>
+          <!-- Profile image upload section on the right -->
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="position: relative; width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary); box-shadow: var(--shadow-sm);">
+              <img id="profilePageAvatar" src="${avatarSrc}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff&rounded=true&bold=true';" />
+              <label for="profileImageInput" style="position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.6); color: white; text-align: center; padding: 4px 0; font-size: 0.65rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                <i class="fa-solid fa-camera"></i> Change
+              </label>
+            </div>
+            <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-weight: 700; color: #1e1b4b; font-size: 1.1rem;">${esc(name)}</span>
+              <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">${roleLabelText}</span>
+            </div>
+          </div>
+        </div>
+
+        <form id="profileForm" style="display: flex; flex-direction: column; gap: 24px; margin-top: 16px;">
+          ${fieldsHtml}
+          ${roleFieldsHtml}
+          ${allocsHtml}
+          
+          <button type="submit" class="btn-filled-purple" style="align-self: flex-start; padding: 12px 28px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+          </button>
         </form>
-      </div>`);
-    document.getElementById('profileForm').addEventListener('submit', e => {
+      </div>
+    `);
+
+    // Add expertise tags list events
+    const addBtn = document.getElementById('addExpertiseBtn');
+    const expInput = document.getElementById('newExpertiseInput');
+    const container = document.getElementById('expertiseContainer');
+
+    const addTag = () => {
+      const val = expInput.value.trim();
+      if (!val) return;
+      const existing = Array.from(container.querySelectorAll('.expertise-tag')).map(el => el.getAttribute('data-tag'));
+      if (existing.includes(val)) {
+        expInput.value = '';
+        return;
+      }
+
+      const tagHtml = `
+        <div class="expertise-tag" data-tag="${esc(val)}" style="display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;">
+          <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+          <span>${esc(val)}</span>
+          <button type="button" class="remove-exp-btn" style="background: none; border: none; color: #15803d; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem;" onclick="this.parentElement.remove()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', tagHtml);
+      expInput.value = '';
+    };
+
+    addBtn?.addEventListener('click', addTag);
+    expInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTag();
+      }
+    });
+
+    // Add profile image upload change binding
+    document.getElementById('profileImageInput')?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('profileImage', file);
+
+      try {
+        const res = await fetch(`${apiBase}/api/auth/profile-picture`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
+
+        if (res.ok) {
+          const updated = await res.json();
+          user.profilePicture = updated.profilePicture;
+          localStorage.setItem('user', JSON.stringify(user));
+          alert('Profile picture updated successfully!');
+          renderProfile(); // Re-render page
+          
+          // Try to update top navbar picture
+          const topAvatar = document.getElementById('userAvatar');
+          if (topAvatar) {
+            const cleanUrl = updated.profilePicture.startsWith('http') ? updated.profilePicture : `${apiBase}${updated.profilePicture}`;
+            topAvatar.src = `${cleanUrl}?t=${new Date().getTime()}`;
+          }
+        } else {
+          const err = await res.json();
+          throw new Error(err.message || 'Upload failed');
+        }
+      } catch (err) {
+        alert('Error uploading picture: ' + err.message);
+      }
+    });
+
+    // Add form submit listener
+    document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const next = { ...user, ...Object.fromEntries(new FormData(e.currentTarget).entries()) };
-      localStorage.setItem('user', JSON.stringify(next));
-      alert('Profile saved locally.');
+      const form = e.currentTarget;
+      const formData = Object.fromEntries(new FormData(form).entries());
+
+      // Collect expertise tags
+      if (container) {
+        const expertiseTags = Array.from(container.querySelectorAll('.expertise-tag')).map(el => el.getAttribute('data-tag'));
+        formData.expertise = expertiseTags;
+      }
+
+      // Client validation for experience
+      if (formData.yearsExperience !== undefined) {
+        formData.yearsExperience = Number(formData.yearsExperience);
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/api/auth/profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (res.ok) {
+          const updated = await res.json();
+          
+          // Merge token back in since update profile api doesn't return JWT token
+          const finalUser = { ...user, ...updated };
+          localStorage.setItem('user', JSON.stringify(finalUser));
+          
+          // Globally update local user object variables
+          Object.assign(user, finalUser);
+
+          alert('Profile details saved successfully!');
+          renderProfile(); // Re-render
+
+          // Update header username
+          const nameDisplay = document.getElementById('userName');
+          if (nameDisplay) {
+            const nameParts = finalUser.name.split(' ');
+            const displayName = nameParts[0] + (['dr.', 'dr', 'prof.', 'prof', 'mr.', 'mr', 'mrs.', 'mrs', 'ms.', 'ms'].includes(nameParts[0].toLowerCase()) && nameParts.length > 1 ? ' ' + nameParts[1] : '');
+            nameDisplay.innerText = `Hi, ${displayName}`;
+          }
+        } else {
+          const err = await res.json();
+          throw new Error(err.message || 'Update failed');
+        }
+      } catch (err) {
+        alert('Error updating profile: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Profile Details';
+        }
+      }
     });
   }
 
