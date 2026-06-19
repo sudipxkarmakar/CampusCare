@@ -7019,6 +7019,15 @@
 
   async function renderStudentDatabase() {
     const userRole = (user.role || 'guest').toLowerCase();
+    
+    // Dynamic Filter state
+    let selectedYear = 'all';
+    let selectedBatch = 'all';
+    let selectedDept = 'all';
+    let selectedSubject = 'all';
+    let sortBy = 'name-asc';
+    let allDbData = [];
+
     content(`
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
         <button type="button" id="dbBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
@@ -7031,6 +7040,7 @@
       </div>
       
       <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+        <!-- Top controls: Filter Select + Search -->
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
           <select id="dbFilterDropdown" style="padding: 8px 16px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569;">
             <!-- Options dynamically added -->
@@ -7040,6 +7050,19 @@
             <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.85rem;"></i>
           </div>
         </div>
+
+        <!-- Middle controls: Dynamic Category Filters (Year/Batch/Dept/Subject) + Sort Dropdown -->
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
+           <div id="dbDynamicFilters" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+           <div style="display: flex; gap: 10px; align-items: center;">
+             <label style="font-weight:700; font-size:0.85rem; color:#475569; margin:0;">Sort By:</label>
+             <select id="dbSortDropdown" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; background: white; cursor: pointer; font-weight: 600; color: #475569;">
+               <!-- Sort options dynamically added -->
+             </select>
+           </div>
+        </div>
+
+        <!-- Table container -->
         <div id="dbTableContainer">
           <div style="text-align: center; padding: 40px; color: #64748b;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
@@ -7081,7 +7104,114 @@
       dropdown.value = filterParam;
     }
 
-    let allDbData = [];
+    // Dynamic Filter builder helper
+    const updateFilterDropdowns = () => {
+      const filterContainer = document.getElementById('dbDynamicFilters');
+      if (!filterContainer) return;
+      const filterVal = dropdown.value;
+
+      let html = '';
+      const needYear = ['my-students', 'my-mentees', 'dept-students', 'dept-teachers', 'hostel-residents', 'all-students', 'all-teachers'].includes(filterVal);
+      const needBatch = ['my-students', 'my-mentees', 'dept-students'].includes(filterVal);
+      const needDept = ['hostel-residents', 'all-students', 'all-teachers', 'all-hods', 'all-wardens'].includes(filterVal);
+      const needSubject = ['dept-teachers', 'all-teachers'].includes(filterVal);
+
+      if (needDept) {
+        const depts = [...new Set(allDbData.map(item => item.department).filter(Boolean))].sort();
+        html += `
+          <select id="filterDeptSelect" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; background: white; cursor: pointer; color: #475569; font-weight: 600;">
+            <option value="all">All Departments</option>
+            ${depts.map(d => `<option value="${d}" ${selectedDept === d ? 'selected' : ''}>${d}</option>`).join('')}
+          </select>
+        `;
+      }
+
+      if (needYear) {
+        const years = [...new Set(allDbData.map(item => item.year).filter(Boolean))].sort();
+        html += `
+          <select id="filterYearSelect" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; background: white; cursor: pointer; color: #475569; font-weight: 600;">
+            <option value="all">All Years</option>
+            ${years.map(y => `<option value="${y}" ${selectedYear === y ? 'selected' : ''}>${y}</option>`).join('')}
+          </select>
+        `;
+      }
+
+      if (needBatch) {
+        const batches = [...new Set(allDbData.map(item => item.batch).filter(Boolean))].sort();
+        html += `
+          <select id="filterBatchSelect" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; background: white; cursor: pointer; color: #475569; font-weight: 600;">
+            <option value="all">All Batches</option>
+            ${batches.map(b => `<option value="${b}" ${selectedBatch === b ? 'selected' : ''}>${b.startsWith('Batch') ? b : 'Batch ' + b}</option>`).join('')}
+          </select>
+        `;
+      }
+
+      if (needSubject) {
+        const subjectsSet = new Set();
+        allDbData.forEach(t => {
+          if (t.teachingSubjects && Array.isArray(t.teachingSubjects)) {
+            t.teachingSubjects.forEach(s => subjectsSet.add(s));
+          }
+        });
+        const subjects = [...subjectsSet].sort();
+        html += `
+          <select id="filterSubjectSelect" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; background: white; cursor: pointer; color: #475569; font-weight: 600;">
+            <option value="all">All Subjects</option>
+            ${subjects.map(s => `<option value="${s}" ${selectedSubject === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        `;
+      }
+
+      filterContainer.innerHTML = html;
+
+      document.getElementById('filterDeptSelect')?.addEventListener('change', (e) => { selectedDept = e.target.value; renderFilteredTable(); });
+      document.getElementById('filterYearSelect')?.addEventListener('change', (e) => { selectedYear = e.target.value; renderFilteredTable(); });
+      document.getElementById('filterBatchSelect')?.addEventListener('change', (e) => { selectedBatch = e.target.value; renderFilteredTable(); });
+      document.getElementById('filterSubjectSelect')?.addEventListener('change', (e) => { selectedSubject = e.target.value; renderFilteredTable(); });
+    };
+
+    // Sort options builder helper
+    const updateSortDropdown = () => {
+      const sortSelect = document.getElementById('dbSortDropdown');
+      if (!sortSelect) return;
+      const filterVal = dropdown.value;
+
+      let optsHtml = `
+        <option value="name-asc">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+      `;
+
+      if (['my-students', 'my-mentees', 'dept-students', 'hostel-residents', 'all-students'].includes(filterVal)) {
+        optsHtml += `<option value="roll-asc">Roll Number</option>`;
+      }
+
+      if (['my-students', 'my-mentees', 'dept-students', 'dept-teachers', 'all-students', 'all-teachers', 'all-hods', 'all-wardens'].includes(filterVal)) {
+        optsHtml += `
+          <option value="att-desc">Attendance (High-Low)</option>
+          <option value="att-asc">Attendance (Low-High)</option>
+        `;
+      }
+
+      if (['my-mentees'].includes(filterVal)) {
+        optsHtml += `
+          <option value="mar-desc">MAR Points (High-Low)</option>
+          <option value="moocs-desc">MOOCs Credits (High-Low)</option>
+        `;
+      }
+
+      if (['dept-students', 'all-students'].includes(filterVal)) {
+        optsHtml += `
+          <option value="cgpa-desc">CGPA (High-Low)</option>
+        `;
+      }
+
+      if (filterVal === 'hostel-residents') {
+        optsHtml += `<option value="room-asc">Room Number</option>`;
+      }
+
+      sortSelect.innerHTML = optsHtml;
+      sortSelect.value = sortBy;
+    };
 
     const loadDbData = async () => {
       const filterVal = dropdown.value;
@@ -7145,6 +7275,15 @@
         const res = await fetch(`${apiBase}${endpoint}`, { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) throw new Error();
         allDbData = await res.json();
+        
+        // Reset sub filters to all when loading new view
+        selectedYear = 'all';
+        selectedBatch = 'all';
+        selectedDept = 'all';
+        selectedSubject = 'all';
+
+        updateFilterDropdowns();
+        updateSortDropdown();
         renderFilteredTable();
       } catch (e) {
         if (tableContainer) tableContainer.innerHTML = '<div class="module-empty">Failed to load data.</div>';
@@ -7155,8 +7294,9 @@
       const q = document.getElementById('dbSearchInput')?.value.toLowerCase() || '';
       const filterVal = dropdown.value;
       
-      const filtered = allDbData.filter(item => {
-        return (
+      let filtered = allDbData.filter(item => {
+        // Base text search
+        const matchText = (
           (item.name && item.name.toLowerCase().includes(q)) ||
           (item.rollNumber && item.rollNumber.toLowerCase().includes(q)) ||
           (item.employeeId && item.employeeId.toLowerCase().includes(q)) ||
@@ -7164,38 +7304,250 @@
           (item.department && item.department.toLowerCase().includes(q)) ||
           (item.email && item.email.toLowerCase().includes(q))
         );
-      });
-      
-      let columns = ['name', 'rollNumber', 'department', 'year', 'batch', 'email'];
-      if (filterVal.includes('teacher') || filterVal.includes('hod') || filterVal.includes('warden')) {
-        if (filterVal === 'hostel-residents') {
-          columns = ['name', 'rollNumber', 'department', 'roomNumber', 'email'];
-        } else if (filterVal === 'all-wardens') {
-          columns = ['name', 'employeeId', 'hostelName', 'email'];
-        } else {
-          columns = ['name', 'employeeId', 'department', 'email'];
+
+        if (!matchText) return false;
+
+        // Apply Year Filter
+        if (selectedYear !== 'all' && item.year !== selectedYear) return false;
+
+        // Apply Batch Filter
+        if (selectedBatch !== 'all' && item.batch !== selectedBatch) return false;
+
+        // Apply Dept Filter
+        if (selectedDept !== 'all' && item.department !== selectedDept) return false;
+
+        // Apply Subject Filter
+        if (selectedSubject !== 'all') {
+          if (!item.teachingSubjects || !item.teachingSubjects.includes(selectedSubject)) return false;
         }
-      }
-      
-      const mapped = filtered.map(item => {
-        return {
-          ...item,
-          employeeId: item.employeeId || item.teacherId || '--',
-          department: item.department || '--',
-          hostelName: item.hostelName || '--',
-          year: item.year || '--',
-          batch: item.batch || '--',
-          rollNumber: item.rollNumber || '--',
-          roomNumber: item.roomNumber || '--'
-        };
+
+        return true;
       });
       
+      // Sort
+      if (sortBy === 'name-asc') {
+        filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      } else if (sortBy === 'name-desc') {
+        filtered.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+      } else if (sortBy === 'roll-asc') {
+        filtered.sort((a, b) => (a.rollNumber || '').localeCompare(b.rollNumber || ''));
+      } else if (sortBy === 'att-desc') {
+        filtered.sort((a, b) => (b.attendance || 0) - (a.attendance || 0));
+      } else if (sortBy === 'att-asc') {
+        filtered.sort((a, b) => (a.attendance || 0) - (b.attendance || 0));
+      } else if (sortBy === 'mar-desc') {
+        filtered.sort((a, b) => (b.mar || 0) - (a.mar || 0));
+      } else if (sortBy === 'moocs-desc') {
+        filtered.sort((a, b) => (b.moocs || 0) - (a.moocs || 0));
+      } else if (sortBy === 'cgpa-desc') {
+        filtered.sort((a, b) => (b.cgpa || 0) - (a.cgpa || 0));
+      } else if (sortBy === 'room-asc') {
+        filtered.sort((a, b) => (a.roomNumber || '').localeCompare(b.roomNumber || ''));
+      }
+
+      // Column mapping and header building
+      let cols = [];
+      let headers = [];
+      let editableFields = {}; // fieldName -> type
+
+      if (filterVal === 'my-students') {
+        cols = ['name', 'rollNumber', 'email', 'attendance', 'assignmentsSubmitted', 'whatsapp'];
+        headers = ['Name', 'Roll No', 'Mail', 'Attendance (I/N)', 'Assignment Submission (I/N)', 'WhatsApp Link'];
+        editableFields = { 'attendance': 'number', 'assignmentsSubmitted': 'number' };
+      } else if (filterVal === 'my-mentees') {
+        cols = ['name', 'rollNumber', 'email', 'attendance', 'mar', 'moocs', 'whatsapp'];
+        headers = ['Name', 'Roll No', 'Mail', 'Attendance (I/N)', 'MAR (I/N)', 'MOOCs (I/N)', 'WhatsApp Link'];
+        editableFields = { 'attendance': 'number', 'mar': 'number', 'moocs': 'number' };
+      } else if (filterVal === 'dept-students') {
+        cols = ['name', 'rollNumber', 'email', 'contactNumber', 'attendance', 'cgpa', 'whatsapp'];
+        headers = ['Name', 'Roll No', 'Mail', 'Contact No', 'Attendance', 'CGPA', 'WhatsApp Link'];
+      } else if (filterVal === 'dept-teachers') {
+        cols = ['name', 'email', 'contactNumber', 'subjectsAssigned', 'attendance', 'whatsapp'];
+        headers = ['Name', 'Mail', 'Contact No', 'Subject Assigned', 'Attendance', 'WhatsApp Link'];
+      } else if (filterVal === 'hostel-residents') {
+        cols = ['name', 'department', 'year', 'rollNumber', 'email', 'contactNumber', 'hostelName', 'roomNumber', 'whatsapp'];
+        headers = ['Name', 'Dept', 'Year', 'Roll No', 'Mail', 'Contact No', 'Hostel Name', 'Room No', 'WhatsApp Link'];
+      } else if (filterVal === 'all-students') {
+        cols = ['name', 'department', 'year', 'rollNumber', 'email', 'attendance', 'cgpa', 'whatsapp'];
+        headers = ['Name', 'Dept', 'Year', 'Roll No', 'Mail', 'Attendance', 'CGPA', 'WhatsApp Link'];
+      } else if (filterVal === 'all-teachers') {
+        cols = ['name', 'department', 'email', 'contactNumber', 'subjectsAssigned', 'attendance', 'whatsapp'];
+        headers = ['Name', 'Dept', 'Mail', 'Contact No', 'Subject Assigned', 'Attendance', 'WhatsApp Link'];
+      } else if (filterVal === 'all-hods') {
+        cols = ['name', 'department', 'email', 'contactNumber', 'attendance', 'whatsapp'];
+        headers = ['Name', 'Dept', 'Mail', 'Contact No', 'Avg Attendance', 'WhatsApp Link'];
+      } else if (filterVal === 'all-wardens') {
+        cols = ['name', 'hostelName', 'email', 'contactNumber', 'attendance', 'whatsapp'];
+        headers = ['Name', 'Warden For', 'Mail', 'Contact No', 'Avg Attendance', 'WhatsApp Link'];
+      }
+
+      // Draw table structure
       const container = document.getElementById('dbTableContainer');
-      if (container) container.innerHTML = table(mapped, columns);
+      if (!container) return;
+
+      if (!filtered.length) {
+        container.innerHTML = '<div class="module-empty"><i class="fa-regular fa-folder-open"></i><span>No records found.</span></div>';
+        return;
+      }
+
+      const formatSubjects = (item) => {
+        if (!item.teachingSubjects || item.teachingSubjects.length === 0) return 'None';
+        let formatted = [];
+        item.teachingSubjects.forEach(sub => {
+          if (item.teachingBatches && item.teachingBatches.length > 0) {
+            item.teachingBatches.forEach(b => {
+              formatted.push(`${sub} (${b.batch || 'All'} - ${b.passOutYear || 'General'})`);
+            });
+          } else {
+            formatted.push(sub);
+          }
+        });
+        return [...new Set(formatted)].join(', ') || 'None';
+      };
+
+      const formatCellVal = (item, col) => {
+        if (col === 'whatsapp') {
+          const phone = item.contactNumber || item.mobile || '';
+          if (!phone) return '--';
+          const cleanPhone = phone.replace(/\D/g, '');
+          if (!cleanPhone) return '--';
+          const prefix = cleanPhone.length === 10 ? '91' : '';
+          return `<a href="https://wa.me/${prefix}${cleanPhone}" target="_blank" style="color: #25D366; font-size: 1.25rem; display: inline-block; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.2)';" onmouseleave="this.style.transform='scale(1)';"><i class="fa-brands fa-whatsapp"></i></a>`;
+        }
+        
+        if (col === 'subjectsAssigned') {
+          return formatSubjects(item);
+        }
+
+        let val = item[col];
+        if (val === undefined || val === null || val === '') {
+          val = '--';
+        }
+
+        if (col === 'attendance') {
+          return `${val !== '--' ? val + '%' : '--'}`;
+        }
+
+        return val;
+      };
+
+      const tableHtml = `
+        <div class="module-table-wrap">
+          <table class="module-table dashboard-table">
+            <thead>
+              <tr>
+                ${headers.map(h => `<th>${h}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.map(item => `
+                <tr style="transition: background-color 0.2s;">
+                  ${cols.map(col => {
+                    const isEditable = !!editableFields[col];
+                    const rawVal = item[col] || 0;
+                    const cellDisplay = formatCellVal(item, col);
+                    
+                    if (isEditable) {
+                      return `
+                        <td class="db-interactive-cell" 
+                            data-id="${item._id}" 
+                            data-field="${col}" 
+                            data-value="${rawVal}" 
+                            style="cursor: pointer; position: relative; font-weight: 600; color: var(--primary); text-decoration: underline dotted;"
+                            title="Click to edit value inline">
+                          ${cellDisplay}
+                        </td>
+                      `;
+                    }
+                    return `<td style="font-weight: 550;">${cellDisplay}</td>`;
+                  }).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML = tableHtml;
+
+      // Attach inline editing listeners to interactive cells
+      container.querySelectorAll('.db-interactive-cell').forEach(cell => {
+        cell.addEventListener('click', (e) => {
+          if (cell.querySelector('input')) return;
+          const id = cell.dataset.id;
+          const field = cell.dataset.field;
+          const currentVal = parseFloat(cell.dataset.value) || 0;
+
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.value = currentVal;
+          input.style.width = '75px';
+          input.style.padding = '4px 8px';
+          input.style.borderRadius = '6px';
+          input.style.border = '1.5px solid var(--primary)';
+          input.style.outline = 'none';
+          input.style.textAlign = 'center';
+          input.style.fontFamily = 'inherit';
+          input.style.fontSize = '0.9rem';
+
+          cell.innerHTML = '';
+          cell.appendChild(input);
+          input.focus();
+          input.select();
+
+          const saveInlineEdit = async () => {
+            const newVal = parseFloat(input.value) || 0;
+            cell.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="color: var(--primary);"></i>`;
+            
+            try {
+              const res = await fetch(`${apiBase}/api/auth/users/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${user.token || ''}`
+                },
+                body: JSON.stringify({ [field]: newVal })
+              });
+
+              if (res.ok) {
+                // Update local memory data
+                const localItem = allDbData.find(item => item._id === id);
+                if (localItem) localItem[field] = newVal;
+
+                cell.dataset.value = newVal;
+                cell.innerHTML = `${newVal}${field === 'attendance' ? '%' : ''}`;
+                cell.style.backgroundColor = '#d1fae5';
+                setTimeout(() => { cell.style.backgroundColor = ''; }, 1000);
+              } else {
+                throw new Error();
+              }
+            } catch (err) {
+              cell.dataset.value = currentVal;
+              cell.innerHTML = `${currentVal}${field === 'attendance' ? '%' : ''}`;
+              cell.style.backgroundColor = '#fee2e2';
+              setTimeout(() => { cell.style.backgroundColor = ''; }, 1000);
+            }
+          };
+
+          input.addEventListener('blur', saveInlineEdit);
+          input.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Enter') {
+              input.blur();
+            } else if (evt.key === 'Escape') {
+              input.removeEventListener('blur', saveInlineEdit);
+              cell.innerHTML = `${currentVal}${field === 'attendance' ? '%' : ''}`;
+            }
+          });
+        });
+      });
     };
 
     dropdown.addEventListener('change', loadDbData);
     document.getElementById('dbSearchInput')?.addEventListener('input', renderFilteredTable);
+    document.getElementById('dbSortDropdown')?.addEventListener('change', (e) => {
+      sortBy = e.target.value;
+      renderFilteredTable();
+    });
 
     await loadDbData();
   }

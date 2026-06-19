@@ -544,3 +544,33 @@ export const updateProfile = async (req, res) => {
         res.status(500).json({ message: 'Server Error updating profile' });
     }
 };
+
+// @desc    Update any user's fields (Admin/Authority only)
+// @route   PUT /api/auth/users/:id
+// @access  Private (Teacher, HOD, Principal, Warden, Admin)
+export const updateUserFields = async (req, res) => {
+    try {
+        const callerRole = (req.user.role || '').toLowerCase();
+        if (['student', 'hosteler', 'guest'].includes(callerRole)) {
+            return res.status(403).json({ message: 'Access denied.' });
+        }
+
+        const targetUser = await User.findById(req.params.id);
+        if (!targetUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const fields = ['attendance', 'mar', 'moocs', 'cgpa', 'assignmentsSubmitted', 'contactNumber', 'email', 'name', 'rollNumber', 'batch', 'year', 'department', 'hostelName', 'roomNumber'];
+        fields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                targetUser[field] = req.body[field];
+            }
+        });
+
+        await targetUser.save();
+        res.json({ message: 'User updated successfully', user: targetUser });
+    } catch (error) {
+        console.error('Update User Error:', error);
+        res.status(500).json({ message: 'Server Error during user update' });
+    }
+};

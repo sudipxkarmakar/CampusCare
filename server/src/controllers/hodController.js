@@ -181,17 +181,12 @@ const getDepartmentStudents = async (req, res) => {
     }
 };
 
-// @desc    Get All Teachers of Department
-// @route   GET /api/hod/teachers
-// @access  Private/HOD
 const getDepartmentTeachers = async (req, res) => {
     try {
         const { department } = req.user;
 
-        // Fetch teachers
-        // fields: Teacher ID (maybe employeeId or _id), Name, Subject/Expertise, Email, Designation
         const teachers = await User.find({ role: 'teacher', department })
-            .select('employeeId name expertise specialization email designation _id')
+            .select('employeeId name expertise specialization email designation _id contactNumber attendance teachingSubjects teachingBatches')
             .sort({ name: 1 });
 
         const safeTeachers = teachers.map(t => ({
@@ -202,7 +197,11 @@ const getDepartmentTeachers = async (req, res) => {
             subjectExpertise: (t.expertise && t.expertise.length > 0) ? t.expertise.join(', ') : (t.specialization || 'N/A'), // Mapped for frontend
             specialization: t.specialization || '',
             email: t.email,
-            designation: t.designation || 'Faculty'
+            designation: t.designation || 'Faculty',
+            contactNumber: t.contactNumber || '',
+            attendance: t.attendance || 0,
+            teachingSubjects: t.teachingSubjects || [],
+            teachingBatches: t.teachingBatches || []
         }));
 
         res.json(safeTeachers);

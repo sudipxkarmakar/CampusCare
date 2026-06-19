@@ -79,11 +79,10 @@ const resolveComplaintDirectly = async (req, res) => {
 // @access  Private/Principal
 const getAllStudents = async (req, res) => {
     try {
-        // Fetch both students and hostelers, sorted by roll number
         const students = await User.find({ role: { $in: ['student', 'hosteler'] } })
             .sort({ rollNumber: 1 })
-            .select('name rollNumber department batch email')
-            .lean(); // Faster execution
+            .select('name rollNumber department batch email year attendance cgpa contactNumber')
+            .lean();
         res.json(students);
     } catch (error) {
         console.error(error);
@@ -97,7 +96,7 @@ const getAllStudents = async (req, res) => {
 const getAllTeachers = async (req, res) => {
     try {
         const teachers = await User.find({ role: 'teacher' })
-            .select('name employeeId department email')
+            .select('name employeeId department email contactNumber attendance teachingSubjects teachingBatches')
             .lean();
         res.json(teachers);
     } catch (error) {
@@ -112,7 +111,7 @@ const getAllTeachers = async (req, res) => {
 const getAllHODs = async (req, res) => {
     try {
         const hods = await User.find({ role: 'hod' })
-            .select('name employeeId department email')
+            .select('name employeeId department email contactNumber attendance')
             .lean();
         res.json(hods);
     } catch (error) {
@@ -127,7 +126,7 @@ const getAllHODs = async (req, res) => {
 const getAllWardens = async (req, res) => {
     try {
         const wardens = await User.find({ role: 'warden' })
-            .select('name employeeId hostelName email')
+            .select('name employeeId hostelName email contactNumber attendance')
             .lean();
         res.json(wardens);
     } catch (error) {
