@@ -6,7 +6,6 @@ let currentStudentId = null;
 let currentBatchKey = null; // New state for bulk assign
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // alert("Debug: Script Loaded v2"); // Commenting out to avoid annoyance, relying on v2 param
     checkAuth();
 
     // Determine default year or wait
@@ -16,6 +15,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         yearSelect.value = "4th Year";
         await loadTeachers(); // Pre-fetch teachers
         loadStudentsForMentorship();
+        yearSelect.addEventListener('change', loadStudentsForMentorship);
+    }
+});
+
+// --- CENTRALIZED EVENT DELEGATION ---
+document.addEventListener("click", (e) => {
+    // 1. Assign Mentor to Batch button
+    const batchBtn = e.target.closest(".open-batch-assign-btn");
+    if (batchBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const batchKey = batchBtn.dataset.batch;
+        openBatchAssignModal(batchKey);
+        return;
+    }
+
+    // 2. Individual student assign button
+    const studentBtn = e.target.closest(".open-student-assign-btn");
+    if (studentBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const studentId = studentBtn.dataset.id;
+        const studentName = studentBtn.dataset.name;
+        openAssignModal(studentId, studentName);
+        return;
+    }
+
+    // 3. Select Mentor in search list
+    const mentorBtn = e.target.closest(".select-mentor-btn");
+    if (mentorBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const teacherId = mentorBtn.dataset.id;
+        assignMentor(teacherId);
+        return;
+    }
+
+    // 4. Close modal button (Handles close button)
+    const closeBtn = e.target.closest(".close-modal-btn");
+    if (closeBtn) {
+        e.preventDefault();
+        const modal = document.getElementById('assignMentorModal');
+        if (modal) modal.style.display = 'none';
+        return;
+    }
+
+    // 5. Close Modal when clicking outside (backdrop)
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = "none";
     }
 });
 
@@ -148,7 +196,7 @@ function renderStudentList(container, students, batchKey) {
     // Header with Bulk Assign Button
     html += `
     <div style="margin-bottom:12px; display:flex; justify-content:center;">
-        <button onclick="openBatchAssignModal('${batchKey}')" 
+        <button class="open-batch-assign-btn" data-batch="${batchKey}" 
             style="background: var(--primary); color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;"
             onmouseenter="this.style.background='#5530a6';"
             onmouseleave="this.style.background='var(--primary)';">
@@ -176,7 +224,7 @@ function renderStudentList(container, students, batchKey) {
                     <i class="fa-solid fa-user-tie"></i> ${mentorName}
                 </div>
             </div>
-            <button onclick="openAssignModal('${s._id}', '${s.name}')" 
+            <button class="open-student-assign-btn" data-id="${s._id}" data-name="${s.name}" 
                 style="background: var(--primary-light); color: var(--primary); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
                 onmouseenter="this.style.background='var(--primary)'; this.style.color='white';"
                 onmouseleave="this.style.background='var(--primary-light)'; this.style.color='var(--primary)';"
@@ -194,7 +242,7 @@ function openAssignModal(studentId, studentName) {
     currentStudentId = studentId;
     currentBatchKey = null; // Clear batch context
     document.getElementById('assignModalTitle').innerText = `Assign Mentor to ${studentName}`;
-    document.getElementById('assignMentorModal').style.display = 'block';
+    document.getElementById('assignMentorModal').style.display = 'flex';
     renderTeacherList();
 }
 
@@ -203,7 +251,7 @@ function openBatchAssignModal(batchKey) {
     currentBatchKey = batchKey;
     currentStudentId = null; // Clear student context
     document.getElementById('assignModalTitle').innerText = `Assign Mentor to ${batchKey}`;
-    document.getElementById('assignMentorModal').style.display = 'block';
+    document.getElementById('assignMentorModal').style.display = 'flex';
     renderTeacherList();
 }
 
@@ -212,7 +260,7 @@ function renderTeacherList(search = '') {
     const filtered = allTeachers.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
 
     listDiv.innerHTML = filtered.map(t => `
-        <div onclick="assignMentor('${t._id}')" 
+        <div class="select-mentor-btn" data-id="${t._id}" 
              style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; border-radius: 8px;"
              onmouseenter="this.style.backgroundColor='var(--primary-light)';" 
              onmouseleave="this.style.backgroundColor='transparent';">
@@ -303,3 +351,9 @@ function checkAuth() {
         userDetailsEl.innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
     }
 }
+
+// Expose handlers to window for inline onclick execution
+window.loadStudentsForMentorship = loadStudentsForMentorship;
+window.openBatchAssignModal = openBatchAssignModal;
+window.openAssignModal = openAssignModal;
+window.assignMentor = assignMentor;
