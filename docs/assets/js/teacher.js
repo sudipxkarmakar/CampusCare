@@ -13,14 +13,48 @@ if (user.role !== 'teacher' && user.role !== 'hod') {
 
 var API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com') + '/api';
 
+// Calendar state & events (matching student portal)
+let currentCalendarDate = new Date();
+const calendarEvents = {
+    '2026-05-01': { type: 'holiday', title: 'May Day / Labour Day', desc: 'College campus closed in observance of International Workers\' Day.' },
+    '2026-05-08': { type: 'holiday', title: 'Rabindranath Tagore Jayanti', desc: 'Celebration of the birth anniversary of Rabindranath Tagore. Holiday declared.' },
+    '2026-05-15': { type: 'event', title: 'Mid-Sem Exams Start', desc: 'Spring semester mid-term examinations commence for all departments.' },
+    '2026-05-18': { type: 'event', title: 'Guest Lecture: AI Trends', desc: 'Dr. Anita Sen will give a seminar on "Modern Trends in Generative AI" in Seminar Hall 1 at 2:00 PM.' },
+    '2026-05-20': { type: 'event', title: 'Annual Cultural Fest', desc: '"Sanskriti 2026" - The annual cultural festival of CampusCare starting from 10:00 AM.' },
+    '2026-05-21': { type: 'event', title: 'Cultural Fest Day 2', desc: 'Concerts, dances, and prize distribution ceremony for Sanskriti 2026.' },
+    '2026-05-25': { type: 'holiday', title: 'Buddha Purnima', desc: 'Public holiday on the occasion of Buddha Purnima.' },
+    '2026-04-15': { type: 'holiday', title: 'Bengali New Year (Poila Baisakh)', desc: 'Subho Noboborsho! College closed.' },
+    '2026-04-22': { type: 'event', title: 'Tech Fest "Tantra"', desc: 'Annual national-level coding and robotics contest.' },
+    '2026-06-05': { type: 'event', title: 'World Environment Day', desc: 'Tree plantation drive and poster exhibition on campus.' },
+    '2026-08-15': { type: 'holiday', title: 'Independence Day', desc: 'Flag hoisting ceremony at Main Lawn at 8:30 AM.' }
+};
+
+// Complaint data cache
+let allTeacherComplaints = { myStudents: [], myMentees: [], general: [] };
+let currentComplaintFilter = 'my-students';
+
+function getCalendarTooltip() {
+    let tooltip = document.getElementById('calendar-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'calendar-tooltip';
+        tooltip.className = 'cal-tooltip';
+        document.body.appendChild(tooltip);
+    }
+    return tooltip;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Hero Greeting
     const greeting = document.getElementById('teacher-greeting');
     if (greeting) {
         const firstName = user.name ? user.name.split(' ')[0] : 'Faculty';
-        const prefix = user.role === 'hod' ? 'Prof.' : (user.gender === 'female' ? 'Ms.' : 'Mr.'); // Simplistic prefix
-        // Alternatively, just use the name:
-        greeting.innerHTML = `Good morning, ${firstName}! 👋`;
+        const hour = new Date().getHours();
+        let salutation = 'Good morning';
+        let icon = '☀️';
+        if (hour >= 12 && hour < 17) { salutation = 'Good afternoon'; icon = '☀️'; }
+        else if (hour >= 17) { salutation = 'Good evening'; icon = '🌙'; }
+        greeting.innerHTML = `${salutation}, <span style="color: var(--primary); font-weight: 800;">${firstName}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
     }
 
     // Top Right Profile
@@ -39,9 +73,26 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
+    // Bind complaint filter tabs
+    const filterTabs = document.querySelectorAll('.complaints-filter-tabs .filter-tab');
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            filterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentComplaintFilter = tab.dataset.filter;
+            renderComplaints();
+        });
+    });
+
+    // Initialize Calendar
+    initCalendar();
+
     // Fetch dynamic content
     fetchTeacherRoutine();
     fetchOfficialNotices();
+    fetchTeacherStats();
+    fetchTeacherComplaints();
+    fetchTeacherAssignments();
 });
 
 // Global Logout Function
@@ -58,6 +109,100 @@ window.toggleProfileMenu = function () {
     }
 };
 
+// ── CALENDAR (matching student portal) ──
+function initCalendar() {
+    renderCalendar();
+    const prevBtn = document.getElementById('prev-month');
+    const nextBtn = document.getElementById('next-month');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+    }
+}
+
+function renderCalendar() {
+    const monthYearEl = document.getElementById('calendar-month-year');
+    const daysContainer = document.getElementById('calendar-days-container');
+    if (!monthYearEl || !daysContainer) return;
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    monthYearEl.textContent = `${monthNames[month]} ${year}`;
+    daysContainer.innerHTML = '';
+
+    const dayNames = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+    dayNames.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'cal-day-name';
+        el.textContent = d;
+        daysContainer.appendChild(el);
+    });
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const prevTotalDays = new Date(year, month, 0).getDate();
+    const today = new Date();
+
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'cal-day muted';
+        dayDiv.textContent = prevTotalDays - i;
+        daysContainer.appendChild(dayDiv);
+    }
+
+    for (let i = 1; i <= totalDays; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'cal-day';
+        dayDiv.textContent = i;
+
+        if (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year) {
+            dayDiv.classList.add('active');
+        }
+
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const dayEvent = calendarEvents[dateStr];
+        if (dayEvent) {
+            dayDiv.classList.add(dayEvent.type === 'holiday' ? 'holiday-day' : 'event-day');
+            dayDiv.addEventListener('mouseenter', () => {
+                const tooltip = getCalendarTooltip();
+                tooltip.innerHTML = `
+                    <span class="cal-tooltip-type ${dayEvent.type}">${dayEvent.type}</span>
+                    <div class="cal-tooltip-title">${dayEvent.title}</div>
+                    <div class="cal-tooltip-desc">${dayEvent.desc}</div>
+                `;
+                const rect = dayDiv.getBoundingClientRect();
+                tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+                tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+                tooltip.style.transform = 'translate(-50%, -100%)';
+                tooltip.classList.add('show');
+            });
+            dayDiv.addEventListener('mouseleave', () => {
+                getCalendarTooltip().classList.remove('show');
+            });
+        }
+        daysContainer.appendChild(dayDiv);
+    }
+
+    const totalCellsAdded = firstDay + totalDays;
+    const remainingCells = 42 - totalCellsAdded;
+    for (let i = 1; i <= remainingCells; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'cal-day muted';
+        dayDiv.textContent = i;
+        daysContainer.appendChild(dayDiv);
+    }
+}
+
+// ── TODAY'S SCHEDULE ──
 async function fetchTeacherRoutine() {
     const listEl = document.getElementById('todays-schedule-list');
     if (!listEl) return;
@@ -66,21 +211,22 @@ async function fetchTeacherRoutine() {
         const res = await fetch(`${API_URL}/routine/teacher`, {
             headers: { 'Authorization': `Bearer ${user.token || localStorage.getItem('token')}` }
         });
-        
         if (!res.ok) throw new Error('Failed to fetch routine');
         const routineData = await res.json();
 
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
         const today = days[new Date().getDay()];
         const todaysClasses = routineData.filter(r => r.day === today);
 
         if (todaysClasses.length === 0) {
             listEl.innerHTML = `<div style="padding:16px; text-align:center; color:var(--text-muted);">No classes scheduled for today! 🎉</div>`;
+            const classStatEl = document.getElementById('stat-classes');
+            if (classStatEl) classStatEl.innerText = '0';
             return;
         }
 
         const parseStartTime = (slot) => {
-            const startStr = slot.split(' - ')[0]; 
+            const startStr = slot.split(' - ')[0];
             const [hStr, mStr] = startStr.split(':');
             let h = parseInt(hStr);
             const m = parseInt(mStr);
@@ -94,10 +240,9 @@ async function fetchTeacherRoutine() {
         todaysClasses.forEach((c, i) => {
             const subjectName = c.subject ? c.subject.name : c.subjectName;
             const room = c.room || 'TBA';
-            const slot = c.timeSlot.split(' - ')[0]; // Show start time
-            
-            const bgColors = ['#ede9fe', '#d1fae5', '#e0f2fe', '#ffedd5'];
-            const textColors = ['#7c3aed', '#059669', '#0284c7', '#ea580c'];
+            const slot = c.timeSlot.split(' - ')[0];
+            const bgColors = ['#ede9fe','#d1fae5','#e0f2fe','#ffedd5'];
+            const textColors = ['#7c3aed','#059669','#0284c7','#ea580c'];
             const bg = bgColors[i % bgColors.length];
             const textC = textColors[i % textColors.length];
 
@@ -110,18 +255,17 @@ async function fetchTeacherRoutine() {
                 <span style="background: ${bg}; color: ${textC}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">Room ${room}</span>
             </div>`;
         });
-        
         listEl.innerHTML = html;
 
-        // Update top stat
         const classStatEl = document.getElementById('stat-classes');
-        if(classStatEl) classStatEl.innerText = todaysClasses.length;
+        if (classStatEl) classStatEl.innerText = todaysClasses.length;
 
     } catch (error) {
         console.error('Error fetching routine:', error);
     }
 }
 
+// ── OFFICIAL NOTICES ──
 async function fetchOfficialNotices() {
     const listEl = document.getElementById('official-notices-list');
     if (!listEl) return;
@@ -130,9 +274,8 @@ async function fetchOfficialNotices() {
         const res = await fetch(`${API_URL}/notices?role=${user.role}&department=${user.department || ''}`);
         if (!res.ok) throw new Error('Failed to fetch notices');
         const notices = await res.json();
-        
-        const generalNotices = notices.filter(n => n.audience === 'general' || n.audience === 'teachers').slice(0, 3);
-        
+        const generalNotices = notices.filter(n => n.audience === 'general' || n.audience === 'teachers').slice(0, 5);
+
         if (generalNotices.length === 0) {
             listEl.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--text-muted);">No official notices.</div>`;
             return;
@@ -140,27 +283,179 @@ async function fetchOfficialNotices() {
 
         let html = '';
         generalNotices.forEach((n, i) => {
-            const bgColors = ['#ffedd5', '#e0f2fe', '#ede9fe'];
-            const textColors = ['#ea580c', '#0284c7', '#7c3aed'];
-            const icons = ['fa-bullhorn', 'fa-file-contract', 'fa-calendar'];
-            
+            const bgColors = ['#ffedd5','#e0f2fe','#ede9fe','#d1fae5','#fce7f3'];
+            const textColors = ['#ea580c','#0284c7','#7c3aed','#059669','#db2777'];
+            const icons = ['fa-bullhorn','fa-file-contract','fa-calendar','fa-bell','fa-envelope'];
             const bg = bgColors[i % bgColors.length];
             const tc = textColors[i % textColors.length];
             const icon = icons[i % icons.length];
             const d = new Date(n.date || n.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
             html += `
-            <div class="notice-item">
+            <a href="../modules/notices/post.html" class="notice-item" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); cursor:pointer; text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
                 <div style="background: ${bg}; color: ${tc}; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;"><i class="fa-solid ${icon}"></i></div>
-                <div class="notice-info" style="flex: 1;">
-                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark);">${n.title}</h4>
+                <div style="flex: 1; min-width:0;">
+                  <h4 style="font-size: 0.85rem; margin-bottom: 2px; color: var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${n.title}</h4>
                   <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">${d}</p>
                 </div>
                 <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.7rem;"></i>
-            </div>`;
+            </a>`;
         });
         listEl.innerHTML = html;
     } catch (error) {
         console.error('Error fetching official notices:', error);
+    }
+}
+
+// ── STATS (Students, Mentees, Tasks) ──
+async function fetchTeacherStats() {
+    // Fetch students count
+    try {
+        const res = await fetch(`${API_URL}/teacher/all-students`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        if (res.ok) {
+            const students = await res.json();
+            const el = document.getElementById('stat-students');
+            if (el) el.innerText = students.length;
+        }
+    } catch (e) { console.error('Stats students error:', e); }
+
+    // Fetch mentees count
+    try {
+        const res = await fetch(`${API_URL}/teacher/my-mentees`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        if (res.ok) {
+            const mentees = await res.json();
+            const el = document.getElementById('stat-mentees');
+            if (el) el.innerText = mentees.length;
+        }
+    } catch (e) { console.error('Stats mentees error:', e); }
+
+    // Fetch pending tasks (MAR/MOOC approvals)
+    try {
+        const res = await fetch(`${API_URL}/mar-moocs/mentees`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        if (res.ok) {
+            const items = await res.json();
+            const pending = Array.isArray(items) ? items.filter(i => i.status === 'Proposed').length : 0;
+            const el = document.getElementById('stat-tasks');
+            if (el) el.innerText = pending;
+        }
+    } catch (e) {
+        const el = document.getElementById('stat-tasks');
+        if (el) el.innerText = '0';
+    }
+}
+
+// ── COMPLAINTS WITH FILTER TABS ──
+async function fetchTeacherComplaints() {
+    const listEl = document.getElementById('recent-complaints-list');
+    if (!listEl) return;
+
+    try {
+        // Fetch general/public complaints
+        const genRes = await fetch(`${API_URL}/complaints?public=true`);
+        const genData = genRes.ok ? await genRes.json() : [];
+        allTeacherComplaints.general = genData.slice(0, 8);
+    } catch (e) { console.error('General complaints error:', e); }
+
+    try {
+        // Fetch mentee complaints
+        const menteeRes = await fetch(`${API_URL}/complaints/mentees`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        const menteeData = menteeRes.ok ? await menteeRes.json() : [];
+        allTeacherComplaints.myMentees = menteeData.slice(0, 8);
+    } catch (e) { console.error('Mentee complaints error:', e); }
+
+    try {
+        // Fetch all complaints, filter by teacher's students (department match)
+        const allRes = await fetch(`${API_URL}/complaints`);
+        const allData = allRes.ok ? await allRes.json() : [];
+        allTeacherComplaints.myStudents = allData
+            .filter(c => c.student && c.student.department === user.department)
+            .slice(0, 8);
+    } catch (e) { console.error('Student complaints error:', e); }
+
+    renderComplaints();
+}
+
+function renderComplaints() {
+    const listEl = document.getElementById('recent-complaints-list');
+    if (!listEl) return;
+
+    let data = [];
+    if (currentComplaintFilter === 'my-students') data = allTeacherComplaints.myStudents;
+    else if (currentComplaintFilter === 'my-mentees') data = allTeacherComplaints.myMentees;
+    else data = allTeacherComplaints.general;
+
+    if (!data || data.length === 0) {
+        listEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);"><i class="fa-solid fa-check-circle" style="font-size:1.5rem; margin-bottom:8px; opacity:0.5; display:block;"></i>No complaints found.</div>`;
+        return;
+    }
+
+    listEl.innerHTML = data.map((c, i) => {
+        const studentName = c.student ? c.student.name : 'Anonymous';
+        const statusColors = { 'Resolved': '#10b981', 'In Progress': '#3b82f6', 'Under Progress': '#3b82f6', 'Escalated': '#8b5cf6' };
+        const sColor = statusColors[c.status] || '#ef4444';
+        const catBg = ['#ffedd5','#e0f2fe','#ede9fe','#fce7f3'];
+        const catTc = ['#ea580c','#0284c7','#7c3aed','#db2777'];
+
+        return `
+        <a href="../modules/complaints/resolve.html" style="display:flex; gap:12px; align-items:flex-start; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); text-decoration:none !important; color:inherit; cursor:pointer; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+            <div style="background:${catBg[i%4]}; color:${catTc[i%4]}; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div style="flex:1; min-width:0;">
+                <h4 style="font-size:0.85rem; margin:0 0 2px 0; color:var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.title}</h4>
+                <p style="font-size:0.72rem; color:var(--text-muted); margin:0;">${studentName} · ${c.category || 'General'}</p>
+            </div>
+            <span style="font-size:0.65rem; font-weight:700; color:${sColor}; background:${sColor}15; padding:2px 8px; border-radius:10px; white-space:nowrap;">${c.status || 'Pending'}</span>
+        </a>`;
+    }).join('');
+}
+
+// ── ASSIGNMENTS PREVIEW ──
+async function fetchTeacherAssignments() {
+    const listEl = document.getElementById('assignments-list');
+    if (!listEl) return;
+
+    try {
+        const res = await fetch(`${API_URL}/assignments/created`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        if (!res.ok) throw new Error('Failed');
+        const assignments = await res.json();
+        const list = assignments.filter(a => a.type !== 'note').slice(0, 6);
+
+        if (list.length === 0) {
+            listEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);"><i class="fa-solid fa-file-circle-check" style="font-size:1.5rem; margin-bottom:8px; opacity:0.5; display:block;"></i>No assignments created yet.</div>`;
+            return;
+        }
+
+        listEl.innerHTML = list.map((a, i) => {
+            const due = a.deadline ? new Date(a.deadline).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : 'No deadline';
+            const isPast = a.deadline && new Date(a.deadline) < new Date();
+            const bgColors = ['#e0f2fe','#ede9fe','#d1fae5','#fef3c7','#fce7f3','#ffedd5'];
+            const tcColors = ['#0284c7','#7c3aed','#059669','#d97706','#db2777','#ea580c'];
+
+            return `
+            <a href="../modules/assignments/post.html" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div style="background:${bgColors[i%6]}; color:${tcColors[i%6]}; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <h4 style="font-size:0.85rem; margin:0 0 2px 0; color:var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.title}</h4>
+                    <p style="font-size:0.72rem; color:var(--text-muted); margin:0;">${a.subject || ''} · ${a.batch ? 'Batch ' + a.batch : ''}</p>
+                </div>
+                <span style="font-size:0.65rem; font-weight:700; color:${isPast ? '#ef4444' : '#059669'}; background:${isPast ? '#fef2f2' : '#ecfdf5'}; padding:2px 8px; border-radius:10px; white-space:nowrap;">${due}</span>
+            </a>`;
+        }).join('');
+    } catch (error) {
+        console.error('Error fetching assignments:', error);
+        if (listEl) listEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Could not load assignments.</div>`;
     }
 }
