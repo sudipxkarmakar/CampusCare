@@ -89,8 +89,8 @@
       view: 'profile.html'
     },
     'gate-pass': {
-      title: 'Gate Pass Approval',
-      description: 'Hosteler leave and gate-pass approvals live in one authority-facing page.',
+      title: 'Leave Approvals',
+      description: 'Hosteler leave approvals live in one authority-facing page.',
       icon: 'fa-stamp',
       view: '../gate-pass/approve.html'
     },
@@ -6751,9 +6751,9 @@
       <div class="section-card module-panel" style="padding: 28px; border-radius: 16px; background: white; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
         <div class="section-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px;">
           <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #1e1b4b; font-family: 'Poppins', sans-serif;">
-            <i class="fa-solid fa-stamp" style="color: var(--primary); margin-right: 8px;"></i> Approve Gate Pass / Leave
+            <i class="fa-solid fa-stamp" style="color: var(--primary); margin-right: 8px;"></i> Approve Leave Requests
           </h2>
-          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Review, approve, or reject student leave and gate-pass applications.</p>
+          <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #64748b;">Review, approve, or reject student leave applications.</p>
         </div>
         <div id="leaveTableContainer">
           <div style="text-align: center; padding: 40px; color: #64748b;">
@@ -6880,7 +6880,7 @@
         const fromDate = leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '--';
         const toDate = leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '--';
         
-        const type = leave.type || 'Gate Pass';
+        const type = leave.type || 'Leave';
         const reason = leave.reason || '--';
         
         const hodStatus = leave.hodStatus || 'Pending';
@@ -6900,7 +6900,7 @@
 
         let wardenBadgeHtml = '';
         if (wardenStatus === 'Approved') {
-          wardenBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Issued</span>`;
+          wardenBadgeHtml = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
         } else if (wardenStatus === 'Rejected') {
           wardenBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
         } else {
@@ -6923,14 +6923,14 @@
         } else if (userRole === 'warden') {
           if (wardenStatus === 'Pending') {
             let btnStyle = 'background: var(--success);';
-            let btnText = 'Issue Pass';
+            let btnText = 'Approve';
             let btnIcon = 'fa-stamp';
-            let btnTitle = 'Issue Gate Pass for this student?';
+            let btnTitle = 'Approve leave for this student?';
             if (hodStatus !== 'Approved') {
               btnStyle = 'background: var(--warning);';
-              btnText = 'Issue Pass (Direct)';
+              btnText = 'Approve (Direct)';
               btnIcon = 'fa-bolt';
-              btnTitle = 'HOD has not approved yet. Directly issue Gate Pass?';
+              btnTitle = 'HOD has not approved yet. Directly approve leave?';
             }
             actionHtml = `
               <div style="display: flex; gap: 8px;">

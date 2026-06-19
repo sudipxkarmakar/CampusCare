@@ -599,8 +599,8 @@ function renderLeavesWidget() {
                         <i class="fa-solid fa-stamp"></i>
                     </div>
                     <div>
-                        <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Gate Pass Requests</h4>
-                        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any gate pass or leaves yet.</p>
+                        <h4 style="margin:0 0 4px 0; font-size:0.95rem; color:var(--text-dark);">No Leave Requests</h4>
+                        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">You have not applied for any leaves yet.</p>
                     </div>
                     <a href="../hostel/index.html" class="btn-pill btn-filled-purple" style="font-size:0.8rem; padding:8px 16px; margin-top:4px; text-decoration:none;">Apply Now</a>
                 </div>`;

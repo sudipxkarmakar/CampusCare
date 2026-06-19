@@ -65,20 +65,20 @@ async function loadLeaves() {
             const isFinalRejected = leave.status === 'Rejected' || leave.status === 'Rejected by Warden' || wardenStatus === 'Rejected';
 
             if (isFinalApproved) {
-                actionHtml = `<span style="background:#d1fae5; color:#047857; padding:6px 12px; border-radius:6px; font-weight:600;"><i class="fa-solid fa-check"></i> Passed</span>`;
+                actionHtml = `<span style="background:#d1fae5; color:#047857; padding:6px 12px; border-radius:6px; font-weight:600;"><i class="fa-solid fa-check"></i> Approved</span>`;
             } else if (isFinalRejected) {
                 actionHtml = `<span style="background:#fee2e2; color:#b91c1c; padding:6px 12px; border-radius:6px; font-weight:600;"><i class="fa-solid fa-xmark"></i> Rejected</span>`;
             } else {
                 // Pending Logic
-                let approveBtnText = 'Issue Pass';
+                let approveBtnText = 'Approve';
                 let approveBtnIcon = 'fa-stamp';
-                let approveBtnAction = 'Issue Gate Pass for this student?';
+                let approveBtnAction = 'Approve leave for this student?';
                 let btnStyle = 'background:#10b981;'; // Green
 
                 if (hStatus !== 'Approved') {
-                    approveBtnText = 'Issue Pass (Direct)';
+                    approveBtnText = 'Approve (Direct)';
                     approveBtnIcon = 'fa-bolt'; // Bolt icon for instant action
-                    approveBtnAction = 'Directly issue Gate Pass? (HOD has not approved yet)';
+                    approveBtnAction = 'Directly approve leave? (HOD has not approved yet)';
                     btnStyle = 'background: var(--warning);'; // Amber/Orange
                 } else {
                     btnStyle = 'background: var(--success);'; // Green
@@ -90,7 +90,7 @@ async function loadLeaves() {
                             style="${btnStyle} color:white; border:none; padding:6px 14px; border-radius:8px; cursor:pointer; font-weight:600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;" 
                             onmouseenter="this.style.background='${hStatus !== 'Approved' ? '#d97706' : '#059669'}';" 
                             onmouseleave="this.style.background='${hStatus !== 'Approved' ? 'var(--warning)' : 'var(--success)'}';"
-                            title="Issue Gate Pass">
+                            title="Approve Leave">
                             <i class="fa-solid ${approveBtnIcon}"></i> ${approveBtnText}
                         </button>
                         <button onclick="openRejectModal('${leave._id}')" 
@@ -132,7 +132,7 @@ async function loadLeaves() {
 }
 
 async function approveLeave(id, confirmMsg) {
-    if (!confirm(confirmMsg || 'Issue Gate Pass for this student?')) return;
+    if (!confirm(confirmMsg || 'Approve leave for this student?')) return;
     await processAction(id, 'approve');
 }
 
