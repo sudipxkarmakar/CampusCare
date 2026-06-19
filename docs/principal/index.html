@@ -80,6 +80,20 @@
               grid-template-columns: repeat(3, 1fr) !important;
           }
       }
+      .clickable-preview-item,
+      .clickable-preview-item * {
+          text-decoration: none !important;
+      }
+      .clickable-preview-item {
+          color: inherit;
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      .clickable-preview-item:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-sm);
+          border-color: var(--primary) !important;
+      }
   </style>
   <script>
       (function() {
@@ -587,7 +601,7 @@
                 const audienceColor = audience === 'Hostel' ? '#8b5cf6' : '#0284c7';
                 const audienceBg = audience === 'Hostel' ? 'rgba(139,92,246,0.1)' : 'rgba(2,132,199,0.1)';
                 return `
-                    <div style="display:flex; gap:12px; align-items:flex-start; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
+                    <a href="../modules/notices/view.html" class="clickable-preview-item" style="display:flex; gap:12px; align-items:flex-start; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
                         <div style="background:rgba(139,92,246,0.1); color:var(--secondary); width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;">
                             <i class="fa-solid fa-bullhorn"></i>
                         </div>
@@ -595,7 +609,7 @@
                             <h4 style="font-size:0.85rem; margin:0 0 2px 0; color:var(--text-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${n.title || ''}">${n.title || 'Notice'}</h4>
                             <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">${date} · <span style="background:${audienceBg}; color:${audienceColor}; padding:0 6px; border-radius:6px; font-weight:600;">${audience}</span></p>
                         </div>
-                    </div>`;
+                    </a>`;
             }).join('');
         } catch (e) {
             if (container) container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">Could not load notices.</div>`;
@@ -655,7 +669,7 @@
                 const subtitle = c.roomNumber ? `By: ${studentName} (Room ${c.roomNumber})` : `By: ${studentName}`;
 
                 return `
-                    <div style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+                    <a href="../modules/complaints/resolve.html" class="clickable-preview-item" style="display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
                         <div style="${bgStyle} width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
                             ${iconHtml}
                         </div>
@@ -664,7 +678,7 @@
                             <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${subtitle}</p>
                         </div>
                         <span style="${statusBg} padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 700; flex-shrink: 0;">${c.status || 'Open'}</span>
-                    </div>
+                    </a>
                 `;
             }).join('');
         } catch (e) {
@@ -720,7 +734,7 @@
                 }
 
                 return `
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+                    <a href="../modules/gate-pass/approve.html" class="clickable-preview-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
                         <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; width: 110px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; white-space: nowrap;">
                             <i class="fa-regular fa-calendar-days" style="color: var(--primary)"></i> ${timeText}
                         </div>
@@ -731,7 +745,7 @@
                         <div style="flex-shrink: 0; display: flex; align-items: center;">
                             ${statusBadge}
                         </div>
-                    </div>`;
+                    </a>`;
             }).join('');
         } catch (e) {
             if (container) container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">Could not load leave requests.</div>`;
