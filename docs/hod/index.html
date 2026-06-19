@@ -629,10 +629,145 @@
     </div>
   </div>
 
+  <!-- NOTICE DETAIL MODAL -->
+  <div id="notice-detail-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(6px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 500px; text-align: left; position: relative; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 16px; max-height: 90vh; overflow-y: auto;">
+      <button onclick="toggleModal('notice-detail-modal')"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-size: 1.4rem; color: var(--text-dark); margin: 0; padding-right: 30px;" id="modal-notice-title">Notice Title</h3>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;" id="modal-notice-meta">Date | Audience</div>
+      <div style="background: var(--bg-color); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); width: 100%;">
+        <p style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.6; margin: 0; white-space: pre-wrap;" id="modal-notice-content">Notice content text...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLAINT DETAIL MODAL -->
+  <div id="complaint-detail-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(6px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 500px; text-align: left; position: relative; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 16px; max-height: 90vh; overflow-y: auto;">
+      <button onclick="toggleModal('complaint-detail-modal')"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-size: 1.4rem; color: var(--text-dark); margin: 0; padding-right: 30px;" id="modal-complaint-title">Complaint Title</h3>
+      
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 0.85rem; padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600;" id="modal-complaint-category">Category</span>
+        <span style="font-size: 0.85rem; padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600;" id="modal-complaint-priority">Priority</span>
+        <span style="font-size: 0.85rem; padding: 4px 12px; border-radius: var(--radius-full); font-weight: 600;" id="modal-complaint-status">Status</span>
+      </div>
+
+      <div style="background: var(--bg-color); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <p style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.6; margin: 0; white-space: pre-wrap;" id="modal-complaint-desc">Description...</p>
+      </div>
+
+      <div id="modal-complaint-student-info" style="font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px;">
+        <!-- Student details -->
+      </div>
+
+      <!-- Reported Image -->
+      <div id="modal-complaint-image-container" style="display: none;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Reported Photo:</div>
+        <img id="modal-complaint-img" src="" style="width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      </div>
+
+      <!-- Resolution Proof Image (if resolved) -->
+      <div id="modal-complaint-resolution-container" style="display: none; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: var(--radius-md);">
+        <div style="font-size: 0.8rem; font-weight: 700; color: #166534; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+          <i class="fa-solid fa-circle-check"></i> Resolution Proof:
+        </div>
+        <img id="modal-complaint-res-img" src="" style="width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid #bbf7d0;">
+        <p id="modal-complaint-resolved-by" style="font-size: 0.8rem; color: #166534; margin: 6px 0 0 0; font-weight: 500;"></p>
+      </div>
+
+      <!-- Actions -->
+      <div id="modal-complaint-actions" style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-upvote-complaint" class="btn-filled-purple" style="flex: 1; font-size: 0.9rem; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <i class="fa-regular fa-thumbs-up"></i> Upvote (<span id="modal-complaint-upvotes-count">0</span>)
+          </button>
+          <button id="btn-show-resolve-flow" class="btn-filled-purple" style="flex: 1; font-size: 0.9rem; padding: 10px; background: #10b981; border-color: #10b981; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <i class="fa-solid fa-check"></i> Resolve Issue
+          </button>
+        </div>
+
+        <!-- Resolve Upload Area (hidden by default) -->
+        <div id="modal-complaint-upload-area" style="display: none; background: #eff6ff; border: 2px dashed #3b82f6; padding: 16px; border-radius: var(--radius-md); flex-direction: column; gap: 12px;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af;">Upload Resolution Proof Image</div>
+          <input type="file" id="modal-complaint-proof-file" accept="image/*" style="font-size: 0.85rem;">
+          <div id="modal-complaint-proof-preview" style="display: none; position: relative;">
+            <img id="modal-complaint-proof-preview-img" style="width: 100%; height: 120px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid #bfdbfe;">
+          </div>
+          <button id="btn-submit-resolution" class="btn-filled-purple" style="background: #10b981; border-color: #10b981; font-weight: 700; padding: 10px;">
+            Confirm Resolution
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEAVE DETAIL MODAL -->
+  <div id="leave-detail-modal" class="modal-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(6px);">
+    <div class="modal-content glass"
+      style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 500px; text-align: left; position: relative; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 16px; max-height: 90vh; overflow-y: auto;">
+      <button onclick="toggleModal('leave-detail-modal')"
+        style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); z-index: 10;"><i
+          class="fa-solid fa-xmark"></i></button>
+      <h3 style="font-size: 1.4rem; color: var(--text-dark); margin: 0; padding-right: 30px;">Leave Application Details</h3>
+      
+      <div id="modal-leave-student-info" style="font-size: 0.95rem; color: var(--text-dark); background: var(--bg-color); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px;">
+        <!-- Student details -->
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Duration:</div>
+        <div style="font-size: 0.95rem; color: var(--text-dark); font-weight: 600;" id="modal-leave-duration"></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Reason:</div>
+        <div style="font-size: 0.95rem; color: var(--text-dark); background: var(--bg-color); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" id="modal-leave-reason"></div>
+      </div>
+
+      <div id="modal-leave-status-row" style="display: flex; gap: 12px; font-size: 0.85rem;">
+        <!-- Statuses -->
+      </div>
+
+      <!-- Action Fields -->
+      <div id="modal-leave-actions" style="display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">HOD Remark / Comment:</label>
+          <textarea id="modal-leave-remark" placeholder="Enter optional remark..." style="width: 100%; height: 60px; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: inherit; font-size: 0.9rem; outline: none; resize: none;"></textarea>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-reject-leave" class="btn-filled-purple" style="flex: 1; font-size: 0.9rem; padding: 10px; background: var(--danger); border-color: var(--danger);">
+            <i class="fa-solid fa-xmark"></i> Reject
+          </button>
+          <button id="btn-approve-leave" class="btn-filled-purple" style="flex: 1; font-size: 0.9rem; padding: 10px; background: var(--success); border-color: var(--success);">
+            <i class="fa-solid fa-check"></i> Approve
+          </button>
+        </div>
+      </div>
+
+      <div id="modal-leave-remark-readonly" style="display: none; background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md);">
+        <!-- Readonly Remark -->
+      </div>
+    </div>
+  </div>
+
   <script src="../assets/js/landing.js"></script>
   <script src="../assets/js/ai.js"></script>
   <script src="../assets/js/hod.js"></script>
   <script>
+    let dashboardNotices = [];
+    let dashboardComplaints = [];
+    let dashboardLeaves = [];
+
     document.addEventListener('DOMContentLoaded', () => {
         // Allow other scripts to set up token
         setTimeout(() => {
@@ -661,6 +796,7 @@
             });
             if (res.ok) {
                 const complaints = await res.json();
+                dashboardComplaints = complaints;
                 renderRecentComplaintsList(complaints);
             } else {
                 throw new Error('Response not ok');
@@ -722,7 +858,7 @@
             const subtitle = c.roomNumber ? `By: ${studentName} (Room ${c.roomNumber})` : `By: ${studentName}`;
 
             html += `
-                <div class="complaint-item" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); transition: all 0.2s;">
+                <div class="complaint-item" onclick="openComplaintModal('${c._id}')" style="display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); transition: all 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(0,0,0,0.02)'" onmouseout="this.style.background='var(--bg-color)'">
                     <div style="${bgStyle} width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
                         ${iconHtml}
                     </div>
@@ -839,6 +975,7 @@
             });
             if (res.ok) {
                 const leaves = await res.json();
+                dashboardLeaves = leaves;
                 renderHODLeavePreview(leaves);
             } else {
                 throw new Error('Response not ok');
@@ -894,7 +1031,7 @@
             }
 
             html += `
-            <div class="list-item-compact" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; transition: all 0.2s;">
+            <div class="list-item-compact" onclick="openLeaveModal('${leave._id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(0,0,0,0.02)'" onmouseout="this.style.background='var(--bg-color)'">
                 <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; width: 125px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; white-space: nowrap;">
                     <i class="fa-regular fa-calendar-days" style="color: var(--primary)"></i> ${timeText}
                 </div>
@@ -931,6 +1068,7 @@
             });
             if (!res.ok) throw new Error('Response not ok');
             const notices = await res.json();
+            dashboardNotices = notices;
             const recent = notices
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                 .slice(0, 4);
@@ -946,7 +1084,7 @@
                 const audienceColor = audience === 'Hostel' ? '#8b5cf6' : '#0284c7';
                 const audienceBg = audience === 'Hostel' ? 'rgba(139,92,246,0.1)' : 'rgba(2,132,199,0.1)';
                 return `
-                    <div style="display:flex; gap:12px; align-items:flex-start; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color);">
+                    <div onclick="openNoticeModal('${n._id}')" style="display:flex; gap:12px; align-items:flex-start; padding:10px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.02)'" onmouseout="this.style.background='var(--bg-color)'">
                         <div style="background:rgba(139,92,246,0.1); color:var(--secondary); width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;">
                             <i class="fa-solid fa-bullhorn"></i>
                         </div>
@@ -958,6 +1096,305 @@
             }).join('');
         } catch (e) {
             if (container) container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">Could not load notices.</div>`;
+        }
+    }
+
+    // Modal Details Functions
+    window.openNoticeModal = function(id) {
+        const notice = dashboardNotices.find(n => n._id === id);
+        if (!notice) return;
+        document.getElementById('modal-notice-title').textContent = notice.title || 'Notice';
+        const date = notice.createdAt ? new Date(notice.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
+        const audience = notice.audience || 'General';
+        document.getElementById('modal-notice-meta').textContent = `${date} · ${audience.toUpperCase()}`;
+        document.getElementById('modal-notice-content').textContent = notice.content || '';
+        toggleModal('notice-detail-modal');
+    };
+
+    window.openLeaveModal = function(id) {
+        const leave = dashboardLeaves.find(l => l._id === id);
+        if (!leave) return;
+        
+        const student = leave.student || {};
+        document.getElementById('modal-leave-student-info').innerHTML = `
+            <div style="font-weight: 700; color: var(--text-dark);">${student.name || 'Student'}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Roll No: ${student.rollNumber || 'N/A'} | Dept: ${student.department || 'N/A'} | Batch: ${student.batch || 'N/A'}</div>
+        `;
+
+        const formatDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        document.getElementById('modal-leave-duration').textContent = `${formatDate(leave.startDate)} - ${formatDate(leave.endDate)}`;
+        document.getElementById('modal-leave-reason').textContent = leave.reason || 'No reason specified';
+
+        const statusRow = document.getElementById('modal-leave-status-row');
+        let statusBadge = '';
+        if (leave.hodStatus === 'Pending') {
+            statusBadge = '<span style="background: rgba(245, 158, 11, 0.1); color: var(--warning); padding: 4px 10px; border-radius: var(--radius-full); font-weight: 700;">Pending HOD Approval</span>';
+        } else if (leave.hodStatus === 'Approved') {
+            statusBadge = '<span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 4px 10px; border-radius: var(--radius-full); font-weight: 700;">Approved by HOD</span>';
+        } else {
+            statusBadge = '<span style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 4px 10px; border-radius: var(--radius-full); font-weight: 700;">Rejected by HOD</span>';
+        }
+        statusRow.innerHTML = `<div>Status: ${statusBadge}</div>`;
+
+        const actionsEl = document.getElementById('modal-leave-actions');
+        const readOnlyEl = document.getElementById('modal-leave-remark-readonly');
+
+        if (leave.hodStatus === 'Pending') {
+            actionsEl.style.display = 'flex';
+            readOnlyEl.style.display = 'none';
+            document.getElementById('modal-leave-remark').value = leave.hodRemark || '';
+
+            // Bind Approve Button
+            document.getElementById('btn-approve-leave').onclick = async () => {
+                const remark = document.getElementById('modal-leave-remark').value;
+                await submitLeaveAction(id, 'approve', remark);
+            };
+
+            // Bind Reject Button
+            document.getElementById('btn-reject-leave').onclick = async () => {
+                const remark = document.getElementById('modal-leave-remark').value;
+                await submitLeaveAction(id, 'reject', remark);
+            };
+        } else {
+            actionsEl.style.display = 'none';
+            readOnlyEl.style.display = 'block';
+            readOnlyEl.innerHTML = `
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">HOD Remark:</div>
+                <div style="font-size: 0.9rem; color: var(--text-dark); font-style: italic;">"${leave.hodRemark || 'No remarks provided.'}"</div>
+            `;
+        }
+
+        toggleModal('leave-detail-modal');
+    };
+
+    async function submitLeaveAction(id, action, remark) {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+
+        try {
+            const res = await fetch(`${API_BASE}/api/hod/leaves/${id}/action`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action, remark })
+            });
+
+            if (res.ok) {
+                toggleModal('leave-detail-modal');
+                // Refresh list and stats
+                loadHODLeavePreview();
+                if (typeof loadDashboardStats === 'function') {
+                    loadDashboardStats();
+                }
+            } else {
+                const data = await res.json();
+                alert(data.message || `Failed to ${action} leave request.`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Server error executing leave action.');
+        }
+    }
+
+    window.openComplaintModal = function(id) {
+        const complaint = dashboardComplaints.find(c => c._id === id);
+        if (!complaint) return;
+
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+
+        document.getElementById('modal-complaint-title').textContent = complaint.title || 'Complaint';
+        
+        // Category badge
+        const catEl = document.getElementById('modal-complaint-category');
+        catEl.textContent = complaint.category || 'General';
+        catEl.style.background = 'rgba(14, 165, 233, 0.1)';
+        catEl.style.color = '#0ea5e9';
+
+        // Priority badge
+        const prioEl = document.getElementById('modal-complaint-priority');
+        prioEl.textContent = complaint.priority || 'Medium';
+        if (complaint.priority === 'High' || complaint.priority === 'Urgent') {
+            prioEl.style.background = 'rgba(239, 68, 68, 0.1)';
+            prioEl.style.color = 'var(--danger)';
+        } else {
+            prioEl.style.background = 'rgba(245, 158, 11, 0.1)';
+            prioEl.style.color = 'var(--warning)';
+        }
+
+        // Status badge
+        const statEl = document.getElementById('modal-complaint-status');
+        statEl.textContent = complaint.status || 'Submitted';
+        if (complaint.status === 'Resolved') {
+            statEl.style.background = 'rgba(16, 185, 129, 0.1)';
+            statEl.style.color = 'var(--success)';
+        } else if (complaint.status === 'In Progress') {
+            statEl.style.background = 'rgba(14, 165, 233, 0.1)';
+            statEl.style.color = '#0ea5e9';
+        } else {
+            statEl.style.background = 'rgba(239, 68, 68, 0.1)';
+            statEl.style.color = 'var(--danger)';
+        }
+
+        // Description
+        document.getElementById('modal-complaint-desc').textContent = complaint.description || '';
+
+        // Student Info
+        const student = complaint.student || {};
+        document.getElementById('modal-complaint-student-info').innerHTML = `
+            <strong>Reported By:</strong> ${student.name || 'Student'} (${student.rollNumber || 'N/A'})
+            ${complaint.roomNumber ? ` | Room ${complaint.roomNumber}` : ''}
+        `;
+
+        // Reported Image
+        const imgContainer = document.getElementById('modal-complaint-image-container');
+        if (complaint.image) {
+            imgContainer.style.display = 'block';
+            document.getElementById('modal-complaint-img').src = `${API_BASE}${complaint.image}`;
+        } else {
+            imgContainer.style.display = 'none';
+        }
+
+        // Resolution Proof Container
+        const resContainer = document.getElementById('modal-complaint-resolution-container');
+        const actionsEl = document.getElementById('modal-complaint-actions');
+        
+        if (complaint.status === 'Resolved') {
+            resContainer.style.display = 'block';
+            actionsEl.style.display = 'none';
+            document.getElementById('modal-complaint-res-img').src = `${API_BASE}${complaint.resolutionImage || complaint.afterImage || ''}`;
+            document.getElementById('modal-complaint-resolved-by').textContent = `Resolved by ${complaint.resolvedBy?.name || 'Warden'} on ${new Date(complaint.updatedAt || complaint.createdAt).toLocaleDateString()}`;
+        } else {
+            resContainer.style.display = 'none';
+            actionsEl.style.display = 'flex';
+            
+            // Set Upvote Count
+            document.getElementById('modal-complaint-upvotes-count').textContent = complaint.upvotes || 0;
+
+            // Handle Upvote Button
+            document.getElementById('btn-upvote-complaint').onclick = async () => {
+                await upvoteComplaintOnDashboard(id);
+            };
+
+            // Reset resolve flow UI
+            const uploadArea = document.getElementById('modal-complaint-upload-area');
+            uploadArea.style.display = 'none';
+            document.getElementById('modal-complaint-proof-file').value = '';
+            const previewEl = document.getElementById('modal-complaint-proof-preview');
+            previewEl.style.display = 'none';
+
+            // Show resolve flow toggle
+            document.getElementById('btn-show-resolve-flow').onclick = () => {
+                uploadArea.style.display = uploadArea.style.display === 'none' ? 'flex' : 'none';
+            };
+
+            // Preview resolution image
+            document.getElementById('modal-complaint-proof-file').onchange = function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('modal-complaint-proof-preview-img').src = e.target.result;
+                        previewEl.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewEl.style.display = 'none';
+                }
+            };
+
+            // Confirm Resolve Button
+            document.getElementById('btn-submit-resolution').onclick = async () => {
+                await submitComplaintResolution(id);
+            };
+        }
+
+        toggleModal('complaint-detail-modal');
+    };
+
+    async function upvoteComplaintOnDashboard(id) {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+
+        try {
+            const res = await fetch(`${API_BASE}/api/complaints/${id}/upvote`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json(); // returns { message, upvotes }
+                // Update local complaints cache
+                const comp = dashboardComplaints.find(c => c._id === id);
+                if (comp) {
+                    comp.upvotes = data.upvotes;
+                }
+                document.getElementById('modal-complaint-upvotes-count').textContent = data.upvotes;
+                // Reload dashboard preview
+                loadRecentComplaintsPreview();
+            } else {
+                const data = await res.json();
+                alert(data.message || 'Failed to toggle upvote.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Server error while upvoting.');
+        }
+    }
+
+    async function submitComplaintResolution(id) {
+        const fileInput = document.getElementById('modal-complaint-proof-file');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert('Please select an image file to serve as resolution proof.');
+            return;
+        }
+
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const user = JSON.parse(userStr);
+
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE = (isLocal ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com');
+        const rolePath = window.location.pathname.includes('/warden/') ? 'warden' : 'hod';
+
+        const formData = new FormData();
+        formData.append('resolutionImage', file);
+
+        try {
+            const res = await fetch(`${API_BASE}/api/${rolePath}/complaints/${id}/resolve`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${user.token}` },
+                body: formData
+            });
+
+            if (res.ok) {
+                toggleModal('complaint-detail-modal');
+                // Refresh complaints list and stats
+                loadRecentComplaintsPreview();
+                if (typeof loadDashboardStats === 'function') {
+                    loadDashboardStats();
+                }
+            } else {
+                const data = await res.json();
+                alert(data.message || 'Failed to resolve complaint.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Server error resolving complaint.');
         }
     }
   </script>
