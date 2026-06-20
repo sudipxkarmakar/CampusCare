@@ -255,20 +255,29 @@ async function fetchTeacherRoutine() {
         let html = '';
         todaysClasses.forEach((c, i) => {
             const subjectName = c.subject ? c.subject.name : c.subjectName;
-            const room = c.room || 'TBA';
-            const slot = c.timeSlot.split(' - ')[0];
-            const bgColors = ['#ede9fe','#d1fae5','#e0f2fe','#ffedd5'];
-            const textColors = ['#7c3aed','#059669','#0284c7','#ea580c'];
+            const year = c.year || '';
+            const batch = c.batch ? `Batch ${c.batch}` : '';
+            const yearBatchText = [year, batch].filter(Boolean).join(' - ') || 'N/A';
+            const slot = c.timeSlot;
+            const bgColors = ['#d1fae5', '#fef3c7', '#e0e7ff', '#fce7f3'];
+            const textColors = ['#10b981', '#f59e0b', '#4f46e5', '#ec4899'];
+            const icons = ['fa-chalkboard-user', 'fa-database', 'fa-code', 'fa-laptop-code'];
             const bg = bgColors[i % bgColors.length];
             const textC = textColors[i % textColors.length];
+            const icon = icons[i % icons.length];
 
             html += `
-            <div class="list-item-compact">
-                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; width: 65px;">${slot}</div>
-                <div style="flex: 1; padding: 0 12px;">
-                    <h4 style="font-size: 0.85rem; margin: 0; color: var(--text-dark);">${subjectName}</h4>
+            <div style="display:flex; gap:16px; align-items:center; padding:16px; border-radius:var(--radius-md); background:var(--bg-color); border:1px solid var(--border-color);">
+                <div style="width:48px; height:48px; border-radius:var(--radius-sm); background:${bg}; color:${textC}; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                    <i class="fa-solid ${icon}"></i>
                 </div>
-                <span style="background: ${bg}; color: ${textC}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;">Room ${room}</span>
+                <div style="flex:1;">
+                    <h4 style="margin:0 0 4px 0; font-size:1rem; color:var(--text-dark);">${subjectName}</h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem;">
+                        <span style="color:var(--text-muted)">${slot}</span>
+                        <span style="background:${bg}; color:${textC}; padding:2px 8px; border-radius:var(--radius-full); font-weight:600;">${yearBatchText}</span>
+                    </div>
+                </div>
             </div>`;
         });
         listEl.innerHTML = html;
