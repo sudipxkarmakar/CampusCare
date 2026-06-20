@@ -164,7 +164,14 @@ function setupProfile() {
         if (greetingName) greetingName.innerText = user.name; // set name first
         updateWardenGreeting(); // then rebuild h1 with correct salutation + name
 
-        document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>${user.hostelName || 'Hostel Admin'}`;
+        const badge = document.querySelector('.role-badge-mini');
+        if (badge) {
+            badge.textContent = user.role.toUpperCase();
+        }
+        document.getElementById('userDetails').innerHTML = `
+            <strong style="font-size: 1rem; color: var(--text-dark);">${user.name || 'User'}</strong>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-left: 6px;">(ID: ${user.employeeId || user.rollNumber || user.identifier || 'N/A'})</span>
+        `;
     }
 }
 

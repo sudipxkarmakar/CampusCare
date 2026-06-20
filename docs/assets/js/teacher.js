@@ -63,16 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Top Right Profile
     const userNameEl = document.getElementById('userName');
     const userDeptEl = document.getElementById('userDept') || document.getElementById('userRole');
-    if (userNameEl) userNameEl.innerText = `Hi, ${user.name ? user.name.split(' ')[0] : 'Faculty'} 👋`;
+    if (userNameEl) userNameEl.innerText = `Hi, ${user.name ? user.name.split(' ')[0] : 'Faculty'}`;
     if (userDeptEl) userDeptEl.innerText = user.department || 'Department';
 
     // Profile Dropdown Info
     const userDetailsEl = document.getElementById('userDetails');
     if (userDetailsEl) {
+        const badge = document.querySelector('.role-badge-mini');
+        if (badge) {
+            badge.textContent = 'TEACHER';
+        }
         userDetailsEl.innerHTML = `
-            <strong>${user.name || 'User'}</strong><br>
-            <span style="font-size:0.8rem; color:var(--text-muted);">${user.identifier || user.email || 'ID Not Available'}</span><br>
-            <span style="font-size:0.8rem; background:var(--primary-light); color:var(--primary); padding:2px 6px; border-radius:4px; font-weight:600; margin-top:8px; display:inline-block; text-transform:capitalize;">${user.role}</span>
+            <strong style="font-size: 1rem; color: var(--text-dark);">${user.name || 'User'}</strong>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-left: 6px;">(ID: ${user.employeeId || user.rollNumber || user.identifier || 'N/A'})</span>
         `;
     }
 

@@ -1497,44 +1497,13 @@ window.checkAuthState = function () {
   const userAvatar = document.getElementById("userAvatar");
   const userDetails = document.getElementById("userDetails");
 
-  if (userAvatar && !userAvatar.dataset.intercepted) {
-    userAvatar.dataset.intercepted = "true";
-    try {
-      const originalDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
-      Object.defineProperty(userAvatar, 'src', {
-        get: function() {
-          return originalDescriptor.get.call(this);
-        },
-        set: function(value) {
-          const user = getStoredUser();
-          if (user.profilePicture && value && value.includes("ui-avatars.com/api")) {
-            let avatarSrc = user.profilePicture;
-            if (!avatarSrc.startsWith("http")) {
-              const isLocal = window.location.hostname === "localhost" ||
-                              window.location.hostname === "127.0.0.1" ||
-                              window.location.hostname === "" ||
-                              window.location.protocol === "file:";
-              const BACKEND_URL = isLocal
-                ? "http://localhost:5000"
-                : "https://campuscare-backend-96cn.onrender.com";
-              avatarSrc = avatarSrc.startsWith("/") ? `${BACKEND_URL}${avatarSrc}` : `${BACKEND_URL}/${avatarSrc}`;
-            }
-            avatarSrc += (avatarSrc.includes("?") ? "&" : "?") + `t=${new Date().getTime()}`;
-            originalDescriptor.set.call(this, avatarSrc);
-          } else {
-            originalDescriptor.set.call(this, value);
-          }
-        },
-        configurable: true
-      });
-    } catch (e) {
-      console.error("[Auth] Failed to intercept avatar src:", e);
-    }
-  }
+  // Intercepting avatar src is no longer needed since we set it directly below.
 
   if (userStr) {
     // User is Logged In
     const user = JSON.parse(userStr);
+    let designation = "User";
+    const role = (user.role || "").toLowerCase();
 
     if (loginBtn) loginBtn.style.display = "none";
 
@@ -1545,9 +1514,6 @@ window.checkAuthState = function () {
       userProfile.style.display = "flex";
       userProfile.style.alignItems = "center";
       userProfile.style.gap = "10px";
-
-      let designation = "User";
-      const role = (user.role || "").toLowerCase();
       if (role === "student" || role === "hosteler") {
         const dept = user.department || "Student";
         let yrText = "";
@@ -1587,7 +1553,7 @@ window.checkAuthState = function () {
         infoDiv.style.cssText = "display: flex; flex-direction: column; text-align: left; justify-content: center;";
       }
       infoDiv.innerHTML = `
-        <span id="userName" style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark); margin: 0; line-height: 1.2;">Hello, ${displayName}</span>
+        <span id="userName" style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark); margin: 0; line-height: 1.2;">Hi, ${displayName}</span>
         <span id="userRole" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; line-height: 1.2;">${designation}</span>
       `;
 
@@ -1611,7 +1577,6 @@ window.checkAuthState = function () {
 
     // Role-based Colors
     let roleColor = "10b981"; // Default Green (Teacher/General)
-    const role = (user.role || "").toLowerCase();
 
     if (role === "student")
       roleColor = "3b82f6"; // Blue
@@ -1733,6 +1698,14 @@ window.checkAuthState = function () {
       navRoleBadgeWrapper.style.alignItems = "center";
       navRoleBadgeWrapper.style.gap = "8px";
 
+    const logoText = document.getElementById("logoText");
+    if (logoText) {
+      const roleLabel = user.role ? (user.role.toUpperCase() === 'HOD' ? 'HOD' : user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Member';
+      if (!logoText.querySelector(".logo-role-badge")) {
+        logoText.innerHTML = `CampusCare <span class="logo-role-badge" style="font-size: 0.8rem; background: var(--primary); color: white; padding: 4px 10px; border-radius: var(--radius-full); vertical-align: middle; margin-left: 8px;">${roleLabel}</span>`;
+      }
+    }
+
       const roleModuleMap = {
         student: "student/index.html",
         teacher: "teacher/index.html",
@@ -1808,7 +1781,6 @@ window.checkAuthState = function () {
         admin: { bg: "#f3f4f6", color: "#374151" },
       };
 
-      const role = (user.role || "").toLowerCase();
       let usernameText = user.rollNumber || user.employeeId || user.identifier || "";
       let emailText = user.email || "";
 
@@ -1824,36 +1796,22 @@ window.checkAuthState = function () {
 
       profileMenu.style.minWidth = "290px";
       profileMenu.style.flexDirection = "column";
+      profileMenu.style.padding = "16px";
       profileMenu.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 12px; min-width: 290px; padding: 2px;">
+        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 290px; padding: 2px;">
           <!-- Line 1: Header with Badge -->
-          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 2px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 0;">
             <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
-            <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); background: ${colors.bg}; color: ${colors.color};">${roleLabel}</span>
+            <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); background: ${colors.bg}; color: ${colors.color};">${(user.role || "User").toUpperCase()}</span>
           </div>
           
-          <!-- Line 2: Details (preserves #userDetails ID for inline scripts) -->
-          <div id="userDetails" style="background: #f8fafc; border-radius: 16px; padding: 14px 16px; margin: 8px 0; border: 1px solid rgba(107, 70, 193, 0.06); display: flex; justify-content: space-between; align-items: stretch; gap: 16px; text-align: left;">
-            <!-- Left Column: Name & Email -->
-            <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0;">
-              <span style="background: rgba(107, 70, 193, 0.08); color: var(--primary); padding: 5px 12px; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.3px; height: 26px; box-sizing: border-box; white-space: nowrap; width: fit-content;">${user.name || "User"}</span>
-              <div style="font-size: 0.76rem; color: var(--text-muted); font-weight: 500; word-break: break-all; line-height: 1.4;">
-                ${user.email || ""}
-              </div>
-            </div>
-            
-            <!-- Vertical Divider Line -->
-            <div style="width: 1px; background: rgba(107, 70, 193, 0.12); align-self: stretch;"></div>
-            
-            <!-- Right Column: ID & Dept -->
-            <div style="display: flex; flex-direction: column; justify-content: center; gap: 6px; font-size: 0.76rem; color: var(--text-muted); font-weight: 500; line-height: 1.4; flex-shrink: 0; min-width: 80px;">
-              <div>ID: <span style="color: var(--text-dark); font-weight: 700;">${user.rollNumber || user.employeeId || user.identifier || "--"}</span></div>
-              <div>Dept: <span style="color: var(--text-dark); font-weight: 700;">${user.department || "--"}</span></div>
-            </div>
+          <div id="userDetails" style="display: flex; align-items: baseline; gap: 8px; text-align: left; width: 100%; padding: 4px 0; box-sizing: border-box;">
+            <span style="font-weight: 700; font-size: 1rem; color: var(--text-dark);">${user.name || "User"}</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">(ID: ${user.rollNumber || user.employeeId || user.identifier || "--"})</span>
           </div>
 
           <!-- Line 3: Actions -->
-          <div style="display: flex; gap: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+          <div style="display: flex; gap: 8px; margin-top: 2px; border-top: 1px solid var(--border-color); padding-top: 10px;">
             <a href="${profilePath}" class="btn-outline-purple" style="flex: 1 !important; text-align: center; font-size: 0.85rem; padding: 10px 12px; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; border: 1.5px solid var(--primary); color: var(--primary); background: transparent; cursor: pointer; margin-top: 0 !important; width: auto !important;" onmouseenter="this.style.background='rgba(107, 70, 193, 0.08)';" onmouseleave="this.style.background='transparent';">
               <i class="fa-regular fa-user"></i> Profile
             </a>

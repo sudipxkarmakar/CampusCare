@@ -55,16 +55,7 @@ const startServer = async () => {
 
   // 2. Helmet Integration (Report-Only / Relaxed for Static Frontend)
   app.use(helmet({
-    contentSecurityPolicy: {
-      useDefaults: true,
-      directives: {
-        "script-src": ["'self'", "'unsafe-inline'"], 
-        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-        "font-src": ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-        "img-src": ["'self'", "data:", "https:", "https://res.cloudinary.com", "http://localhost:5000", "http://127.0.0.1:5000"],
-        "connect-src": ["'self'", "https://api.groq.com", "http://localhost:5000", "http://127.0.0.1:5000"]
-      }
-    },
+    contentSecurityPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" }
   }));
 

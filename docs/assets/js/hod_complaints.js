@@ -260,8 +260,8 @@ function checkAuth() {
         return;
     }
 
-    const userNameEl = document.getElementById('userName');
-    if (userNameEl) userNameEl.innerText = `Hello, ${user.name}`;
+    const firstName = user.name ? user.name.split(' ')[0] : 'HOD';
+    if (userNameEl) userNameEl.innerText = `Hello, ${firstName}`;
 }
 
 // Global Paste Support for Modal

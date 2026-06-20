@@ -87,6 +87,7 @@
             style="display: flex; align-items: center; gap: 32px"
           >
             <h1
+              id="logoText"
               style="
                 margin: 0;
                 font-size: 1.8rem;
@@ -567,30 +568,25 @@
                     width: 80px;
                     height: 100px;
                     flex: none;
-                    background: var(--primary);
-                    color: white;
                   "
                 >
                   <img
-                    src="https://ui-avatars.com/api/?name=PG&background=fff&color=6b46c1"
-                    style="margin-top: 10px"
+                    src="assets/images/project_guide.png"
+                    style="object-fit: cover; width: 100%; height: 100%; border-radius: var(--radius-md);"
+                    alt="Amit Kumar Jha"
                   />
-                  <div class="dev-info" style="opacity: 1">
-                    <h4 style="color: white; font-size: 0.75rem;">Guide</h4>
-                  </div>
                 </div>
                 <div
                   style="
                     flex: 1;
-                    padding: 12px;
-                    border: 1px solid var(--border-color);
-                    border-radius: var(--radius-sm);
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    font-size: 0.85rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
                   "
                 >
-                  PROJECT GUIDE
+                  <div style="font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Project Guide</div>
+                  <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-dark);">Amit Kumar Jha</h4>
+                  <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Assistant Professor</p>
                 </div>
               </div>
             </div>
@@ -1110,7 +1106,7 @@
     
     <script src="assets/js/api.js?v=1.6"></script>
     <script src="assets/js/ai.js"></script>
-    <script src="assets/js/landing.js?v=3.3"></script>
+    <script src="assets/js/landing.js?v=3.5"></script>
   </body>
 </html>
 

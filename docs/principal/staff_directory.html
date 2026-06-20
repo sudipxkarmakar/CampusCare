@@ -108,8 +108,15 @@
               if (user.role === 'principal' || user.role === 'admin') {
                   document.getElementById('userProfile').style.display = 'flex';
                   document.getElementById('userName').innerText = `Hello, ${user.name}`;
-                  document.getElementById('userDetails').innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}`;
-                  document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
+                   const badge = document.querySelector('.role-badge-mini');
+                   if (badge) {
+                       badge.textContent = user.role.toUpperCase();
+                   }
+                   document.getElementById('userDetails').innerHTML = `
+                       <strong style="font-size: 1rem; color: var(--text-dark);">${user.name || 'User'}</strong>
+                       <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-left: 6px;">(ID: ${user.employeeId || user.rollNumber || user.identifier || 'N/A'})</span>
+                   `;
+                   document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${user.name}&background=random`;
               }
           }
       });

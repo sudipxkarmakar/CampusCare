@@ -84,7 +84,14 @@ function setupProfile() {
         
         const userDetailsEl = document.getElementById('userDetails');
         if (userDetailsEl) {
-            userDetailsEl.innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Campus Authority`;
+            const badge = document.querySelector('.role-badge-mini');
+            if (badge) {
+                badge.textContent = user.role.toUpperCase();
+            }
+            userDetailsEl.innerHTML = `
+                <strong style="font-size: 1rem; color: var(--text-dark);">${user.name || 'User'}</strong>
+                <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-left: 6px;">(ID: ${user.employeeId || user.rollNumber || user.identifier || 'N/A'})</span>
+            `;
         }
     }
 }

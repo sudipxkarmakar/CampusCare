@@ -655,10 +655,18 @@ function checkAuth() {
     const userProfileEl = document.getElementById('userProfile');
     const userDetailsEl = document.getElementById('userDetails');
 
-    if (userNameEl) userNameEl.innerText = `Hello, ${user.name}`;
+    const firstName = user.name ? user.name.split(' ')[0] : 'HOD';
+    if (userNameEl) userNameEl.innerText = `Hello, ${firstName}`;
     if (userProfileEl) userProfileEl.style.display = 'flex';
     if (userDetailsEl) {
-        userDetailsEl.innerHTML = `<strong>${user.role.toUpperCase()}</strong><br>${user.email}<br>Dept: ${user.department || 'N/A'}`;
+        const badge = document.querySelector('.role-badge-mini');
+        if (badge) {
+            badge.textContent = 'HOD';
+        }
+        userDetailsEl.innerHTML = `
+            <strong style="font-size: 1rem; color: var(--text-dark);">${user.name || 'User'}</strong>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-left: 6px;">(ID: ${user.employeeId || user.rollNumber || user.identifier || 'N/A'})</span>
+        `;
     }
 }
 

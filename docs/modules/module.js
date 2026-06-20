@@ -258,6 +258,42 @@
     const nameParts = (user.name || user.fullName || 'User').split(' ');
     const displayName = nameParts[0] + (['dr.', 'dr', 'prof.', 'prof', 'mr.', 'mr', 'mrs.', 'mrs', 'ms.', 'ms'].includes(nameParts[0].toLowerCase()) && nameParts.length > 1 ? ' ' + nameParts[1] : '');
 
+    let designation = "User";
+    if (userRole === "student" || userRole === "hosteler") {
+      const dept = user.department || "Student";
+      let yrText = "";
+      if (user.semester) {
+        const yr = Math.ceil(parseInt(user.semester) / 2);
+        const suffixes = ["st", "nd", "rd", "th"];
+        const suffix = (yr >= 1 && yr <= 4) ? suffixes[yr - 1] : "th";
+        yrText = `, ${yr}${suffix} Year`;
+      } else if (user.batch) {
+        yrText = `, Batch ${user.batch}`;
+      }
+      designation = `${dept}${yrText}`;
+    } else if (userRole === "teacher" || userRole === "hod" || userRole === "warden" || userRole === "dean" || userRole === "principal") {
+      const roleLabels = {
+        teacher: "Faculty",
+        hod: "HOD",
+        warden: "Hostel Admin",
+        dean: "Dean",
+        principal: "Principal"
+      };
+      const labelVal = roleLabels[userRole] || (userRole.charAt(0).toUpperCase() + userRole.slice(1));
+      const deptText = user.department ? `, ${user.department}` : "";
+      designation = `${labelVal}${deptText}`;
+    } else {
+      designation = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : "User";
+    }
+
+    let usernameText = user.rollNumber || user.employeeId || user.identifier || "";
+    if (role === "student" || role === "hosteler") {
+      let emailLocal = (user.email || "").split("@")[0];
+      if (emailLocal) {
+        usernameText = emailLocal;
+      }
+    }
+
     let profileSectionHtml = '';
     if (user.token) {
       profileSectionHtml = `
@@ -270,7 +306,7 @@
                     top: calc(100% + 10px);
                     right: 0;
                     background: var(--bg-color);
-                    padding: 20px;
+                    padding: 16px;
                     border-radius: var(--radius-lg);
                     box-shadow: var(--shadow-lg);
                     z-index: 1000;
@@ -278,26 +314,20 @@
                     animation: fadeIn 0.2s ease;
                     text-align: left;
                   ">
-                    <div style="display: flex; flex-direction: column; gap: 12px; min-width: 240px; padding: 2px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px; min-width: 290px; padding: 2px;">
                       <!-- Line 1: Header with Badge -->
-                      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 2px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 0;">
                         <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-dark);">Account Details</span>
-                        <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-sm); background: ${colors.bg}; color: ${colors.color};">${roleLabel}</span>
+                        <span class="role-badge-mini" style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); background: ${colors.bg}; color: ${colors.color};">${(user.role || 'Guest').toUpperCase()}</span>
                       </div>
                       
-                      <!-- Line 2: Details -->
-                      <div id="userDetails" style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0 !important; text-align: left;">
-                        <strong style="font-size: 0.95rem; color: var(--text-dark);">${esc(user.name || "User")}</strong>
-                        <span style="word-break: break-all;">${esc(user.email || "")}</span>
-                        <span style="font-weight: 500;">
-                          ID: ${esc(user.rollNumber || user.employeeId || user.identifier || "--")}
-                          ${user.department ? ` • Dept: ${esc(user.department)}` : ""}
-                          ${user.hostelName ? ` • Hostel: ${esc(user.hostelName)}` : ""}
-                        </span>
-                      </div>
-
+                       <div id="userDetails" style="display: flex; align-items: baseline; gap: 8px; text-align: left; width: 100%; padding: 4px 0; box-sizing: border-box;">
+                         <span style="font-weight: 700; font-size: 1rem; color: var(--text-dark);">${esc(user.name || "User")}</span>
+                         <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">(ID: ${esc(user.rollNumber || user.employeeId || user.identifier || "--")})</span>
+                       </div>
+ 
                       <!-- Line 3: Actions -->
-                      <div style="display: flex; gap: 8px; margin-top: 6px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                      <div style="display: flex; gap: 8px; margin-top: 2px; border-top: 1px solid var(--border-color); padding-top: 10px;">
                         <a href="${rootPrefix}modules/profile.html" class="btn-outline-purple" style="flex: 1 !important; text-align: center; font-size: 0.8rem; padding: 8px 10px; text-decoration: none; border-radius: var(--radius-sm); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; margin-top: 0 !important; width: auto !important;">
                           <i class="fa-regular fa-user"></i> Profile
                         </a>
