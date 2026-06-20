@@ -21,41 +21,6 @@
     }
 
     /* Minor adjustments for teacher dashboard */
-    .stat-card-small {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      background: var(--bg-color);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-color);
-      text-align: center;
-    }
-
-    .stat-card-small .icon-wrapper {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-    }
-
-    .stat-card-small h4 {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin: 0 0 4px 0;
-      font-weight: 500;
-    }
-
-    .stat-card-small .stat-value {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin: 0;
-    }
 
     .list-item-compact {
       display: flex;
@@ -310,35 +275,35 @@
           </section>
 
           <!-- Stat Cards -->
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-            <div class="stat-card-small">
+          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+            <a href="../modules/routine/view.html" class="stat-card-new" style="text-decoration: none;">
               <div class="icon-wrapper" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-calendar-day"></i></div>
-              <h4>Classes Today</h4>
-              <p class="stat-value" id="stat-classes">--</p>
-              <a href="../modules/routine/view.html"
-                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View Schedule</a>
-            </div>
-            <div class="stat-card-small">
+              <div class="stat-info">
+                <h4>Classes Today</h4>
+                <p class="stat-value" id="stat-classes">--</p>
+              </div>
+            </a>
+            <a href="../modules/student-database/view.html" class="stat-card-new" style="text-decoration: none;">
               <div class="icon-wrapper" style="background: #ede9fe; color: #7c3aed;"><i class="fa-solid fa-users"></i></div>
-              <h4>Students</h4>
-              <p class="stat-value" id="stat-students">--</p>
-              <a href="../modules/student-database/view.html"
-                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">Total Students</a>
-            </div>
-            <div class="stat-card-small">
+              <div class="stat-info">
+                <h4>Students</h4>
+                <p class="stat-value" id="stat-students">--</p>
+              </div>
+            </a>
+            <a href="javascript:void(0)" class="stat-card-new" style="text-decoration: none;">
               <div class="icon-wrapper" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-clipboard-check"></i></div>
-              <h4>Pending Tasks</h4>
-              <p class="stat-value" id="stat-tasks">--</p>
-              <a href="javascript:void(0)"
-                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">Pending Approvals</a>
-            </div>
-            <div class="stat-card-small">
+              <div class="stat-info">
+                <h4>Pending Tasks</h4>
+                <p class="stat-value" id="stat-tasks">--</p>
+              </div>
+            </a>
+            <a href="../modules/student-database/view.html?filter=my-mentees" class="stat-card-new" style="text-decoration: none;">
               <div class="icon-wrapper" style="background: #d1fae5; color: #059669;"><i class="fa-solid fa-user-graduate"></i></div>
-              <h4>Mentees</h4>
-              <p class="stat-value" id="stat-mentees">--</p>
-              <a href="../modules/student-database/view.html?filter=my-mentees"
-                style="font-size: 0.75rem; color: var(--primary); text-decoration: none; margin-top: 8px; font-weight: 600;">View Mentees</a>
-            </div>
+              <div class="stat-info">
+                <h4>Mentees</h4>
+                <p class="stat-value" id="stat-mentees">--</p>
+              </div>
+            </a>
           </div>
         </div>
 
