@@ -193,6 +193,11 @@ window.showDetailPopup = function(title, subtitle, content, dateText, category) 
     });
   }
   
+  let cleanContent = content || '';
+  cleanContent = cleanContent.replace(/\[EVENT_META:[\s\S]*?\]/g, '').trim();
+  let cleanTitle = title || '';
+  cleanTitle = cleanTitle.replace(/\[EVENT_META:[\s\S]*?\]/g, '').trim();
+
   const contentBox = document.getElementById('landing-detail-modal-content');
   contentBox.innerHTML = `
     <button data-action="closeDetailPopup" aria-label="Close details" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); transition: background 0.2s;"><i class="fa-solid fa-xmark"></i></button>
@@ -202,11 +207,11 @@ window.showDetailPopup = function(title, subtitle, content, dateText, category) 
         ${dateText ? `<span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">${dateText}</span>` : ''}
       </div>
       <div>
-        <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-dark); margin: 0; line-height: 1.3;">${title}</h2>
+        <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-dark); margin: 0; line-height: 1.3;">${cleanTitle}</h2>
         ${subtitle ? `<p style="font-size: 1rem; color: var(--text-muted); margin: 4px 0 0 0; font-weight: 500;">${subtitle}</p>` : ''}
       </div>
       <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
-        <p style="font-size: 1rem; line-height: 1.6; color: var(--text-dark); margin: 0; white-space: pre-wrap;">${content}</p>
+        <p style="font-size: 1rem; line-height: 1.6; color: var(--text-dark); margin: 0; white-space: pre-wrap;">${cleanContent}</p>
       </div>
     </div>
   `;
