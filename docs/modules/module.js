@@ -141,24 +141,15 @@
       navMenuHtml = `
         <li><a href="${rootPrefix}student/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Home</a></li>
         <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-regular fa-calendar"></i> Class Routine</a></li>
-        <li><a href="${rootPrefix}modules/assignments/view.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
-        <li><a href="${rootPrefix}modules/documents/view.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-pdf"></i> Documents</a></li>
         <li><a href="${rootPrefix}modules/notices/view.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-bell"></i> Personal Notice</a></li>
-        <li><a href="${rootPrefix}modules/mar-moocs/view.html" class="nav-item ${cfg.module === 'mar-moocs' ? 'active' : ''}"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
+        <li><a href="${rootPrefix}modules/complaints/view.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-shield-halved"></i> Complaints</a></li>
       `;
     } else if (userRole === 'teacher') {
       portalText = 'Teacher Portal';
       navMenuHtml = `
         <li><a href="${rootPrefix}teacher/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
         <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> My Classes</a></li>
-        <li><a href="${rootPrefix}modules/assignments/view.html" class="nav-item ${cfg.module === 'assignments' ? 'active' : ''}"><i class="fa-solid fa-file-pen"></i> Assignments</a></li>
-        <li><a href="${rootPrefix}modules/documents/post.html" class="nav-item ${cfg.module === 'documents' ? 'active' : ''}"><i class="fa-solid fa-file-arrow-up"></i> Notes</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=my-mentees') ? 'active' : ''}"><i class="fa-solid fa-users"></i> Students</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html?filter=my-mentees" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=my-mentees') ? 'active' : ''}"><i class="fa-solid fa-hands-holding-child"></i> Mentees</a></li>
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-circle-exclamation"></i> Complaints</a></li>
-        <li><a href="${rootPrefix}modules/mar-moocs/post.html" class="nav-item ${cfg.module === 'mar-moocs' ? 'active' : ''}"><i class="fa-solid fa-award"></i> MAR & MOOCs</a></li>
-        <li><a href="${rootPrefix}teacher/personal_space.html" class="nav-item"><i class="fa-solid fa-folder-open"></i> Personal Space</a></li>
-        <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Library</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-regular fa-bell"></i> Official Notices</a></li>
       `;
     } else if (userRole === 'warden') {
@@ -168,9 +159,7 @@
         <li><a href="${rootPrefix}modules/gate-pass/approve.html" class="nav-item ${cfg.module === 'gate-pass' ? 'active' : ''}"><i class="fa-solid fa-stamp"></i> Leave Approvals</a></li>
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-triangle-exclamation"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/mess-menu/post.html" class="nav-item ${cfg.module === 'mess-menu' ? 'active' : ''}"><i class="fa-solid fa-utensils"></i> Mess Menu</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Residents</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notice Board</a></li>
-        <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book-open"></i> Library</a></li>
       `;
     } else if (userRole === 'hod') {
       portalText = 'HOD Portal';
@@ -178,30 +167,15 @@
         <li><a href="${rootPrefix}hod/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
         <li><a href="${rootPrefix}modules/gate-pass/approve.html" class="nav-item ${cfg.module === 'gate-pass' ? 'active' : ''}"><i class="fa-solid fa-file-signature"></i> Leave Requests</a></li>
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-gavel"></i> Dept Complaints</a></li>
-        <li><a href="${rootPrefix}hod/subject_allocation.html" class="nav-item"><i class="fa-solid fa-book-open-reader"></i> Subject Allocation</a></li>
         <li><a href="${rootPrefix}modules/routine/post.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-week"></i> Routine Management</a></li>
-        <li><a href="${rootPrefix}hod/mentor_allocation.html" class="nav-item"><i class="fa-solid fa-chalkboard-user"></i> Mentor Assignment</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> Students</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html?filter=dept-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=dept-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> Teachers</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Notices</a></li>
-        <li><a href="${rootPrefix}modules/alumni/post.html" class="nav-item ${cfg.module === 'alumni' ? 'active' : ''}"><i class="fa-solid fa-graduation-cap"></i> Alumni</a></li>
-        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> Academic Leaders</a></li>
-        <li><a href="${rootPrefix}modules/achievements/post.html" class="nav-item ${cfg.module === 'achievements' ? 'active' : ''}"><i class="fa-solid fa-trophy"></i> Achievements</a></li>
       `;
     } else if (userRole === 'principal') {
       portalText = 'Principal Portal';
       navMenuHtml = `
         <li><a href="${rootPrefix}principal/index.html" class="nav-item"><i class="fa-solid fa-house-chimney"></i> Dashboard</a></li>
-        <li><a href="${rootPrefix}modules/routine/view.html" class="nav-item ${cfg.module === 'routine' ? 'active' : ''}"><i class="fa-solid fa-calendar-days"></i> Routine Management</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html" class="nav-item ${cfg.module === 'student-database' && !window.location.search.includes('filter') ? 'active' : ''}"><i class="fa-solid fa-user-graduate"></i> All Students</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-teachers" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-teachers') ? 'active' : ''}"><i class="fa-solid fa-person-chalkboard"></i> All Teachers</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-hods" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-hods') ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> HODs</a></li>
-        <li><a href="${rootPrefix}modules/student-database/view.html?filter=all-wardens" class="nav-item ${cfg.module === 'student-database' && window.location.search.includes('filter=all-wardens') ? 'active' : ''}"><i class="fa-solid fa-user-shield"></i> Wardens</a></li>
         <li><a href="${rootPrefix}modules/complaints/resolve.html" class="nav-item ${cfg.module === 'complaints' ? 'active' : ''}"><i class="fa-solid fa-list-check"></i> Complaints</a></li>
         <li><a href="${rootPrefix}modules/notices/post.html" class="nav-item ${cfg.module === 'notices' ? 'active' : ''}"><i class="fa-solid fa-bullhorn"></i> Global Notices</a></li>
-        <li><a href="${rootPrefix}modules/library.html" class="nav-item ${cfg.module === 'library' ? 'active' : ''}"><i class="fa-solid fa-book"></i> Central Library</a></li>
-        <li><a href="${rootPrefix}modules/leaders/post.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-user-tie"></i> Add Academic Leader</a></li>
-        <li><a href="${rootPrefix}modules/leaders/view.html" class="nav-item ${cfg.module === 'leaders' && cfg.mode !== 'post' ? 'active' : ''}"><i class="fa-solid fa-users"></i> Academic Leaders</a></li>
       `;
     } else {
       portalText = 'Guest Portal';
@@ -370,11 +344,7 @@
             </ul>
 
             <div class="sidebar-bottom" style="display: flex !important; flex-direction: column !important; width: 100% !important; gap: 4px !important;">
-              ${user.token ? `
-                <a href="${rootPrefix}modules/complaints/post.html" class="nav-item ${cfg.module === 'complaints' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-circle-plus"></i> Register Complaint</a>
-              ` : `
-                <a href="${rootPrefix}modules/profile.html" class="nav-item ${cfg.module === 'profile' ? 'active' : ''}"><i class="fa-solid fa-gear"></i> Settings</a>
-              `}
+              <a href="${rootPrefix}modules/complaints/post.html" class="nav-item ${cfg.module === 'complaints' && cfg.mode === 'post' ? 'active' : ''}"><i class="fa-solid fa-circle-plus"></i> Register Complaint</a>
               <a href="javascript:void(0)" class="nav-item" data-action="logout" style="color: var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
             </div>
           </aside>
