@@ -423,7 +423,7 @@
         <section class="section-card">
           <div class="section-header">
             <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-shield-halved" style="color: var(--secondary);"></i> Notices</h2>
-            <a href="../modules/notices/post.html" class="btn-view-all">View All</a>
+            <a href="../modules/notices/view.html" class="btn-view-all">View All</a>
           </div>
           <div class="assignment-tabs" id="notice-filter-tabs">
             <div class="assignment-tab active" data-filter="general">General</div>
@@ -949,7 +949,7 @@
             if (calendarUpdated && typeof renderCalendar === 'function') {
                 renderCalendar();
             }
-
+            renderWardenNoticesPreview('general');
         } catch (e) {
             // Error fetching notices
         }
