@@ -152,6 +152,9 @@ class CampusAgentService {
 
     detectIntent(input, user, conversationId = null) {
         const lower = input.toLowerCase();
+        if (lower.includes('draft a brief, professional')) {
+            return 'general';
+        }
         const ctx = conversationId ? contextByConversation.get(conversationId) : null;
         if (ctx && (ctx.entityType === 'NOTICE' || ctx.entityType === 'EVENT')) {
             if (includesAny(lower, ['do that', 'fetch archived', 'archived', 'archive', 'old', 'older', 'previous', 'past'])) {
@@ -848,6 +851,28 @@ class CampusAgentService {
 
     async answerGeneral(input, user, history, traceId, clientContext = {}) {
         const role = user?.role || 'guest';
+
+        // Intelligent template fallback if Groq API key is missing
+        if (!this.groq && input.toLowerCase().includes('draft a brief, professional')) {
+            const type = input.toLowerCase().includes('whatsapp') ? 'WhatsApp message' : 'Personal Call Notice';
+            const regardingIndex = input.toLowerCase().indexOf('regarding:');
+            let topic = 'important updates';
+            if (regardingIndex !== -1) {
+                const afterRegarding = input.slice(regardingIndex + 10).trim();
+                const dotIndex = afterRegarding.indexOf('.');
+                topic = dotIndex !== -1 ? afterRegarding.slice(0, dotIndex).trim() : afterRegarding;
+            }
+            topic = topic.replace(/^["']|["']$/g, '').trim();
+
+            let template = '';
+            if (type === 'WhatsApp message') {
+                template = `*Notification from Principal's Office*\n\nDear Student(s),\n\nThis is a reminder regarding: ${topic}.\n\nPlease take the necessary action immediately.\n\nRegards,\nPrincipal`;
+            } else {
+                template = `NOTICE: Personal Call\n\nTo: Concerned Student(s)\nFrom: Principal's Office\n\nYou are requested to report to the Principal's Office regarding: ${topic}.\n\nPlease treat this as urgent.\n\nDate: ${new Date().toLocaleDateString('en-IN')}`;
+            }
+            return this.reply(template, { traceId });
+        }
+
         const prompt = [
             {
                 role: 'system',

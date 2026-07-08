@@ -81,7 +81,7 @@ const getAllStudents = async (req, res) => {
     try {
         const students = await User.find({ role: { $in: ['student', 'hosteler'] } })
             .sort({ rollNumber: 1 })
-            .select('name rollNumber department batch email year attendance cgpa contactNumber')
+            .select('name rollNumber department batch email year attendance cgpa contactNumber mar backlogs')
             .lean();
         res.json(students);
     } catch (error) {

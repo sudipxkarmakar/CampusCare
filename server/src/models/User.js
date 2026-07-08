@@ -94,6 +94,7 @@ const userSchema = new mongoose.Schema({
     moocs: { type: Number, default: 0 },
     attendance: { type: Number, default: 0 },
     cgpa: { type: Number, default: 0 },
+    backlogs: { type: Number, default: 0 },
     assignmentsSubmitted: { type: Number, default: 0 },
 
     // Common for Student/Teacher/Hosteler

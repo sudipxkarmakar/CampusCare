@@ -334,18 +334,49 @@
           </div>
         </section>
 
-        <!-- Right Section (Span 1): Resolution Center -->
+        <!-- Right Section (Span 1): Direct Outreach -->
         <section class="section-card" style="display: flex; flex-direction: column;">
-          <h3 style="margin-bottom: 1.5rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
-              <i class="fa-solid fa-shield-halved" style="color: var(--danger);"></i> Resolution Center
+          <h3 style="margin-bottom: 1rem; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-size: 1.25rem;">
+              <i class="fa-solid fa-paper-plane" style="color: var(--primary);"></i> Direct Outreach
           </h3>
-          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
-              <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0; line-height: 1.5; text-align: center;">
-                  Oversee high-priority complaints and structural audits submitted by campus residents.
-              </p>
-              <a href="../modules/complaints/resolve.html" class="btn-filled-purple" style="display: block; text-align: center; text-decoration: none; padding: 12px; font-weight: 600; border-radius: var(--radius-md);">
-                  <i class="fa-solid fa-list-check"></i> Review Complaints
-              </a>
+          <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+              <div style="display: flex; background: var(--bg-color); padding: 2px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <button type="button" id="outreach-type-wp" onclick="setOutreachType('wp')" class="btn-dashboard active" style="flex: 1; border-radius: var(--radius-md); border: none; font-size: 0.85rem; padding: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;"><i class="fa-brands fa-whatsapp"></i> Text over WP</button>
+                <button type="button" id="outreach-type-notice" onclick="setOutreachType('notice')" class="btn-dashboard" style="flex: 1; border-radius: var(--radius-md); border: none; font-size: 0.85rem; padding: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;"><i class="fa-solid fa-bullhorn"></i> Personal Notice</button>
+              </div>
+
+              <!-- User Search Directory -->
+              <div style="position: relative;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; display: block;">Agent Directory Query</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="outreach-search-user" placeholder="Search name, or ask AI like 'CGPA < 7'..." style="flex: 1; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 0.9rem; font-family: inherit; outline: none; box-sizing: border-box;">
+                  <button type="button" onclick="executeOutreachQuery()" class="btn-filled-purple" style="padding: 10px 14px; border-radius: var(--radius-md); border: none; color: white;"><i class="fa-solid fa-robot"></i> Find</button>
+                </div>
+                <div id="outreach-search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 100; max-height: 200px; overflow-y: auto; margin-top: 4px;"></div>
+              </div>
+
+              <!-- Selected Recipient Info -->
+              <div id="selected-user-display"></div>
+
+              <!-- AI Draft Prompt -->
+              <div style="background: #fdf4ff; border: 1px solid #f3d9fa; padding: 12px; border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px;">
+                <label style="font-size: 0.8rem; font-weight: 700; color: #86198f; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-robot"></i> AI Draft Assistant</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="text" id="outreach-ai-prompt" placeholder="e.g. Warn about low attendance" style="flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; box-sizing: border-box;">
+                  <button type="button" id="outreach-ai-draft-btn" onclick="generateOutreachAIDraft()" class="btn-filled-purple" style="background: #a21caf; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; color: white;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Draft
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; display: block;">Message / Notice Content</label>
+                <textarea id="outreach-message" placeholder="Type your message or call instructions..." rows="3" style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 0.9rem; font-family: inherit; outline: none; resize: none; box-sizing: border-box;"></textarea>
+              </div>
+
+              <button type="button" onclick="executeOutreach()" class="btn-filled-purple" style="width: 100%; border: none; font-size: 0.9rem; padding: 10px; font-weight: 700; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto;">
+                <i class="fa-solid fa-paper-plane"></i> Send Outreach
+              </button>
           </div>
         </section>
 
@@ -861,6 +892,412 @@
             if (container) container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">Could not load leave requests.</div>`;
         }
     }
+
+    // Direct Outreach Logic
+    let currentOutreachType = 'wp';
+    let allOutreachUsers = [];
+    let selectedOutreachUser = null;
+
+    window.setOutreachType = function(type) {
+        currentOutreachType = type;
+        const btnWp = document.getElementById('outreach-type-wp');
+        const btnNotice = document.getElementById('outreach-type-notice');
+
+        if (type === 'wp') {
+            btnWp.classList.add('active');
+            btnNotice.classList.remove('active');
+        } else {
+            btnNotice.classList.add('active');
+            btnWp.classList.remove('active');
+        }
+    };
+
+    async function loadDirectoryData() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const currentUserObj = JSON.parse(userStr);
+        const token = currentUserObj.token;
+        const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+        
+        const endpoints = [
+            '/api/principal/students',
+            '/api/principal/teachers',
+            '/api/principal/hods',
+            '/api/principal/wardens'
+        ];
+        const responses = await Promise.all(
+            endpoints.map(ep => fetch(`${apiBase}${ep}`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.ok ? r.json() : []))
+        );
+        
+        const roles = ['Student', 'Teacher', 'HOD', 'Warden'];
+        allOutreachUsers = responses.flatMap((list, idx) => 
+            (Array.isArray(list) ? list : []).map(u => ({
+                id: u._id,
+                name: u.name || u.fullName || 'User',
+                roll: u.rollNumber || u.employeeId || '',
+                phone: u.contactNumber || u.phone || '',
+                role: roles[idx],
+                dept: u.department || '',
+                cgpa: u.cgpa || 0,
+                marPoints: u.mar || 0,
+                attendance: u.attendance || 0,
+                backlogs: u.backlogs || 0
+            }))
+        );
+    }
+
+    async function fetchComplaints() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return [];
+        const currentUserObj = JSON.parse(userStr);
+        const token = currentUserObj.token;
+        const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+        
+        try {
+            const res = await fetch(`${apiBase}/api/complaints`, { headers: { Authorization: `Bearer ${token}` } });
+            return res.ok ? await res.json() : [];
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    }
+
+    window.executeOutreachQuery = async function() {
+        const query = document.getElementById('outreach-search-user').value.trim();
+        const resultsDiv = document.getElementById('outreach-search-results');
+        
+        if (!query) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        resultsDiv.innerHTML = '<div style="font-size:0.85rem; color:var(--text-dark); padding:12px; font-weight: 500;"><i class="fa-solid fa-robot fa-spin" style="color: var(--primary);"></i> Agent querying Directory & Databases...</div>';
+        resultsDiv.style.display = 'block';
+
+        if (allOutreachUsers.length === 0) {
+            try {
+                await loadDirectoryData();
+            } catch (e) {
+                resultsDiv.innerHTML = '<div style="font-size:0.8rem; color:var(--danger); padding:10px;">Failed to load directory.</div>';
+                return;
+            }
+        }
+
+        const lowerQuery = query.toLowerCase();
+
+        let targetUsers = [];
+        let reason = '';
+
+        const cgpaMatch = lowerQuery.match(/(?:cgpa)\s*(?:greater\s*than|above|higher\s*than|higher|>|less\s*than|below|lower\s*than|lower|under|<)\s*(\d+(?:\.\d+)?)/);
+        const marMatch = lowerQuery.match(/(?:mar|mar\s*points)\s*(?:greater\s*than|above|higher\s*than|higher|>|less\s*than|below|lower\s*than|lower|under|<)\s*(\d+)/);
+        const attMatch = lowerQuery.match(/(?:attendance)\s*(?:greater\s*than|above|higher\s*than|higher|>|less\s*than|below|lower\s*than|lower|under|<)\s*(\d+)/);
+        const backMatch = lowerQuery.match(/(?:backlogs|backlog)\s*(?:greater\s*than|above|higher\s*than|higher|>|less\s*than|below|lower\s*than|lower|under|<|==)\s*(\d+)/);
+
+        let matchedAnyMetric = false;
+        let reasons = [];
+        targetUsers = allOutreachUsers.filter(u => u.role === 'Student');
+
+        if (cgpaMatch) {
+            const threshold = parseFloat(cgpaMatch[1]);
+            const isGreater = cgpaMatch[0].includes('greater') || cgpaMatch[0].includes('above') || cgpaMatch[0].includes('>') || cgpaMatch[0].includes('higher');
+            targetUsers = targetUsers.filter(u => isGreater ? u.cgpa > threshold : u.cgpa < threshold);
+            reasons.push(`CGPA ${isGreater ? '>' : '<'} ${threshold}`);
+            matchedAnyMetric = true;
+        }
+        if (marMatch) {
+            const threshold = parseInt(marMatch[1]);
+            const isGreater = marMatch[0].includes('greater') || marMatch[0].includes('above') || marMatch[0].includes('>') || marMatch[0].includes('higher');
+            targetUsers = targetUsers.filter(u => isGreater ? u.marPoints > threshold : u.marPoints < threshold);
+            reasons.push(`MAR Points ${isGreater ? '>' : '<'} ${threshold}`);
+            matchedAnyMetric = true;
+        }
+        if (attMatch) {
+            const threshold = parseInt(attMatch[1]);
+            const isGreater = attMatch[0].includes('greater') || attMatch[0].includes('above') || attMatch[0].includes('>') || attMatch[0].includes('higher');
+            targetUsers = targetUsers.filter(u => isGreater ? u.attendance > threshold : u.attendance < threshold);
+            reasons.push(`Attendance ${isGreater ? '>' : '<'} ${threshold}%`);
+            matchedAnyMetric = true;
+        }
+        if (backMatch) {
+            const threshold = parseInt(backMatch[1]);
+            const isGreater = backMatch[0].includes('greater') || backMatch[0].includes('above') || backMatch[0].includes('>') || backMatch[0].includes('higher');
+            targetUsers = targetUsers.filter(u => isGreater ? u.backlogs > threshold : u.backlogs < threshold);
+            reasons.push(`Backlogs ${isGreater ? '>' : '<'} ${threshold}`);
+            matchedAnyMetric = true;
+        }
+
+        if (matchedAnyMetric) {
+            reason = `Students with ${reasons.join(' and ')}`;
+        }
+        else if (lowerQuery.includes('latest complaint') || lowerQuery.includes('newest complaint') || lowerQuery.includes('last complaint')) {
+            const complaints = await fetchComplaints();
+            if (complaints && complaints.length > 0) {
+                complaints.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const latest = complaints[0];
+                const filedBy = latest.student || latest.user || {};
+                const name = filedBy.name || latest.studentName || '';
+                const found = allOutreachUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
+                if (found) {
+                    targetUsers = [found];
+                    reason = `Sender of latest complaint ("${latest.title || latest.subject || 'No Subject'}")`;
+                } else if (name) {
+                    targetUsers = [{
+                        id: filedBy._id,
+                        name: name,
+                        phone: filedBy.contactNumber || '',
+                        role: 'Student',
+                        dept: filedBy.department || ''
+                    }];
+                    reason = `Sender of latest complaint ("${latest.title || latest.subject || 'No Subject'}")`;
+                }
+            }
+        }
+        else if (lowerQuery.includes('complaint about') || lowerQuery.includes('complaint regarding') || lowerQuery.includes('complaint on')) {
+            const keywordMatch = lowerQuery.match(/(?:about|regarding|on)\s+(.+)/);
+            if (keywordMatch) {
+                const keyword = keywordMatch[1].trim();
+                const complaints = await fetchComplaints();
+                const matched = complaints.filter(c => 
+                    (c.title && c.title.toLowerCase().includes(keyword)) ||
+                    (c.subject && c.subject.toLowerCase().includes(keyword)) ||
+                    (c.description && c.description.toLowerCase().includes(keyword))
+                );
+                if (matched.length > 0) {
+                    const userNames = matched.map(c => (c.student?.name || c.user?.name || c.studentName || '').toLowerCase());
+                    targetUsers = allOutreachUsers.filter(u => userNames.includes(u.name.toLowerCase()));
+                    reason = `Senders of complaints matching "${keyword}"`;
+                }
+            }
+        }
+        else if (lowerQuery.includes('all students') || lowerQuery.includes('every student')) {
+            targetUsers = allOutreachUsers.filter(u => u.role === 'Student');
+            reason = 'All Students';
+        } 
+        else if (lowerQuery.includes('all teachers') || lowerQuery.includes('every teacher')) {
+            targetUsers = allOutreachUsers.filter(u => u.role === 'Teacher');
+            reason = 'All Teachers';
+        }
+        else {
+            targetUsers = allOutreachUsers.filter(u => 
+                u.name.toLowerCase().includes(lowerQuery) || 
+                u.roll.toLowerCase().includes(lowerQuery) || 
+                u.role.toLowerCase().includes(lowerQuery) ||
+                u.dept.toLowerCase().includes(lowerQuery)
+            ).slice(0, 5);
+            reason = `Search matches for "${query}"`;
+        }
+
+        if (targetUsers.length === 0) {
+            resultsDiv.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted); padding:12px;">No matching users resolved by Agent.</div>';
+            return;
+        }
+
+        if (targetUsers.length === 1) {
+            selectOutreachUser(targetUsers[0]);
+            resultsDiv.style.display = 'none';
+        } else {
+            resultsDiv.innerHTML = `
+                <div style="padding:10px; border-bottom:1px solid var(--border-color); background: #fdf4ff; font-weight:700; font-size:0.8rem; color:#86198f; display:flex; justify-content:space-between; align-items:center;">
+                    <span>Resolved: ${reason} (${targetUsers.length} users)</span>
+                    <button type="button" onclick="selectOutreachSet(${JSON.stringify(targetUsers).replace(/"/g, '&quot;')}, '${reason.replace(/'/g, "\\'")}')" style="background:#a21caf; border:none; color:white; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer;">Select All</button>
+                </div>
+                ${targetUsers.map(u => `
+                    <div onclick="selectOutreachUser(${JSON.stringify(u).replace(/"/g, '&quot;')})" style="padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; flex-direction: column; gap: 4px;" onmouseover="this.style.background='var(--bg-color)'" onmouseout="this.style.background='transparent'">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">${u.name} <span style="font-size:0.7rem; padding: 2px 6px; background:#e2e8f0; border-radius:10px; font-weight:700; margin-left:4px;">${u.role}</span></div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">${u.dept ? u.dept + ' | ' : ''}ID: ${u.roll || 'N/A'}</div>
+                        ${u.role === 'Student' ? `
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <span style="background: #eff6ff; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 600;">CGPA: ${u.cgpa}</span>
+                            <span style="background: #faf5ff; color: #6b46c1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">MAR: ${u.marPoints}</span>
+                            <span style="background: #f0fdf4; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Att: ${u.attendance}%</span>
+                            ${u.backlogs > 0 ? `<span style="background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Backlogs: ${u.backlogs}</span>` : ''}
+                        </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+    };
+
+    window.selectOutreachSet = function(users, label) {
+        selectedOutreachUser = users;
+        document.getElementById('outreach-search-user').value = `${label} (${users.length} Selected)`;
+        document.getElementById('outreach-search-results').style.display = 'none';
+
+        document.getElementById('selected-user-display').innerHTML = `
+            <div style="font-size:0.8rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 8px 12px; border-radius: var(--radius-md); font-weight: 600; display:flex; align-items:center; justify-content:space-between;">
+                <span>Recipient: ${label} (${users.length} Users)</span>
+                <button type="button" onclick="clearSelectedUser()" style="background:none; border:none; color:#166534; cursor:pointer; font-weight:bold; font-size: 1.1rem;">&times;</button>
+            </div>
+        `;
+    };
+
+    window.selectOutreachUser = function(user) {
+        selectedOutreachUser = user;
+        document.getElementById('outreach-search-user').value = `${user.name} (${user.role})`;
+        document.getElementById('outreach-search-results').style.display = 'none';
+        
+        document.getElementById('selected-user-display').innerHTML = `
+            <div style="font-size:0.8rem; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 8px 12px; border-radius: var(--radius-md); font-weight: 600; display:flex; align-items:center; justify-content:space-between;">
+                <span>Recipient: ${user.name} (${user.role})</span>
+                <button type="button" onclick="clearSelectedUser()" style="background:none; border:none; color:#166534; cursor:pointer; font-weight:bold; font-size: 1.1rem;">&times;</button>
+            </div>
+        `;
+    };
+
+    window.clearSelectedUser = function() {
+        selectedOutreachUser = null;
+        document.getElementById('outreach-search-user').value = '';
+        document.getElementById('selected-user-display').innerHTML = '';
+    };
+
+    window.generateOutreachAIDraft = async function() {
+        if (!selectedOutreachUser) {
+            alert('Please search and select recipient(s) first.');
+            return;
+        }
+        const promptInput = document.getElementById('outreach-ai-prompt').value.trim();
+        if (!promptInput) {
+            alert('Please enter a brief instruction for the AI (e.g. Warn about low attendance).');
+            return;
+        }
+
+        const draftBtn = document.getElementById('outreach-ai-draft-btn');
+        draftBtn.disabled = true;
+        draftBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Drafting...';
+
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return;
+        const currentUserObj = JSON.parse(userStr);
+        const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+
+        const isMultiple = Array.isArray(selectedOutreachUser);
+        const namePlaceholder = isMultiple ? "students" : selectedOutreachUser.name;
+        const rolePlaceholder = isMultiple ? "Student" : selectedOutreachUser.role;
+
+        try {
+            const response = await fetch(`${apiBase}/api/ai/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentUserObj.token}`
+                },
+                body: JSON.stringify({
+                    text: `Draft a brief, professional ${currentOutreachType === 'wp' ? 'WhatsApp message' : 'personal call notice'} to ${namePlaceholder} (${rolePlaceholder}) regarding: ${promptInput}. Just give the drafted text without any surrounding explanation or introduction.`,
+                    conversationId: 'outreach_' + Date.now(),
+                    history: []
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const resultText = data.response?.message || data.message || '';
+                const cleanedText = resultText.replace(/^["']|["']$/g, '').trim();
+                document.getElementById('outreach-message').value = cleanedText;
+            } else {
+                alert('AI drafting failed.');
+            }
+        } catch(e) {
+            console.error(e);
+            alert('Error generating draft.');
+        } finally {
+            draftBtn.disabled = false;
+            draftBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Draft';
+        }
+    };
+
+    window.executeOutreach = async function() {
+        if (!selectedOutreachUser) {
+            alert('Please search and select recipient(s) first.');
+            return;
+        }
+        const message = document.getElementById('outreach-message').value.trim();
+        if (!message) {
+            alert('Please enter or generate a message.');
+            return;
+        }
+
+        const isMultiple = Array.isArray(selectedOutreachUser);
+        const recipients = isMultiple ? selectedOutreachUser : [selectedOutreachUser];
+
+        if (currentOutreachType === 'wp') {
+            if (recipients.length === 1) {
+                const phone = recipients[0].phone;
+                if (!phone) {
+                    alert('No contact number available for this user.');
+                    return;
+                }
+                const cleanPhone = phone.replace(/[^\d+]/g, '');
+                const wpUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${encodeURIComponent(message)}`;
+                window.open(wpUrl, '_blank');
+            } else {
+                let modal = document.getElementById('wp-multiple-modal');
+                if (modal) modal.remove();
+                
+                modal = document.createElement('div');
+                modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);';
+                modal.id = 'wp-multiple-modal';
+                
+                modal.innerHTML = `
+                    <div style="background:white; padding:24px; border-radius:18px; width:90%; max-width:440px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.15); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:16px;">
+                        <h3 style="margin:0; color:#1e1b4b; font-weight:700; font-size:1.2rem;">WhatsApp Broadcast (${recipients.length} recipients)</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.4;">Click each recipient below to open WhatsApp with your drafted message:</p>
+                        <div style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px;">
+                            ${recipients.map((r, idx) => {
+                                const cleanPhone = (r.phone || '').replace(/[^\d+]/g, '');
+                                const wpUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${encodeURIComponent(message)}`;
+                                return `
+                                    <button type="button" onclick="window.open('${wpUrl}', '_blank'); this.style.background='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#64748b';" style="padding:10px 14px; border-radius:10px; border:1px solid #25D366; background:#e8fbf0; color:#0f5132; text-align:left; font-size:0.85rem; font-weight:600; cursor:pointer; width:100%; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;">
+                                        <span>${idx + 1}. ${r.name} (${r.phone || 'No Phone'})</span>
+                                        <i class="fa-brands fa-whatsapp" style="font-size:1.15rem; color:#25D366;"></i>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                        <button type="button" onclick="document.getElementById('wp-multiple-modal').remove()" class="btn-filled-purple" style="width:100%; padding:11px; border-radius:10px; font-weight:700; cursor:pointer;">Done</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+        } else {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                alert('You must be logged in.');
+                return;
+            }
+            const currentUserObj = JSON.parse(userStr);
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+
+            try {
+                let successCount = 0;
+                await Promise.all(recipients.map(async (r) => {
+                    const response = await fetch(`${apiBase}/api/content/notice`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentUserObj.token}`
+                        },
+                        body: JSON.stringify({
+                            title: `Call Notice: ${r.name}`,
+                            content: message,
+                            audience: 'personal',
+                            userId: currentUserObj._id
+                        })
+                    });
+                    if (response.ok) successCount++;
+                }));
+
+                alert(`Successfully posted personal notice to ${successCount} of ${recipients.length} recipients!`);
+                document.getElementById('outreach-message').value = '';
+                document.getElementById('outreach-ai-prompt').value = '';
+                clearSelectedUser();
+                if (typeof loadNotices === 'function') loadNotices();
+            } catch (error) {
+                console.error(error);
+                alert('Error posting personal notices.');
+            }
+        }
+    };
   </script>
 </body>
 </html>
