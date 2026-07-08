@@ -119,6 +119,7 @@ class CampusAgentService {
             else if (intent === 'mar_moocs') result = await this.getMarMoocs(user, activeConversationId, traceId, input);
             else if (intent === 'status') result = await this.getStatus(user, traceId, input);
             else if (intent === 'leave') result = await this.draftLeave(input, user, activeConversationId, traceId);
+            else if (intent === 'teacher_outreach') result = await this.handleTeacherOutreach(input, user, activeConversationId, traceId);
             else result = await this.answerGeneral(input, user, history, traceId, clientContext);
 
             await this.logAction({
@@ -166,6 +167,11 @@ class CampusAgentService {
                 return 'schedule';
             }
         }
+        const isTeacher = user && ['teacher', 'hod', 'principal'].includes(user.role);
+        if (isTeacher && (includesAny(lower, ['send', 'text', 'message', 'msg', 'whatsapp', 'wp', 'alert', 'outreach', 'draft']) && includesAny(lower, ['student', 'students', 'parent', 'parents', 'class', 'batch', 'assignment']))) {
+            return 'teacher_outreach';
+        }
+
         if (includesAny(lower, ['night out', 'leave', 'home visit', 'medical leave', 'apply for'])) return 'leave';
         if (includesAny(lower, ['submit', 'turn in', 'complete', 'upload', 'draft', 'write', 'prepare']) && includesAny(lower, ['assignment', 'homework', 'work'])) return 'assignment_submit';
         if (includesAny(lower, ['complaint', 'complain', 'issue', 'problem', 'broken', 'not working', 'harassment', 'ragging'])) return 'complaint_create';
@@ -218,6 +224,18 @@ class CampusAgentService {
 
         if (!selected) return null;
         pendingByConversation.delete(conversationId);
+
+        if (pending.type === 'teacher_outreach') {
+            return this.handleTeacherOutreach(input, user, conversationId, traceId, selected.id);
+        }
+
+        if (pending.type === 'teacher_outreach_group') {
+            return this.handleTeacherOutreach(input, user, conversationId, traceId, pending.assignmentId, selected.id);
+        }
+
+        if (pending.type === 'teacher_outreach_channel') {
+            return this.handleTeacherOutreach(input, user, conversationId, traceId, pending.assignmentId, pending.targetGroup, selected.id);
+        }
 
         if (pending.type === 'assignment_submit') {
             return this.submitAssignment(input, user, conversationId, traceId, selected.id);
@@ -403,6 +421,134 @@ class CampusAgentService {
             timestamp: Date.now(),
             traceId
         };
+    }
+
+    async handleTeacherOutreach(input, user, conversationId, traceId, forcedAssignmentId = null, forcedGroup = null, forcedChannel = null) {
+        this.requireRole(user, ['teacher', 'hod', 'principal'], 'Only teachers can send outreach notifications.');
+        
+        const lower = input.toLowerCase();
+
+        // 1. Fetch assignments created by the teacher
+        const assignments = await Assignment.find({ teacher: user._id, type: 'assignment' }).lean();
+        if (assignments.length === 0) {
+            return this.reply('I could not find any assignments created by you to alert students about.', { traceId });
+        }
+
+        let assignment = null;
+        if (forcedAssignmentId) {
+            assignment = assignments.find(a => a._id.toString() === forcedAssignmentId);
+        } else {
+            // Try to match from text
+            assignment = assignments.find(a => lower.includes(a.title.toLowerCase()));
+        }
+
+        // If no assignment resolved, and there is more than 1 choice: ask user which assignment
+        if (!assignment) {
+            if (assignments.length === 1) {
+                assignment = assignments[0];
+            } else {
+                // Return choice list
+                const choices = assignments.map(a => ({
+                    id: a._id.toString(),
+                    title: a.title,
+                    subject: a.subject
+                }));
+                pendingByConversation.set(conversationId, {
+                    type: 'teacher_outreach',
+                    choices,
+                    originalInput: input,
+                    createdAt: Date.now()
+                });
+                return this.collection('ASSIGNMENT', choices, 'Which assignment are you referring to? Please select one:', traceId, 'ACTION_SELECTION');
+            }
+        }
+
+        // 2. Resolve the target group (submitted vs pending)
+        let targetGroup = forcedGroup;
+        if (!targetGroup) {
+            if (lower.includes('not submitted') || lower.includes('pending') || lower.includes("haven't") || lower.includes('missed') || lower.includes('yet to') || lower.includes('overdue')) {
+                targetGroup = 'pending';
+            } else if (lower.includes('submitted') || lower.includes('turned in') || lower.includes('completed')) {
+                targetGroup = 'submitted';
+            }
+        }
+
+        if (!targetGroup) {
+            const groupChoices = [
+                { id: 'pending', title: 'Pending Students', subject: 'Haven\'t submitted yet' },
+                { id: 'submitted', title: 'Submitted Students', subject: 'Completed submissions' }
+            ];
+            pendingByConversation.set(conversationId, {
+                type: 'teacher_outreach_group',
+                assignmentId: assignment._id.toString(),
+                choices: groupChoices,
+                originalInput: input,
+                createdAt: Date.now()
+            });
+            return this.collection('ASSIGNMENT', groupChoices, `Regarding assignment "${assignment.title}", should I draft the message for students who have submitted, or those who are pending?`, traceId, 'ACTION_SELECTION');
+        }
+
+        // 3. Resolve channel (WhatsApp vs Notice)
+        let channel = forcedChannel;
+        if (!channel) {
+            if (lower.includes('whatsapp') || lower.includes('wp') || lower.includes('text') || lower.includes('msg') || lower.includes('message')) {
+                channel = 'WhatsApp';
+            } else if (lower.includes('notice') || lower.includes('alert') || lower.includes('announcement')) {
+                channel = 'Notice';
+            }
+        }
+
+        if (!channel) {
+            const channelChoices = [
+                { id: 'whatsapp', title: 'WhatsApp Message', subject: 'External quick text' },
+                { id: 'notice', title: 'Official Notice', subject: 'Internal campus announcement' }
+            ];
+            pendingByConversation.set(conversationId, {
+                type: 'teacher_outreach_channel',
+                assignmentId: assignment._id.toString(),
+                targetGroup,
+                choices: channelChoices,
+                originalInput: input,
+                createdAt: Date.now()
+            });
+            return this.collection('ASSIGNMENT', channelChoices, `Which communication channel would you like to use for "${assignment.title}"?`, traceId, 'ACTION_SELECTION');
+        }
+
+        // 4. We have all three! Let's draft the message!
+        const deadlineStr = assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : 'N/A';
+        const draftPrompt = `draft a brief, professional ${channel.toLowerCase()} notification/alert for students whose submission for assignment '${assignment.title}' (Subject: ${assignment.subject}, Deadline: ${deadlineStr}) is ${targetGroup.toUpperCase()}.`;
+        
+        let draftMessage = "";
+        try {
+            const aiRes = await this.answerGeneral(draftPrompt, user, [], traceId);
+            draftMessage = aiRes.message;
+        } catch (e) {
+            draftMessage = `Dear Students,\n\nThis is a reminder regarding the assignment "${assignment.title}" for ${assignment.subject}. The submission status is currently ${targetGroup.toUpperCase()}.\n\nDeadline: ${deadlineStr}\n\nPlease take necessary action.`;
+        }
+
+        let messageText = `Here is the drafted ${channel} alert for students whose assignment status is **${targetGroup}**:\n\n---\n${draftMessage}\n---`;
+        let actionVal = 'AI_RESPONSE';
+        let payloadVal = {};
+
+        if (channel.toLowerCase() === 'whatsapp') {
+            actionVal = 'OUTREACH_WHATSAPP_DRAFTED';
+            payloadVal = { text: draftMessage, channel };
+            
+            const encodedText = encodeURIComponent(draftMessage);
+            const waUrl = `https://web.whatsapp.com/send?text=${encodedText}`;
+            messageText += `\n\n<a href="${waUrl}" target="_blank" class="btn-confirm" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none; gap:8px; background:#10b981; color:white; padding:10px 20px; border-radius:8px; font-weight:600; font-family:'Inter', sans-serif; font-size:0.85rem; margin-top:10px;"><i class="fa-brands fa-whatsapp"></i> Open WhatsApp Web</a>`;
+        } else if (channel.toLowerCase() === 'notice') {
+            actionVal = 'PREFILL_NOTICE';
+            payloadVal = { text: draftMessage, title: `Notice regarding ${assignment.title}` };
+            messageText += `\n\n<a href="modules/notices/post.html" target="_top" class="btn-confirm" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none; gap:8px; background:#6b46c1; color:white; padding:10px 20px; border-radius:8px; font-weight:600; font-family:'Inter', sans-serif; font-size:0.85rem; margin-top:10px;"><i class="fa-solid fa-bullhorn"></i> Create Notice</a>`;
+        }
+
+        return this.reply(messageText, {
+            presentationState: 'SUCCESS',
+            action: actionVal,
+            payload: payloadVal,
+            traceId
+        });
     }
 
     async submitAssignment(input, user, conversationId, traceId, forcedAssignmentId = null) {

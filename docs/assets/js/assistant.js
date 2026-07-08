@@ -37,7 +37,7 @@ function appendMessage(role, content, persist = true) {
 
     const body = document.createElement('div');
     body.className = 'message-content';
-    body.textContent = content;
+    body.innerHTML = content.replace(/\n/g, '<br>');
 
     message.appendChild(body);
     els.history.appendChild(message);
@@ -161,6 +161,35 @@ function renderAction(result) {
         link.target = '_top';
         link.className = 'btn-confirm';
         link.textContent = 'Review Leave';
+        els.actionArea.appendChild(link);
+    }
+
+    if (result?.action === 'PREFILL_NOTICE' && result.payload) {
+        sessionStorage.setItem('aiDraftNoticeText', result.payload.text || '');
+        sessionStorage.setItem('aiDraftNoticeTitle', result.payload.title || '');
+        const link = document.createElement('a');
+        link.href = 'modules/notices/post.html';
+        link.target = '_top';
+        link.className = 'btn-confirm';
+        link.style.cssText = 'display: inline-flex; align-items: center; justify-content: center; text-decoration: none; gap: 8px;';
+        link.innerHTML = '<i class="fa-solid fa-bullhorn"></i> Create Notice';
+        els.actionArea.appendChild(link);
+    }
+
+    if (result?.action === 'OUTREACH_WHATSAPP_DRAFTED' && result.payload?.text) {
+        const encodedText = encodeURIComponent(result.payload.text);
+        const url = `https://web.whatsapp.com/send?text=${encodedText}`;
+        try {
+            window.open(url, '_blank');
+        } catch (e) {
+            console.error('Popup blocked:', e);
+        }
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.className = 'btn-confirm';
+        link.style.cssText = 'display: inline-flex; align-items: center; justify-content: center; text-decoration: none; gap: 8px;';
+        link.innerHTML = '<i class="fa-brands fa-whatsapp"></i> Open WhatsApp';
         els.actionArea.appendChild(link);
     }
 }

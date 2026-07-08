@@ -426,7 +426,7 @@
             <button class="filter-tab" id="tab-my-mentees" data-filter="my-mentees">My Mentees</button>
             <button class="filter-tab" id="tab-general" data-filter="general">General</button>
           </div>
-          <div id="recent-complaints-list" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 380px;">
+          <div id="recent-complaints-list" style="display: flex; flex-direction: column; gap: 12px;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
               Loading complaints...
             </div>
@@ -444,7 +444,7 @@
             <div class="assignment-tab" data-filter="personal">Personal</div>
             <div class="assignment-tab" data-filter="hosteler">Hostel</div>
           </div>
-          <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 440px;">
+          <div id="official-notices-list" style="display: flex; flex-direction: column; gap: 16px;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
               Loading notices...
             </div>
@@ -457,7 +457,7 @@
             <h2><i class="fa-solid fa-file-pen" style="color: var(--warning);"></i> Assignments</h2>
             <a href="../modules/assignments/view.html" class="btn-view-all">View All</a>
           </div>
-          <div id="assignments-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; overflow-y: auto; max-height: 440px;">
+          <div id="assignments-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">
               Loading assignments...
             </div>
@@ -466,19 +466,6 @@
 
       </div>
 
-      <!-- AI Assistant Banner at the bottom -->
-      <div style="background: #ede9fe; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
-        <img src="../assets/images/guest_illustration.png" alt="Mascot" style="width: 80px; height: auto;"
-          onerror="this.style.display='none'">
-        <div style="flex: 1;">
-          <h4 style="margin: 0 0 4px 0; font-size: 1rem; color: var(--text-dark);">AI Assistant</h4>
-          <p style="margin: 0 0 12px 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Need help with your tasks or looking for something?</p>
-          <button onclick="toggleModal('ai-modal')"
-            style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-            Chat Now <i class="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
-      </div>
     </main>
 
   </div>

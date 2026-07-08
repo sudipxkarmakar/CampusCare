@@ -38,7 +38,7 @@ const AssistantDrawer = {
                 <h3 style="margin: 0; font-size: 1rem; color: #0f172a;">CampusCare Assistant</h3>
                 <button id="close-ai-drawer" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">&times;</button>
             </div>
-            <iframe src="${rootPath}assistant.html?mode=drawer" style="flex: 1; border: none; width: 100%;"></iframe>
+            <iframe src="${rootPath}assistant.html?mode=drawer&v=3.6" style="flex: 1; border: none; width: 100%;"></iframe>
         `;
 
         document.body.appendChild(container);

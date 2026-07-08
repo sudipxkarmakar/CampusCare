@@ -971,6 +971,22 @@
       });
     }
 
+    // Prefill from AI Draft Notice if available
+    try {
+      const aiNoticeText = sessionStorage.getItem('aiDraftNoticeText');
+      const aiNoticeTitle = sessionStorage.getItem('aiDraftNoticeTitle');
+      if (aiNoticeText) {
+        if (editor) editor.innerHTML = aiNoticeText;
+        if (textarea) textarea.value = aiNoticeText;
+        const titleInput = document.querySelector('input[name="title"]');
+        if (titleInput && aiNoticeTitle) titleInput.value = aiNoticeTitle;
+        sessionStorage.removeItem('aiDraftNoticeText');
+        sessionStorage.removeItem('aiDraftNoticeTitle');
+      }
+    } catch (err) {
+      console.error('Error prefilling AI notice draft:', err);
+    }
+
     // AI Draft button for notice form
     document.getElementById('noticeAiDraftBtn')?.addEventListener('click', async () => {
       const btn = document.getElementById('noticeAiDraftBtn');

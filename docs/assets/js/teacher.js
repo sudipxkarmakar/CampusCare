@@ -453,7 +453,7 @@ async function fetchTeacherComplaints() {
         // Fetch general/public complaints
         const genRes = await fetch(`${API_URL}/complaints?public=true`);
         const genData = genRes.ok ? await genRes.json() : [];
-        allTeacherComplaints.general = genData.slice(0, 8);
+        allTeacherComplaints.general = genData.slice(0, 5);
     } catch (e) { console.error('General complaints error:', e); }
 
     try {
@@ -462,7 +462,7 @@ async function fetchTeacherComplaints() {
             headers: { 'Authorization': `Bearer ${user.token}` }
         });
         const menteeData = menteeRes.ok ? await menteeRes.json() : [];
-        allTeacherComplaints.myMentees = menteeData.slice(0, 8);
+        allTeacherComplaints.myMentees = menteeData.slice(0, 5);
     } catch (e) { console.error('Mentee complaints error:', e); }
 
     try {
@@ -471,7 +471,7 @@ async function fetchTeacherComplaints() {
         const allData = allRes.ok ? await allRes.json() : [];
         allTeacherComplaints.myStudents = allData
             .filter(c => c.student && c.student.department === user.department)
-            .slice(0, 8);
+            .slice(0, 5);
     } catch (e) { console.error('Student complaints error:', e); }
 
     renderComplaints();
@@ -559,6 +559,8 @@ async function openTeacherSubmissionsModal(assignmentId) {
     const assignment = window.teacherAssignmentsCache ? window.teacherAssignmentsCache.find(x => x._id === assignmentId) : null;
     if (!assignment) return;
 
+    window.activeModalAssignment = assignment; // Cache selected assignment context
+
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.id = 'submissions-list-modal';
@@ -593,11 +595,22 @@ async function openTeacherSubmissionsModal(assignmentId) {
           <span><strong>Deadline:</strong> ${dueStr}</span>
         </div>
 
-        <div id="submissionsStatusContainer" style="border-top: 1px solid var(--border-color); padding-top: 16px; text-align: center;">
-          <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
-            <i class="fa-solid fa-users" style="color: #6366f1; font-size: 1.6rem;"></i>
-            <div style="font-size: 0.88rem; color: var(--text-muted); font-weight: 500;">Submission Status</div>
-            <div id="submissionsCountVal" style="font-size: 1.8rem; font-weight: 800; color: #4f46e5;">...</div>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 0.9rem;">
+            <span style="color: var(--text-muted); font-weight: 600;">Submission Status:</span>
+            <strong id="submissionsCountVal" style="color: var(--primary); font-size: 1.05rem;">Loading...</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">Outreach & Alerts (AI Assisted)</div>
+          <div style="display: flex; gap: 10px;">
+            <button id="ai-notice-draft-btn" class="btn-pill btn-outline-purple" style="flex: 1; padding: 10px 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" onclick="draftOutreachAlert('Notice')">
+              <i class="fa-solid fa-bullhorn"></i> Draft Notice
+            </button>
+            <button id="ai-wp-draft-btn" class="btn-pill btn-outline-purple" style="flex: 1; padding: 10px 12px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;" onclick="draftOutreachAlert('WhatsApp')">
+              <i class="fa-brands fa-whatsapp"></i> Draft WP Msg
+            </button>
           </div>
         </div>
       </div>
@@ -611,16 +624,49 @@ async function openTeacherSubmissionsModal(assignmentId) {
     });
 
     try {
+        // Fetch submissions
         const res = await fetch(`${API_URL}/assignments/${assignmentId}/submissions`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
+        const submissions = res.ok ? await res.json() : [];
 
-        if (!res.ok) throw new Error();
-        const submissions = await res.json();
+        // Fetch students to calculate total in batch
+        const studentsRes = await fetch(`${API_URL}/teacher/all-students`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+        const students = studentsRes.ok ? await studentsRes.json() : [];
+
+        let targetStudents = students;
+        if (assignment.batch && assignment.batch !== 'All') {
+            const assignBatchClean = assignment.batch.replace('Batch ', '').trim();
+            targetStudents = students.filter(s => {
+                const sBatchClean = s.batch ? s.batch.replace('Batch ', '').trim() : '';
+                return sBatchClean === assignBatchClean;
+            });
+        }
+        
+        // Ensure department match if it's set
+        if (assignment.department) {
+            targetStudents = targetStudents.filter(s => s.department === assignment.department);
+        } else if (user.department) {
+            targetStudents = targetStudents.filter(s => s.department === user.department);
+        }
+
+        // Filter by Year
+        if (assignment.year) {
+            targetStudents = targetStudents.filter(s => s.year === assignment.year);
+        }
+
+        // Filter by Sub-batch if set
+        if (assignment.subBatch) {
+            targetStudents = targetStudents.filter(s => s.subBatch === assignment.subBatch);
+        }
+
+        const totalStudentsCount = targetStudents.length || students.length || 1;
 
         const countVal = document.getElementById('submissionsCountVal');
         if (countVal) {
-            countVal.innerText = `${submissions.length} Student${submissions.length === 1 ? '' : 's'} Submitted`;
+            countVal.innerText = `${submissions.length} / ${totalStudentsCount} Students Submitted`;
         }
     } catch (e) {
         console.error(e);
@@ -628,3 +674,33 @@ async function openTeacherSubmissionsModal(assignmentId) {
         if (countVal) countVal.innerText = 'Error loading status';
     }
 }
+
+window.draftOutreachAlert = function(type) {
+    if (!window.activeModalAssignment) return;
+    const assignment = window.activeModalAssignment;
+    
+    // Close the current details modal
+    const assignModal = document.getElementById('submissions-list-modal');
+    if (assignModal) assignModal.remove();
+
+    // Open the AI modal
+    const aiModal = document.getElementById('ai-modal');
+    if (aiModal && aiModal.style.display !== 'flex') {
+        if (typeof toggleModal === 'function') {
+            toggleModal('ai-modal');
+        } else {
+            aiModal.style.display = 'flex';
+        }
+    }
+
+    // Set the prompt text
+    const aiInput = document.getElementById('ai-input');
+    if (aiInput) {
+        aiInput.value = `send a ${type.toLowerCase()} outreach message to students for assignment '${assignment.title}' whose status is pending`;
+        
+        // Trigger the AI chat request
+        if (typeof askAI === 'function') {
+            setTimeout(() => askAI(), 300);
+        }
+    }
+};
