@@ -4535,6 +4535,16 @@
 
         checkAndShowSessionNotifications(allAssignments);
         renderFilteredAssignments();
+
+        // Auto-open assignment details if assignmentId query parameter is present
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoOpenId = urlParams.get('assignmentId');
+        if (autoOpenId) {
+          const autoOpenAssign = allAssignments.find(a => (a._id === autoOpenId || a.id === autoOpenId));
+          if (autoOpenAssign) {
+            setTimeout(() => showStudentAssignmentDetailsModal(autoOpenAssign), 200);
+          }
+        }
       } catch (err) {
         console.error(err);
         document.getElementById('assignListContainer').innerHTML = `

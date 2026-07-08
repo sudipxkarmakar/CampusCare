@@ -13,7 +13,7 @@ export const getStudentRoutine = async (req, res) => {
         let { department, year, batch, subBatch, semester } = req.query;
 
         // If 'me' (authenticated user context)
-        if (req.user && req.user.role === 'student') {
+        if (req.user && (req.user.role === 'student' || req.user.role === 'hosteler')) {
             department = req.user.department;
             year = req.user.year;
             semester = req.user.semester;

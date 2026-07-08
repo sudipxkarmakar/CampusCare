@@ -124,6 +124,16 @@ async function loadAssignments() {
             }
         }
 
+        // Auto-open assignment if assignmentId query parameter is present
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoOpenId = urlParams.get('assignmentId');
+        if (autoOpenId) {
+            const autoOpenIndex = assignmentsList.findIndex(a => a._id === autoOpenId);
+            if (autoOpenIndex !== -1) {
+                setTimeout(() => viewAssignment(autoOpenIndex), 200);
+            }
+        }
+
         // --- AI PRE-FILL LOGIC ---
         const aiSubject = sessionStorage.getItem('aiSubmitSubject');
         const aiTitle = sessionStorage.getItem('aiSubmitTitle');

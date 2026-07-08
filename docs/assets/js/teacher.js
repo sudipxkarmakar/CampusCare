@@ -523,6 +523,7 @@ async function fetchTeacherAssignments() {
         });
         if (!res.ok) throw new Error('Failed');
         const assignments = await res.json();
+        window.teacherAssignmentsCache = assignments; // Cache globally
         const list = assignments.filter(a => a.type !== 'note').slice(0, 6);
 
         if (list.length === 0) {
@@ -537,7 +538,7 @@ async function fetchTeacherAssignments() {
             const tcColors = ['#0284c7','#7c3aed','#059669','#d97706','#db2777','#ea580c'];
 
             return `
-            <a href="../modules/assignments/post.html" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+            <div onclick="openTeacherSubmissionsModal('${a._id}')" style="display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--bg-color); text-decoration:none !important; color:inherit; transition: transform 0.15s, box-shadow 0.15s; cursor:pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-sm)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
                 <div style="background:${bgColors[i%6]}; color:${tcColors[i%6]}; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">
                     <i class="fa-solid fa-file-pen"></i>
                 </div>
@@ -546,10 +547,84 @@ async function fetchTeacherAssignments() {
                     <p style="font-size:0.72rem; color:var(--text-muted); margin:0;">${a.subject || ''} · ${a.batch ? 'Batch ' + a.batch : ''}</p>
                 </div>
                 <span style="font-size:0.65rem; font-weight:700; color:${isPast ? '#ef4444' : '#059669'}; background:${isPast ? '#fef2f2' : '#ecfdf5'}; padding:2px 8px; border-radius:10px; white-space:nowrap;">${due}</span>
-            </a>`;
+            </div>`;
         }).join('');
     } catch (error) {
         console.error('Error fetching assignments:', error);
         if (listEl) listEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Could not load assignments.</div>`;
+    }
+}
+
+async function openTeacherSubmissionsModal(assignmentId) {
+    const assignment = window.teacherAssignmentsCache ? window.teacherAssignmentsCache.find(x => x._id === assignmentId) : null;
+    if (!assignment) return;
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'submissions-list-modal';
+    modal.style.cssText = `
+        display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; 
+        backdrop-filter: blur(4px);
+    `;
+
+    const title = assignment.title || 'Assignment';
+    const subject = assignment.subject || 'N/A';
+    const batch = assignment.batch || 'All';
+    const desc = assignment.description || 'No description provided.';
+    const dueStr = assignment.deadline ? new Date(assignment.deadline).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No deadline';
+
+    modal.innerHTML = `
+      <div class="modal-content glass" style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 520px; text-align: left; position: relative; box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto; font-family: 'Inter', sans-serif;">
+        <button id="closeSubmissionsModal" style="position: absolute; top: 15px; right: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); transition: color 0.2s;">&times;</button>
+        
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0 0 4px 0;">${title}</h3>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px;">
+          <span style="font-weight: 600; color: var(--primary);">${subject}</span> | Batch: ${batch}
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.5; color: var(--text-dark);">
+          <strong style="display:block; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;">Assignment Details</strong>
+          ${desc}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+          <i class="fa-regular fa-calendar-days" style="color: var(--primary)"></i> 
+          <span><strong>Deadline:</strong> ${dueStr}</span>
+        </div>
+
+        <div id="submissionsStatusContainer" style="border-top: 1px solid var(--border-color); padding-top: 16px; text-align: center;">
+          <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-users" style="color: #6366f1; font-size: 1.6rem;"></i>
+            <div style="font-size: 0.88rem; color: var(--text-muted); font-weight: 500;">Submission Status</div>
+            <div id="submissionsCountVal" style="font-size: 1.8rem; font-weight: 800; color: #4f46e5;">...</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('closeSubmissionsModal')?.addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+
+    try {
+        const res = await fetch(`${API_URL}/assignments/${assignmentId}/submissions`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+
+        if (!res.ok) throw new Error();
+        const submissions = await res.json();
+
+        const countVal = document.getElementById('submissionsCountVal');
+        if (countVal) {
+            countVal.innerText = `${submissions.length} Student${submissions.length === 1 ? '' : 's'} Submitted`;
+        }
+    } catch (e) {
+        console.error(e);
+        const countVal = document.getElementById('submissionsCountVal');
+        if (countVal) countVal.innerText = 'Error loading status';
     }
 }

@@ -6,7 +6,21 @@ async function fetchAndRenderRoutine(role) {
 
     try {
         console.log(`[Routine] Fetching routine for role: ${role}`);
-        const endpoint = role === 'teacher' ? '/routine/teacher' : '/routine/student';
+        let endpoint = role === 'teacher' ? '/routine/teacher' : '/routine/student';
+
+        if (role !== 'teacher') {
+            const userStr = localStorage.getItem('user');
+            const user = userStr ? JSON.parse(userStr) : null;
+            if (user) {
+                const qParams = new URLSearchParams({
+                    department: user.department || '',
+                    year: user.year || '',
+                    batch: user.batch || '',
+                    semester: user.semester || ''
+                });
+                endpoint += `?${qParams.toString()}`;
+            }
+        }
 
         const response = await api.fetchWithAuth(endpoint);
 

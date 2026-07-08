@@ -20,6 +20,19 @@
       font-family: "Font Awesome 6 Free" !important;
     }
 
+    /* Hide scrollbars for dashboard widgets */
+    #recent-complaints-list::-webkit-scrollbar,
+    #official-notices-list::-webkit-scrollbar,
+    #assignments-list::-webkit-scrollbar {
+      display: none;
+    }
+    #recent-complaints-list,
+    #official-notices-list,
+    #assignments-list {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+
     /* Minor adjustments for teacher dashboard */
 
     .list-item-compact {
@@ -442,7 +455,7 @@
         <section class="section-card" style="display: flex; flex-direction: column;">
           <div class="section-header">
             <h2><i class="fa-solid fa-file-pen" style="color: var(--warning);"></i> Assignments</h2>
-            <a href="../modules/assignments/post.html" class="btn-view-all">View All</a>
+            <a href="../modules/assignments/view.html" class="btn-view-all">View All</a>
           </div>
           <div id="assignments-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px; overflow-y: auto; max-height: 440px;">
             <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px 0;">

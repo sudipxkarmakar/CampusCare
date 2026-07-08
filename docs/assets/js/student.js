@@ -339,7 +339,13 @@ async function fetchRoutine() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-        const res = await fetch(`${API_URL}/routine/student`, {
+        const qParams = new URLSearchParams({
+            department: user.department || '',
+            year: user.year || '',
+            batch: user.batch || '',
+            semester: user.semester || ''
+        });
+        const res = await fetch(`${API_URL}/routine/student?${qParams.toString()}`, {
             headers: { 'Authorization': `Bearer ${user.token}` },
             signal: controller.signal
         });
@@ -540,6 +546,10 @@ function renderAssignments(filterType) {
                 document.getElementById('modal-assign-due').textContent = 'Due: ' + (assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'N/A');
                 document.getElementById('modal-assign-desc').textContent = assignment.description || 'No description provided.';
                 document.getElementById('modal-assign-teacher').textContent = 'Posted by: ' + (assignment.teacher ? assignment.teacher.name : 'Faculty');
+                const subLink = document.getElementById('modal-assign-submissions-link');
+                if (subLink) {
+                    subLink.href = `../modules/assignments/view.html?assignmentId=${assignment._id}`;
+                }
                 if (typeof toggleModal === 'function') toggleModal('assignment-detail-modal');
             }
         });
