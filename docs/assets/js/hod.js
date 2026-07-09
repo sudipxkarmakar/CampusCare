@@ -188,8 +188,10 @@ function setupProfile() {
         const firstName = user.name ? user.name.split(' ')[0] : 'HOD';
         document.getElementById('userName').innerText = `Hello, ${firstName}`;
         
-        const greetingName = document.getElementById('hod-name');
-        if (greetingName) greetingName.innerText = firstName;
+        const greetingEl = document.getElementById('hod-greeting');
+        if (greetingEl) {
+            greetingEl.innerHTML = getGreetingText(firstName);
+        }
         
         const badge = document.querySelector('.role-badge-mini');
         if (badge) {
@@ -200,6 +202,18 @@ function setupProfile() {
             <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-left: 6px;">(ID: ${user.employeeId || user.rollNumber || user.identifier || 'N/A'})</span>
         `;
     }
+}
+
+function getGreetingText(name) {
+    const hour = new Date().getHours();
+    let salutation, icon;
+
+    if (hour >= 0 && hour < 5)         { salutation = 'Good night';     icon = '🌙'; }
+    else if (hour >= 5 && hour < 12)   { salutation = 'Good morning';   icon = '☀️'; }
+    else if (hour >= 12 && hour < 17)  { salutation = 'Good afternoon'; icon = '☀️'; }
+    else                               { salutation = 'Good evening';   icon = '🌆'; }
+    
+    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
 }
 
 

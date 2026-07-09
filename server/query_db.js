@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from './src/models/User.js';
-import Complaint from './src/models/Complaint.js';
 
 dotenv.config();
 
@@ -10,23 +9,15 @@ async function run() {
     await mongoose.connect(mongoURI);
     console.log('MongoDB Connected.');
 
-    const students = await User.find({ role: 'student' }).limit(3);
-    console.log('Students in DB:');
-    students.forEach(s => {
-        console.log(`Name: ${s.name}, Email: ${s.email}, Role: ${s.role}, Dept: ${s.department}`);
-    });
-
-    const staffList = await User.find({ role: 'staff' });
-    console.log('\nStaff in DB:');
-    staffList.forEach(st => {
-        console.log(`Name: ${st.name}, Designation: ${st.designation}, Phone: ${st.contactNumber}`);
-    });
-
-    const latestComplaints = await Complaint.find().sort({ createdAt: -1 }).limit(3).populate('assignedStaff');
-    console.log('\nLatest Complaints in DB:');
-    latestComplaints.forEach(c => {
-        console.log(`Title: ${c.title}, Location: ${c.location}, Category: ${c.category}, Assigned Staff: ${c.assignedStaff ? c.assignedStaff.name : 'NONE'}`);
-    });
+    const roles = ['student', 'hosteler', 'teacher', 'warden', 'hod', 'principal'];
+    for (const r of roles) {
+        const u = await User.findOne({ role: r });
+        if (u) {
+            console.log(`Role: ${r.toUpperCase()} | Name: ${u.name} | Identifier: ${u.rollNumber || u.employeeId || u.email} | Password: password123 (or check hash: ${u.password ? 'present' : 'none'}) | Dept: ${u.department || 'N/A'}`);
+        } else {
+            console.log(`Role: ${r.toUpperCase()} | NOT FOUND`);
+        }
+    }
 
     process.exit(0);
 }
