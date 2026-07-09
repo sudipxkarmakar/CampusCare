@@ -240,6 +240,7 @@ const getDepartmentComplaints = async (req, res) => {
             .populate('student', 'name rollNumber department roomNumber profilePicture')
             .populate('againstUser', 'name designation department')
             .populate('resolvedBy', 'name role profilePicture')
+            .populate('assignedStaff', 'name designation contactNumber email')
             .sort({ createdAt: -1 })
             .lean();
 

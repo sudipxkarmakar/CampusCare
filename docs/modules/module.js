@@ -1147,6 +1147,80 @@
       <label>Details<textarea name="description" required></textarea></label>`;
   }
 
+  function showWhatsAppDraftModal(staff, comp) {
+    const studentName = user.name || 'Student';
+    const roomNo = comp.location || 'N/A';
+    const problem = comp.title || 'N/A';
+    const details = comp.description || 'N/A';
+    
+    const message = `Hello ${staff.name},\n\nA new campus complaint has been filed and routed to you.\n\n*Task:* ${staff.designation} Work\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Details:* ${details}\n*Reported By:* ${studentName}\n\nPlease take necessary action.`;
+    const encodedText = encodeURIComponent(message);
+    const phone = staff.contactNumber ? staff.contactNumber.replace(/\D/g, '') : '';
+    const prefix = phone.length === 10 ? '91' : '';
+    const waUrl = `https://api.whatsapp.com/send?phone=${prefix}${phone}&text=${encodedText}`;
+
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'cc-whatsapp-modal';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+    modal.style.backdropFilter = 'blur(8px)';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.zIndex = '99999';
+    modal.style.animation = 'fadeIn 0.3s ease';
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-width: 500px; width: 90%; padding: 32px; text-align: center; border: 1px solid #e2e8f0; animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+        <div style="width: 64px; height: 64px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 2rem;">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h3 style="margin: 0 0 8px 0; font-size: 1.5rem; font-weight: 700; color: #0f172a; font-family: 'Poppins', sans-serif;">Complaint Registered!</h3>
+        <p style="color: #64748b; font-size: 0.95rem; margin: 0 0 24px 0; line-height: 1.5;">
+          Your complaint has been successfully filed and assigned to <strong>${staff.name} (${staff.designation})</strong>.
+        </p>
+        
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 28px; text-align: left;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Draft Message</div>
+          <div style="font-size: 0.85rem; color: #334155; line-height: 1.6; max-height: 150px; overflow-y: auto; white-space: pre-wrap; font-family: inherit;">${message}</div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button id="cc-wa-close-btn" style="padding: 12px 24px; border-radius: 12px; border: 1px solid #cbd5e1; background: white; color: #475569; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;" onmouseenter="this.style.background='#f1f5f9';" onmouseleave="this.style.background='white';">
+            Close
+          </button>
+          <a id="cc-wa-send-btn" href="${waUrl}" target="_blank" style="text-decoration: none; padding: 12px 24px; border-radius: 12px; border: none; background: #25D366; color: white; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);" onmouseenter="this.style.background='#128c7e'; this.style.transform='translateY(-1px)';" onmouseleave="this.style.background='#25D366'; this.style.transform='none';">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.15rem;"></i> Send Alert
+          </a>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    if (!document.getElementById('cc-modal-styles')) {
+      const style = document.createElement('style');
+      style.id = 'cc-modal-styles';
+      style.innerHTML = `
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      `;
+      document.head.appendChild(style);
+    }
+
+    document.getElementById('cc-wa-close-btn').addEventListener('click', () => {
+      modal.remove();
+    });
+    document.getElementById('cc-wa-send-btn').addEventListener('click', () => {
+      modal.remove();
+    });
+  }
+
   async function submitPost(event) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -1188,23 +1262,10 @@
     
     if (cfg.module === 'complaints') {
       const resData = await res.json();
-      alert('Complaint submitted successfully!');
       if (resData.assignedStaff) {
-        const staff = resData.assignedStaff;
-        const comp = resData.complaint;
-        const studentName = user.name || 'Student';
-        const roomNo = comp.location || 'N/A';
-        const problem = comp.title || 'N/A';
-        const details = comp.description || 'N/A';
-        
-        const message = `Hello ${staff.name},\n\nA new campus complaint has been filed and routed to you.\n\n*Task:* ${staff.designation} Work\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Details:* ${details}\n*Reported By:* ${studentName}\n\nPlease take necessary action.`;
-        const encodedText = encodeURIComponent(message);
-        
-        if (confirm(`A WhatsApp notification has been drafted for the assigned staff: ${staff.name} (${staff.designation}).\n\nClick OK to open WhatsApp and send the alert.`)) {
-          const phone = staff.contactNumber ? staff.contactNumber.replace(/\D/g, '') : '';
-          const prefix = phone.length === 10 ? '91' : '';
-          window.open(`https://api.whatsapp.com/send?phone=${prefix}${phone}&text=${encodedText}`, '_blank');
-        }
+        showWhatsAppDraftModal(resData.assignedStaff, resData.complaint);
+      } else {
+        alert('Complaint submitted successfully!');
       }
     } else {
       alert('Submitted successfully.');
@@ -3324,6 +3385,11 @@
                 <input type="text" name="title" id="complaintTitleInput" placeholder="Brief subject of the issue..." required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
               </div>
 
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Location (e.g., Room No, Lab, Block)</label>
+                <input type="text" name="location" id="complaintLocationInput" placeholder="e.g. Room 204, IT Lab, Block A" required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';">
+              </div>
+
               <button type="button" id="complaintAiDraftBtn" class="ai-draft-btn">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span id="complaintAiDraftBtnLabel">Draft with AI</span>
@@ -3470,9 +3536,28 @@
         body: formData
       });
       if (res.ok) {
+        const resData = await res.json();
         alert('Complaint registered successfully.');
         form.reset();
         loadRedesignedComplaints();
+
+        if (resData.assignedStaff) {
+          const staff = resData.assignedStaff;
+          const comp = resData.complaint;
+          const studentName = user.name || 'Student';
+          const roomNo = comp.location || 'N/A';
+          const problem = comp.title || 'N/A';
+          const details = comp.description || 'N/A';
+
+          const message = `Hello ${staff.name},\n\nA new campus complaint has been filed and routed to you.\n\n*Task:* ${staff.designation} Work\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Details:* ${details}\n*Reported By:* ${studentName}\n\nPlease take necessary action.`;
+          const encodedText = encodeURIComponent(message);
+
+          if (confirm(`A WhatsApp notification has been drafted for the assigned staff: ${staff.name} (${staff.designation}).\n\nClick OK to open WhatsApp and send the alert.`)) {
+            const phone = staff.contactNumber ? staff.contactNumber.replace(/\D/g, '') : '';
+            const prefix = phone.length === 10 ? '91' : '';
+            window.open(`https://api.whatsapp.com/send?phone=${prefix}${phone}&text=${encodedText}`, '_blank');
+          }
+        }
       } else {
         alert('Registration failed.');
       }
@@ -3755,6 +3840,40 @@
       `;
     }
 
+    // Assigned Staff Info
+    let assignedStaffHtml = '';
+    if (c.assignedStaff) {
+      const staff = typeof c.assignedStaff === 'object' ? c.assignedStaff : null;
+      if (staff) {
+        const staffName = staff.name || 'Support Staff';
+        const staffDesignation = staff.designation || 'Staff';
+        const staffPhone = staff.contactNumber || 'N/A';
+        const staffEmail = staff.email || 'N/A';
+        
+        const cleanPhone = staffPhone.replace(/\D/g, '');
+        const prefix = cleanPhone.length === 10 ? '91' : '';
+        const waLink = cleanPhone ? `<a href="https://api.whatsapp.com/send?phone=${prefix}${cleanPhone}&text=${encodeURIComponent('Hello ' + staffName + ', regarding campus complaint: ' + title)}" target="_blank" style="color: #25D366; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(37, 211, 102, 0.1); border-radius: 50%; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.15)';" onmouseleave="this.style.transform='scale(1)';"><i class="fa-brands fa-whatsapp"></i></a>` : '';
+
+        assignedStaffHtml = `
+          <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 36px; height: 36px; background: #f3e8ff; color: #7c3aed; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-toolbox"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.75rem; color: #6b21a8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Assigned Support Staff</div>
+                <div style="font-size: 0.9rem; font-weight: 700; color: #581c87;">${esc(staffName)} <span style="font-size: 0.8rem; font-weight: 500; color: #701a75;">(${esc(staffDesignation)})</span></div>
+                <div style="font-size: 0.75rem; color: #7e22ce; margin-top: 2px;">Email: ${esc(staffEmail)} • Ph: ${esc(staffPhone)}</div>
+              </div>
+            </div>
+            <div>
+              ${waLink}
+            </div>
+          </div>
+        `;
+      }
+    }
+
     // Badges Style
     let priorityStyle = 'background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;';
     if (priority === 'High') priorityStyle = 'background: #fffbeb; color: #92400e; border: 1px solid #fde68a;';
@@ -3855,6 +3974,9 @@
 
         <!-- Description -->
         <div style="font-size: 0.95rem; color: #334155; line-height: 1.6; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; font-family: 'Inter', sans-serif; white-space: pre-wrap; word-break: break-word;">${esc(desc)}</div>
+
+        <!-- Assigned Staff Info -->
+        ${assignedStaffHtml}
 
         <!-- Resolver Info -->
         ${resolverHtml}

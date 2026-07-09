@@ -1,11 +1,27 @@
 import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
-
-// @desc    File a new complaint
-// @route   POST /api/complaints
-// @desc    File a new complaint
-// @route   POST /api/complaints
 import fs from 'fs';
+
+const includesAny = (text, words) => words.some((word) => text.includes(word));
+
+const classifyComplaint = (text = '') => {
+    const lower = text.toLowerCase();
+    let category = 'Other';
+    if (includesAny(lower, ['fan', 'light', 'electric', 'power', 'wire', 'shock'])) category = 'Electrical';
+    else if (includesAny(lower, ['toilet', 'washroom', 'dirty', 'clean', 'garbage', 'smell'])) category = 'Sanitation';
+    else if (includesAny(lower, ['bench', 'door', 'window', 'wall', 'pipe', 'water leak'])) category = 'Civil';
+    else if (includesAny(lower, ['wifi', 'internet', 'computer', 'projector', 'network'])) category = 'IT';
+    else if (includesAny(lower, ['food', 'mess', 'canteen', 'meal'])) category = 'Mess';
+    else if (includesAny(lower, ['ragging', 'fight', 'harassment', 'theft', 'stolen'])) category = 'Disciplinary';
+    else if (includesAny(lower, ['personal', 'mentor', 'teacher'])) category = 'Personal';
+
+    let priority = 'Medium';
+    if (includesAny(lower, ['fire', 'shock', 'injury', 'harassment', 'ragging', 'urgent', 'danger'])) priority = 'Urgent';
+    else if (includesAny(lower, ['not working', 'broken', 'leak', 'stolen'])) priority = 'High';
+    else if (includesAny(lower, ['minor', 'request', 'suggestion'])) priority = 'Low';
+
+    return { category, priority };
+};
 
 const classifyStaff = (text = '', studentDept = '') => {
     const lower = text.toLowerCase();
@@ -152,6 +168,7 @@ export const getComplaints = async (req, res) => {
         const complaints = await Complaint.find(filter)
             .populate('student', 'name department rollNumber roomNumber profilePicture')
             .populate('resolvedBy', 'name role profilePicture')
+            .populate('assignedStaff', 'name designation contactNumber email')
             .sort({ createdAt: -1 })
             .lean();
 
@@ -246,6 +263,7 @@ export const getMenteeComplaints = async (req, res) => {
             .populate('student', 'name department roomNumber rollNumber profilePicture')
             .populate('againstUser', 'name designation')
             .populate('resolvedBy', 'name role profilePicture')
+            .populate('assignedStaff', 'name designation contactNumber email')
             .sort({ createdAt: -1 });
 
         res.json(complaints);
@@ -344,6 +362,7 @@ export const getMyComplaints = async (req, res) => {
             .populate('student', 'name department roomNumber rollNumber profilePicture')
             .populate('againstUser', 'name')
             .populate('resolvedBy', 'name role profilePicture')
+            .populate('assignedStaff', 'name designation contactNumber email')
             .sort({ createdAt: -1 });
         res.json(complaints);
     } catch (error) {

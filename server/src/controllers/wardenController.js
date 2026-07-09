@@ -146,6 +146,7 @@ const getHostelComplaints = async (req, res) => {
             .populate('student', 'name roomNumber hostelName rollNumber department profilePicture')
             .populate('againstUser', 'name')
             .populate('resolvedBy', 'name role profilePicture')
+            .populate('assignedStaff', 'name designation contactNumber email')
             .sort({ createdAt: -1 });
 
         res.json(complaints);
