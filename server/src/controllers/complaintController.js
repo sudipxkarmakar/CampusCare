@@ -59,6 +59,10 @@ const classifyStaff = (text = '', studentDept = '') => {
     if (includesAny(lower, ['broken bench in lawn', 'streetlights not working', 'football ground', 'fallen tree', 'lawn', 'ground', 'tree', 'grass', 'streetlight', 'park'])) {
         return { designation: 'Estate / Grounds Manager', routeDept: null };
     }
+    // Electrician
+    if (includesAny(lower, ['electrician', 'switch', 'socket', 'wire', 'fan', 'bulb', 'light', 'smartboard', 'power'])) {
+        return { designation: 'Electrician', routeDept: null };
+    }
     // Carpenter
     if (includesAny(lower, ['drawing board', 'desk broken', 'door lock', 'bed frame', 'cupboard', 'carpenter', 'desk', 'bed', 'drawer', 'chair', 'board'])) {
         return { designation: 'Carpenter', routeDept: null };
@@ -74,10 +78,6 @@ const classifyStaff = (text = '', studentDept = '') => {
     // Housekeeping
     if (includesAny(lower, ['corridors dirty', 'garbage overflowing', 'washroom needs cleaning', 'water logging', 'housekeeping', 'clean', 'dirty', 'garbage', 'dustbin', 'sweeping', 'logging', 'common area'])) {
         return { designation: 'Housekeeping & Janitorial Supervisor', routeDept: null };
-    }
-    // Electrician
-    if (includesAny(lower, ['electrician', 'switch', 'socket', 'wire', 'fan', 'bulb', 'light', 'smartboard', 'power'])) {
-        return { designation: 'Electrician', routeDept: null };
     }
     // water-related logic specifically
     if (lower.includes('water')) {
