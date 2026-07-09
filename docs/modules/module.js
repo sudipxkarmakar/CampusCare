@@ -1153,7 +1153,7 @@
     const problem = comp.title || 'N/A';
     const details = comp.description || 'N/A';
     
-    const message = `Hello ${staff.name},\n\nA new campus complaint has been filed and routed to you.\n\n*Task:* ${staff.designation} Work\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Details:* ${details}\n*Reported By:* ${studentName}\n\nPlease take necessary action.`;
+    const message = `Hello ${staff.name},\n\nA new campus complaint has been filed and routed to you.\n\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Details:* ${details}\n*Reported By:* ${studentName}\n\nPlease take necessary action.`;
     const encodedText = encodeURIComponent(message);
     const phone = staff.contactNumber ? staff.contactNumber.replace(/\D/g, '') : '';
     const prefix = phone.length === 10 ? '91' : '';
@@ -3852,7 +3852,17 @@
         
         const cleanPhone = staffPhone.replace(/\D/g, '');
         const prefix = cleanPhone.length === 10 ? '91' : '';
-        const waLink = cleanPhone ? `<a href="https://api.whatsapp.com/send?phone=${prefix}${cleanPhone}&text=${encodeURIComponent('Hello ' + staffName + ', regarding campus complaint: ' + title)}" target="_blank" style="color: #25D366; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(37, 211, 102, 0.1); border-radius: 50%; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.15)';" onmouseleave="this.style.transform='scale(1)';"><i class="fa-brands fa-whatsapp"></i></a>` : '';
+
+        const studentNameVal = raiserName || 'Student';
+        const roomNo = c.location || 'N/A';
+        const problem = title || 'N/A';
+        const details = desc || 'N/A';
+        const priorityLabel = priority || 'Medium';
+
+        const message = `Hello ${staffName},\n\nA campus complaint has been assigned to you.\n\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Priority:* ${priorityLabel}\n*Details:* ${details}\n*Reported By:* ${studentNameVal}\n\nPlease attend to this issue.`;
+        const encodedText = encodeURIComponent(message);
+        
+        const waLink = cleanPhone ? `<a href="https://api.whatsapp.com/send?phone=${prefix}${cleanPhone}&text=${encodedText}" target="_blank" style="color: #25D366; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(37, 211, 102, 0.1); border-radius: 50%; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.15)';" onmouseleave="this.style.transform='scale(1)';"><i class="fa-brands fa-whatsapp"></i></a>` : '';
 
         assignedStaffHtml = `
           <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px;">
