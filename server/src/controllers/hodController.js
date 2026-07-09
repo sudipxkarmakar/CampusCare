@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 // @desc    Get HOD Dashboard Stats
 // @route   GET /api/hod/dashboard
 // @access  Private/HOD
+
 const getHodDashboardStats = async (req, res) => {
     try {
         const { department } = req.user;
@@ -135,6 +136,7 @@ const handleLeaveAction = async (req, res) => {
 // @desc    Get All Students of Department
 // @route   GET /api/hod/students
 // @access  Private/HOD
+
 const getDepartmentStudents = async (req, res) => {
     try {
         const { department } = req.user;
