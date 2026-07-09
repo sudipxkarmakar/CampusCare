@@ -232,7 +232,7 @@
           </section>
 
           <!-- Stat Cards Row -->
-          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;">
             <a href="../modules/gate-pass/approve.html" class="stat-card-new" style="text-decoration: none; position: relative;">
               <div id="leaveCountBadge" class="badge-count" style="display:none; top: 15px; right: 15px; background: var(--danger); color: white; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; line-height: 1; box-sizing: border-box; position: absolute;">0</div>
               <div class="icon-wrapper" style="background: #fee2e2; color: #ef4444;">
@@ -271,6 +271,16 @@
               <div class="stat-info">
                 <h4>Teachers</h4>
                 <p class="stat-value" id="teacherCountVal">0</p>
+              </div>
+            </a>
+
+            <a href="../modules/student-database/view.html?filter=faculty-staff" class="stat-card-new" style="text-decoration: none;">
+              <div class="icon-wrapper" style="background: rgba(20, 184, 166, 0.1); color: #14b8a6;">
+                <i class="fa-solid fa-toolbox"></i>
+              </div>
+              <div class="stat-info">
+                <h4>Staff</h4>
+                <p class="stat-value" id="staffCountVal">0</p>
               </div>
             </a>
           </div>
@@ -481,6 +491,10 @@
               <a href="../modules/achievements/post.html" class="module-card-compact">
                 <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:#10b981"><i class="fa-solid fa-trophy"></i></div>
                 <div class="module-title-compact">Achievements</div>
+              </a>
+              <a href="../modules/student-database/view.html?filter=faculty-staff" class="module-card-compact">
+                <div class="module-icon-compact" style="background:rgba(20, 184, 166, 0.1); color:#14b8a6"><i class="fa-solid fa-toolbox"></i></div>
+                <div class="module-title-compact">Faculty Staff</div>
               </a>
             </div>
           </section>

@@ -58,6 +58,23 @@ async function loadDashboardStats() {
         if (document.getElementById('totalWardens'))
             document.getElementById('totalWardens').innerText = data.wardenCount !== undefined ? data.wardenCount : 0;
 
+        // Support Staff count
+        try {
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+            const staffRes = await fetch(`${apiBase}/api/auth/staff`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (staffRes.ok) {
+                const staff = await staffRes.json();
+                const staffCountEl = document.getElementById('totalStaff');
+                if (staffCountEl) staffCountEl.innerText = staff.length;
+            }
+        } catch (e) {
+            console.error('Error fetching staff count:', e);
+        }
+
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
     }

@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, getProfile, uploadProfilePicture, updateProfile, updateUserFields } from '../controllers/authController.js';
+import { registerUser, loginUser, getProfile, uploadProfilePicture, updateProfile, updateUserFields, getSupportStaff } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import multer from 'multer';
 import path from 'path';
@@ -45,5 +45,6 @@ router.get('/profile', protect, getProfile);
 router.put('/profile', protect, updateProfile); // Edit Profile
 router.post('/profile-picture', protect, upload.single('profileImage'), uploadProfilePicture);
 router.put('/users/:id', protect, updateUserFields);
+router.get('/staff', protect, getSupportStaff);
 
 export default router;

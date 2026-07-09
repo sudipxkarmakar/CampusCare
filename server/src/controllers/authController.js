@@ -46,6 +46,11 @@ const validateRoleData = (role, data) => {
         return null;
     }
 
+    if (role === 'staff') {
+        if (!employeeId) return 'Valid Employee ID is required.';
+        return null;
+    }
+
     return 'Invalid Role';
 };
 
@@ -102,7 +107,7 @@ export const registerUser = async (req, res) => {
         }
         // ...
         let idQuery;
-        if (role === 'teacher' || role === 'hod' || role === 'warden') {
+        if (role === 'teacher' || role === 'hod' || role === 'warden' || role === 'staff') {
             idQuery = { employeeId };
         } else {
             // Students & Hostelers: Roll Number is unique ONLY within the department
@@ -112,7 +117,7 @@ export const registerUser = async (req, res) => {
         const idExists = await User.findOne(idQuery);
 
         if (idExists) {
-            const idType = (role === 'teacher' || role === 'hod' || role === 'warden') ? 'Employee ID' : 'Roll Number in this Department';
+            const idType = (role === 'teacher' || role === 'hod' || role === 'warden' || role === 'staff') ? 'Employee ID' : 'Roll Number in this Department';
             return res.status(400).json({ message: `${idType} already exists.` });
         }
 
@@ -127,23 +132,39 @@ export const registerUser = async (req, res) => {
             bloodGroup
         };
 
+        let finalDesignation = designation;
+        if (!finalDesignation) {
+            if (role === 'student' || role === 'hosteler') finalDesignation = 'student';
+            else if (role === 'teacher') finalDesignation = 'teacher';
+            else if (role === 'hod') finalDesignation = 'hod';
+            else if (role === 'warden') finalDesignation = 'warden';
+            else if (role === 'principal') finalDesignation = 'principal';
+            else if (role === 'dean') finalDesignation = 'dean';
+            else if (role === 'librarian') finalDesignation = 'librarian';
+        }
+
         if (role === 'student') {
             userData.rollNumber = rollNumber;
             userData.year = year;
             userData.batch = batch;
             userData.section = section;
+            userData.designation = 'student';
         } else if (role === 'hosteler') {
             userData.rollNumber = rollNumber;
             userData.year = year;
             userData.batch = batch;
             userData.hostelName = hostelName;
             userData.roomNumber = roomNumber;
+            userData.designation = 'student';
         } else if (role === 'teacher' || role === 'hod' || role === 'warden') {
             userData.employeeId = employeeId;
-            userData.designation = designation;
+            userData.designation = finalDesignation;
             userData.yearsExperience = yearsExperience;
             userData.joiningYear = joiningYear;
             userData.specialization = specialization;
+        } else if (role === 'staff') {
+            userData.employeeId = employeeId;
+            userData.designation = finalDesignation;
         }
 
         // 5. Handle Profile Picture
@@ -259,6 +280,7 @@ export const loginUser = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role, // Return DB role
+                designation: user.designation || user.role,
                 department: user.department,
                 batch: user.batch,
                 section: user.section,
@@ -560,7 +582,7 @@ export const updateUserFields = async (req, res) => {
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        const fields = ['attendance', 'mar', 'moocs', 'cgpa', 'assignmentsSubmitted', 'contactNumber', 'email', 'name', 'rollNumber', 'batch', 'year', 'department', 'hostelName', 'roomNumber'];
+        const fields = ['attendance', 'mar', 'moocs', 'cgpa', 'assignmentsSubmitted', 'contactNumber', 'email', 'name', 'rollNumber', 'batch', 'year', 'department', 'hostelName', 'roomNumber', 'designation'];
         fields.forEach(field => {
             if (req.body[field] !== undefined) {
                 targetUser[field] = req.body[field];
@@ -572,5 +594,23 @@ export const updateUserFields = async (req, res) => {
     } catch (error) {
         console.error('Update User Error:', error);
         res.status(500).json({ message: 'Server Error during user update' });
+    }
+};
+
+// @desc    Get all support staff
+// @route   GET /api/auth/staff
+// @access  Private (HOD, Principal, Admin, Dean)
+export const getSupportStaff = async (req, res) => {
+    try {
+        const callerRole = (req.user.role || '').toLowerCase();
+        if (!['hod', 'principal', 'admin', 'dean'].includes(callerRole)) {
+            return res.status(403).json({ message: 'Access denied.' });
+        }
+
+        const staff = await User.find({ role: 'staff' }).select('-password').lean();
+        res.json(staff);
+    } catch (error) {
+        console.error('Get Support Staff Error:', error);
+        res.status(500).json({ message: 'Server Error retrieving staff' });
     }
 };

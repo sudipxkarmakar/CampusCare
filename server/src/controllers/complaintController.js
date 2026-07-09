@@ -7,46 +7,118 @@ import User from '../models/User.js';
 // @route   POST /api/complaints
 import fs from 'fs';
 
-const includesAny = (text, words) => words.some((word) => text.includes(word));
-
-const classifyComplaint = (text = '') => {
+const classifyStaff = (text = '', studentDept = '') => {
     const lower = text.toLowerCase();
-    let category = 'Other';
-    if (includesAny(lower, ['fan', 'light', 'electric', 'power', 'wire', 'shock'])) category = 'Electrical';
-    else if (includesAny(lower, ['toilet', 'washroom', 'dirty', 'clean', 'garbage', 'smell'])) category = 'Sanitation';
-    else if (includesAny(lower, ['bench', 'door', 'window', 'wall', 'pipe', 'water leak'])) category = 'Civil';
-    else if (includesAny(lower, ['wifi', 'internet', 'computer', 'projector', 'network'])) category = 'IT';
-    else if (includesAny(lower, ['food', 'mess', 'canteen', 'meal'])) category = 'Mess';
-    else if (includesAny(lower, ['ragging', 'fight', 'harassment', 'theft', 'stolen'])) category = 'Disciplinary';
-    else if (includesAny(lower, ['personal', 'mentor', 'teacher'])) category = 'Personal';
 
-    let priority = 'Medium';
-    if (includesAny(lower, ['fire', 'shock', 'injury', 'harassment', 'ragging', 'urgent', 'danger'])) priority = 'Urgent';
-    else if (includesAny(lower, ['not working', 'broken', 'leak', 'stolen'])) priority = 'High';
-    else if (includesAny(lower, ['minor', 'request', 'suggestion'])) priority = 'Low';
+    // 1. Direct multi-word/phrase/keyword matches
+    // HVAC / AC Technician
+    if (includesAny(lower, ['split ac', 'ac not cooling', 'ac down', 'air conditioner', 'hvac', 'ac cooling'])) {
+        return { designation: 'HVAC / AC Technician', routeDept: null };
+    }
+    // Mess / Catering Manager
+    if (includesAny(lower, ['unhygienic food', 'insect in meal', 'water cooler empty', 'dinner delayed', 'raw chapati', 'utensils dirty', 'mess', 'food', 'meal', 'canteen', 'lunch', 'dinner', 'breakfast', 'utensil'])) {
+        return { designation: 'Mess / Catering Manager', routeDept: null };
+    }
+    // Pest Control Specialist
+    if (includesAny(lower, ['mosquitoes', 'bedbugs', 'stray dog', 'stray cat', 'beehive', 'rodents', 'pest control', 'bug', 'insect', 'rodent'])) {
+        return { designation: 'Pest Control Specialist', routeDept: null };
+    }
+    // Lab Assistant
+    if (includesAny(lower, ['burning smell from cro', 'lab component', 'chemical spill', 'soldering iron', 'cro', 'chemical', 'soldering'])) {
+        return { designation: 'Lab Assistants / Attendants', routeDept: studentDept };
+    }
+    // Network Admin
+    if (includesAny(lower, ['wi-fi', 'wifi', 'internet', 'lan port', 'portal login', 'server down', 'pc not booting', 'lan', 'pc', 'login error', 'portal', 'network'])) {
+        return { designation: 'Network / System Administrator (IT Support)', routeDept: null };
+    }
+    // Lift / Elevator
+    if (includesAny(lower, ['lift stuck', 'elevator', 'lift making', 'jerky movement', 'sensor failure'])) {
+        return { designation: 'Lift / Elevator Technician', routeDept: null };
+    }
+    // Security
+    if (includesAny(lower, ['parking issue', 'unauthorized entry', 'lost bag', 'bicycle theft', 'fight near gate', 'gate pass', 'security', 'guard', 'theft', 'stolen', 'parking', 'fight', 'gate'])) {
+        return { designation: 'Chief Security Officer / Guard Desk', routeDept: null };
+    }
+    // Grounds Manager
+    if (includesAny(lower, ['broken bench in lawn', 'streetlights not working', 'football ground', 'fallen tree', 'lawn', 'ground', 'tree', 'grass', 'streetlight', 'park'])) {
+        return { designation: 'Estate / Grounds Manager', routeDept: null };
+    }
+    // Carpenter
+    if (includesAny(lower, ['drawing board', 'desk broken', 'door lock', 'bed frame', 'cupboard', 'carpenter', 'desk', 'bed', 'drawer', 'chair', 'board'])) {
+        return { designation: 'Carpenter', routeDept: null };
+    }
+    // Mason / Civil
+    if (includesAny(lower, ['wall crack', 'ceiling plaster', 'broken floor tiles', 'roof leakage during rain', 'whitewash', 'wall', 'ceiling', 'plaster', 'tiles', 'cement', 'paint', 'painter', 'mason'])) {
+        return { designation: 'Mason / Painter (Civil Maintenance)', routeDept: null };
+    }
+    // Plumber
+    if (includesAny(lower, ['plumber', 'pipe', 'tap', 'flush', 'clogged', 'leakage', 'toilet', 'washroom'])) {
+        return { designation: 'Plumber', routeDept: null };
+    }
+    // Housekeeping
+    if (includesAny(lower, ['corridors dirty', 'garbage overflowing', 'washroom needs cleaning', 'water logging', 'housekeeping', 'clean', 'dirty', 'garbage', 'dustbin', 'sweeping', 'logging', 'common area'])) {
+        return { designation: 'Housekeeping & Janitorial Supervisor', routeDept: null };
+    }
+    // Electrician
+    if (includesAny(lower, ['electrician', 'switch', 'socket', 'wire', 'fan', 'bulb', 'light', 'smartboard', 'power'])) {
+        return { designation: 'Electrician', routeDept: null };
+    }
+    // water-related logic specifically
+    if (lower.includes('water')) {
+        return { designation: 'Plumber', routeDept: null };
+    }
 
-    return { category, priority };
+    // 3. Fallbacks based on broad classification categories
+    const analysis = classifyComplaint(text);
+    if (analysis.category === 'Electrical') return { designation: 'Electrician' };
+    if (analysis.category === 'Sanitation') return { designation: 'Housekeeping & Janitorial Supervisor' };
+    if (analysis.category === 'Civil') return { designation: 'Plumber' };
+    if (analysis.category === 'IT') return { designation: 'Network / System Administrator (IT Support)' };
+    if (analysis.category === 'Mess') return { designation: 'Mess / Catering Manager' };
+    if (analysis.category === 'Disciplinary') return { designation: 'Chief Security Officer / Guard Desk' };
+
+    // Default fallback
+    return { designation: 'Estate / Grounds Manager' };
 };
 
 export const fileComplaint = async (req, res) => {
     fs.appendFileSync('debug_output.txt', `\nHEADERS: ${req.headers['content-type']}\nBODY: ${JSON.stringify(req.body)}\nFILE: ${req.file ? req.file.originalname : 'none'}\n`);
-    const { title, description, againstUser } = req.body;
+    const { title, description, location, againstUser } = req.body;
     const studentId = req.user._id;
 
     try {
+        const studentUser = await User.findById(studentId);
+        const studentDept = studentUser ? studentUser.department || '' : '';
+
         const analysis = classifyComplaint(`${title} ${description}`);
+        const staffMatch = classifyStaff(`${title} ${description}`, studentDept);
+
+        // Find the matched staff member from DB
+        let staffQuery = { role: 'staff', designation: staffMatch.designation };
+        if (staffMatch.routeDept) {
+            staffQuery.department = staffMatch.routeDept;
+        }
+        let matchedStaffUser = await User.findOne(staffQuery);
+        if (!matchedStaffUser && staffMatch.routeDept) {
+            matchedStaffUser = await User.findOne({ role: 'staff', designation: staffMatch.designation });
+        }
 
         const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
         const complaintData = {
             title,
             description,
+            location: location || '',
             student: studentId,
             category: analysis.category,
             priority: analysis.priority,
             againstUser: againstUser || null
         };
         
+        if (matchedStaffUser) {
+            complaintData.assignedStaff = matchedStaffUser._id;
+        }
+
         if (imageUrl) {
             complaintData.image = imageUrl;
         }
@@ -56,7 +128,12 @@ export const fileComplaint = async (req, res) => {
         res.status(201).json({
             message: 'Complaint filed successfully',
             complaint,
-            aiNote: `Classified as ${analysis.category} with ${analysis.priority} priority.`
+            assignedStaff: matchedStaffUser ? {
+                name: matchedStaffUser.name,
+                designation: matchedStaffUser.designation,
+                contactNumber: matchedStaffUser.contactNumber
+            } : null,
+            aiNote: `Classified as ${analysis.category} with ${analysis.priority} priority and assigned to ${staffMatch.designation}.`
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

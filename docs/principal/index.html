@@ -226,7 +226,7 @@
           </section>
 
           <!-- Core Institutional Stats Row -->
-          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+          <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;">
             <a href="../modules/student-database/view.html" class="stat-card-new stat-card-link" style="align-items: center; text-align: center;">
               <div class="icon-wrapper" style="background: #dbeafe; color: #1d4ed8;">
                 <i class="fa-solid fa-user-graduate"></i>
@@ -261,6 +261,15 @@
               <div class="stat-info" style="text-align: center;">
                 <h4>Total Wardens</h4>
                 <p class="stat-value" id="totalWardens">0</p>
+              </div>
+            </a>
+            <a href="../modules/student-database/view.html?filter=faculty-staff" class="stat-card-new stat-card-link" style="align-items: center; text-align: center;">
+              <div class="icon-wrapper" style="background: rgba(20, 184, 166, 0.1); color: #14b8a6;">
+                <i class="fa-solid fa-toolbox"></i>
+              </div>
+              <div class="stat-info" style="text-align: center;">
+                <h4>Faculty Staff</h4>
+                <p class="stat-value" id="totalStaff">0</p>
               </div>
             </a>
           </div>
@@ -330,6 +339,10 @@
             <a href="../modules/achievements/post.html" class="module-card-compact">
               <div class="module-icon-compact" style="background:rgba(16, 185, 129, 0.1); color:#10b981"><i class="fa-solid fa-trophy"></i></div>
               <div class="module-title-compact">Achievements</div>
+            </a>
+            <a href="../modules/student-database/view.html?filter=faculty-staff" class="module-card-compact">
+              <div class="module-icon-compact" style="background:rgba(20, 184, 166, 0.1); color:#14b8a6"><i class="fa-solid fa-toolbox"></i></div>
+              <div class="module-title-compact">Faculty Staff</div>
             </a>
           </div>
         </section>

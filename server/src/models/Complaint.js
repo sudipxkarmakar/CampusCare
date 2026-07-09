@@ -61,6 +61,14 @@ const complaintSchema = new mongoose.Schema({
     resolvedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+    },
+    location: {
+        type: String,
+        default: ''
+    },
+    assignedStaff: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 }, { timestamps: true });
 

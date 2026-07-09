@@ -58,6 +58,23 @@ async function loadDashboardStats() {
         const insightTeacherCount = document.getElementById('insight-teacher-count');
         if (insightTeacherCount) insightTeacherCount.innerText = data.teacherCount;
 
+        // Support Staff count
+        try {
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://campuscare-backend-96cn.onrender.com';
+            const staffRes = await fetch(`${apiBase}/api/auth/staff`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (staffRes.ok) {
+                const staff = await staffRes.json();
+                const staffCountVal = document.getElementById('staffCountVal');
+                if (staffCountVal) staffCountVal.innerText = staff.length;
+            }
+        } catch (e) {
+            console.error('Error fetching staff count:', e);
+        }
+
         // Leave Requests Stats
         const leaveCountVal = document.getElementById('leaveCountVal');
         if (leaveCountVal) leaveCountVal.innerText = data.pendingLeaves || 0;

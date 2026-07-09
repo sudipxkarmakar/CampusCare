@@ -1104,6 +1104,7 @@
   function postFields() {
     if (cfg.module === 'complaints') return `
       <label>Subject<input name="title" required></label>
+      <label>Location (e.g., Room No, Lab, Block)<input name="location" placeholder="e.g. Room 204, IT Lab, Block A" required></label>
       <label>Issue Details<textarea name="description" required></textarea></label>
       <label>Attachment<input name="image" type="file" accept="image/*"></label>`;
     if (cfg.module === 'notices') return `
@@ -1184,7 +1185,30 @@
       alert('Submission failed. Please check your login and backend server.');
       return;
     }
-    alert('Submitted successfully.');
+    
+    if (cfg.module === 'complaints') {
+      const resData = await res.json();
+      alert('Complaint submitted successfully!');
+      if (resData.assignedStaff) {
+        const staff = resData.assignedStaff;
+        const comp = resData.complaint;
+        const studentName = user.name || 'Student';
+        const roomNo = comp.location || 'N/A';
+        const problem = comp.title || 'N/A';
+        const details = comp.description || 'N/A';
+        
+        const message = `Hello ${staff.name},\n\nA new campus complaint has been filed and routed to you.\n\n*Task:* ${staff.designation} Work\n*Problem:* ${problem}\n*Location:* ${roomNo}\n*Details:* ${details}\n*Reported By:* ${studentName}\n\nPlease take necessary action.`;
+        const encodedText = encodeURIComponent(message);
+        
+        if (confirm(`A WhatsApp notification has been drafted for the assigned staff: ${staff.name} (${staff.designation}).\n\nClick OK to open WhatsApp and send the alert.`)) {
+          const phone = staff.contactNumber ? staff.contactNumber.replace(/\D/g, '') : '';
+          const prefix = phone.length === 10 ? '91' : '';
+          window.open(`https://api.whatsapp.com/send?phone=${prefix}${phone}&text=${encodedText}`, '_blank');
+        }
+      }
+    } else {
+      alert('Submitted successfully.');
+    }
     form.reset();
   }
 
@@ -7305,6 +7329,7 @@
       options += `
         <option value="dept-students">Department Students</option>
         <option value="dept-teachers">Department Teachers</option>
+        <option value="faculty-staff">Faculty Staff</option>
       `;
     } else if (userRole === 'principal' || userRole === 'dean') {
       options += `
@@ -7312,6 +7337,7 @@
         <option value="all-teachers">All Teachers</option>
         <option value="all-hods">HODs</option>
         <option value="all-wardens">Wardens</option>
+        <option value="faculty-staff">Faculty Staff</option>
       `;
     }
     dropdown.innerHTML = options;
@@ -7420,6 +7446,9 @@
         } else if (filterVal === 'all-wardens') {
           titleEl.textContent = 'Hostel Wardens';
           descEl.textContent = 'Directory of all hostel management staff and wardens.';
+        } else if (filterVal === 'faculty-staff') {
+          titleEl.textContent = 'Faculty Support Staff';
+          descEl.textContent = 'Directory of infrastructure, IT, mess, housekeeping, pest control, security, and grounds staff.';
         }
       }
 
@@ -7435,6 +7464,7 @@
       else if (filterVal === 'all-teachers') endpoint = '/api/principal/teachers';
       else if (filterVal === 'all-hods') endpoint = '/api/principal/hods';
       else if (filterVal === 'all-wardens') endpoint = '/api/principal/wardens';
+      else if (filterVal === 'faculty-staff') endpoint = '/api/auth/staff';
       
       const tableContainer = document.getElementById('dbTableContainer');
       if (tableContainer) {
@@ -7576,6 +7606,10 @@
       } else if (filterVal === 'all-wardens') {
         cols = ['name', 'hostelName', 'email', 'contactNumber', 'attendance', 'whatsapp'];
         headers = ['Name', 'Warden For', 'Mail', 'Contact No', 'Avg Attendance', 'WhatsApp Link'];
+      } else if (filterVal === 'faculty-staff') {
+        cols = ['name', 'designation', 'email', 'contactNumber', 'whatsapp'];
+        headers = ['Name', 'Role/Designation', 'Email', 'Contact No', 'WhatsApp Link'];
+        editableFields = { 'name': 'text', 'designation': 'text', 'email': 'text', 'contactNumber': 'text' };
       }
 
       // Draw table structure
@@ -7667,7 +7701,8 @@
                 <tr style="transition: background-color 0.2s;">
                   ${cols.map(col => {
                     const isEditable = !!editableFields[col];
-                    const rawVal = item[col] || 0;
+                    const isText = editableFields[col] === 'text';
+                    const rawVal = (item[col] !== undefined && item[col] !== null) ? item[col] : (isText ? '' : 0);
                     const cellDisplay = formatCellVal(item, col);
                     
                     if (isEditable) {
@@ -7683,6 +7718,7 @@
                             data-id="${item._id}" 
                             data-field="${col}" 
                             data-value="${rawVal}" 
+                            data-type="${editableFields[col]}"
                             data-total-field="${totalField}"
                             data-total-value="${totalVal}"
                             style="cursor: pointer; position: relative; font-weight: 600; color: var(--primary); padding: 8px 12px; transition: background-color 0.2s;"
@@ -7736,6 +7772,74 @@
           if (cell.querySelector('input')) return;
           const id = cell.dataset.id;
           const field = cell.dataset.field;
+          const type = cell.dataset.type;
+          
+          if (type === 'text') {
+            const currentText = cell.dataset.value || '';
+            const textInput = document.createElement('input');
+            textInput.type = 'text';
+            textInput.value = currentText;
+            textInput.style.width = '140px';
+            textInput.style.padding = '2px 4px';
+            textInput.style.borderRadius = '4px';
+            textInput.style.border = '1px solid var(--primary)';
+            textInput.style.outline = 'none';
+            textInput.style.fontSize = '0.85rem';
+
+            cell.innerHTML = '';
+            cell.appendChild(textInput);
+            textInput.focus();
+            textInput.select();
+
+            let isSaving = false;
+            const saveTextEdit = async () => {
+              if (isSaving) return;
+              isSaving = true;
+              const newText = textInput.value;
+              cell.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="color: var(--primary);"></i>`;
+              try {
+                const res = await fetch(`${apiBase}/api/auth/users/${id}`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({ [field]: newText })
+                });
+
+                if (res.ok) {
+                  // Update local memory data
+                  const localItem = allDbData.find(item => item._id === id);
+                  if (localItem) {
+                    localItem[field] = newText;
+                  }
+                  cell.dataset.value = newText;
+                  cell.innerHTML = `<span>${newText || '--'}</span><i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>`;
+                  cell.style.backgroundColor = '#d1fae5';
+                  setTimeout(() => { cell.style.backgroundColor = ''; }, 1000);
+                } else {
+                  throw new Error();
+                }
+              } catch (err) {
+                cell.dataset.value = currentText;
+                cell.innerHTML = `<span>${currentText || '--'}</span><i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>`;
+                cell.style.backgroundColor = '#fee2e2';
+                setTimeout(() => { cell.style.backgroundColor = ''; }, 1000);
+              }
+            };
+
+            textInput.addEventListener('blur', saveTextEdit);
+            textInput.addEventListener('keydown', (ev) => {
+              if (ev.key === 'Enter') saveTextEdit();
+              if (ev.key === 'Escape') {
+                textInput.removeEventListener('blur', saveTextEdit);
+                cell.dataset.value = currentText;
+                cell.innerHTML = `<span>${currentText || '--'}</span><i class="fa-solid fa-pencil cell-edit-icon" style="opacity: 0; color: #94a3b8; font-size: 0.75rem; margin-left: 6px; transition: opacity 0.2s;"></i>`;
+              }
+            });
+            return;
+          }
+
           const totalField = cell.dataset.totalField;
           const currentVal = parseFloat(cell.dataset.value) || 0;
           const currentTotal = parseFloat(cell.dataset.totalValue) || 0;

@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['student', 'teacher', 'hod', 'admin', 'hosteler', 'alumni', 'librarian', 'principal', 'warden', 'dean'],
+        enum: ['student', 'teacher', 'hod', 'admin', 'hosteler', 'alumni', 'librarian', 'principal', 'warden', 'dean', 'staff'],
         default: 'student',
     },
     // Student Specific
