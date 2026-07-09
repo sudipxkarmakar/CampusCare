@@ -94,6 +94,46 @@ if (loginForm) {
         updateFormFields(roleSelect.value); // Re-run to show/hide extras
     });
 
+    // Auto-login on typing correct credentials
+    let autoLoginTimeout = null;
+    const checkAutoLogin = () => {
+        if (isRegistering) return;
+        
+        const identifier = identifierInput.value.trim();
+        const password = document.getElementById('password')?.value || '';
+        
+        if (!identifier || !password) return;
+
+        if (autoLoginTimeout) clearTimeout(autoLoginTimeout);
+
+        autoLoginTimeout = setTimeout(async () => {
+            const department = document.getElementById('department')?.value;
+            const data = { identifier, password };
+            if (department) {
+                data.department = department;
+            }
+
+            try {
+                const result = await api.post('/auth/login', data);
+                if (result.token) {
+                    localStorage.setItem('user', JSON.stringify(result));
+                    if (result.role === 'teacher') window.location.href = 'teacher/index.html';
+                    else if (result.role === 'hod') window.location.href = 'hod/index.html';
+                    else if (result.role === 'warden') window.location.href = 'warden/index.html';
+                    else if (result.role === 'principal') window.location.href = 'principal/index.html';
+                    else if (result.role === 'hosteler') window.location.href = 'student/index.html';
+                    else if (result.role === 'student') window.location.href = 'student/index.html';
+                    else window.location.href = 'index.html';
+                }
+            } catch (error) {
+                // Ignore background validation failures
+            }
+        }, 400);
+    };
+
+    identifierInput.addEventListener('input', checkAutoLogin);
+    document.getElementById('password')?.addEventListener('input', checkAutoLogin);
+
     // 5. Form Submission
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
