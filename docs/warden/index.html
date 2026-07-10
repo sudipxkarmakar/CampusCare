@@ -1047,15 +1047,15 @@
                     </button>
                     <h3 style="margin: 0 0 20px 0; font-size: 1.4rem; font-weight: 800; color: #0f172a; font-family: 'Poppins', sans-serif;">Edit Emergency Contacts</h3>
                     <form id="editContactsForm" style="display: flex; flex-direction: column; gap: 16px;">
-                        \${contacts.map((c, idx) => \`
+                        ${contacts.map((c, idx) => `
                             <div style="border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); background: var(--bg-color);">
-                                <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: var(--primary); font-weight: 700;">Contact \${idx + 1}</h4>
+                                <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: var(--primary); font-weight: 700;">Contact ${idx + 1}</h4>
                                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    <input type="text" id="contact-name-\${idx}" value="\${c.name}" required placeholder="Name" style="padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); outline: none; width:100%; box-sizing:border-box;">
-                                    <input type="text" id="contact-phone-\${idx}" value="\${c.phone}" required placeholder="Phone" style="padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); outline: none; width:100%; box-sizing:border-box;">
+                                    <input type="text" id="contact-name-${idx}" value="${c.name}" required placeholder="Name" style="padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); outline: none; width:100%; box-sizing:border-box;">
+                                    <input type="text" id="contact-phone-${idx}" value="${c.phone}" required placeholder="Phone" style="padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); outline: none; width:100%; box-sizing:border-box;">
                                 </div>
                             </div>
-                        \`).join('')}
+                        `).join('')}
                         <button type="submit" class="btn-filled-purple" style="padding: 12px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
                             <i class="fa-solid fa-floppy-disk"></i> Save Contacts
                         </button>
