@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { protect, teacher } from '../middleware/authMiddleware.js';
+import { protect, teacher, canPostNotice } from '../middleware/authMiddleware.js';
 import { createAssignment, createNote, createNotice, getMyContent, getTeacherNotes, deleteNote } from '../controllers/contentController.js';
 import { getTeacherAssignments, getAssignmentSubmissions } from '../controllers/assignmentController.js';
 
@@ -42,7 +42,7 @@ router.get('/assignment/:id/submissions', protect, teacher, getAssignmentSubmiss
 router.post('/note', protect, teacher, upload.single('file'), createNote);
 router.get('/note/created', protect, teacher, getTeacherNotes); // NEW: Match frontend
 router.delete('/note/:id', protect, teacher, deleteNote); // NEW: Delete Note
-router.post('/notice', protect, teacher, createNotice);
+router.post('/notice', protect, canPostNotice, createNotice);
 router.get('/my-content', protect, getMyContent);
 
 export default router;

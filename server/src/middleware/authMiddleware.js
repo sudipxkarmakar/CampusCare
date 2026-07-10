@@ -88,3 +88,12 @@ export const principal = (req, res, next) => {
         res.status(401).json({ message: 'Not authorized as Principal' });
     }
 };
+
+export const canPostNotice = (req, res, next) => {
+    const allowedRoles = ['teacher', 'hod', 'warden', 'principal', 'dean', 'admin'];
+    if (req.user && allowedRoles.includes(req.user.role)) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Not authorized to post notices' });
+    }
+};
