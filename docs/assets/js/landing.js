@@ -1148,17 +1148,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (res.ok) {
         let complaints = await res.json();
 
-        // PRIVACY FILTER: Show all non-personal, BUT only show 'Personal' if it belongs to the logged-in user
-        const userStrFilter = localStorage.getItem("user");
-        const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
-
-        allPublicComplaints = complaints.filter((c) => {
-          if (c.category !== "Personal") return true;
-          const studentId =
-            c.student && c.student._id ? c.student._id : c.student;
-          if (userFilterObj && studentId === userFilterObj._id) return true;
-          return false;
-        });
+        // PRIVACY FILTER: The Transparency Wall is public; it must never display 'Personal' complaints.
+        allPublicComplaints = complaints.filter((c) => c.category !== "Personal");
         renderWallComplaints(allPublicComplaints);
       }
     } catch (error) {

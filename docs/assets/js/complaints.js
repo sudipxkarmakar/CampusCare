@@ -209,17 +209,8 @@ async function loadComplaints() {
 
         let complaints = await response.json();
 
-        // PRIVACY FILTER: Show all non-personal, BUT only show 'Personal' if it belongs to the logged-in user
-        const userStrFilter = localStorage.getItem('user');
-        const userFilterObj = userStrFilter ? JSON.parse(userStrFilter) : null;
-        
-        complaints = complaints.filter(c => {
-            if (c.category !== 'Personal') return true;
-            // For populated student object or raw string ID
-            const studentId = c.student && c.student._id ? c.student._id : c.student;
-            if (userFilterObj && studentId === userFilterObj._id) return true;
-            return false;
-        });
+        // PRIVACY FILTER: The Transparency Wall is public; it must never display 'Personal' complaints.
+        complaints = complaints.filter(c => c.category !== 'Personal');
 
         if (complaints.length === 0) {
             list.innerHTML = '<p style="text-align:center; padding:2rem;">No complaints found.</p>';

@@ -1,6 +1,7 @@
 import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
 import fs from 'fs';
+import fetch from 'node-fetch';
 
 const includesAny = (text, words) => words.some((word) => text.includes(word));
 
@@ -13,7 +14,7 @@ const classifyComplaint = (text = '') => {
     else if (includesAny(lower, ['wifi', 'internet', 'computer', 'projector', 'network'])) category = 'IT';
     else if (includesAny(lower, ['food', 'mess', 'canteen', 'meal'])) category = 'Mess';
     else if (includesAny(lower, ['ragging', 'fight', 'harassment', 'theft', 'stolen'])) category = 'Disciplinary';
-    else if (includesAny(lower, ['personal', 'mentor', 'teacher'])) category = 'Personal';
+    else if (includesAny(lower, ['personal', 'mentor', 'teacher', 'fever', 'headache', 'sick', 'anxiety', 'depression', 'stressed', 'medical', 'vomit', 'illness', 'doctor', 'ankle', 'injury', 'injured', 'pain', 'hurt', 'wound', 'hospital', 'accident', 'cough', 'bleed', 'bleeding', 'counseling', 'mental', 'unconscious', 'fainted'])) category = 'Personal';
 
     let priority = 'Medium';
     if (includesAny(lower, ['fire', 'shock', 'injury', 'harassment', 'ragging', 'urgent', 'danger'])) priority = 'Urgent';
@@ -106,7 +107,36 @@ export const fileComplaint = async (req, res) => {
         const studentUser = await User.findById(studentId);
         const studentDept = studentUser ? studentUser.department || '' : '';
 
-        const analysis = classifyComplaint(`${title} ${description}`);
+        // Try to classify via FastAPI ML server, fall back to heuristic if down
+        let analysis = classifyComplaint(`${title} ${description}`);
+        try {
+            const mlResponse = await fetch('http://127.0.0.1:8000/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: `${title} ${description}` })
+            });
+            if (mlResponse.ok) {
+                const mlData = await mlResponse.json();
+                if (mlData.category && mlData.priority) {
+                    // Double-Insurance: If the local heuristic already classified it as 'Personal', do not overwrite it!
+                    if (analysis.category === 'Personal') {
+                        console.log(`[ML SERVICE] Heuristic safety-net identified 'Personal'. Keeping 'Personal' category, using ML priority: ${mlData.priority}`);
+                        analysis.priority = mlData.priority;
+                    } else {
+                        analysis = {
+                            category: mlData.category,
+                            priority: mlData.priority
+                        };
+                        console.log(`[ML SERVICE] Classified via ML model: Category=${analysis.category}, Priority=${analysis.priority}`);
+                    }
+                }
+            } else {
+                console.warn(`[ML SERVICE] ML Service returned status ${mlResponse.status}. Falling back to heuristics.`);
+            }
+        } catch (mlError) {
+            console.warn('[ML SERVICE] Could not connect to ML service. Falling back to heuristics:', mlError.message);
+        }
+
         const staffMatch = classifyStaff(`${title} ${description}`, studentDept);
 
         // Find the matched staff member from DB
@@ -313,6 +343,21 @@ export const correctComplaint = async (req, res) => {
         complaint.category = category;
         complaint.priority = priority;
         await complaint.save();
+
+        // 2. Trigger feedback & background retraining in FastAPI ML service
+        try {
+            fetch('http://127.0.0.1:8000/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: `${complaint.title} ${complaint.description}`,
+                    category: category,
+                    priority: priority
+                })
+            }).catch(err => console.warn('[ML SERVICE] Feedback loop failed:', err.message));
+        } catch (feedbackErr) {
+            console.warn('[ML SERVICE] Feedback request failed:', feedbackErr.message);
+        }
 
         res.json({
             message: 'Complaint corrected successfully.',

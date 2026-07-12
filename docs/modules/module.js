@@ -3643,6 +3643,13 @@
 
       // Apply local filters if needed
       let filtered = [...listData];
+
+      // Privacy Filter: Non-staff users must never see 'Personal' complaints in the public 'All Complaints' feed
+      const isStaff = ['teacher', 'hod', 'warden', 'principal', 'dean', 'admin'].includes(userRole);
+      if (!isStaff && filterVal === 'all') {
+        filtered = filtered.filter(c => c.category !== 'Personal');
+      }
+
       if (filterVal === 'resolved-by-me') {
         filtered = filtered.filter(c => c.resolvedBy && (c.resolvedBy._id === user._id || c.resolvedBy === user._id));
       } else if (filterVal === 'by-students') {
