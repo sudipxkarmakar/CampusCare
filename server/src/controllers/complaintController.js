@@ -14,7 +14,7 @@ const classifyComplaint = (text = '') => {
     else if (includesAny(lower, ['wifi', 'internet', 'computer', 'projector', 'network'])) category = 'IT';
     else if (includesAny(lower, ['food', 'mess', 'canteen', 'meal'])) category = 'Mess';
     else if (includesAny(lower, ['ragging', 'fight', 'harassment', 'theft', 'stolen'])) category = 'Disciplinary';
-    else if (includesAny(lower, ['personal', 'mentor', 'teacher', 'fever', 'headache', 'sick', 'anxiety', 'depression', 'stressed', 'medical', 'vomit', 'illness', 'doctor', 'ankle', 'injury', 'injured', 'pain', 'hurt', 'wound', 'hospital', 'accident', 'cough', 'bleed', 'bleeding', 'counseling', 'mental', 'unconscious', 'fainted'])) category = 'Personal';
+    else if (includesAny(lower, ['personal', 'mentor', 'teacher', 'fever', 'headache', 'sick', 'anxiety', 'depression', 'stressed', 'medical', 'vomit', 'illness', 'doctor', 'ankle', 'injury', 'injured', 'pain', 'hurt', 'wound', 'hospital', 'accident', 'cough', 'bleed', 'bleeding', 'counseling', 'mental', 'unconscious', 'fainted', 'collapsed', 'collapse', 'fell down'])) category = 'Personal';
 
     let priority = 'Medium';
     if (includesAny(lower, ['fire', 'shock', 'injury', 'harassment', 'ragging', 'urgent', 'danger'])) priority = 'Urgent';
