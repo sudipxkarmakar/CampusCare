@@ -3,7 +3,11 @@ import User from '../models/User.js';
 import fs from 'fs';
 import fetch from 'node-fetch';
 
-const includesAny = (text, words) => words.some((word) => text.includes(word));
+const includesAny = (text, words) => words.some((word) => {
+    const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+    return regex.test(text);
+});
 
 const classifyComplaint = (text = '') => {
     const lower = text.toLowerCase();

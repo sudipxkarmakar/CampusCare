@@ -1,4 +1,8 @@
-const includesAny = (text, words) => words.some((word) => text.includes(word));
+const includesAny = (text, words) => words.some((word) => {
+    const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+    return regex.test(text);
+});
 
 export const analyzeComplaint = async (text = '') => {
     const lowerText = text.toLowerCase();
