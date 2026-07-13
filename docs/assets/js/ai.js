@@ -56,6 +56,20 @@ const AssistantDrawer = {
         const isOpen = drawer.style.right === '0px';
         const shouldOpen = typeof force === 'boolean' ? force : !isOpen;
         drawer.style.right = shouldOpen ? '0px' : '-450px';
+
+        if (shouldOpen) {
+            const iframe = drawer.querySelector('iframe');
+            if (iframe) {
+                setTimeout(() => {
+                    try {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.postMessage({ action: 'focusInput' }, '*');
+                    } catch (e) {
+                        console.error('Assistant focus error:', e);
+                    }
+                }, 400); // 400ms matches CSS transition time
+            }
+        }
     }
 };
 

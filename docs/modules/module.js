@@ -758,6 +758,14 @@
           openNoticeModal(id);
         });
       });
+
+      const noticeId = new URLSearchParams(window.location.search).get('noticeId');
+      if (noticeId) {
+        const noticeExists = filtered.some(item => item._id === noticeId || item.id === noticeId);
+        if (noticeExists) {
+          setTimeout(() => openNoticeModal(noticeId), 150);
+        }
+      }
     }
 
     function openNoticeModal(noticeId) {
@@ -888,7 +896,7 @@
                 </div>
                 <button type="button" id="noticeAiDraftBtn" style="display:flex; align-items:center; gap:7px; padding:8px 16px; border-radius:8px; border:1.5px solid #8b5cf6; background:#f5f3ff; color:#6d28d9; font-weight:700; font-size:0.83rem; cursor:pointer; transition:all 0.2s; white-space:nowrap;" onmouseenter="this.style.background='#6d28d9';this.style.color='white';" onmouseleave="this.style.background='#f5f3ff';this.style.color='#6d28d9';">
                   <i class="fa-solid fa-wand-magic-sparkles"></i>
-                  <span id="noticeAiDraftBtnLabel">Draft with AI</span>
+                  <span id="noticeAiDraftBtnLabel">Prepare Draft</span>
                 </button>
               </div>
               
@@ -1024,11 +1032,11 @@
           setTimeout(() => { editorEl.parentElement.style.borderColor = 'var(--border-color)'; }, 1500);
         }
       } catch (err) {
-        alert('AI drafting failed. Please write your notice manually.');
+        alert('Draft preparation failed. Please write your notice manually.');
       } finally {
         btn.disabled = false;
         btn.style.opacity = '1';
-        if (label) label.textContent = 'Draft with AI';
+        if (label) label.textContent = 'Prepare Draft';
       }
     });
   }
@@ -1433,11 +1441,11 @@
               <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
                   <span>Inspiring Quote / Story</span>
-                  <span id="alumniAiTag" style="display:none; font-size:0.72rem; color:#b45309; font-weight:600; background:#fffbeb; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                  <span id="alumniAiTag" style="display:none; font-size:0.72rem; color:#b45309; font-weight:600; background:#fffbeb; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Draft Prepared</span>
                 </label>
                 <button type="button" id="alumniAiDraftBtn" class="alumni-ai-btn" style="margin-bottom: 6px;">
                   <i class="fa-solid fa-wand-magic-sparkles"></i>
-                  <span id="alumniAiDraftBtnLabel">Draft Quote with AI</span>
+                  <span id="alumniAiDraftBtnLabel">Prepare Quote Draft</span>
                 </button>
                 <textarea name="about" id="alumniAboutInput" rows="3" placeholder="A short inspiring quote or achievement story..." style="padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.88rem; font-family: inherit;" onfocus="this.style.borderColor='#d97706';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
               </div>
@@ -1633,7 +1641,7 @@
         document.querySelectorAll('.alumni-post-row-item').forEach(r => r.style.background = '');
       });
 
-      // AI Draft Quote
+      // Draft Quote
       document.getElementById('alumniAiDraftBtn')?.addEventListener('click', async () => {
         const btn = document.getElementById('alumniAiDraftBtn');
         const label = document.getElementById('alumniAiDraftBtnLabel');
@@ -1668,11 +1676,11 @@
           }
           if (aiTag) aiTag.style.display = 'inline-flex';
         } catch (err) {
-          alert('AI drafting failed. Please write the quote manually.');
+          alert('Draft preparation failed. Please write the quote manually.');
         } finally {
           btn.disabled = false;
           btn.classList.remove('loading');
-          if (label) label.textContent = 'Draft Quote with AI';
+          if (label) label.textContent = 'Prepare Quote Draft';
         }
       });
 
@@ -2115,11 +2123,11 @@
               <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
                   <span>Description</span>
-                  <span id="achievAiTag" style="display:none; font-size:0.72rem; color:#065f46; font-weight:600; background:#ecfdf5; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafted</span>
+                  <span id="achievAiTag" style="display:none; font-size:0.72rem; color:#065f46; font-weight:600; background:#ecfdf5; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Draft Prepared</span>
                 </label>
                 <button type="button" id="achievAiDraftBtn" class="achiev-ai-btn" style="margin-bottom: 6px;">
                   <i class="fa-solid fa-wand-magic-sparkles"></i>
-                  <span id="achievAiDraftBtnLabel">Draft Description with AI</span>
+                  <span id="achievAiDraftBtnLabel">Prepare Description Draft</span>
                 </button>
                 <textarea name="description" id="achievDescInput" rows="3" placeholder="Describe the achievement in detail..." required class="achiev-form-input"></textarea>
               </div>
@@ -2307,11 +2315,11 @@
           }
           if (aiTag) aiTag.style.display = 'inline-flex';
         } catch (err) {
-          alert('AI drafting failed. Please write the description manually.');
+          alert('Draft preparation failed. Please write the description manually.');
         } finally {
           btn.disabled = false;
           btn.classList.remove('loading');
-          if (label) label.textContent = 'Draft Description with AI';
+          if (label) label.textContent = 'Prepare Description Draft';
         }
       });
 
@@ -2767,12 +2775,12 @@
               <div style="display: flex; flex-direction: column; gap: 5px;">
                 <label style="font-size: 0.82rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
                   <span>Inspiring Leadership Quote / Message</span>
-                  <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
+                  <span id="leaderAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> Draft Prepared</span>
                 </label>
                 
                 <button type="button" id="leaderAiDraftBtn" class="leader-ai-btn" style="margin-bottom: 6px;">
                   <i class="fa-solid fa-wand-magic-sparkles"></i>
-                  <span id="leaderAiDraftBtnLabel">Draft Quote with AI</span>
+                  <span id="leaderAiDraftBtnLabel">Prepare Quote Draft</span>
                 </button>
 
                 <textarea name="message" id="leaderQuoteInput" rows="3" placeholder="A quote or welcome message from the leader..." class="leader-form-input"></textarea>
@@ -2884,7 +2892,7 @@
 
       loadLeaderPostSidelist();
 
-      // AI Draft Quote Event Listener
+      // Draft Quote Event Listener
       document.getElementById('leaderAiDraftBtn')?.addEventListener('click', async () => {
         const btn = document.getElementById('leaderAiDraftBtn');
         const label = document.getElementById('leaderAiDraftBtnLabel');
@@ -2922,11 +2930,11 @@
           }
           if (aiTag) aiTag.style.display = 'inline-flex';
         } catch (err) {
-          alert('AI drafting failed. Please write the quote manually.');
+          alert('Draft preparation failed. Please write the quote manually.');
         } finally {
           btn.disabled = false;
           btn.classList.remove('loading');
-          if (label) label.textContent = 'Draft Quote with AI';
+          if (label) label.textContent = 'Prepare Quote Draft';
         }
       });
 
@@ -3392,13 +3400,13 @@
 
               <button type="button" id="complaintAiDraftBtn" class="ai-draft-btn">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span id="complaintAiDraftBtnLabel">Draft with AI</span>
+                <span id="complaintAiDraftBtnLabel">Prepare Draft</span>
               </button>
 
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <label style="font-size: 0.85rem; font-weight: 600; color: #475569; display: flex; align-items: center; justify-content: space-between;">
                   <span>Issue Details</span>
-                  <span id="complaintAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> AI Drafted</span>
+                  <span id="complaintAiTag" style="display:none; font-size:0.75rem; color:#7c3aed; font-weight:600; background:#f5f3ff; padding:2px 8px; border-radius:6px;"><i class="fa-solid fa-sparkles"></i> Draft Prepared</span>
                 </label>
                 <textarea name="description" id="complaintDescInput" rows="5" placeholder="Describe the issue in detail..." required style="padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;" onfocus="this.style.borderColor='#8b5cf6';" onblur="this.style.borderColor='#cbd5e1';"></textarea>
               </div>
@@ -3522,6 +3530,35 @@
 
     dropdown.addEventListener('change', loadRedesignedComplaints);
 
+    try {
+      const rawComplaintDraft = sessionStorage.getItem('campuscareAiDraft:complaint') || sessionStorage.getItem('aiDraftComplaint');
+      if (rawComplaintDraft) {
+        const draft = JSON.parse(rawComplaintDraft);
+        const titleInput = document.getElementById('complaintTitleInput');
+        const locationInput = document.getElementById('complaintLocationInput');
+        const descInput = document.getElementById('complaintDescInput');
+        const aiTag = document.getElementById('complaintAiTag');
+        const draftSections = [
+          draft.summary ? `Summary\n${draft.summary}` : '',
+          draft.description ? `Detailed Description\n${draft.description}` : '',
+          Array.isArray(draft.observedImpact) && draft.observedImpact.length ? `Observed Impact\n${draft.observedImpact.join('\n')}` : '',
+          Array.isArray(draft.requestedAction) && draft.requestedAction.length ? `Requested Action\n${draft.requestedAction.join('\n')}` : ''
+        ].filter(Boolean).join('\n\n');
+
+        if (titleInput && draft.title) titleInput.value = draft.title;
+        if (locationInput && draft.location) locationInput.value = draft.location;
+        if (descInput && (draftSections || draft.description)) descInput.value = draftSections || draft.description;
+        if (aiTag) aiTag.style.display = 'inline-flex';
+
+        sessionStorage.removeItem('campuscareAiDraft:complaint');
+        sessionStorage.removeItem('aiDraftComplaint');
+        sessionStorage.removeItem('aiDraftTitle');
+        sessionStorage.removeItem('aiDraftDesc');
+      }
+    } catch (err) {
+      console.error('Error prefilling AI complaint draft:', err);
+    }
+
     // Handle Form Submit
     document.getElementById('complaintPostForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -3599,11 +3636,11 @@
         if (data.description && titleEl && !titleEl.value) titleEl.value = data.title || subject;
         if (aiTag) aiTag.style.display = 'inline-flex';
       } catch (err) {
-        alert('AI drafting failed. Please write your complaint manually.');
+        alert('Draft preparation failed. Please write your complaint manually.');
       } finally {
         btn.disabled = false;
         btn.classList.remove('loading');
-        if (label) label.textContent = 'Draft with AI';
+        if (label) label.textContent = 'Prepare Draft';
       }
     });
 
@@ -8141,10 +8178,10 @@
 
               <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
                 <label style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                  <i class="fa-solid fa-robot" style="color: #075E54;"></i> AI Draft Assistant
+                  <i class="fa-solid fa-robot" style="color: #075E54;"></i> Draft Assistant
                 </label>
                 <div style="display: flex; gap: 8px;">
-                  <input type="text" id="waAiPrompt" placeholder="Ask AI to draft... (e.g. Warn about low attendance)" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none;">
+                  <input type="text" id="waAiPrompt" placeholder="Describe the message to prepare..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none;">
                   <button type="button" id="waAiDraftBtn" style="background: #075E54; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center;">
                     <span id="waAiBtnText">Generate</span>
                     <i class="fa-solid fa-spinner fa-spin" id="waAiSpinner" style="display: none; margin-left: 6px;"></i>
@@ -8225,7 +8262,7 @@
 
       aiDraftBtn.onclick = async () => {
         const promptText = aiPromptInput.value.trim();
-        if (!promptText) return alert('Please enter a prompt for the AI Assistant.');
+        if (!promptText) return alert('Please enter what the message should cover.');
 
         const btnText = document.getElementById('waAiBtnText');
         const spinner = document.getElementById('waAiSpinner');
@@ -8265,7 +8302,7 @@
             alert('Could not generate message draft.');
           }
         } catch (err) {
-          alert('Failed to connect to AI Assistant. Please draft manually.');
+          alert('Could not prepare the draft. Please write it manually.');
         } finally {
           btnText.style.display = 'inline';
           spinner.style.display = 'none';

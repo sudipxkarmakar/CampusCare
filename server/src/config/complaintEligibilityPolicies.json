@@ -1,0 +1,71 @@
+{
+  "categories": {
+    "Disciplinary": {
+      "allowedRoles": ["student", "hosteler", "teacher", "hod", "admin", "alumni", "librarian", "warden", "principal", "dean", "staff"],
+      "requiredConditions": [],
+      "alternativeAction": "Contact the Disciplinary Committee or campus security desk for immediate support.",
+      "publicSafety": true,
+      "notes": "Includes ragging, harassment, bullying, threats, assault, theft, and other student-safety incidents."
+    },
+    "Electrical": {
+      "allowedRoles": ["hosteler", "staff", "warden"],
+      "requiredConditions": ["isHosteller", "ownsRoom"],
+      "alternativeAction": "Use the hostel maintenance module or contact your warden/electrician for hostel-room electrical issues. Classroom or lab electrical faults should be reported through campus infrastructure/maintenance.",
+      "publicSafety": false
+    },
+    "IT": {
+      "allowedRoles": ["student", "hosteler", "teacher", "hod", "staff"],
+      "requiredConditions": ["assignedDepartment"],
+      "alternativeAction": "Contact IT Support for campus network or account issues. Hostel-room network issues should include your assigned hostel/room details.",
+      "publicSafety": false
+    },
+    "Sanitation": {
+      "allowedRoles": ["student", "hosteler", "teacher", "hod", "admin", "alumni", "librarian", "warden", "principal", "dean", "staff"],
+      "requiredConditions": [],
+      "alternativeAction": "Report campus cleanliness issues to Housekeeping or the campus cleanliness module.",
+      "publicSafety": true
+    },
+    "Mess": {
+      "allowedRoles": ["hosteler"],
+      "requiredConditions": ["isHosteller", "messSubscriber"],
+      "alternativeAction": "Only mess subscribers can raise mess complaints here. Non-subscribers should contact the cafeteria/vendor counter or student welfare office.",
+      "publicSafety": false
+    },
+    "Civil": {
+      "allowedRoles": ["student", "hosteler", "teacher", "hod", "admin", "alumni", "librarian", "warden", "principal", "dean", "staff"],
+      "requiredConditions": [],
+      "alternativeAction": "Report infrastructure issues to the Maintenance Department or campus infrastructure module.",
+      "publicSafety": true
+    },
+    "Personal": {
+      "allowedRoles": ["student", "hosteler"],
+      "requiredConditions": ["assignedDepartment"],
+      "alternativeAction": "Personal academic or welfare concerns should go through your mentor, department office, or Student Welfare Office.",
+      "publicSafety": false
+    },
+    "Other": {
+      "allowedRoles": ["student", "hosteler", "teacher", "hod", "admin", "alumni", "librarian", "warden", "principal", "dean", "staff"],
+      "requiredConditions": [],
+      "alternativeAction": "Use the relevant campus module if your issue belongs to a more specific area.",
+      "publicSafety": true
+    }
+  },
+  "conditions": {
+    "isHosteller": {
+      "description": "User must be a hosteler or have hostel assignment details.",
+      "failureReason": "Your profile is not marked as a hosteller."
+    },
+    "messSubscriber": {
+      "description": "User must be subscribed to hostel mess services.",
+      "failureReason": "Your profile does not show an active mess subscription."
+    },
+    "ownsRoom": {
+      "description": "The complaint must relate to the user's assigned hostel room when a room-specific hostel category is selected.",
+      "failureReason": "This complaint type is limited to your assigned hostel room."
+    },
+    "assignedDepartment": {
+      "description": "User must have an assigned department in the authenticated profile.",
+      "failureReason": "Your profile does not have an assigned department."
+    }
+  }
+}

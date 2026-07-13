@@ -12,6 +12,7 @@ import User from '../models/User.js';
 import MarMooc from '../models/MarMooc.js';
 import AIActionLog from '../models/AIActionLog.js';
 import { EXECUTION_STATUS, CONFIRMATION_STATUS } from '../constants/aiConstants.js';
+import PolicyEngine from '../ai/policies/PolicyEngine.js';
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const pendingByConversation = new Map();
@@ -604,6 +605,24 @@ class CampusAgentService {
     async createComplaint(input, user, conversationId, traceId) {
         this.requireUser(user);
         const draft = await this.generateComplaintDraft(input, user);
+        const eligibility = PolicyEngine.evaluateComplaintEligibility({
+            user,
+            category: draft.category,
+            fields: draft
+        });
+
+        if (!eligibility.success) {
+            return this.reply(eligibility.reason, {
+                success: false,
+                presentationState: 'FAILED',
+                payload: {
+                    category: draft.category,
+                    alternativeAction: eligibility.alternativeAction,
+                    failedConditions: eligibility.failedConditions || []
+                },
+                traceId
+            });
+        }
 
         contextByConversation.set(conversationId, {
             entityType: 'COMPLAINT_DRAFT',

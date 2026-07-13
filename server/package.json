@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "check": "node --check src/server.js && node --check src/ai/index.js && node --check src/ai/runtimes/LookupRuntime.js",
+    "deploy:check": "node scripts/check_deploy_ready.js && npm run check",
     "inspect": "node scripts/inspect_complaints.js",
     "check-achievements": "node check_achievements.js"
   },

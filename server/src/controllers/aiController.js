@@ -9,12 +9,14 @@ export const handleGetStatus = async (req, res) => {
 
 export const handleChat = async (req, res, next) => {
     try {
-        const { text, history = [], conversationId, clientContext = {} } = req.body;
+        const { text, conversationId, clientContext = {} } = req.body;
         if (!text || !String(text).trim()) {
             return res.status(400).json({ error: 'Text input is required' });
         }
 
-        const result = await aiService.processInput(text, req.user, history, conversationId, clientContext);
+        // Import the V5 processAIInput coordinator
+        const { processAIInput } = await import('../ai/index.js');
+        const result = await processAIInput(text, req.user, conversationId, clientContext);
 
         if (req.headers.accept === 'text/event-stream') {
             res.setHeader('Content-Type', 'text/event-stream');

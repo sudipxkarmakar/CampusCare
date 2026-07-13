@@ -141,8 +141,8 @@
             <button
               id="assistantBtn"
               class="btn-pill btn-outline-purple"
-              data-action="toggleRightPanel"
-              data-panel-mode="assistant"
+              data-action="toggleModal"
+              data-modal-id="ai-modal"
             >
               <i class="fa-solid fa-robot"></i> Assistant
             </button>
@@ -824,96 +824,7 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
 
-        <!-- AI Assistant Card -->
-        <div class="side-card" id="assistant-section">
-          <h3>
-            <i
-              class="fa-solid fa-robot"
-              style="color: var(--primary); font-size: 1.5rem"
-            ></i>
-            AI Assistant
-          </h3>
-          <div class="ai-greeting">
-            <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
-            <div>
-              <p>Hi there! 👋</p>
-              <span>How can I help you today?</span>
-            </div>
-          </div>
 
-          <div
-            id="ai-status"
-            style="
-              margin-bottom: 12px;
-              color: var(--text-muted);
-              font-size: 0.82rem;
-              font-weight: 600;
-            "
-          >
-            Ready.
-          </div>
-
-          <div class="ai-suggestions">
-            <button
-              class="ai-suggestion-btn"
-              data-action="aiQuery"
-              data-query="General Information"
-            >
-              <i class="fa-solid fa-circle-info"></i> General Information
-            </button>
-            <button
-              class="ai-suggestion-btn"
-              data-action="aiQuery"
-              data-query="Admission Process"
-            >
-              <i class="fa-solid fa-graduation-cap"></i> Admission Process
-            </button>
-            <button
-              class="ai-suggestion-btn"
-              data-action="aiQuery"
-              data-query="Campus Facilities"
-            >
-              <i class="fa-solid fa-building"></i> Campus Facilities
-            </button>
-            <button
-              class="ai-suggestion-btn"
-              data-action="aiQuery"
-              data-query="Scholarships"
-            >
-              <i class="fa-solid fa-award"></i> Scholarships
-            </button>
-            <button
-              class="ai-suggestion-btn"
-              data-action="aiQuery"
-              data-query="Events & News"
-            >
-              <i class="fa-regular fa-calendar-days"></i> Events & News
-            </button>
-          </div>
-
-          <div
-            id="ai-chat-history"
-            style="
-              display: block;
-              max-height: 200px;
-              overflow-y: auto;
-              margin-bottom: 15px;
-              font-size: 0.85rem;
-              padding: 10px;
-              background: var(--bg-color);
-              border-radius: var(--radius-sm);
-            "
-          ></div>
-
-          <div id="ai-action-area" style="margin-bottom: 12px"></div>
-
-          <div class="ai-input-wrapper">
-            <input type="text" id="ai-input" placeholder="Ask me anything..." />
-            <button id="ai-send-btn" data-action="askAI" aria-label="Open AI Assistant" aria-expanded="false" aria-haspopup="dialog">
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        </div>
 
         <!-- SOS & On-Site Assistance Card -->
         <div class="side-card" id="sos-section">

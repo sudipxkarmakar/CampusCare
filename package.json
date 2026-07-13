@@ -5,6 +5,8 @@
     "scripts": {
         "start": "cd server && npm start",
         "dev": "cd server && npm run dev",
+        "check": "cd server && npm run check",
+        "deploy:check": "cd server && npm run deploy:check",
         "install-deps": "cd server && npm install"
     },
     "keywords": [],

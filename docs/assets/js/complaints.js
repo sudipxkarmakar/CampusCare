@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const btn = complaintForm.querySelector('button');
             const originalText = btn.innerText;
-            btn.innerText = "Processing AI Analysis...";
+            btn.innerText = "Processing...";
             btn.disabled = true;
 
             const fileInput = document.getElementById('attachment');
@@ -168,7 +168,7 @@ async function aiAutoFillComplaint() {
     const titleEl = document.getElementById('title');
     const descEl = document.getElementById('description');
     
-    titleEl.value = "AI is drafting...";
+    titleEl.value = "Preparing draft...";
     descEl.value = "Please wait...";
 
     try {
@@ -189,7 +189,7 @@ async function aiAutoFillComplaint() {
         descEl.value = data.description || "";
     } catch (err) {
         console.error(err);
-        alert("AI could not generate draft.");
+        alert("Could not prepare draft.");
         titleEl.value = "";
         descEl.value = "";
     }
@@ -480,7 +480,7 @@ async function loadMyComplaints() {
                              <i class="fa-solid fa-thumbs-up"></i> <span id="count-${c._id}">${c.upvotes || 0}</span> Upvotes
                          </button>
                      </div>
-                     ${c.aiFeedback ? `<div style="margin-top:10px; background:#f0f9ff; padding:10px; border-radius:8px; font-size:0.85rem; color:#0369a1;"><i class="fa-solid fa-robot"></i> <strong>AI Note:</strong> ${c.aiFeedback}</div>` : ''}
+                     ${c.aiFeedback ? `<div style="margin-top:10px; background:#f0f9ff; padding:10px; border-radius:8px; font-size:0.85rem; color:#0369a1;"><i class="fa-solid fa-robot"></i> <strong>Note:</strong> ${c.aiFeedback}</div>` : ''}
                  </div>
              `;
         });

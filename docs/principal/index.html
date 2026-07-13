@@ -373,7 +373,7 @@
 
               <!-- AI Draft Prompt -->
               <div style="background: #fdf4ff; border: 1px solid #f3d9fa; padding: 12px; border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px;">
-                <label style="font-size: 0.8rem; font-weight: 700; color: #86198f; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-robot"></i> AI Draft Assistant</label>
+                <label style="font-size: 0.8rem; font-weight: 700; color: #86198f; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-robot"></i> Draft Assistant</label>
                 <div style="display: flex; gap: 6px;">
                   <input type="text" id="outreach-ai-prompt" placeholder="e.g. Warn about low attendance" style="flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; box-sizing: border-box;">
                   <button type="button" id="outreach-ai-draft-btn" onclick="generateOutreachAIDraft()" class="btn-filled-purple" style="background: #a21caf; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; color: white;">
@@ -1468,7 +1468,7 @@
                 const cleanedText = resultText.replace(/^["']|["']$/g, '').trim();
                 document.getElementById('outreach-message').value = cleanedText;
             } else {
-                alert('AI drafting failed.');
+                alert('Draft preparation failed.');
             }
         } catch(e) {
             console.error(e);

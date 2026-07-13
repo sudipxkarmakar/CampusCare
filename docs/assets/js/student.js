@@ -1064,10 +1064,10 @@ function openEmergencyWaDraftModal(name, phone) {
 
               <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
                 <label style="display: block; font-weight: 700; font-size: 0.85rem; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                  <i class="fa-solid fa-robot" style="color: #075E54;"></i> AI Draft Assistant
+                  <i class="fa-solid fa-robot" style="color: #075E54;"></i> Draft Assistant
                 </label>
                 <div style="display: flex; gap: 8px;">
-                  <input type="text" id="studentWaAiPrompt" placeholder="Ask AI to draft... (e.g. Request clinic appointment)" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none;">
+                  <input type="text" id="studentWaAiPrompt" placeholder="Describe the message to prepare..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none;">
                   <button type="button" id="studentWaAiDraftBtn" style="background: #075E54; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center;">
                     <span id="studentWaAiBtnText">Generate</span>
                     <i class="fa-solid fa-spinner fa-spin" id="studentWaAiSpinner" style="display: none; margin-left: 6px;"></i>

@@ -2,6 +2,7 @@ import Complaint from '../models/Complaint.js';
 import User from '../models/User.js';
 import fs from 'fs';
 import fetch from 'node-fetch';
+import PolicyEngine from '../ai/policies/PolicyEngine.js';
 
 const includesAny = (text, words) => words.some((word) => {
     const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -139,6 +140,29 @@ export const fileComplaint = async (req, res) => {
             }
         } catch (mlError) {
             console.warn('[ML SERVICE] Could not connect to ML service. Falling back to heuristics:', mlError.message);
+        }
+
+        const eligibility = PolicyEngine.evaluateComplaintEligibility({
+            user: studentUser || req.user,
+            category: analysis.category,
+            fields: {
+                title,
+                description,
+                location,
+                room: req.body.room,
+                roomNumber: req.body.roomNumber,
+                building: req.body.building,
+                hostelName: req.body.hostelName
+            }
+        });
+
+        if (!eligibility.success) {
+            return res.status(403).json({
+                message: eligibility.reason,
+                category: analysis.category,
+                alternativeAction: eligibility.alternativeAction,
+                failedConditions: eligibility.failedConditions || []
+            });
         }
 
         const staffMatch = classifyStaff(`${title} ${description}`, studentDept);

@@ -9,7 +9,8 @@ import csv
 app = FastAPI()
 
 # Load Models
-MODELS_DIR = "models/"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 VECTORIZER_PATH = os.path.join(MODELS_DIR, "text_vectorizer.pkl")
 CATEGORY_MODEL_PATH = os.path.join(MODELS_DIR, "category_model.pkl")
 PRIORITY_MODEL_PATH = os.path.join(MODELS_DIR, "priority_model.pkl")
@@ -32,6 +33,14 @@ except Exception as e:
 
 class ComplaintInput(BaseModel):
     text: str
+
+@app.get("/health")
+async def health():
+    models_loaded = bool(vectorizer and category_model and priority_model)
+    return {
+        "status": "ok" if models_loaded else "degraded",
+        "modelsLoaded": models_loaded
+    }
 
 @app.post("/analyze")
 async def analyze_complaint(input_data: ComplaintInput):
