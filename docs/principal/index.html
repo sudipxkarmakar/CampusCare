@@ -1479,6 +1479,20 @@
         }
     };
 
+    window.openBroadcastWhatsApp = function(btn, phone) {
+        const message = document.getElementById('outreach-message').value.trim();
+        let cleanPhone = phone.replace(/[^\d+]/g, '');
+        if (cleanPhone.length === 10) {
+            cleanPhone = '91' + cleanPhone;
+        }
+        const wpUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${encodeURIComponent(message)}`;
+        window.open(wpUrl, '_blank');
+        
+        btn.style.background = '#f1f5f9';
+        btn.style.borderColor = '#cbd5e1';
+        btn.style.color = '#64748b';
+    };
+
     window.executeOutreach = async function() {
         if (!selectedOutreachUser) {
             alert('Please search and select recipient(s) first.');
@@ -1491,16 +1505,23 @@
         }
 
         const isMultiple = Array.isArray(selectedOutreachUser);
-        const recipients = isMultiple ? selectedOutreachUser : [selectedOutreachUser];
+        let recipients = isMultiple ? selectedOutreachUser : [selectedOutreachUser];
 
         if (currentOutreachType === 'wp') {
+            // Filter recipients to only those with available phone numbers
+            recipients = recipients.filter(r => r.phone && r.phone.trim() && r.phone.trim().toLowerCase() !== 'no phone');
+
+            if (recipients.length === 0) {
+                alert('None of the selected recipients have a contact number available.');
+                return;
+            }
+
             if (recipients.length === 1) {
                 const phone = recipients[0].phone;
-                if (!phone) {
-                    alert('No contact number available for this user.');
-                    return;
+                let cleanPhone = phone.replace(/[^\d+]/g, '');
+                if (cleanPhone.length === 10) {
+                    cleanPhone = '91' + cleanPhone;
                 }
-                const cleanPhone = phone.replace(/[^\d+]/g, '');
                 const wpUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${encodeURIComponent(message)}`;
                 window.open(wpUrl, '_blank');
             } else {
@@ -1512,16 +1533,17 @@
                 modal.id = 'wp-multiple-modal';
                 
                 modal.innerHTML = `
-                    <div style="background:white; padding:24px; border-radius:18px; width:90%; max-width:440px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.15); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:16px;">
-                        <h3 style="margin:0; color:#1e1b4b; font-weight:700; font-size:1.2rem;">WhatsApp Broadcast (${recipients.length} recipients)</h3>
+                    <div style="background:white; padding:24px; border-radius:18px; width:90%; max-width:440px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.15); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:16px; position:relative;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                            <h3 style="margin:0; color:#1e1b4b; font-weight:700; font-size:1.2rem;">WhatsApp Broadcast (${recipients.length} recipients)</h3>
+                            <button type="button" onclick="document.getElementById('wp-multiple-modal').remove()" style="background:none; border:none; font-size:1.6rem; color:#94a3b8; cursor:pointer; transition:color 0.2s; padding:0; margin:0; line-height:1;" onmouseenter="this.style.color='#ef4444';" onmouseleave="this.style.color='#94a3b8';">&times;</button>
+                        </div>
                         <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.4;">Click each recipient below to open WhatsApp with your drafted message:</p>
                         <div style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px;">
                             ${recipients.map((r, idx) => {
-                                const cleanPhone = (r.phone || '').replace(/[^\d+]/g, '');
-                                const wpUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${encodeURIComponent(message)}`;
                                 return `
-                                    <button type="button" onclick="window.open('${wpUrl}', '_blank'); this.style.background='#f1f5f9'; this.style.borderColor='#cbd5e1'; this.style.color='#64748b';" style="padding:10px 14px; border-radius:10px; border:1px solid #25D366; background:#e8fbf0; color:#0f5132; text-align:left; font-size:0.85rem; font-weight:600; cursor:pointer; width:100%; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;">
-                                        <span>${idx + 1}. ${r.name} (${r.phone || 'No Phone'})</span>
+                                    <button type="button" onclick="window.openBroadcastWhatsApp(this, '${r.phone}')" style="padding:10px 14px; border-radius:10px; border:1px solid #25D366; background:#e8fbf0; color:#0f5132; text-align:left; font-size:0.85rem; font-weight:600; cursor:pointer; width:100%; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;">
+                                        <span>${idx + 1}. ${r.name} (${r.phone})</span>
                                         <i class="fa-brands fa-whatsapp" style="font-size:1.15rem; color:#25D366;"></i>
                                     </button>
                                 `;
