@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupProfile();
 });
 
-// Welcome Greeting Generator
 function getGreetingText(name) {
     const hour = new Date().getHours();
     let salutation, icon;
@@ -15,7 +14,7 @@ function getGreetingText(name) {
     else if (hour >= 12 && hour < 17)  { salutation = 'Good afternoon'; icon = '☀️'; }
     else                               { salutation = 'Good evening';   icon = '🌆'; }
     
-    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
+    return `<span style="margin-right: 12px; font-size: 2.5rem; vertical-align: middle;">${icon}</span>${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!`;
 }
 
 async function loadDashboardStats() {
@@ -88,8 +87,8 @@ function setupProfile() {
         // Update greeting
         const greetingEl = document.getElementById('principal-greeting');
         if (greetingEl) {
-            const firstName = user.name ? user.name.split(' ')[0] : 'Principal';
-            greetingEl.innerHTML = getGreetingText(firstName);
+            const displayName = user.name || 'Principal';
+            greetingEl.innerHTML = getGreetingText(displayName);
         }
 
         // Set navbar user profiles
