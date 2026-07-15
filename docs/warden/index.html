@@ -241,12 +241,12 @@
       <!-- ROW 1 (2:1 Ratio): Hero Banner + Calendar -->
       <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
 
-        <!-- Left Column: Hero (Span 2) -->
-        <div style="grid-column: span 2; display: flex;">
+        <!-- Left Column: Hero + Core Stats (Span 2) -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
           <section class="hero-card" id="home"
             style="padding: 30px 40px; display:flex; justify-content:space-between; align-items:center; flex: 1; border-radius: 24px; background: #ffffff; color: var(--text-dark); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
-            <div class="hero-content" style="max-width: 65%; z-index: 2;">
-              <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div class="hero-content" style="max-width: 80%; z-index: 2;">
+              <h1 style="font-size: 2.5rem; margin-bottom: 12px; color: var(--text-dark); line-height: 1.3; display: flex; align-items: center; gap: 10px; white-space: nowrap;">
                 <span>☀️</span> Good morning, <span id="warden-name" style="color: var(--success); font-weight: 800;">Warden</span>!
               </h1>
               <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 0;">
@@ -258,30 +258,6 @@
                 onerror="this.src='https://ui-avatars.com/api/?name=Mascot&background=random'" />
             </div>
           </section>
-        </div>
-
-        <!-- Right Column: Calendar (Span 1) -->
-        <section class="section-card" id="calendar-widget" style="display: flex; flex-direction: column;">
-          <div class="section-header" style="margin-bottom: 0;">
-            <h2 style="font-size: 1.25rem;"><i class="fa-regular fa-calendar" style="color: var(--success);"></i> Calendar</h2>
-          </div>
-          <div style="text-align: center; margin: 16px 0; font-weight: 600; display:flex; justify-content:space-between; align-items:center;">
-            <i class="fa-solid fa-chevron-left" id="prev-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
-            <span id="calendar-month-year">June 2026</span>
-            <i class="fa-solid fa-chevron-right" id="next-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
-          </div>
-          <div class="calendar-grid" id="calendar-days-container">
-            <!-- Dynamically populated from JS -->
-          </div>
-        </section>
-
-      </div>
-
-      <!-- ROW 2 (2:1 Ratio): Hostel Services (6 columns) + Mess Menu -->
-      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
-
-        <!-- Left Section (Span 2): Stat Cards + Services Grid -->
-        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
 
           <!-- Stat Cards Row -->
           <div class="dashboard-stats-row" style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
@@ -326,9 +302,33 @@
               </div>
             </a>
           </div>
+        </div>
+
+        <!-- Right Column: Calendar (Span 1) -->
+        <section class="section-card" id="calendar-widget" style="display: flex; flex-direction: column;">
+          <div class="section-header" style="margin-bottom: 0;">
+            <h2 style="font-size: 1.25rem;"><i class="fa-regular fa-calendar" style="color: var(--success);"></i> Calendar</h2>
+          </div>
+          <div style="text-align: center; margin: 16px 0; font-weight: 600; display:flex; justify-content:space-between; align-items:center;">
+            <i class="fa-solid fa-chevron-left" id="prev-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+            <span id="calendar-month-year">June 2026</span>
+            <i class="fa-solid fa-chevron-right" id="next-month" style="color:var(--text-muted); cursor:pointer; padding: 4px 8px;"></i>
+          </div>
+          <div class="calendar-grid" id="calendar-days-container">
+            <!-- Dynamically populated from JS -->
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ROW 2 (2:1 Ratio): Hostel Services (6 columns) + Mess Menu -->
+      <div class="triple-grid" style="margin-bottom: 32px; align-items: stretch;">
+
+        <!-- Left Section (Span 2): Services Grid -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
 
           <!-- Hostel Services Grid — 6 columns -->
-          <section class="section-card">
+          <section class="section-card" style="flex: 1; display: flex; flex-direction: column;">
             <div class="section-header">
               <h2 style="font-size: 1.25rem;"><i class="fa-solid fa-bolt" style="color: var(--success);"></i> Hostel Services &amp; Actions</h2>
             </div>
