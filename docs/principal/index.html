@@ -1429,11 +1429,21 @@
             alert('Please search and select recipient(s) first.');
             return;
         }
-        const promptInput = document.getElementById('outreach-ai-prompt').value.trim();
+        let promptInput = document.getElementById('outreach-ai-prompt').value.trim();
         if (!promptInput) {
             alert('Please enter a brief instruction for the AI (e.g. Warn about low attendance).');
             return;
         }
+
+        // Normalize "mess" -> "message" for outreach context unless referencing dining mess
+        promptInput = promptInput.replace(/\bmess\b/gi, (match, offset, string) => {
+            const lower = string.toLowerCase();
+            const isDiningMess = /\b(food|canteen|dining|hostel|fee|charge|menu|clean|dirty|wash|plate|kitchen)\b/i.test(lower);
+            if (!isDiningMess) {
+                return 'message';
+            }
+            return match;
+        });
 
         const draftBtn = document.getElementById('outreach-ai-draft-btn');
         draftBtn.disabled = true;
@@ -1493,6 +1503,19 @@
         btn.style.color = '#64748b';
     };
 
+    window.closeOutreachModalAndSend = function() {
+        const modal = document.getElementById('wp-multiple-modal');
+        if (!modal) return;
+        
+        const buttons = modal.querySelectorAll('button[data-phone]');
+        buttons.forEach(btn => {
+            const phone = btn.getAttribute('data-phone');
+            window.openBroadcastWhatsApp(btn, phone);
+        });
+        
+        modal.remove();
+    };
+
     window.executeOutreach = async function() {
         if (!selectedOutreachUser) {
             alert('Please search and select recipient(s) first.');
@@ -1516,44 +1539,34 @@
                 return;
             }
 
-            if (recipients.length === 1) {
-                const phone = recipients[0].phone;
-                let cleanPhone = phone.replace(/[^\d+]/g, '');
-                if (cleanPhone.length === 10) {
-                    cleanPhone = '91' + cleanPhone;
-                }
-                const wpUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${encodeURIComponent(message)}`;
-                window.open(wpUrl, '_blank');
-            } else {
-                let modal = document.getElementById('wp-multiple-modal');
-                if (modal) modal.remove();
-                
-                modal = document.createElement('div');
-                modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);';
-                modal.id = 'wp-multiple-modal';
-                
-                modal.innerHTML = `
-                    <div style="background:white; padding:24px; border-radius:18px; width:90%; max-width:440px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.15); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:16px; position:relative;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                            <h3 style="margin:0; color:#1e1b4b; font-weight:700; font-size:1.2rem;">WhatsApp Broadcast (${recipients.length} recipients)</h3>
-                            <button type="button" onclick="document.getElementById('wp-multiple-modal').remove()" style="background:none; border:none; font-size:1.6rem; color:#94a3b8; cursor:pointer; transition:color 0.2s; padding:0; margin:0; line-height:1;" onmouseenter="this.style.color='#ef4444';" onmouseleave="this.style.color='#94a3b8';">&times;</button>
-                        </div>
-                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.4;">Click each recipient below to open WhatsApp with your drafted message:</p>
-                        <div style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px;">
-                            ${recipients.map((r, idx) => {
-                                return `
-                                    <button type="button" onclick="window.openBroadcastWhatsApp(this, '${r.phone}')" style="padding:10px 14px; border-radius:10px; border:1px solid #25D366; background:#e8fbf0; color:#0f5132; text-align:left; font-size:0.85rem; font-weight:600; cursor:pointer; width:100%; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;">
-                                        <span>${idx + 1}. ${r.name} (${r.phone})</span>
-                                        <i class="fa-brands fa-whatsapp" style="font-size:1.15rem; color:#25D366;"></i>
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                        <button type="button" onclick="document.getElementById('wp-multiple-modal').remove()" class="btn-filled-purple" style="width:100%; padding:11px; border-radius:10px; font-weight:700; cursor:pointer;">Done</button>
+            let modal = document.getElementById('wp-multiple-modal');
+            if (modal) modal.remove();
+            
+            modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);';
+            modal.id = 'wp-multiple-modal';
+            
+            modal.innerHTML = `
+                <div style="background:white; padding:24px; border-radius:18px; width:90%; max-width:440px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.15); border:1px solid var(--border-color); display:flex; flex-direction:column; gap:16px; position:relative;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <h3 style="margin:0; color:#1e1b4b; font-weight:700; font-size:1.2rem;">WhatsApp Broadcast (${recipients.length} recipient${recipients.length === 1 ? '' : 's'})</h3>
+                        <button type="button" onclick="document.getElementById('wp-multiple-modal').remove()" style="background:none; border:none; font-size:1.6rem; color:#94a3b8; cursor:pointer; transition:color 0.2s; padding:0; margin:0; line-height:1;" onmouseenter="this.style.color='#ef4444';" onmouseleave="this.style.color='#94a3b8';">&times;</button>
                     </div>
-                `;
-                document.body.appendChild(modal);
-            }
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.4;">Click each recipient below to open WhatsApp with your drafted message:</p>
+                    <div style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px;">
+                        ${recipients.map((r, idx) => {
+                            return `
+                                <button type="button" data-phone="${r.phone}" onclick="window.openBroadcastWhatsApp(this, '${r.phone}')" style="padding:10px 14px; border-radius:10px; border:1px solid #25D366; background:#e8fbf0; color:#0f5132; text-align:left; font-size:0.85rem; font-weight:600; cursor:pointer; width:100%; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;">
+                                    <span>${idx + 1}. ${r.name} (${r.phone})</span>
+                                    <i class="fa-brands fa-whatsapp" style="font-size:1.15rem; color:#25D366;"></i>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                    <button type="button" onclick="window.closeOutreachModalAndSend()" class="btn-filled-purple" style="width:100%; padding:11px; border-radius:10px; font-weight:700; cursor:pointer;">${recipients.length === 1 ? 'Send Outreach' : 'Done'}</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
         } else {
             const userStr = localStorage.getItem('user');
             if (!userStr) {

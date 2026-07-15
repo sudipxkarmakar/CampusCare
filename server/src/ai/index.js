@@ -187,7 +187,8 @@ export const processAIInput = async (text, user, conversationId, clientContext =
 
     // 2. Search integration fallback if query indicates viewing lists/records
     const wantsCreationWorkflow = hasAny(lower(text), workflowCreateSignals) && AIKernel.getWorkflow(parsedData.intent);
-    if (!session.workflowMemory.activeWorkflowId && !wantsCreationWorkflow && LookupRuntime.canHandle(text)) {
+    const isOutreachDraftRequest = lower(text).includes('draft a brief') || lower(text).includes('regarding:');
+    if (!session.workflowMemory.activeWorkflowId && !wantsCreationWorkflow && !isOutreachDraftRequest && LookupRuntime.canHandle(text)) {
         const lookupResult = await LookupRuntime.handle(text, { user, clientContext });
         if (lookupResult) return PresentationEngine.render(lookupResult);
     }
@@ -290,6 +291,18 @@ export const processAIInput = async (text, user, conversationId, clientContext =
     }
 
     if (!AIKernel.getCapability(convoResult.intent)) {
+        if (convoResult.intent === 'GENERAL') {
+            const aiService = (await import('../services/aiService.js')).default;
+            const generalResponse = await aiService.answerGeneral(text, user, [], traceId, clientContext);
+            return PresentationEngine.render({
+                type: 'AI_RESPONSE',
+                success: generalResponse.success !== false,
+                presentationState: generalResponse.presentationState || 'SUCCESS',
+                message: generalResponse.message,
+                payload: generalResponse.payload
+            });
+        }
+
         return PresentationEngine.render({
             type: 'AI_RESPONSE',
             success: true,
