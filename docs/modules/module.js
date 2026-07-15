@@ -542,6 +542,28 @@
   }
 
   async function renderNoticesList() {
+    const role = (user.role || '').toLowerCase();
+    let tabsHtml = `
+      <button type="button" class="filter-tab active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; background: #6b46c1; color: white;">All Notices</button>
+      <button type="button" class="filter-tab" data-filter="general" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">General</button>
+      <button type="button" class="filter-tab" data-filter="student" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Students</button>
+    `;
+    if (role !== 'student' && role !== 'hosteler') {
+      tabsHtml += `
+        <button type="button" class="filter-tab" data-filter="teacher" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Teachers</button>
+      `;
+    }
+    if (role === 'hosteler' || (role !== 'student' && role !== 'hosteler')) {
+      tabsHtml += `
+        <button type="button" class="filter-tab" data-filter="hosteler" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Hostelers</button>
+      `;
+    }
+    if (role !== 'student' && role !== 'hosteler') {
+      tabsHtml += `
+        <button type="button" class="filter-tab" data-filter="admin" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Administrators</button>
+      `;
+    }
+
     const el = content(`
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
         <button type="button" id="noticeBackBtn" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 1.1rem; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; transition: all 0.2s;" onmouseenter="this.style.background='#e2e8f0';" onmouseleave="this.style.background='#f8fafc';">
@@ -556,12 +578,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
         <!-- Filter Tabs -->
         <div id="noticeFilterTabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button type="button" class="filter-tab active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; background: #6b46c1; color: white;">All Notices</button>
-          <button type="button" class="filter-tab" data-filter="general" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">General</button>
-          <button type="button" class="filter-tab" data-filter="student" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Students</button>
-          <button type="button" class="filter-tab" data-filter="teacher" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Teachers</button>
-          <button type="button" class="filter-tab" data-filter="hosteler" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Hostelers</button>
-          <button type="button" class="filter-tab" data-filter="admin" style="padding: 8px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; background: #fff; color: #475569;">Administrators</button>
+          ${tabsHtml}
         </div>
         <!-- Right Sort Dropdown -->
         <div>
@@ -638,6 +655,19 @@
     function renderFiltered() {
       // Filter
       let filtered = [...loadedNotices];
+      const role = (user.role || '').toLowerCase();
+      if (role === 'student') {
+        filtered = filtered.filter(n => {
+          const aud = (n.audience || '').toLowerCase();
+          return aud === 'general' || aud === 'student' || aud === 'students';
+        });
+      } else if (role === 'hosteler') {
+        filtered = filtered.filter(n => {
+          const aud = (n.audience || '').toLowerCase();
+          return aud === 'general' || aud === 'student' || aud === 'students' || aud === 'hosteler' || aud === 'hostelers';
+        });
+      }
+
       if (activeFilter !== 'all') {
         filtered = filtered.filter(n => {
           const aud = (n.audience || '').toLowerCase();
