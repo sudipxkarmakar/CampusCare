@@ -896,7 +896,7 @@
         if (!container) return;
 
         try {
-            const res = await fetch(`${API_BASE}/api/notices`, {
+            const res = await fetch(`${API_BASE}/api/notices?role=${user.role}&userId=${user._id || user.id || ''}&department=${user.department || ''}`, {
                 headers: { 'Authorization': `Bearer ${user.token}` }
             });
             if (!res.ok) throw new Error('Response not ok');

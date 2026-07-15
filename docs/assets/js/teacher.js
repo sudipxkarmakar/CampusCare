@@ -304,7 +304,7 @@ async function fetchOfficialNotices() {
     if (!listEl) return;
 
     try {
-        const res = await fetch(`${API_URL}/notices?role=${user.role}&department=${user.department || ''}`);
+        const res = await fetch(`${API_URL}/notices?role=${user.role}&userId=${user._id || user.id || ''}&department=${user.department || ''}`);
         if (!res.ok) throw new Error('Failed to fetch notices');
         const notices = await res.json();
         
