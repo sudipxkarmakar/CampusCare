@@ -6,6 +6,17 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
     ? (localBackendPorts.has(window.location.port) ? window.location.origin : 'http://localhost:5000')
     : 'https://campuscare-backend-96cn.onrender.com';
 
+function resolveRedirectPath(path) {
+    if (!path || !path.startsWith('/')) return path;
+    const pathParts = window.top.location.pathname.split('/');
+    const docsIndex = pathParts.findIndex(p => p.toLowerCase() === 'docs');
+    if (docsIndex !== -1) {
+        const prefix = pathParts.slice(0, docsIndex + 1).join('/');
+        return prefix + path;
+    }
+    return path;
+}
+
 const state = {
     busy: false,
     messages: JSON.parse(localStorage.getItem(`campuscare_ai_messages_${conversationId}`) || '[]')
@@ -76,7 +87,7 @@ function renderChoiceCards(result) {
         card.append(title, meta);
         card.addEventListener('click', () => {
             if (choice.path) {
-                window.top.location.href = choice.path;
+                window.top.location.href = resolveRedirectPath(choice.path);
                 return;
             }
             if (choice.fileUrl) {
@@ -135,12 +146,13 @@ function renderAction(result) {
     els.actionArea.innerHTML = '';
 
     if (result?.action === 'NAVIGATE' && result.payload?.path) {
-        window.top.location.href = result.payload.path;
+        window.top.location.href = resolveRedirectPath(result.payload.path);
         return;
     }
 
     if (result?.action === 'AI_DRAFT_REDIRECT' && result.payload?.draft) {
-        const { entity, redirect, draft } = result.payload;
+        const { entity, draft } = result.payload;
+        const redirect = resolveRedirectPath(result.payload.redirect);
         sessionStorage.setItem('campuscareAiDraft', JSON.stringify(result.payload));
         sessionStorage.setItem(`campuscareAiDraft:${entity}`, JSON.stringify(draft));
 
