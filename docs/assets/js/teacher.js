@@ -51,13 +51,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hero Greeting
     const greeting = document.getElementById('teacher-greeting');
     if (greeting) {
-        const firstName = user.name ? user.name.split(' ')[0] : 'Faculty';
+        const name = user.name || 'Faculty';
         const hour = new Date().getHours();
         let salutation = 'Good morning';
         let icon = '☀️';
         if (hour >= 12 && hour < 17) { salutation = 'Good afternoon'; icon = '☀️'; }
         else if (hour >= 17) { salutation = 'Good evening'; icon = '🌙'; }
-        greeting.innerHTML = `${salutation}, <span style="color: var(--primary); font-weight: 800;">${firstName}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
+        
+        // Format name to exclude surname but keep titles like Dr. or Prof.
+        const parts = String(name || '').trim().split(/\s+/);
+        let displayName = parts[0] || 'Faculty';
+        if (parts.length > 1 && ['dr', 'prof'].includes(parts[0].replace(/[.]/g, '').toLowerCase())) {
+            displayName = parts[0] + ' ' + parts[1];
+        }
+        
+        greeting.innerHTML = `<span style="margin-right: 12px; font-size: 2.5rem; vertical-align: middle;">${icon}</span>${salutation}, <span style="color: var(--primary); font-weight: 800;">${displayName}</span>!`;
     }
 
     // Top Right Profile

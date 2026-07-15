@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update greeting
         const greetingEl = document.getElementById('hosteler-greeting');
         if (greetingEl) {
-            const firstName = user.name ? user.name.split(' ')[0] : 'Hosteler';
-            greetingEl.innerHTML = getGreetingText(firstName);
+            const displayName = user.name || 'Hosteler';
+            greetingEl.innerHTML = getGreetingText(displayName);
         }
 
         // Set hostel stats
@@ -78,7 +78,14 @@ function getGreetingText(name) {
         icon = "🌙";
     }
     
-    return `${salutation}, <span style="color: var(--warning); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
+    // Format name to exclude surname but keep titles like Dr. or Prof.
+    const parts = String(name || '').trim().split(/\s+/);
+    let displayName = parts[0] || 'Hosteler';
+    if (parts.length > 1 && ['dr', 'prof'].includes(parts[0].replace(/[.]/g, '').toLowerCase())) {
+        displayName = parts[0] + ' ' + parts[1];
+    }
+    
+    return `<span style="margin-right: 12px; font-size: 2.5rem; vertical-align: middle;">${icon}</span>${salutation}, <span style="color: var(--warning); font-weight: 800;">${displayName}</span>!`;
 }
 
 function prefillAiLeaveDraft() {

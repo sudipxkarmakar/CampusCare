@@ -65,7 +65,14 @@ function getGreetingText(name) {
         icon = "🌙";
     }
     
-    return `${salutation}, <span style="color: var(--primary); font-weight: 800;">${name}</span>!<br><span style="font-size: 2.2rem; display: inline-block; margin-top: 8px;">${icon}</span>`;
+    // Format name to exclude surname but keep titles like Dr. or Prof.
+    const parts = String(name || '').trim().split(/\s+/);
+    let displayName = parts[0] || 'Student';
+    if (parts.length > 1 && ['dr', 'prof'].includes(parts[0].replace(/[.]/g, '').toLowerCase())) {
+        displayName = parts[0] + ' ' + parts[1];
+    }
+    
+    return `<span style="margin-right: 12px; font-size: 2.5rem; vertical-align: middle;">${icon}</span>${salutation}, <span style="color: var(--primary); font-weight: 800;">${displayName}</span>!`;
 }
 
 // Update UI
@@ -73,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update Header/Hero greeting initially
     const greeting = document.getElementById('student-greeting');
     if (greeting) {
-        const firstName = user.name ? user.name.split(' ')[0] : 'Student';
-        greeting.innerHTML = getGreetingText(firstName);
+        const displayName = user.name || 'Student';
+        greeting.innerHTML = getGreetingText(displayName);
     }
 
     // Bind tab clicks for Assignments
@@ -211,8 +218,8 @@ async function refreshUserProfile() {
             // Sync greeting name if changed
             const greeting = document.getElementById('student-greeting');
             if (greeting) {
-                const firstName = latestProfile.name ? latestProfile.name.split(' ')[0] : 'Student';
-                greeting.innerHTML = getGreetingText(firstName);
+                const displayName = latestProfile.name || 'Student';
+                greeting.innerHTML = getGreetingText(displayName);
             }
             
             // Sync Active Sem

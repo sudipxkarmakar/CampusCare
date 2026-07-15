@@ -187,9 +187,18 @@ function updateWardenGreeting() {
     const nameSpan = document.getElementById('warden-name');
     const name = nameSpan ? nameSpan.innerText : 'Warden';
 
+    // Format name to exclude surname but keep titles like Dr. or Prof.
+    const parts = String(name || '').trim().split(/\s+/);
+    let displayName = parts[0] || 'Warden';
+    if (parts.length > 1 && ['dr', 'prof'].includes(parts[0].replace(/[.]/g, '').toLowerCase())) {
+        displayName = parts[0] + ' ' + parts[1];
+    }
+
     if (h1) {
-        h1.innerHTML = `<span>${icon}</span> ${salutation}, <span id="warden-name" style="color: var(--success); font-weight: 800;">${name}</span>!`;
+        h1.innerHTML = `<span style="margin-right: 12px; font-size: 2.5rem; vertical-align: middle;">${icon}</span>${salutation}, <span id="warden-name" style="color: var(--success); font-weight: 800;">${displayName}</span>!`;
     }
 }
+
+
 
 
